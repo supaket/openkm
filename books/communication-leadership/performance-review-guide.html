@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Review Mastery Guide | Enersys</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1c;
+            --bg-secondary: #111827;
+            --bg-card: #1a2234;
+            --bg-card-hover: #222d44;
+            --accent-primary: #f59e0b;
+            --accent-secondary: #fbbf24;
+            --accent-tertiary: #10b981;
+            --accent-coral: #f97316;
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --accent-pink: #ec4899;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #2d3a52;
+            --gradient-warm: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ec4899 100%);
+            --gradient-cool: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-2%, -2%) rotate(1deg); }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 0.5rem 1.25rem;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-warm);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 28, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-link {
+            white-space: nowrap;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Section Headers */
+        .section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 6rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Framework Cards */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .framework-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .framework-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-accent, var(--gradient-warm));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .framework-card:hover {
+            transform: translateY(-8px);
+            border-color: transparent;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(245, 158, 11, 0.2);
+        }
+
+        .framework-card:hover::before {
+            opacity: 1;
+        }
+
+        .framework-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            background: var(--icon-bg, rgba(245, 158, 11, 0.1));
+        }
+
+        .framework-card h3 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .source {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .framework-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* SBI Diagram */
+        .sbi-diagram {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .sbi-step {
+            flex: 1;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .sbi-step::after {
+            content: '→';
+            position: absolute;
+            right: -1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-primary);
+            font-size: 1.25rem;
+        }
+
+        .sbi-step:last-child::after {
+            display: none;
+        }
+
+        .sbi-letter {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-warm);
+            color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+        }
+
+        .sbi-step h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sbi-step p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Radical Candor Quadrant */
+        .quadrant-container {
+            margin-top: 2rem;
+        }
+
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .quadrant-cell {
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .quadrant-cell.target {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(20, 184, 166, 0.1));
+            border: 2px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .quadrant-cell.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .quadrant-cell.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .quadrant-cell.neutral {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .quadrant-cell h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quadrant-cell p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .quadrant-axis {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        /* COIN Steps */
+        .coin-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .coin-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border-left: 4px solid var(--step-color, var(--accent-primary));
+        }
+
+        .coin-step-letter {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--step-color, var(--accent-primary));
+            color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .coin-step-content h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .coin-step-content p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* 4A Cards */
+        .four-a-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .four-a-card {
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .four-a-card:hover {
+            border-color: var(--accent-coral);
+            transform: translateY(-4px);
+        }
+
+        .four-a-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-coral);
+        }
+
+        .four-a-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Process Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-purple));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 1.75rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            border: 3px solid var(--bg-primary);
+        }
+
+        .timeline-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-primary);
+            border-radius: 100px;
+        }
+
+        /* Meeting Structure Table */
+        .meeting-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .meeting-table th {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .meeting-table td {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .meeting-table tr:hover td {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Script Examples */
+        .script-box {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .script-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-primary);
+        }
+
+        .script-content {
+            position: relative;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-tertiary);
+            margin-bottom: 1rem;
+        }
+
+        .script-content::before {
+            content: '"';
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            font-size: 3rem;
+            color: var(--accent-tertiary);
+            opacity: 0.3;
+            font-family: 'Instrument Serif', serif;
+        }
+
+        .script-content p {
+            padding-left: 1rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .script-tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .script-tip-icon {
+            color: var(--accent-tertiary);
+            flex-shrink: 0;
+        }
+
+        /* Book Cards */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-card {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-purple);
+        }
+
+        .book-cover {
+            width: 80px;
+            height: 120px;
+            background: var(--gradient-cool);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 2rem;
+        }
+
+        .book-info h4 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .book-author {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .book-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .book-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--accent-purple);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        /* Key Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .insight-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: var(--insight-gradient, var(--gradient-warm));
+            opacity: 0.1;
+            border-radius: 0 0 0 100%;
+        }
+
+        .insight-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--insight-gradient, var(--gradient-warm));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .insight-card h4 {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Do's and Don'ts */
+        .dos-donts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .dos-card, .donts-card {
+            padding: 2rem;
+            border-radius: 20px;
+        }
+
+        .dos-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .donts-card {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .dos-card h3, .donts-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dos-card h3 { color: var(--accent-tertiary); }
+        .donts-card h3 { color: #ef4444; }
+
+        .dos-card ul, .donts-card ul {
+            list-style: none;
+        }
+
+        .dos-card li, .donts-card li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .dos-card li::before {
+            content: '✓';
+            color: var(--accent-tertiary);
+            font-weight: 700;
+        }
+
+        .donts-card li::before {
+            content: '✕';
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        /* Checklist */
+        .checklist {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox:hover {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .checkbox.checked {
+            background: var(--accent-primary);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: var(--bg-primary);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        .footer-logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sbi-diagram {
+                flex-direction: column;
+            }
+
+            .sbi-step::after {
+                content: '↓';
+                position: absolute;
+                right: 50%;
+                top: auto;
+                bottom: -1rem;
+                transform: translateX(50%);
+            }
+
+            .quadrant-grid, .four-a-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .book-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .timeline {
+                padding-left: 2rem;
+            }
+
+            .timeline-item::before {
+                left: -1.85rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .bg-animation, .nav, .scroll-indicator {
+                display: none;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+
+            .framework-card, .book-card, .insight-card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <span class="hero-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+            Performance Review Mastery
+        </span>
+        <h1>The Art of <span>Giving Feedback</span></h1>
+        <p>คู่มือฉบับสมบูรณ์สำหรับผู้นำที่ต้องการสร้างทีมที่แข็งแกร่งผ่านการให้ feedback ที่มีประสิทธิภาพ</p>
+        <div class="hero-cta">
+            <a href="#frameworks" class="btn btn-primary">
+                เริ่มเรียนรู้
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <a href="#quick-reference" class="btn btn-secondary">
+                Quick Reference
+            </a>
+        </div>
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#frameworks" class="nav-link">Frameworks</a>
+            <a href="#sbi" class="nav-link">SBI Model</a>
+            <a href="#radical-candor" class="nav-link">Radical Candor</a>
+            <a href="#coin" class="nav-link">COIN Model</a>
+            <a href="#netflix" class="nav-link">Netflix 4A</a>
+            <a href="#process" class="nav-link">Process</a>
+            <a href="#scripts" class="nav-link">Scripts</a>
+            <a href="#books" class="nav-link">Books</a>
+            <a href="#quick-reference" class="nav-link">Quick Reference</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Frameworks Overview -->
+        <section id="frameworks" class="section">
+            <div class="section-header">
+                <div class="section-number">01 / FRAMEWORKS</div>
+                <h2 class="section-title">Core Frameworks</h2>
+                <p class="section-subtitle">เครื่องมือหลักที่ผู้นำระดับโลกใช้ในการให้ feedback</p>
+            </div>
+
+            <div class="framework-grid">
+                <!-- SBI Card -->
+                <div class="framework-card" style="--card-accent: var(--gradient-warm); --icon-bg: rgba(245, 158, 11, 0.1);">
+                    <div class="framework-icon">🎯</div>
+                    <h3>SBI Model</h3>
+                    <p class="source">Center for Creative Leadership</p>
+                    <p>Framework ที่ใช้กันแพร่หลายที่สุดสำหรับการให้ feedback แบบ specific และ actionable</p>
+                    <div class="sbi-diagram">
+                        <div class="sbi-step">
+                            <div class="sbi-letter">S</div>
+                            <h4>Situation</h4>
+                            <p>เมื่อไหร่ ที่ไหน</p>
+                        </div>
+                        <div class="sbi-step">
+                            <div class="sbi-letter">B</div>
+                            <h4>Behavior</h4>
+                            <p>พฤติกรรมที่เห็น</p>
+                        </div>
+                        <div class="sbi-step">
+                            <div class="sbi-letter">I</div>
+                            <h4>Impact</h4>
+                            <p>ผลกระทบที่เกิด</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Radical Candor Card -->
+                <div class="framework-card" style="--card-accent: var(--gradient-cool); --icon-bg: rgba(168, 85, 247, 0.1);">
+                    <div class="framework-icon">💜</div>
+                    <h3>Radical Candor</h3>
+                    <p class="source">Kim Scott - Ex-Google, Ex-Apple</p>
+                    <p>สมดุลระหว่างการใส่ใจและการกล้าพูดตรงๆ สร้างทีมที่แข็งแกร่ง</p>
+                    <div class="quadrant-container">
+                        <div class="quadrant-axis">
+                            <span>Care Personally ↑</span>
+                        </div>
+                        <div class="quadrant-grid">
+                            <div class="quadrant-cell warning">
+                                <h4>😢 Ruinous Empathy</h4>
+                                <p>เกรงใจจนไม่พูด</p>
+                            </div>
+                            <div class="quadrant-cell target">
+                                <h4>✨ Radical Candor</h4>
+                                <p>เป้าหมายของเรา!</p>
+                            </div>
+                            <div class="quadrant-cell neutral">
+                                <h4>😶 Manipulative</h4>
+                                <p>ไม่แคร์ ไม่พูด</p>
+                            </div>
+                            <div class="quadrant-cell danger">
+                                <h4>😤 Obnoxious</h4>
+                                <p>ตรงเกินไป ไม่แคร์</p>
+                            </div>
+                        </div>
+                        <div class="quadrant-axis" style="justify-content: flex-end; margin-top: 0.5rem;">
+                            <span>Challenge Directly →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COIN Card -->
+                <div class="framework-card" style="--card-accent: var(--gradient-success); --icon-bg: rgba(16, 185, 129, 0.1);">
+                    <div class="framework-icon">🪙</div>
+                    <h3>COIN Model</h3>
+                    <p class="source">Feedback Conversation Structure</p>
+                    <p>โครงสร้างการสนทนาที่สร้างความปลอดภัยและนำไปสู่การเปลี่ยนแปลง</p>
+                    <div class="coin-steps">
+                        <div class="coin-step" style="--step-color: #3b82f6;">
+                            <div class="coin-step-letter">C</div>
+                            <div class="coin-step-content">
+                                <h4>Connection</h4>
+                                <p>สร้างบรรยากาศที่ปลอดภัย</p>
+                            </div>
+                        </div>
+                        <div class="coin-step" style="--step-color: #8b5cf6;">
+                            <div class="coin-step-letter">O</div>
+                            <div class="coin-step-content">
+                                <h4>Observation</h4>
+                                <p>สิ่งที่สังเกตเห็น (fact-based)</p>
+                            </div>
+                        </div>
+                        <div class="coin-step" style="--step-color: #ec4899;">
+                            <div class="coin-step-letter">I</div>
+                            <div class="coin-step-content">
+                                <h4>Impact</h4>
+                                <p>ผลกระทบที่เกิดขึ้น</p>
+                            </div>
+                        </div>
+                        <div class="coin-step" style="--step-color: #10b981;">
+                            <div class="coin-step-letter">N</div>
+                            <div class="coin-step-content">
+                                <h4>Next Steps</h4>
+                                <p>แผนการพัฒนาร่วมกัน</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Netflix 4A Card -->
+                <div class="framework-card" style="--card-accent: linear-gradient(135deg, #f97316, #ef4444); --icon-bg: rgba(249, 115, 22, 0.1);">
+                    <div class="framework-icon">🎬</div>
+                    <h3>Netflix 4A Feedback</h3>
+                    <p class="source">Reed Hastings - "No Rules Rules"</p>
+                    <p>วัฒนธรรม Feedback 360° ที่ทำให้ Netflix กลายเป็นบริษัทระดับโลก</p>
+                    <div class="four-a-grid">
+                        <div class="four-a-card">
+                            <h4>🎯 Aim to Assist</h4>
+                            <p>ตั้งใจช่วย ไม่ใช่ตำหนิ</p>
+                        </div>
+                        <div class="four-a-card">
+                            <h4>⚡ Actionable</h4>
+                            <p>ทำได้จริง เปลี่ยนได้</p>
+                        </div>
+                        <div class="four-a-card">
+                            <h4>🙏 Appreciate</h4>
+                            <p>ขอบคุณที่ให้ feedback</p>
+                        </div>
+                        <div class="four-a-card">
+                            <h4>🤔 Accept or Discard</h4>
+                            <p>รับฟัง แต่เลือกได้</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deep Dive: SBI -->
+        <section id="sbi" class="section">
+            <div class="section-header">
+                <div class="section-number">02 / DEEP DIVE</div>
+                <h2 class="section-title">SBI Model in Action</h2>
+                <p class="section-subtitle">ตัวอย่างการใช้งานจริงในสถานการณ์ต่างๆ</p>
+            </div>
+
+            <div class="script-box">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    ตัวอย่าง: Constructive Feedback
+                </h4>
+                <div class="script-content">
+                    <p>"ในการประชุมกับลูกค้า PTT เมื่อสัปดาห์ที่แล้ว <strong style="color: var(--accent-primary);">(Situation)</strong> คุณนำเสนอ solution โดยไม่ได้เตรียม demo ไว้ล่วงหน้า <strong style="color: var(--accent-blue);">(Behavior)</strong> ทำให้ลูกค้าไม่มั่นใจและขอเลื่อนการตัดสินใจออกไป <strong style="color: var(--accent-coral);">(Impact)</strong>"</p>
+                </div>
+
+                <h4 style="margin-top: 2rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    ตัวอย่าง: Positive Feedback
+                </h4>
+                <div class="script-content" style="border-color: var(--accent-tertiary);">
+                    <p>"ในการ deploy ระบบ Genesis เมื่อวันศุกร์ที่ผ่านมา <strong style="color: var(--accent-primary);">(Situation)</strong> คุณ proactive แจ้งทีมล่วงหน้า 2 ชั่วโมง และเตรียม rollback plan ไว้พร้อม <strong style="color: var(--accent-blue);">(Behavior)</strong> ทำให้ทีมมีความมั่นใจ และ deployment สำเร็จโดยไม่มี downtime <strong style="color: var(--accent-tertiary);">(Impact)</strong>"</p>
+                </div>
+
+                <div class="script-tip">
+                    <span class="script-tip-icon">💡</span>
+                    <div>
+                        <strong>Key Insight:</strong> SBI ใช้ได้ทั้ง positive และ constructive feedback ช่วยให้ feedback เฉพาะเจาะจง ไม่เป็นการตัดสิน และเปิดโอกาสให้อีกฝ่ายเข้าใจผลกระทบได้ชัดเจน
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deep Dive: Radical Candor -->
+        <section id="radical-candor" class="section">
+            <div class="section-header">
+                <div class="section-number">03 / RADICAL CANDOR</div>
+                <h2 class="section-title">Care & Challenge</h2>
+                <p class="section-subtitle">ความรู้เชิงลึกจากหนังสือ Radical Candor โดย Kim Scott</p>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card" style="--insight-gradient: linear-gradient(135deg, #f59e0b, #f97316);">
+                    <div class="insight-number">01</div>
+                    <h4>It's Not Mean, It's Clear</h4>
+                    <p>การไม่พูดความจริงเพราะกลัวทำร้ายจิตใจ จริงๆ แล้วเป็นการทำร้ายมากกว่า เพราะทำให้เขาไม่มีโอกาสพัฒนา</p>
+                </div>
+                <div class="insight-card" style="--insight-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);">
+                    <div class="insight-number">02</div>
+                    <h4>Praise in Public, Criticize in Private</h4>
+                    <p>ชมต่อหน้าคนอื่นเพื่อสร้างแรงบันดาลใจให้ทีม แต่ติเป็นการส่วนตัวเพื่อรักษาเกียรติและศักดิ์ศรี</p>
+                </div>
+                <div class="insight-card" style="--insight-gradient: linear-gradient(135deg, #10b981, #14b8a6);">
+                    <div class="insight-number">03</div>
+                    <h4>Get It Right Before Getting It Said</h4>
+                    <p>ก่อนให้ feedback ให้แน่ใจว่าคุณเข้าใจสถานการณ์อย่างครบถ้วน ถามคำถามก่อน อย่าสรุปเอาเอง</p>
+                </div>
+                <div class="insight-card" style="--insight-gradient: linear-gradient(135deg, #ec4899, #f43f5e);">
+                    <div class="insight-number">04</div>
+                    <h4>Don't Personalize</h4>
+                    <p>พูดถึงงาน ไม่ใช่ตัวตน "งานนี้ต้องปรับปรุง" ไม่ใช่ "คุณทำงานไม่ดี" แยก what จาก who</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section id="process" class="section">
+            <div class="section-header">
+                <div class="section-number">04 / PROCESS</div>
+                <h2 class="section-title">Review Meeting Structure</h2>
+                <p class="section-subtitle">โครงสร้างการประชุม Performance Review แบบ 60-90 นาที</p>
+            </div>
+
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>ช่วง</th>
+                        <th>เวลา</th>
+                        <th>สิ่งที่ทำ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>🤝 Opening</strong></td>
+                        <td><span class="time-badge">⏱️ 5 นาที</span></td>
+                        <td>สร้างบรรยากาศ ย้ำว่าเป็นการพัฒนา ไม่ใช่การตัดสิน</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📝 Self-Assessment Review</strong></td>
+                        <td><span class="time-badge">⏱️ 15 นาที</span></td>
+                        <td>ให้เขาอธิบาย self review - ฟังก่อน ยังไม่ต้องแสดงความเห็น</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🔄 Alignment Discussion</strong></td>
+                        <td><span class="time-badge">⏱️ 20 นาที</span></td>
+                        <td>จุดที่เห็นตรงกัน/ต่างกัน พร้อม evidence และ data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>⭐ Strengths</strong></td>
+                        <td><span class="time-badge">⏱️ 10 นาที</span></td>
+                        <td>2-3 จุดแข็งที่ชัดเจน พร้อมตัวอย่างเฉพาะ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📈 Development Areas</strong></td>
+                        <td><span class="time-badge">⏱️ 15 นาที</span></td>
+                        <td>1-2 จุดที่ต้องพัฒนา (ใช้ SBI) - เน้นคุณภาพ ไม่ใช่ปริมาณ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🎯 Goal Setting</strong></td>
+                        <td><span class="time-badge">⏱️ 15 นาที</span></td>
+                        <td>แผน 90 วัน + support ที่ต้องการ - เป็น partnership</td>
+                    </tr>
+                    <tr>
+                        <td><strong>✅ Closing</strong></td>
+                        <td><span class="time-badge">⏱️ 5 นาที</span></td>
+                        <td>สรุป key takeaways + นัด follow-up</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="checklist">
+                <h4 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    Pre-Meeting Checklist
+                </h4>
+                <div class="checklist-item">
+                    <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
+                    <div>
+                        <strong>อ่าน Self Review อย่างละเอียด</strong>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">จด key points และคำถามที่อยากถาม</p>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
+                    <div>
+                        <strong>เทียบกับ Data จริง</strong>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">KPIs, project outcomes, peer feedback, customer feedback</p>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
+                    <div>
+                        <strong>หา Gaps ระหว่าง Perception vs Reality</strong>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">ประเมินตัวเองสูงหรือต่ำเกินไปในเรื่องไหน?</p>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
+                    <div>
+                        <strong>เตรียม Specific Examples ทั้งบวกและลบ</strong>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">ใช้ SBI format เตรียมไว้ 3-5 ตัวอย่าง</p>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
+                    <div>
+                        <strong>เตรียมคำถามเปิด</strong>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">"อะไรที่คุณภูมิใจที่สุด?" "อะไรที่ท้าทายที่สุด?"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scripts Section -->
+        <section id="scripts" class="section">
+            <div class="section-header">
+                <div class="section-number">05 / SCRIPTS</div>
+                <h2 class="section-title">Ready-to-Use Scripts</h2>
+                <p class="section-subtitle">สคริปต์พร้อมใช้สำหรับสถานการณ์ที่ยากลำบาก</p>
+            </div>
+
+            <div class="framework-grid">
+                <div class="script-box">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 19V5M5 12l7-7 7 7"/>
+                        </svg>
+                        เมื่อประเมินตัวเองสูงเกินไป
+                    </h4>
+                    <div class="script-content">
+                        <p>"ผมเห็นว่าคุณให้คะแนนตัวเองที่ 4/5 ในเรื่อง [X]<br><br>ผมอยากเข้าใจมากขึ้น - ช่วยยกตัวอย่างที่ทำให้คุณรู้สึกแบบนั้นได้ไหม?"</p>
+                    </div>
+                    <div class="script-tip">
+                        <span class="script-tip-icon">💡</span>
+                        <div>
+                            <strong>Technique:</strong> ฟังก่อน แล้วค่อยแชร์ data ใช้คำว่า "AND" ไม่ใช่ "BUT"<br>
+                            "ผมเห็นด้วยว่าคุณมี effort สูงมาก <strong>AND</strong> outcome ที่ออกมายังไม่ถึง target เพราะ..."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-box">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5V19M5 12l7 7 7-7"/>
+                        </svg>
+                        เมื่อประเมินตัวเองต่ำเกินไป
+                    </h4>
+                    <div class="script-content" style="border-color: var(--accent-tertiary);">
+                        <p>"ผมสังเกตว่าคุณค่อนข้าง conservative กับตัวเอง<br><br>ผมอยากให้คุณรู้ว่า [specific achievement] มันมี impact มากกว่าที่คุณคิด..."</p>
+                    </div>
+                    <div class="script-tip">
+                        <span class="script-tip-icon">💡</span>
+                        <div>
+                            <strong>From "Thanks for the Feedback":</strong> คนที่ประเมินตัวเองต่ำมักมี "inner critic" ที่รุนแรง ช่วยให้เขาเห็น evidence จากมุมมองภายนอก
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-box">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4M12 16h.01"/>
+                        </svg>
+                        เมื่อต้องพูดเรื่องยาก
+                    </h4>
+                    <div class="script-content" style="border-color: var(--accent-coral);">
+                        <p>"มีเรื่องที่ผมอยากคุยด้วยซึ่งอาจจะยากสักหน่อย<br><br>ผมพูดเรื่องนี้เพราะผมเชื่อในศักยภาพของคุณ และอยากเห็นคุณเติบโต..."</p>
+                    </div>
+                    <div class="script-tip">
+                        <span class="script-tip-icon">💡</span>
+                        <div>
+                            <strong>From Radical Candor:</strong> เริ่มด้วยการแสดงว่าคุณ care และมี good intention - นี่คือการสร้าง psychological safety
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-box">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        เมื่อต้องการ Support
+                    </h4>
+                    <div class="script-content" style="border-color: var(--accent-blue);">
+                        <p>"จากที่เราคุยกันมา ผมอยากถามว่า...<br><br>อะไรที่ผมหรือทีมสามารถช่วยคุณได้? มี blocker อะไรที่เราต้อง address ด้วยกันไหม?"</p>
+                    </div>
+                    <div class="script-tip">
+                        <span class="script-tip-icon">💡</span>
+                        <div>
+                            <strong>From "The Making of a Manager":</strong> Performance review ต้องเป็น two-way conversation ไม่ใช่ one-way judgment
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Books Section -->
+        <section id="books" class="section">
+            <div class="section-header">
+                <div class="section-number">06 / RECOMMENDED READING</div>
+                <h2 class="section-title">Essential Books</h2>
+                <p class="section-subtitle">หนังสือที่ผู้นำทุกคนควรอ่านเพื่อพัฒนาทักษะการให้ feedback</p>
+            </div>
+
+            <div class="book-grid">
+                <div class="book-card">
+                    <div class="book-cover" style="background: linear-gradient(135deg, #ec4899, #f43f5e);">📕</div>
+                    <div class="book-info">
+                        <h4>Radical Candor</h4>
+                        <p class="book-author">Kim Scott</p>
+                        <p class="book-description">Framework หลักสำหรับการให้ feedback ที่ตรงไปตรงมาแต่ยังคงความใส่ใจ เรียนรู้วิธีเป็น "Kick-Ass Boss" โดยไม่สูญเสียความเป็นมนุษย์</p>
+                        <span class="book-tag">Foundation</span>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-cover" style="background: linear-gradient(135deg, #3b82f6, #6366f1);">📘</div>
+                    <div class="book-info">
+                        <h4>Thanks for the Feedback</h4>
+                        <p class="book-author">Douglas Stone & Sheila Heen</p>
+                        <p class="book-description">เข้าใจมุมมองของคนรับ feedback ทำไมบางคนถึง defensive? และจะช่วยให้เขาเปิดรับ feedback ได้อย่างไร?</p>
+                        <span class="book-tag">Receiver's Perspective</span>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-cover" style="background: linear-gradient(135deg, #10b981, #059669);">📗</div>
+                    <div class="book-info">
+                        <h4>The Making of a Manager</h4>
+                        <p class="book-author">Julie Zhuo</p>
+                        <p class="book-description">Practical tips สำหรับ first-time managers จาก VP of Design ที่ Facebook เขียนจากประสบการณ์จริง เข้าใจง่าย ใช้ได้เลย</p>
+                        <span class="book-tag">Practical Guide</span>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-cover" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📙</div>
+                    <div class="book-info">
+                        <h4>No Rules Rules</h4>
+                        <p class="book-author">Reed Hastings & Erin Meyer</p>
+                        <p class="book-description">วัฒนธรรม Netflix ที่ทำให้ feedback กลายเป็นเรื่องปกติ เรียนรู้ 4A framework และการสร้าง culture of candor</p>
+                        <span class="book-tag">Culture Building</span>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-cover" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">📓</div>
+                    <div class="book-info">
+                        <h4>Nine Lies About Work</h4>
+                        <p class="book-author">Marcus Buckingham & Ashley Goodall</p>
+                        <p class="book-description">ท้าทาย traditional performance review ที่ไม่ได้ผล เสนอแนวทางใหม่ที่ focus ที่ strengths และ engagement</p>
+                        <span class="book-tag">Paradigm Shift</span>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-cover" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">📒</div>
+                    <div class="book-info">
+                        <h4>An Everyone Culture</h4>
+                        <p class="book-author">Robert Kegan & Lisa Lahey</p>
+                        <p class="book-description">สร้าง "Deliberately Developmental Organization" ที่ feedback และการพัฒนาเป็นส่วนหนึ่งของวัฒนธรรมองค์กร</p>
+                        <span class="book-tag">Organization Design</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Insights from Books -->
+            <div style="margin-top: 4rem;">
+                <h3 style="font-family: 'Instrument Serif', serif; font-size: 1.75rem; margin-bottom: 2rem; text-align: center;">Key Insights from Each Book</h3>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>
+                            <span style="color: var(--accent-pink);">Radical Candor</span>
+                            <span class="timeline-badge">Kim Scott</span>
+                        </h4>
+                        <p style="color: var(--text-secondary);">"The single most important thing a boss can do is focus on guidance: giving it, receiving it, and encouraging it."<br><br>การเป็นหัวหน้าที่ดีคือการกล้าพูดความจริงด้วยความใส่ใจ ไม่ใช่การเป็นที่รัก การไม่พูดความจริงเพราะกลัวทำร้ายจิตใจคือ "Ruinous Empathy"</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>
+                            <span style="color: var(--accent-blue);">Thanks for the Feedback</span>
+                            <span class="timeline-badge">Stone & Heen</span>
+                        </h4>
+                        <p style="color: var(--text-secondary);">Feedback triggers 3 แบบ: Truth Triggers (ไม่เห็นด้วย), Relationship Triggers (ไม่ไว้ใจคนพูด), Identity Triggers (รู้สึกถูกคุกคาม) เข้าใจ trigger ก่อนจะช่วยให้สื่อสารได้ตรงจุด</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>
+                            <span style="color: var(--accent-tertiary);">The Making of a Manager</span>
+                            <span class="timeline-badge">Julie Zhuo</span>
+                        </h4>
+                        <p style="color: var(--text-secondary);">"The best outcomes come from inspiring people to action, not telling them what to do." Performance review ควรเป็นการสร้างแรงบันดาลใจให้ลูกทีมอยากพัฒนา ไม่ใช่การบังคับ</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>
+                            <span style="color: var(--accent-coral);">No Rules Rules</span>
+                            <span class="timeline-badge">Reed Hastings</span>
+                        </h4>
+                        <p style="color: var(--text-secondary);">"Say what you really think with positive intent." ที่ Netflix ทุกคนต้องพร้อมให้และรับ feedback ตลอดเวลา ไม่ใช่แค่ปีละครั้ง การทำให้ feedback เป็นเรื่องปกติจะลด anxiety ลงมาก</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>
+                            <span style="color: var(--accent-purple);">Nine Lies About Work</span>
+                            <span class="timeline-badge">Buckingham & Goodall</span>
+                        </h4>
+                        <p style="color: var(--text-secondary);">"Lie #3: The best companies cascade goals." "Lie #6: People can reliably rate other people." Performance rating แบบเดิมๆ อาจไม่ได้ผลอย่างที่คิด ลองเปลี่ยนมา focus ที่ strengths และ engagement แทน</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Reference -->
+        <section id="quick-reference" class="section">
+            <div class="section-header">
+                <div class="section-number">07 / QUICK REFERENCE</div>
+                <h2 class="section-title">Do's and Don'ts</h2>
+                <p class="section-subtitle">สรุปสิ่งที่ควรทำและไม่ควรทำสำหรับทีม Enersys</p>
+            </div>
+
+            <div class="dos-donts">
+                <div class="dos-card">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <path d="M22 4L12 14.01l-3-3"/>
+                        </svg>
+                        DO's
+                    </h3>
+                    <ul>
+                        <li>เตรียม data/evidence ก่อนคุย</li>
+                        <li>เริ่มด้วยการถามให้เขาอธิบาย self review ก่อน</li>
+                        <li>ใช้ specific examples (SBI Format)</li>
+                        <li>Focus แค่ 1-2 development areas</li>
+                        <li>ถามว่าต้องการ support อะไร</li>
+                        <li>ใช้ "AND" แทน "BUT"</li>
+                        <li>นัด follow-up ภายใน 90 วัน</li>
+                        <li>Document สิ่งที่ตกลงร่วมกัน</li>
+                    </ul>
+                </div>
+
+                <div class="donts-card">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M15 9l-6 6M9 9l6 6"/>
+                        </svg>
+                        DON'Ts
+                    </h3>
+                    <ul>
+                        <li>Surprise - ไม่ควรมี feedback ใหม่ที่ไม่เคยพูด</li>
+                        <li>Sandwich (ชม-ติ-ชม) - ทำให้ message เจือจาง</li>
+                        <li>เปรียบเทียบกับคนอื่นในทีม</li>
+                        <li>รวม compensation กับ development discussion</li>
+                        <li>พูดถึงบุคลิกหรือตัวตน - พูดถึงงานเท่านั้น</li>
+                        <li>ให้ feedback มากเกินไปในครั้งเดียว</li>
+                        <li>สรุปเอาเองโดยไม่ถาม</li>
+                        <li>ทำให้เป็นการพูดทางเดียว</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Final Summary Card -->
+            <div style="margin-top: 4rem; padding: 3rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(168, 85, 247, 0.1)); border-radius: 24px; border: 1px solid var(--border-color); text-align: center;">
+                <h3 style="font-family: 'Instrument Serif', serif; font-size: 2rem; margin-bottom: 1rem;">Remember</h3>
+                <p style="font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem;">
+                    "The goal of feedback is not to change people.<br>
+                    It's to help them see themselves more clearly so they can choose to change."
+                </p>
+                <p style="color: var(--text-muted);">— Adapted from Thanks for the Feedback</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">Enersys</div>
+        <p>Performance Review Mastery Guide • Built for leaders who care about their people</p>
+        <p style="margin-top: 0.5rem; opacity: 0.5;">© 2025 Enersys Co., Ltd.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.framework-card, .book-card, .insight-card, .timeline-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
