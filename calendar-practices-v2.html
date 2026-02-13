@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Calendar Best Practices — Enersys</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0a0a0f;
+    --bg-slide: #101018;
+    --accent: #4f8cff;
+    --accent2: #7c5cfc;
+    --accent3: #00d4aa;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --text-bright: #ffffff;
+    --card-bg: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.08);
+    --danger: #ff5c6a;
+    --success: #00d4aa;
+    --warning: #ffb347;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Sarabun', 'Outfit', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  .presentation { width: 100vw; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 72px 80px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  .slide-inner { max-width: 1100px; width: 100%; }
+
+  /* NAV */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--card-border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; z-index: 100;
+  }
+
+  .nav-btn {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    color: var(--text); padding: 8px 22px; border-radius: 10px;
+    cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 500;
+    transition: all 0.25s; display: flex; align-items: center; gap: 8px;
+  }
+  .nav-btn:hover { background: rgba(79,140,255,0.15); border-color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .slide-counter {
+    font-family: 'Outfit', sans-serif; font-size: 13px;
+    color: var(--text-dim); letter-spacing: 2px;
+  }
+
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    transition: width 0.5s ease; z-index: 100;
+  }
+
+  /* TYPOGRAPHY */
+  .section-num {
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--accent); letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 700;
+    color: var(--text-bright); margin-bottom: 6px; line-height: 1.2;
+  }
+
+  h2 .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .slide-desc {
+    font-size: 17px; color: var(--text-dim); margin-bottom: 28px;
+    line-height: 1.6; max-width: 700px;
+  }
+
+  /* RESEARCH NOTE */
+  .research-note {
+    background: linear-gradient(135deg, rgba(124,92,252,0.08), rgba(79,140,255,0.06));
+    border: 1px solid rgba(124,92,252,0.2);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 22px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .research-note .source-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .source-tag.hbr { background: rgba(220,50,50,0.15); color: #f06060; }
+  .source-tag.mit { background: rgba(79,140,255,0.15); color: var(--accent); }
+  .source-tag.cmmi { background: rgba(0,212,170,0.15); color: var(--accent3); }
+
+  .research-note strong { color: var(--text); }
+
+  /* CARDS */
+  .cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 14px; }
+  .cards-row.two-col { grid-template-columns: repeat(2, 1fr); }
+
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 24px; transition: all 0.3s;
+  }
+  .card:hover { border-color: rgba(79,140,255,0.3); transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+
+  .card-icon {
+    width: 44px; height: 44px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 14px;
+  }
+  .card-icon.green { background: rgba(0,212,170,0.12); }
+  .card-icon.red { background: rgba(255,92,106,0.12); }
+  .card-icon.yellow { background: rgba(255,179,71,0.12); }
+  .card-icon.blue { background: rgba(79,140,255,0.12); }
+  .card-icon.purple { background: rgba(124,92,252,0.12); }
+
+  .card h3 {
+    font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 600;
+    color: var(--text-bright); margin-bottom: 8px;
+  }
+
+  .card p, .card li { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+  .card ul { list-style: none; padding: 0; }
+  .card ul li { padding: 3px 0; padding-left: 18px; position: relative; }
+  .card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 600; }
+
+  /* TITLE SLIDE */
+  .slide-title .logo-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin-bottom: 28px;
+    box-shadow: 0 20px 60px rgba(79,140,255,0.25);
+  }
+
+  .slide-title h1 {
+    font-family: 'Outfit', sans-serif; font-size: 52px; font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, var(--text-bright), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 14px;
+  }
+
+  .slide-title .subtitle { font-size: 20px; color: var(--text-dim); font-weight: 300; margin-bottom: 24px; }
+
+  .slide-title .tag {
+    display: inline-block; padding: 6px 18px;
+    background: rgba(79,140,255,0.1); border: 1px solid rgba(79,140,255,0.3);
+    border-radius: 100px; font-size: 13px; color: var(--accent);
+    font-weight: 500; letter-spacing: 1px;
+  }
+
+  .slide-title .research-badges {
+    margin-top: 32px;
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  }
+
+  .r-badge {
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .r-badge.hbr { background: rgba(220,50,50,0.1); border: 1px solid rgba(220,50,50,0.25); color: #f06060; }
+  .r-badge.mit { background: rgba(79,140,255,0.1); border: 1px solid rgba(79,140,255,0.25); color: var(--accent); }
+  .r-badge.cmmi { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.25); color: var(--accent3); }
+
+  /* PRINCIPLE */
+  .principle-box {
+    background: linear-gradient(135deg, rgba(79,140,255,0.08), rgba(124,92,252,0.08));
+    border: 1px solid rgba(79,140,255,0.2); border-radius: 18px;
+    padding: 40px; text-align: center; margin-bottom: 20px;
+  }
+  .principle-box .emoji { font-size: 44px; margin-bottom: 14px; }
+  .principle-box h3 {
+    font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 700;
+    color: var(--text-bright); margin-bottom: 8px;
+  }
+  .principle-box p { font-size: 16px; color: var(--text-dim); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+  /* STAT BOXES */
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+
+  .stat-box {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 22px; text-align: center;
+  }
+
+  .stat-box .stat-num {
+    font-family: 'Outfit', sans-serif; font-size: 36px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .stat-box .stat-num.red { color: var(--danger); }
+  .stat-box .stat-num.green { color: var(--success); }
+  .stat-box .stat-num.blue { color: var(--accent); }
+
+  .stat-box .stat-label { font-size: 13px; color: var(--text-dim); line-height: 1.4; }
+  .stat-box .stat-src { font-size: 10px; color: rgba(136,136,160,0.6); margin-top: 6px; letter-spacing: 0.5px; }
+
+  /* FLOW */
+  .flow {
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap; justify-content: center; margin: 24px 0;
+  }
+  .flow-step {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 11px; padding: 12px 18px; font-size: 13px;
+    color: var(--text); font-weight: 500; text-align: center; min-width: 130px;
+  }
+  .flow-arrow { color: var(--accent); font-size: 18px; font-weight: 700; }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-top: 14px;
+  }
+  .compare-table th {
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim);
+    padding: 10px 18px; text-align: left;
+  }
+  .compare-table td {
+    padding: 14px 18px; font-size: 14px; line-height: 1.5; background: var(--card-bg);
+  }
+  .compare-table td:first-child {
+    border-radius: 10px 0 0 10px; border-left: 3px solid var(--danger); color: var(--text-dim);
+  }
+  .compare-table td:last-child {
+    border-radius: 0 10px 10px 0; border-right: 3px solid var(--success); color: var(--text);
+  }
+
+  /* MUST HAVE GRID */
+  .must-have-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
+
+  .must-item {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 18px 14px; text-align: center; transition: all 0.3s;
+  }
+  .must-item:hover { border-color: rgba(79,140,255,0.3); transform: translateY(-3px); }
+  .must-item .icon { font-size: 26px; margin-bottom: 8px; }
+  .must-item .label { font-size: 13px; font-weight: 600; color: var(--text-bright); margin-bottom: 3px; }
+  .must-item .desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+  /* RITUAL */
+  .ritual-timeline { display: flex; gap: 18px; margin-top: 20px; }
+
+  .ritual-day {
+    flex: 1; background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 24px 20px; position: relative; overflow: hidden;
+  }
+  .ritual-day::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .ritual-day.sun::before { background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+  .ritual-day.mon::before { background: linear-gradient(90deg, var(--accent), var(--accent3)); }
+  .ritual-day.fri::before { background: linear-gradient(90deg, var(--accent3), var(--warning)); }
+
+  .ritual-day .day-label {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+  }
+  .ritual-day h4 {
+    font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 600;
+    color: var(--text-bright); margin-bottom: 10px;
+  }
+  .ritual-day p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .checklist li {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 16px 20px; font-size: 14px;
+    color: var(--text); display: flex; align-items: flex-start;
+    gap: 12px; transition: all 0.25s; line-height: 1.5;
+  }
+  .checklist li:hover { border-color: rgba(0,212,170,0.3); background: rgba(0,212,170,0.04); }
+
+  .check-num {
+    width: 30px; height: 30px; min-width: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; color: #fff;
+  }
+
+  /* CMMI LEVELS */
+  .cmmi-levels { display: flex; gap: 6px; margin-top: 20px; align-items: flex-end; }
+
+  .cmmi-level {
+    flex: 1; border-radius: 12px; padding: 18px 14px; text-align: center;
+    border: 1px solid var(--card-border); transition: all 0.3s;
+    position: relative;
+  }
+  .cmmi-level:hover { transform: translateY(-4px); }
+
+  .cmmi-level .lvl-num {
+    font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .cmmi-level .lvl-name {
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; margin-bottom: 6px;
+  }
+  .cmmi-level .lvl-desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+  .cmmi-level.l1 { background: rgba(255,92,106,0.06); min-height: 120px; }
+  .cmmi-level.l1 .lvl-num { color: var(--danger); }
+  .cmmi-level.l1 .lvl-name { color: var(--danger); }
+
+  .cmmi-level.l2 { background: rgba(255,179,71,0.06); min-height: 150px; }
+  .cmmi-level.l2 .lvl-num { color: var(--warning); }
+  .cmmi-level.l2 .lvl-name { color: var(--warning); }
+
+  .cmmi-level.l3 { background: rgba(79,140,255,0.06); min-height: 180px; border-color: rgba(79,140,255,0.3); box-shadow: 0 0 30px rgba(79,140,255,0.08); }
+  .cmmi-level.l3 .lvl-num { color: var(--accent); }
+  .cmmi-level.l3 .lvl-name { color: var(--accent); }
+
+  .cmmi-level.l4 { background: rgba(124,92,252,0.06); min-height: 210px; }
+  .cmmi-level.l4 .lvl-num { color: var(--accent2); }
+  .cmmi-level.l4 .lvl-name { color: var(--accent2); }
+
+  .cmmi-level.l5 { background: rgba(0,212,170,0.06); min-height: 240px; }
+  .cmmi-level.l5 .lvl-num { color: var(--accent3); }
+  .cmmi-level.l5 .lvl-name { color: var(--accent3); }
+
+  .cmmi-arrow {
+    position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+    color: var(--accent); font-size: 16px; font-weight: 700;
+  }
+
+  /* FINAL */
+  .final-quote { text-align: center; max-width: 800px; }
+  .final-quote .big-icon { font-size: 56px; margin-bottom: 20px; }
+  .final-quote h2 { font-size: 36px; margin-bottom: 16px; }
+  .final-quote p { font-size: 18px; color: var(--text-dim); line-height: 1.7; margin-bottom: 32px; }
+  .final-quote .brand {
+    font-family: 'Outfit', sans-serif; font-size: 13px;
+    color: var(--text-dim); letter-spacing: 4px; text-transform: uppercase; opacity: 0.5;
+  }
+
+  .ref-list {
+    text-align: left; max-width: 700px; margin: 32px auto 0;
+    padding: 24px; background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px;
+  }
+  .ref-list h4 {
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .ref-list p { font-size: 12px; color: rgba(136,136,160,0.7); line-height: 1.8; margin: 0; }
+
+  /* BG */
+  .bg-glow {
+    position: absolute; width: 500px; height: 500px;
+    border-radius: 50%; filter: blur(150px); opacity: 0.07; pointer-events: none;
+  }
+  .bg-glow.tl { top: -200px; left: -200px; background: var(--accent); }
+  .bg-glow.br { bottom: -200px; right: -200px; background: var(--accent2); }
+  .bg-glow.center { top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--accent3); }
+
+  .key-hint {
+    position: fixed; bottom: 70px; right: 28px;
+    font-size: 11px; color: var(--text-dim); opacity: 0.35; z-index: 50;
+  }
+  .key-hint kbd {
+    display: inline-block; padding: 2px 7px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 4px; font-family: 'Outfit', sans-serif; font-size: 10px; margin: 0 2px;
+  }
+
+  .tip-box {
+    margin-top: 16px; padding: 16px 22px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+  .tip-box p { font-size: 14px; color: var(--text-dim); line-height: 1.7; margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="presentation" id="presentation">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide slide-title active" data-slide="0">
+    <div class="bg-glow tl"></div>
+    <div class="bg-glow br"></div>
+    <div class="slide-inner" style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+      <div class="logo-icon">📅</div>
+      <h1>Google Calendar<br>Best Practices</h1>
+      <p class="subtitle">Proactive Calendar Management สำหรับทีม</p>
+      <span class="tag">ENERSYS CO., LTD.</span>
+      <div class="research-badges">
+        <span class="r-badge hbr">📕 Harvard Business Review</span>
+        <span class="r-badge mit">📘 MIT Sloan Management Review</span>
+        <span class="r-badge cmmi">📗 CMMI Framework</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Why This Matters — Stats -->
+  <div class="slide" data-slide="1">
+    <div class="bg-glow center"></div>
+    <div class="slide-inner">
+      <div class="section-num">THE PROBLEM</div>
+      <h2>ทำไม Calendar Management <span class="highlight">ถึงสำคัญ?</span></h2>
+      <p class="slide-desc">งานวิจัยจาก Harvard และ MIT ชี้ว่า การจัดการประชุมที่ไม่ดี ทำลายทั้ง productivity และ wellbeing</p>
+
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-num red">70%</div>
+          <div class="stat-label">ของ meetings ทำให้พนักงาน<br><strong style="color:var(--text)">ทำงานจริงไม่ได้</strong></div>
+          <div class="stat-src">HBR — Laker, Pereira et al., 2022</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num blue">23 ชม.</div>
+          <div class="stat-label">ต่อสัปดาห์ที่ผู้บริหารใช้ในประชุม<br><strong style="color:var(--text)">เพิ่มจาก 10 ชม. ในปี 1960</strong></div>
+          <div class="stat-src">HBR — Perlow, Hadley & Eun, 2017</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num green">71%</div>
+          <div class="stat-label">productivity เพิ่มขึ้น เมื่อลดประชุม 40%<br><strong style="color:var(--text)">ด้วย no-meeting days</strong></div>
+          <div class="stat-src">MIT Sloan — Laker et al., 2022</div>
+        </div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag hbr">HBR</span>
+        <strong>Harvard Business School (2017):</strong> สำรวจ 182 ผู้บริหารระดับสูง พบ 65% บอกว่า meetings ทำให้ทำงานตัวเองไม่เสร็จ และ 71% บอกว่า meetings ส่วนใหญ่ไม่มีประสิทธิภาพ<br><br>
+        <span class="source-tag mit">MIT</span>
+        <strong>MIT Sloan (2022):</strong> ศึกษา 76 บริษัททั่วโลก พบว่าการมี meeting-free days ช่วยเพิ่ม autonomy 88%, ลด stress 75%, และเพิ่ม productivity 73%
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Core Principle -->
+  <div class="slide" data-slide="2">
+    <div class="bg-glow tl"></div>
+    <div class="slide-inner">
+      <div class="section-num">CORE PRINCIPLE</div>
+      <h2>Calendar = <span class="highlight">Communication Tool</span></h2>
+      <p class="slide-desc">ปฏิทินไม่ใช่แค่ที่จดนัด แต่เป็นเครื่องมือสื่อสาร ความตั้งใจ ความเคารพเวลา และความเป็นมืออาชีพ</p>
+
+      <div class="principle-box">
+        <div class="emoji">⚡</div>
+        <h3>ตอบทุก Invitation ภายใน 24 ชั่วโมง</h3>
+        <p>ไม่ปล่อยค้าง "No Response" — การตอบเร็วคือการเคารพเวลาของทุกคน</p>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag cmmi">CMMI</span>
+        <strong>CMMI Level 2 — Managed:</strong> กระบวนการที่ "managed" ต้องมีการวางแผน ควบคุม ติดตาม และประเมินผล — การตอบ calendar invitation คือ "process discipline" พื้นฐาน ที่แยกองค์กร Level 1 (Ad hoc) ออกจาก Level 2 (Managed) ได้อย่างชัดเจน<br><br>
+        <span class="source-tag hbr">HBR</span>
+        <strong>Roger Schwarz (HBR, 2015):</strong> Agenda ที่ชัดเจนสามารถลดเวลาประชุมได้ถึง 80% — แต่มีเพียง 37% ของ meetings ที่มี agenda
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Accept / Decline / Tentative -->
+  <div class="slide" data-slide="3">
+    <div class="bg-glow br"></div>
+    <div class="slide-inner">
+      <div class="section-num">SECTION 01</div>
+      <h2>Accept · Decline · <span class="highlight">Tentative</span></h2>
+      <p class="slide-desc">วิธีตอบ invitation อย่างมืออาชีพ</p>
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-icon green">✅</div>
+          <h3>Accept</h3>
+          <ul>
+            <li>อ่าน agenda ที่แนบมา</li>
+            <li>ถ้าไม่มี agenda → ถามกลับ</li>
+            <li>เตรียม pre-read ล่วงหน้า</li>
+            <li>มี conflict → Propose new time</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-icon red">❌</div>
+          <h3>Decline</h3>
+          <ul>
+            <li>กด Decline พร้อม message เสมอ</li>
+            <li>บอกเหตุผลสั้นๆ</li>
+            <li>เสนอคนเข้าแทนถ้าเหมาะสม</li>
+            <li>Decline เร็ว ดีกว่าปล่อยค้าง</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-icon yellow">⏳</div>
+          <h3>Tentative</h3>
+          <ul>
+            <li>ใช้เฉพาะเมื่อรอ dependency จริงๆ</li>
+            <li>ตั้ง deadline ให้ตัวเอง confirm</li>
+            <li>อย่าใช้เป็นนิสัย</li>
+            <li>ทำให้คนจัดวางแผนไม่ได้</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag hbr">HBR</span>
+        <strong>Ashley Whillans, Harvard Business School:</strong> 83% ของ managers รายงานว่า meetings ใน calendar ของตัวเองไม่มีประสิทธิภาพ — การ decline อย่างมีเหตุผล ไม่ใช่ความไม่สุภาพ แต่เป็นการเคารพเวลาทุกฝ่าย<br><br>
+        <span class="source-tag cmmi">CMMI</span>
+        <strong>Project Monitoring & Control (PMC):</strong> การตอบ invitation ทันทีคือส่วนหนึ่งของ "status tracking" — ใน CMMI ทุก commitment ต้องถูก review และ tracked
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Creating Invitations -->
+  <div class="slide" data-slide="4">
+    <div class="bg-glow center"></div>
+    <div class="slide-inner">
+      <div class="section-num">SECTION 02</div>
+      <h2>สร้าง Invitation <span class="highlight">อย่าง Pro</span></h2>
+      <p class="slide-desc">ทุก invitation ที่ส่งออกไป ต้องมีครบทุกข้อ</p>
+      <div class="must-have-grid">
+        <div class="must-item">
+          <div class="icon">📝</div>
+          <div class="label">Title ชัดเจน</div>
+          <div class="desc">ไม่ใช่ "Meeting" แต่เป็น "Genesis AI: Sprint Review"</div>
+        </div>
+        <div class="must-item">
+          <div class="icon">📋</div>
+          <div class="label">Agenda</div>
+          <div class="desc">3-5 bullet + Expected Outcome</div>
+        </div>
+        <div class="must-item">
+          <div class="icon">⏱️</div>
+          <div class="label">25/50 นาที</div>
+          <div class="desc">ไม่ใช่ 30/60 เพื่อให้มี buffer</div>
+        </div>
+        <div class="must-item">
+          <div class="icon">📎</div>
+          <div class="label">แนบ Doc/Link</div>
+          <div class="desc">เอกสารที่เกี่ยวข้อง</div>
+        </div>
+        <div class="must-item">
+          <div class="icon">👥</div>
+          <div class="label">Invite ถูกคน</div>
+          <div class="desc">Required vs Optional</div>
+        </div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag hbr">HBR</span>
+        <strong>Roger Schwarz (HBR, 2015):</strong> เสนอให้เขียน agenda เป็น "คำถาม" แทน topic เช่น แทนที่จะเขียน "จัดสรรพื้นที่สำนักงาน" → ให้เขียน "ภายใต้เงื่อนไขใดที่เราควรจัดสรรพื้นที่สำนักงานใหม่?" พร้อมระบุว่า topic นั้น "แชร์ข้อมูล, ขอ input, หรือตัดสินใจ"<br><br>
+        <span class="source-tag cmmi">CMMI</span>
+        <strong>Project Planning (PP):</strong> ใน CMMI การประชุมต้องมี schedule, agenda, roles ที่ชัดเจน และ post-meeting recap — ซึ่งเริ่มต้นจากการสร้าง calendar invitation ที่มีคุณภาพ
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: สรุปวันได้ สร้าง Calendar เลย -->
+  <div class="slide" data-slide="5">
+    <div class="bg-glow tl"></div>
+    <div class="slide-inner">
+      <div class="section-num">SECTION 03</div>
+      <h2>สรุปวันได้ปุ๊บ <span class="highlight">สร้าง Calendar ปั๊บ</span></h2>
+      <p class="slide-desc">อย่ารอให้อีกฝ่ายสร้าง — ใครสรุปได้ก่อน คนนั้น own</p>
+
+      <div class="cards-row two-col" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-icon blue">🚀</div>
+          <h3>ทำไมต้องเราสร้าง?</h3>
+          <ul>
+            <li>แสดงความ proactive & ownership</li>
+            <li>ควบคุม agenda ได้เอง</li>
+            <li>ลดโอกาส "ลืมทั้งคู่"</li>
+            <li>สร้างความน่าเชื่อถือ</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-icon purple">💬</div>
+          <h3>ตัวอย่าง</h3>
+          <ul>
+            <li>คุย LINE → สร้าง invite ทันที</li>
+            <li>คุย Slack → ได้ agreement, สร้างเลย</li>
+            <li>ประชุมจบ → สร้างก่อนออกจากห้อง</li>
+            <li>ส่ง message: "สร้าง calendar ไว้แล้วนะ"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step">🗣️ สรุปวันเวลา</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">📅 สร้าง Calendar<br><small style="color:var(--accent)">ภายใน 5 นาที</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">📋 ใส่ Title + Agenda</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">👥 Invite ทุกคน</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">💬 แจ้งทุกคน</div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag cmmi">CMMI</span>
+        <strong>CMMI Level 3 — Defined:</strong> กระบวนการที่เป็น "proactive" แทน "reactive" — การสร้าง calendar ทันทีที่สรุปวันได้ คือตัวอย่างของ proactive process ที่สะท้อน organizational maturity<br><br>
+        <span class="source-tag hbr">HBR</span>
+        <strong>HBR Guide to Making Every Meeting Matter:</strong> ทุก meeting ควรจบด้วย clear action items และ follow-up schedule — การสร้าง calendar invite ทันทีคือการ "lock in" commitment
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Weekly Ritual + Block Time -->
+  <div class="slide" data-slide="6">
+    <div class="bg-glow br"></div>
+    <div class="slide-inner">
+      <div class="section-num">SECTION 04</div>
+      <h2>Weekly Calendar <span class="highlight">Ritual</span></h2>
+      <p class="slide-desc">สร้างนิสัย Proactive ด้วย routine ประจำสัปดาห์</p>
+
+      <div class="ritual-timeline">
+        <div class="ritual-day sun">
+          <div class="day-label">อาทิตย์เย็น</div>
+          <h4>🔭 Preview</h4>
+          <p>ดู calendar สัปดาห์หน้าทั้งหมด เตรียม pre-read สำหรับทุก meeting สำคัญ</p>
+        </div>
+        <div class="ritual-day mon">
+          <div class="day-label">จันทร์เช้า</div>
+          <h4>✂️ Prune</h4>
+          <p>ยืนยันว่าทุก meeting ยังจำเป็น cancel สิ่งที่ไม่จำเป็น บล็อค focus time</p>
+        </div>
+        <div class="ritual-day fri">
+          <div class="day-label">ศุกร์</div>
+          <h4>🔍 Review</h4>
+          <p>ทบทวนสัปดาห์ที่ผ่านมา: มี meeting ไหนที่ควรเป็น email แทน?</p>
+        </div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag hbr">HBR</span>
+        <strong>Timeboxing (Marc Zao-Sanders, HBR 2018):</strong> จากการสำรวจ productivity techniques 100 รายการ Timeboxing — การรวม to-do list เข้ากับ calendar — ได้รับการจัดอันดับเป็น "เทคนิคที่มีประโยชน์ที่สุด" ผู้เขียนรายงานว่า productivity เพิ่มขึ้นเท่าตัว<br><br>
+        <span class="source-tag mit">MIT</span>
+        <strong>MIT Sloan (2022):</strong> จำนวน meeting-free days ที่เหมาะสมคือ 3 วัน/สัปดาห์ — เหลือ 2 วันสำหรับประชุมเพื่อรักษา social connections และจัดตาราง
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Block Time + Deep Work -->
+  <div class="slide" data-slide="7">
+    <div class="bg-glow center"></div>
+    <div class="slide-inner">
+      <div class="section-num">SECTION 05</div>
+      <h2>Block Time <span class="highlight">ปกป้องเวลา Deep Work</span></h2>
+      <p class="slide-desc">ปกป้องเวลาของตัวเองก่อนที่คนอื่นจะมาจอง</p>
+
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-icon green">🟢</div>
+          <h3>Focus Time</h3>
+          <p>บล็อค 2-3 ชม./วัน สำหรับ deep work — ใช้สีเขียวให้เห็นชัด</p>
+        </div>
+        <div class="card">
+          <div class="card-icon blue">🔵</div>
+          <h3>Strategy Time</h3>
+          <p>เวลาคิด strategy วางแผนธุรกิจ ไม่ให้ถูก meeting กิน</p>
+        </div>
+        <div class="card">
+          <div class="card-icon yellow">⬜</div>
+          <h3>Buffer Time</h3>
+          <p>ไม่จัด back-to-back ทั้งวัน เว้นพักระหว่าง meeting</p>
+        </div>
+      </div>
+
+      <div style="margin-top:18px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+        <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">🔵</div>
+          <div style="font-size:12px; font-weight:600; color:var(--text-bright);">ลูกค้า</div>
+        </div>
+        <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">🟢</div>
+          <div style="font-size:12px; font-weight:600; color:var(--text-bright);">Focus</div>
+        </div>
+        <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">🟡</div>
+          <div style="font-size:12px; font-weight:600; color:var(--text-bright);">Internal</div>
+        </div>
+        <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">🔴</div>
+          <div style="font-size:12px; font-weight:600; color:var(--text-bright);">Urgent</div>
+        </div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag hbr">HBR</span>
+        <strong>Cal Newport / HBR:</strong> Time-blocking คือเทคนิค productivity อันดับ 1 — บังคับให้ "ตั้งใจ" กับทุกชั่วโมง · หลังถูกขัดจังหวะ ต้องใช้เวลาเฉลี่ย 23 นาทีกว่าจะ focus กลับได้ (UC Irvine Research)<br><br>
+        <span class="source-tag mit">MIT</span>
+        <strong>MIT Sloan:</strong> บริษัทที่มี meeting-free days พบว่า cooperation เพิ่มขึ้น 55% — พนักงานใช้วิธีอื่นที่ดีกว่า เช่น 1:1 ตามเวลาที่เหมาะสม และ async communication
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: CMMI Maturity Applied to Calendar -->
+  <div class="slide" data-slide="8">
+    <div class="bg-glow tl"></div>
+    <div class="slide-inner">
+      <div class="section-num">CMMI FRAMEWORK</div>
+      <h2>Calendar Maturity <span class="highlight">Model</span></h2>
+      <p class="slide-desc">ประยุกต์ CMMI 5 Levels กับ Calendar Management ขององค์กร</p>
+
+      <div class="cmmi-levels">
+        <div class="cmmi-level l1">
+          <div class="lvl-num">1</div>
+          <div class="lvl-name">Initial</div>
+          <div class="lvl-desc">ไม่ตอบ invite ไม่มี agenda ประชุมตาม "heroics"</div>
+        </div>
+        <div class="cmmi-level l2">
+          <div class="lvl-num">2</div>
+          <div class="lvl-name">Managed</div>
+          <div class="lvl-desc">ตอบ invite ตรงเวลา มี agenda พื้นฐาน track commitments</div>
+        </div>
+        <div class="cmmi-level l3">
+          <div class="lvl-num">3</div>
+          <div class="lvl-name">Defined ★</div>
+          <div class="lvl-desc">มี standard process ทั้งองค์กร, proactive ไม่ใช่ reactive</div>
+        </div>
+        <div class="cmmi-level l4">
+          <div class="lvl-num">4</div>
+          <div class="lvl-name">Quantitative</div>
+          <div class="lvl-desc">ใช้ data วัดประสิทธิภาพ meetings, review metrics</div>
+        </div>
+        <div class="cmmi-level l5">
+          <div class="lvl-num">5</div>
+          <div class="lvl-name">Optimizing</div>
+          <div class="lvl-desc">continuous improvement, ทดลอง no-meeting days, ปรับ format</div>
+        </div>
+      </div>
+
+      <div class="research-note">
+        <span class="source-tag cmmi">CMMI</span>
+        <strong>CMMI Institute / Carnegie Mellon:</strong> Level 2 (Managed) ต้องมี process discipline — ทุก commitment ต้อง tracked, reviewed, and evaluated · Level 3 (Defined) เปลี่ยนจาก reactive เป็น proactive — มี organization-wide standards · Level 5 (Optimizing) เน้น continuous improvement ผ่าน innovation<br><br>
+        <span class="source-tag hbr">HBR</span>
+        <strong>Hinds & Sutton, Stanford/Asana (HBR, 2022):</strong> วิจัยพบ "Meeting Reset" — การ audit และ repair meetings อย่างเป็นระบบ เป็นกุญแจสู่ continuous improvement ในระดับองค์กร
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Comparison -->
+  <div class="slide" data-slide="9">
+    <div class="bg-glow br"></div>
+    <div class="slide-inner">
+      <div class="section-num">SECTION 06</div>
+      <h2>❌ ไม่ดี vs ✅ <span class="highlight">Proactive</span></h2>
+      <p class="slide-desc">เปรียบเทียบพฤติกรรมที่ควรเปลี่ยน</p>
+
+      <table class="compare-table">
+        <thead><tr><th>❌ ไม่ Proactive</th><th>✅ Proactive</th></tr></thead>
+        <tbody>
+          <tr><td>มี invitation ค้าง No Response 5+ อัน</td><td>ตอบทุกอันภายใน 24 ชั่วโมง</td></tr>
+          <tr><td>ส่ง invite เขียนแค่ "Meeting"</td><td>ทุก invite มี agenda + expected outcome</td></tr>
+          <tr><td>ประชุม back-to-back ทั้งวัน</td><td>มี focus block + buffer ทุกวัน</td></tr>
+          <tr><td>ไม่เคย decline</td><td>Decline อย่างสุภาพพร้อมเหตุผล</td></tr>
+          <tr><td>Recurring meeting ที่ไม่มีใครอยากเข้า</td><td>Review recurring ทุก quarter</td></tr>
+          <tr><td>รอให้อีกฝ่ายสร้าง calendar</td><td>สรุปวันได้ปุ๊บ สร้าง Calendar ปั๊บ</td></tr>
+        </tbody>
+      </table>
+
+      <div class="research-note">
+        <span class="source-tag hbr">HBR</span>
+        <strong>HBR (2025):</strong> 54% ของ meetings ทั้งหมดถูกจัดโดยพนักงานเพียง 10% — การ training กลุ่ม "power users" กลุ่มนี้ สามารถเปลี่ยน meeting culture ทั้งองค์กรได้
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Quick Wins -->
+  <div class="slide" data-slide="10">
+    <div class="bg-glow center"></div>
+    <div class="slide-inner">
+      <div class="section-num">ACTION ITEMS</div>
+      <h2>Quick Wins <span class="highlight">ทำได้เลยวันนี้</span></h2>
+      <p class="slide-desc">5 สิ่งที่ทำได้ทันทีหลังจากจบ presentation นี้</p>
+
+      <ul class="checklist">
+        <li>
+          <span class="check-num">1</span>
+          <span>เช็ค invitation ที่ค้างอยู่ตอนนี้ — <strong>Accept หรือ Decline ให้หมด</strong></span>
+        </li>
+        <li>
+          <span class="check-num">2</span>
+          <span>บล็อค <strong>Focus Time สัปดาห์หน้า</strong> อย่างน้อย 3 slots (2-3 ชม. ต่อ block)</span>
+        </li>
+        <li>
+          <span class="check-num">3</span>
+          <span>ตั้ง default meeting duration เป็น <strong>25 นาที</strong> (Settings → Event Settings)</span>
+        </li>
+        <li>
+          <span class="check-num">4</span>
+          <span>เปิด <strong>"Speedy meetings"</strong> ใน Google Calendar settings</span>
+        </li>
+        <li>
+          <span class="check-num">5</span>
+          <span>สร้าง <strong>Color Code</strong> ให้ calendar (🔵 ลูกค้า · 🟢 Focus · 🟡 Internal · 🔴 Urgent)</span>
+        </li>
+      </ul>
+
+      <div class="research-note">
+        <span class="source-tag mit">MIT</span>
+        <strong>MIT Sloan แนะนำ:</strong> เริ่มด้วยการทดลอง 6 สัปดาห์ แล้ววัดผล cycle time, throughput และ self-reported focus — ก่อน scale ไปทั้งองค์กร
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Closing + References -->
+  <div class="slide" data-slide="11">
+    <div class="bg-glow center"></div>
+    <div class="slide-inner" style="display:flex; flex-direction:column; align-items:center;">
+      <div class="final-quote">
+        <div class="big-icon">🗓️</div>
+        <h2>Calendar ต้อง<span class="highlight">สะท้อนความจริง</span></h2>
+        <p>ถ้าคนในทีมดู Calendar ของเราแล้วรู้เลยว่า ว่างหรือไม่ว่าง<br>นั่นคือ Proactive Calendar Management ที่ดี</p>
+        <p style="font-size:22px; color:var(--accent); font-weight:600; margin-bottom:32px;">
+          "สรุปวันได้ปุ๊บ สร้าง Calendar ปั๊บ"
+        </p>
+
+        <div class="ref-list">
+          <h4>📚 References</h4>
+          <p>
+            <span class="source-tag hbr" style="font-size:9px;">HBR</span> Perlow, Hadley & Eun. "Stop the Meeting Madness." <em>Harvard Business Review</em>, Jul–Aug 2017<br>
+            <span class="source-tag hbr" style="font-size:9px;">HBR</span> Schwarz, R. "How to Design an Agenda for an Effective Meeting." <em>HBR</em>, Mar 2015<br>
+            <span class="source-tag hbr" style="font-size:9px;">HBR</span> Laker, Pereira et al. "Dear Manager, You're Holding Too Many Meetings." <em>HBR</em>, Mar 2022<br>
+            <span class="source-tag hbr" style="font-size:9px;">HBR</span> Whillans, Feldman & Wisniewski. "The Psychology Behind Meeting Overload." <em>HBR</em>, Nov 2021<br>
+            <span class="source-tag hbr" style="font-size:9px;">HBR</span> Hinds & Sutton. "Meeting Overload Is a Fixable Problem." <em>HBR</em>, Oct 2022<br>
+            <span class="source-tag hbr" style="font-size:9px;">HBR</span> Zao-Sanders, M. "How Timeboxing Works and Why It Will Make You More Productive." <em>HBR</em>, Dec 2018<br>
+            <span class="source-tag mit" style="font-size:9px;">MIT</span> Laker, Pereira, Budhwar & Malik. "The Surprising Impact of Meeting-Free Days." <em>MIT Sloan Management Review</em>, Jan 2022<br>
+            <span class="source-tag cmmi" style="font-size:9px;">CMMI</span> CMMI Institute / ISACA. <em>CMMI Model V2.0</em>, Carnegie Mellon University, 2018<br>
+            <span class="source-tag cmmi" style="font-size:9px;">CMMI</span> CMMI Institute. "Levels of Capability and Performance." <em>cmmiinstitute.com</em>
+          </p>
+        </div>
+
+        <div style="margin-top:24px;">
+          <div class="brand">Enersys Co., Ltd.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>← ก่อนหน้า</button>
+  <span class="slide-counter" id="counter">1 / 12</span>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">ถัดไป →</button>
+</div>
+
+<div class="key-hint"><kbd>←</kbd> <kbd>→</kbd> หรือ swipe เพื่อเปลี่ยนสไลด์</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function showSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[index].classList.add('active');
+    document.getElementById('counter').textContent = `${index + 1} / ${total}`;
+    document.getElementById('prevBtn').disabled = index === 0;
+    document.getElementById('nextBtn').disabled = index === total - 1;
+    document.getElementById('progress').style.width = `${((index + 1) / total) * 100}%`;
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < total) { current = next; showSlide(current); }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+  });
+
+  showSlide(0);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoralLife × Odoo 19 — Presenter Mode</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+    <style>
+        /* ═══════════════════════════════════════════════════
+           CoralLife × Enersys Brand Design System
+           ═══════════════════════════════════════════════════ */
+        :root {
+            --coral: #00897B;
+            --coral-dark: #00695C;
+            --coral-darker: #004D40;
+            --coral-light: #E0F2F1;
+            --coral-lighter: #F1F8F7;
+            --accent: #FF7043;
+            --accent-dark: #E64A19;
+            --accent-light: #FFF3E0;
+            --purple: #7B1FA2;
+            --purple-light: #F3E5F5;
+            --blue: #1565C0;
+            --blue-light: #E3F2FD;
+            --green: #2E7D32;
+            --green-light: #E8F5E9;
+            --red: #C62828;
+            --red-light: #FFEBEE;
+            --amber: #F57F17;
+            --text-primary: #212121;
+            --text-secondary: #546E7A;
+            --text-muted: #90A4AE;
+            --border: #B2DFDB;
+            --border-light: #E0E0E0;
+            --bg-card: #FFFFFF;
+            --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 4px 20px rgba(0,0,0,0.12);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-pill: 50px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap');
+
+        /* ─── Base Typography ─── */
+        .reveal {
+            font-family: 'Noto Sans Thai', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-primary);
+            font-size: 26px;
+            font-weight: 400;
+        }
+        .reveal h1 {
+            font-size: 2.0em; color: var(--coral-darker); font-weight: 800;
+            text-transform: none; letter-spacing: -0.03em; margin-bottom: 0.2em;
+        }
+        .reveal h2 {
+            font-size: 1.45em; color: var(--coral-dark); font-weight: 700;
+            text-transform: none; letter-spacing: -0.02em; margin-bottom: 0.3em;
+        }
+        .reveal h3 {
+            font-size: 0.95em; color: var(--coral); font-weight: 600;
+            text-transform: none; margin-bottom: 0.25em; letter-spacing: -0.01em;
+        }
+        .reveal p { line-height: 1.55; margin-bottom: 0.4em; }
+        .reveal ul, .reveal ol { line-height: 1.65; }
+        .reveal strong { font-weight: 700; }
+        .reveal section { padding: 20px 40px; }
+
+        /* ─── Slide Number ─── */
+        .reveal .slide-number {
+            background: var(--coral-dark); color: white;
+            font-size: 12px; padding: 3px 9px; border-radius: var(--radius-sm) 0 0 0;
+            font-weight: 600; font-family: 'Noto Sans Thai', sans-serif;
+        }
+
+        /* ─── Brand Chrome ─── */
+        .brand-top {
+            position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 100;
+            background: linear-gradient(90deg, var(--coral-darker) 0%, var(--coral) 40%, var(--accent) 100%);
+        }
+        .brand-bottom {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 2px; z-index: 100;
+            background: var(--border);
+        }
+        .brand-footer {
+            position: fixed; bottom: 7px; left: 24px; z-index: 100;
+            font-size: 10px; color: var(--text-muted); letter-spacing: 0.02em;
+            font-family: 'Noto Sans Thai', sans-serif; font-weight: 400;
+        }
+        .brand-footer strong { color: var(--text-secondary); font-weight: 600; }
+
+        /* ─── Subtitle ─── */
+        .subtitle {
+            color: var(--text-secondary); font-size: 0.72em; margin-top: -6px;
+            font-weight: 400; line-height: 1.4;
+        }
+        .section-label {
+            display: inline-block; font-size: 0.42em; text-transform: uppercase;
+            letter-spacing: 0.12em; font-weight: 700; padding: 3px 14px;
+            border-radius: var(--radius-pill); margin-bottom: 8px;
+        }
+        .section-label.sales { background: #E8EAF6; color: #283593; }
+        .section-label.project { background: var(--accent-light); color: var(--accent-dark); }
+        .section-label.accounting { background: var(--green-light); color: var(--green); }
+        .section-label.inventory { background: var(--blue-light); color: var(--blue); }
+        .section-label.aftersales { background: var(--purple-light); color: var(--purple); }
+        .section-label.reporting { background: var(--red-light); color: var(--red); }
+        .section-label.technical { background: #ECEFF1; color: #37474F; }
+
+        /* ─── Cards ─── */
+        .card {
+            display: inline-block; background: var(--bg-card);
+            border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+            padding: 14px 18px; margin: 5px; min-width: 140px;
+            box-shadow: var(--shadow-sm); text-align: center; vertical-align: top;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .card.highlight-border { border: 2px solid var(--coral); }
+        .card h4 {
+            color: var(--coral-dark); margin: 0 0 4px 0; font-size: 0.65em;
+            font-weight: 700; letter-spacing: -0.01em;
+        }
+        .card p {
+            margin: 0; font-size: 0.44em; color: var(--text-secondary);
+            line-height: 1.45; font-weight: 400;
+        }
+        .card .card-icon { font-size: 1.5em; margin-bottom: 4px; display: block; }
+        .card .card-number {
+            font-size: 2.0em; font-weight: 800; color: var(--coral);
+            line-height: 1; margin-bottom: 2px;
+        }
+        .card .card-unit {
+            font-size: 0.42em; color: var(--text-muted); font-weight: 500;
+            display: block; margin-top: -2px;
+        }
+
+        /* ─── Badges ─── */
+        .badge {
+            display: inline-block; padding: 2px 10px; border-radius: var(--radius-pill);
+            font-size: 0.50em; font-weight: 600; margin: 2px; color: white;
+            letter-spacing: 0.01em;
+        }
+        .badge.config { background: var(--blue); }
+        .badge.extend { background: var(--accent); }
+        .badge.custom { background: var(--red); }
+        .badge.done { background: var(--green); }
+        .badge.enterprise { background: var(--purple); }
+        .badge.module { background: var(--coral); }
+        .badge.neutral { background: var(--text-secondary); }
+        .badge.outline {
+            background: transparent; border: 1.5px solid var(--coral);
+            color: var(--coral-dark);
+        }
+
+        /* ─── Flow Diagram ─── */
+        .flow-container { text-align: center; }
+        .flow-step {
+            display: inline-block; border-radius: var(--radius-sm); padding: 7px 12px;
+            margin: 2px; font-size: 0.46em; font-weight: 600; color: white;
+            vertical-align: middle; letter-spacing: -0.01em;
+        }
+        .flow-step.std { background: var(--coral); }
+        .flow-step.cust { background: var(--accent); }
+        .flow-step.report { background: var(--purple); }
+        .flow-arrow {
+            display: inline-block; color: var(--border); font-size: 1.0em;
+            vertical-align: middle; margin: 0 0px;
+        }
+
+        /* ─── Module Map ─── */
+        .module-box {
+            display: inline-block; border: 2px solid; border-radius: var(--radius-sm);
+            padding: 5px 12px; margin: 3px; font-size: 0.46em; font-weight: 500;
+            background: white;
+        }
+        .module-box.custom {
+            border-color: var(--accent); color: var(--accent-dark);
+            font-weight: 700; background: var(--accent-light);
+        }
+        .module-box.enterprise {
+            border-color: var(--purple); color: var(--purple);
+            background: var(--purple-light);
+        }
+        .module-box.core {
+            border-color: var(--blue); color: var(--blue);
+            background: var(--blue-light);
+        }
+
+        /* ─── Tables ─── */
+        table.t {
+            font-size: 0.44em; border-collapse: collapse; width: 100%;
+            margin-top: 6px; border-radius: var(--radius-sm); overflow: hidden;
+        }
+        table.t th {
+            background: var(--coral-dark); color: white; padding: 6px 8px;
+            text-align: left; font-weight: 600; font-size: 0.95em;
+        }
+        table.t td {
+            padding: 4px 8px; border-bottom: 1px solid var(--border-light);
+            font-weight: 400;
+        }
+        table.t tr:nth-child(even) { background: var(--coral-lighter); }
+        table.t tr:hover { background: var(--coral-light); }
+        table.t .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.92em; }
+        table.t.compact td, table.t.compact th { padding: 3px 6px; }
+        table.t.small { font-size: 0.38em; }
+
+        /* ─── Layout ─── */
+        .cols { display: flex; gap: 24px; align-items: flex-start; }
+        .cols > div { flex: 1; }
+        .cols-3 { display: flex; gap: 16px; align-items: flex-start; }
+        .cols-3 > div { flex: 1; }
+
+        /* ─── Feature List ─── */
+        .fl { text-align: left; font-size: 0.62em; line-height: 1.85; list-style: none; padding-left: 0; }
+        .fl li { margin-bottom: 1px; padding-left: 1.4em; text-indent: -1.4em; }
+        .fl li::before { display: none; }
+        .check { color: var(--green); font-weight: 800; margin-right: 3px; font-size: 1.05em; }
+        .x-mark { color: var(--red); font-weight: 800; margin-right: 3px; }
+
+        /* ─── Timeline ─── */
+        .tl-row { display: flex; align-items: center; margin: 8px 0; font-size: 0.56em; }
+        .tl-label {
+            width: 90px; text-align: right; padding-right: 14px;
+            color: var(--text-secondary); font-size: 0.82em; line-height: 1.2;
+            flex-shrink: 0;
+        }
+        .tl-bar {
+            height: 30px; border-radius: var(--radius-pill); display: flex;
+            align-items: center; padding: 0 14px; color: white; font-weight: 600;
+            font-size: 0.78em; box-shadow: var(--shadow-sm);
+        }
+        .tl-marker {
+            display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+            margin-right: 6px; flex-shrink: 0;
+        }
+
+        /* ─── Stat Grid ─── */
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+            margin-top: 10px;
+        }
+        .stat-item {
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            border-radius: var(--radius-md); padding: 14px 10px; text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-item .stat-value {
+            font-size: 1.6em; font-weight: 800; color: var(--coral);
+            line-height: 1.1;
+        }
+        .stat-item .stat-label {
+            font-size: 0.48em; color: var(--text-secondary); margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ─── Diagram boxes ─── */
+        .diagram-box {
+            display: inline-block; border: 2px solid; border-radius: var(--radius-md);
+            padding: 10px 16px; margin: 4px; text-align: center; font-size: 0.5em;
+            font-weight: 600; min-width: 100px; vertical-align: top;
+        }
+        .diagram-arrow {
+            display: inline-block; font-size: 1.4em; vertical-align: middle;
+            color: var(--text-muted); margin: 0 4px;
+        }
+
+        /* ─── Utilities ─── */
+        .text-coral { color: var(--coral-dark); font-weight: 600; }
+        .text-accent { color: var(--accent-dark); font-weight: 600; }
+        .text-purple { color: var(--purple); font-weight: 600; }
+        .text-green { color: var(--green); font-weight: 600; }
+        .text-muted { color: var(--text-muted); }
+        .text-sm { font-size: 0.5em; }
+        .text-xs { font-size: 0.42em; }
+        .text-center { text-align: center; }
+        .mt-0 { margin-top: 0; }
+        .mt-1 { margin-top: 8px; }
+        .mt-2 { margin-top: 16px; }
+        .mb-0 { margin-bottom: 0; }
+        .mb-1 { margin-bottom: 8px; }
+        .gap-sm { gap: 8px; }
+
+        /* ─── Screenshots ─── */
+        .screenshot-container {
+            text-align: center;
+            margin: 8px auto;
+            position: relative;
+        }
+        .screenshot-container img {
+            max-width: 95%;
+            max-height: 520px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            cursor: zoom-in;
+            transition: opacity 0.2s;
+        }
+        .screenshot-container img:hover {
+            opacity: 0.9;
+        }
+        .screenshot-container .zoom-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 28px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+            pointer-events: auto;
+        }
+        .screenshot-container:hover .zoom-btn {
+            opacity: 1;
+        }
+        .screenshot-label {
+            font-size: 0.42em;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* ─── Fullscreen Lightbox ─── */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            animation: lightbox-fade-in 0.2s ease;
+        }
+        .lightbox-overlay.active {
+            display: flex;
+        }
+        @keyframes lightbox-fade-in {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .lightbox-overlay img {
+            max-width: 95vw;
+            max-height: 92vh;
+            border-radius: 6px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+            object-fit: contain;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22px;
+            line-height: 40px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .lightbox-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        /* ─── Presenter Panel ─── */
+        #presenter-toggle {
+            position: fixed; top: 10px; right: 10px; z-index: 200;
+            background: var(--coral-dark); color: white; border: none;
+            padding: 6px 14px; border-radius: var(--radius-pill);
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            font-family: 'Noto Sans Thai', sans-serif;
+            box-shadow: var(--shadow-md); opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #presenter-toggle:hover { opacity: 1; }
+        #presenter-toggle.active { background: var(--accent); opacity: 1; }
+
+        #presenter-panel {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            z-index: 150; background: #1a1a2e; color: #e0e0e0;
+            max-height: 38vh; overflow-y: auto; padding: 14px 24px 10px;
+            font-family: 'Noto Sans Thai', 'SF Mono', monospace;
+            font-size: 14px; line-height: 1.65;
+            border-top: 3px solid var(--coral);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        }
+        #presenter-panel.visible { display: block; }
+        #presenter-panel h4 {
+            color: var(--coral-light); font-size: 13px; margin: 0 0 6px;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        #presenter-panel .talk-script {
+            color: #cfd8dc; font-size: 13.5px; line-height: 1.7;
+            margin-bottom: 10px; white-space: pre-wrap;
+        }
+        #presenter-panel .talk-script strong { color: #fff; }
+        #presenter-panel .talk-script em { color: #80cbc4; font-style: normal; }
+        #presenter-panel .demo-links {
+            display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+        }
+        #presenter-panel .demo-link {
+            display: inline-block; background: #263238; color: #80cbc4;
+            padding: 4px 12px; border-radius: var(--radius-pill);
+            font-size: 12px; text-decoration: none; font-weight: 600;
+            border: 1px solid #37474f; transition: all 0.15s;
+        }
+        #presenter-panel .demo-link:hover {
+            background: var(--coral-dark); color: white; border-color: var(--coral);
+        }
+        #presenter-panel .timing {
+            color: #ff8a65; font-size: 12px; font-weight: 600;
+            margin-bottom: 6px;
+        }
+        #presenter-panel .key-points {
+            color: #a5d6a7; font-size: 12.5px; margin: 4px 0;
+        }
+        #presenter-panel .key-points li { margin-bottom: 2px; }
+        #presenter-panel .divider {
+            border: none; border-top: 1px solid #37474f; margin: 8px 0;
+        }
+
+        /* Demo link bar (always visible, top-right area) */
+        #demo-bar {
+            display: none; position: fixed; top: 10px; right: 140px; z-index: 200;
+        }
+        #demo-bar.visible { display: flex; gap: 4px; }
+        #demo-bar a {
+            background: rgba(0,0,0,0.65); color: #80cbc4; padding: 4px 10px;
+            border-radius: var(--radius-pill); font-size: 11px; text-decoration: none;
+            font-family: 'Noto Sans Thai', sans-serif; font-weight: 600;
+            backdrop-filter: blur(4px); transition: all 0.15s;
+        }
+        #demo-bar a:hover { background: var(--coral-dark); color: white; }
+
+        /* ─── Print ─── */
+        @media print {
+            .reveal .slides section { page-break-after: always; min-height: 100vh; }
+            .brand-top, .brand-bottom, .brand-footer { display: none; }
+            .card:hover { transform: none; box-shadow: var(--shadow-sm); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="brand-top"></div>
+<div class="brand-bottom"></div>
+<div class="brand-footer"><strong>Enersys Co., Ltd.</strong> — Odoo Silver Partner (Thailand) | Confidential</div>
+
+<!-- Presenter Controls -->
+<button id="presenter-toggle" onclick="togglePresenter()" title="Toggle presenter notes (T)">Notes [T]</button>
+<div id="demo-bar"></div>
+<div id="presenter-panel"></div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 1: TITLE                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section data-background-color="#FAFAFA">
+    <div style="margin-top: 30px;">
+        <p style="font-size: 0.48em; color: var(--text-muted); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; font-weight: 500;">Prepared by Enersys Co., Ltd. — Odoo Silver Partner (Thailand)</p>
+        <h1 style="font-size: 2.8em; margin-bottom: 0; color: var(--coral-darker);">CoralLife</h1>
+        <h2 style="color: var(--coral); margin-top: 0; font-size: 1.2em; font-weight: 400;">Odoo 19 Enterprise ERP Implementation</h2>
+        <br>
+        <p style="font-size: 0.65em; color: var(--text-secondary); line-height: 1.5;">
+            ระบบ ERP ครบวงจรสำหรับธุรกิจ Energy Service Company<br>
+            <span style="font-weight: 300;">Air Quality Systems &middot; ERV Systems &middot; Building Envelope Insulation</span>
+        </p>
+        <br>
+        <div style="display: flex; justify-content: center; gap: 16px; font-size: 0.48em; color: var(--text-muted);">
+            <span style="border: 1px solid var(--border); padding: 4px 14px; border-radius: var(--radius-pill);">Customer Review</span>
+            <span style="border: 1px solid var(--border); padding: 4px 14px; border-radius: var(--radius-pill);">February 2026</span>
+            <span style="border: 1px solid var(--border); padding: 4px 14px; border-radius: var(--radius-pill);">Version 1.0</span>
+        </div>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+สวัสดีครับ วันนี้ผมจะนำเสนอระบบ Odoo 19 Enterprise ERP ที่พัฒนาให้กับ CoralLife
+— ผมชื่อ [ชื่อ] จาก Enersys — Odoo Silver Partner ประเทศไทย
+— วันนี้จะ demo ระบบจริงที่ทำงานได้แล้ว ไม่ใช่ mockup
+— ครอบคลุม 27 requirements ที่คุยกันเมื่อ 6 ก.พ.
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 2: AGENDA                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Agenda / วาระการนำเสนอ</h2>
+    <p class="subtitle">~45 นาทีนำเสนอ + ~15 นาที Q&A</p>
+    <br>
+    <div style="text-align: left; max-width: 680px; margin: 0 auto;">
+        <ol style="font-size: 0.66em; line-height: 2.1; counter-reset: agenda;">
+            <li style="padding-left: 4px;">เกี่ยวกับ CoralLife — <span class="text-muted">Company Overview & Key Numbers</span></li>
+            <li style="padding-left: 4px;">27 Requirements สรุป — <span class="text-muted">6 Domains, 3 Implementation Types</span></li>
+            <li style="padding-left: 4px;">สถาปัตยกรรมระบบ — <span class="text-muted">Module Map & Dependencies</span></li>
+            <li style="padding-left: 4px;">End-to-End Flow — <span class="text-muted">13-Step Live Demo</span></li>
+            <li style="padding-left: 4px;">Deep Dive แต่ละโดเมน — <span class="text-muted">CRM, Project, Accounting, Inventory, After-Sales</span></li>
+            <li style="padding-left: 4px;">Technical Highlights — <span class="text-muted">Custom Models, SQL Views, Validations</span></li>
+            <li style="padding-left: 4px;">Requirement Coverage — <span class="text-muted">27/27 Mapping Table</span></li>
+            <li style="padding-left: 4px;">แผนดำเนินงาน — <span class="text-muted">Implementation Timeline</span></li>
+            <li style="padding-left: 4px;">ถาม-ตอบ — <span class="text-muted">Q&A</span></li>
+        </ol>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[]'>
+วาระวันนี้: 9 หัวข้อ ประมาณ 45 นาที + 15 นาที Q&amp;A
+— เริ่มจากภาพรวมบริษัท → 27 requirements → สถาปัตยกรรม → demo ทีละขั้นตอน
+— Deep dive: CRM, Project/BOQ, Accounting, Inventory, After-sales
+— จบด้วย Technical highlights, coverage table, timeline
+— ระหว่างนำเสนอสามารถถามได้ตลอดครับ
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 3: COMPANY OVERVIEW + KEY NUMBERS               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>CoralLife — ธุรกิจของเรา</h2>
+    <p class="subtitle">CORAL LIFE CO., LTD. — Energy Service Company (ESCO)</p>
+    <br>
+    <div style="display: flex; gap: 14px; justify-content: center;">
+        <div class="card" style="min-width: 190px;">
+            <span class="card-icon">🌬️</span>
+            <h4>Air Quality Systems</h4>
+            <p>เครื่องฟอกอากาศ HEPA H13<br>UV-C Germicidal Systems<br>Coverage 40–50 sqm/unit</p>
+        </div>
+        <div class="card" style="min-width: 190px;">
+            <span class="card-icon">♻️</span>
+            <h4>ERV Systems</h4>
+            <p>Energy Recovery Ventilation<br>500–1,000 CMH capacity<br>Heat recovery 75–78%</p>
+        </div>
+        <div class="card" style="min-width: 190px;">
+            <span class="card-icon">🏗️</span>
+            <h4>Building Insulation</h4>
+            <p>PIR / XPS ฉนวนกันความร้อน<br>Low-E Double Glazing<br>Building Envelope</p>
+        </div>
+    </div>
+    <br>
+    <div class="stat-grid" style="max-width: 700px; margin: 12px auto 0;">
+        <div class="stat-item">
+            <div class="stat-value">33</div>
+            <div class="stat-label">Products / สินค้า<br>3 ภาษา (TH/EN/JP)</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Currencies / สกุลเงิน<br>THB · USD · JPY · SGD</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Markets / ตลาด<br>ไทย · ญี่ปุ่น · สิงคโปร์</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" style="color: var(--accent);">฿79M+</div>
+            <div class="stat-label">Pipeline Value<br>มูลค่า CRM Pipeline</div>
+        </div>
+    </div>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"Products","url":"/odoo/inventory/products"},{"label":"Contacts","url":"/odoo/contacts"}]'>
+CoralLife ทำ 3 สายงานหลัก:
+— *Air Quality*: เครื่องฟอกอากาศ HEPA, UV-C — ขาย B2B ให้อาคารสำนักงาน
+— *ERV*: ระบบแลกเปลี่ยนพลังงาน 500-1000 CMH — ประหยัดไฟ 75-78%
+— *Building Insulation*: ฉนวน PIR/XPS, กระจก Low-E
+
+KEY NUMBERS ที่ setup ในระบบ:
+— 33 สินค้า 3 ภาษา (กดเข้าดูได้ใน Products)
+— 4 สกุลเงิน: THB หลัก + USD/JPY/SGD
+— Pipeline มูลค่ารวม 79 ล้านบาท
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 4: DEMO PROJECTS & CUSTOMERS                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Demo Projects & Customers / โครงการสาธิต</h2>
+    <p class="subtitle">3 โครงการตัวอย่างครอบคลุมทุก scenario — B2B Japan, B2B Thai, B2C</p>
+    <br>
+    <table class="t">
+        <thead>
+            <tr>
+                <th>Project Code</th>
+                <th>ชื่อโครงการ</th>
+                <th>Customer</th>
+                <th>Country</th>
+                <th>Value</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="mono" style="font-weight:700; color: var(--coral-dark);">PRJ-2026-038</td>
+                <td>Building Envelope & MEP — Sky Ground Residence 38</td>
+                <td>บจก. สกาย กราวด์ ดีเวลลอปเมนท์</td>
+                <td>🇹🇭 Thailand</td>
+                <td style="font-weight:700;">฿62.2M</td>
+                <td><span class="badge" style="font-size:0.85em; background: var(--accent);">Negotiation</span></td>
+            </tr>
+            <tr>
+                <td class="mono" style="font-weight:700; color: var(--coral-dark);">PRJ-2026-001</td>
+                <td>Air Quality System — ABC Japan Office 5F</td>
+                <td>ABC Japan Co., Ltd.</td>
+                <td>🇯🇵 Japan</td>
+                <td style="font-weight:600;">฿1.35M</td>
+                <td><span class="badge done" style="font-size:0.85em;">In Progress</span></td>
+            </tr>
+            <tr>
+                <td class="mono">PRJ-2025-045</td>
+                <td>ERV System — XYZ Building</td>
+                <td>บจก. XYZ พร็อพเพอร์ตี้</td>
+                <td>🇹🇭 Thailand</td>
+                <td>฿300K</td>
+                <td><span class="badge neutral" style="font-size:0.85em;">Completed</span></td>
+            </tr>
+            <tr>
+                <td class="mono">PRJ-2026-010</td>
+                <td>Home Air Quality — Sukhumvit Condo</td>
+                <td>Mr. John Smith</td>
+                <td>🇹🇭 Thailand</td>
+                <td>฿100K</td>
+                <td><span class="badge outline" style="font-size:0.85em;">Planning</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 20px; font-size: 0.48em;">
+        <div style="border-left: 3px solid var(--coral); padding-left: 10px; text-align: left;">
+            <strong>Vendors</strong><br>
+            ห้างฯ เอ็มไพร์ วัสดุก่อสร้าง (TH)<br>
+            Air Systems Intl. Pte. Ltd. (SG)
+        </div>
+        <div style="border-left: 3px solid var(--accent); padding-left: 10px; text-align: left;">
+            <strong>BOQ Case Study</strong><br>
+            PRJ-2026-038: 4 BOQs<br>
+            Total: <strong style="color: var(--coral-dark);">฿62,233,436</strong>
+        </div>
+        <div style="border-left: 3px solid var(--purple); padding-left: 10px; text-align: left;">
+            <strong>CRM Pipeline</strong><br>
+            7 leads across 5 stages<br>
+            Incl. Sky Ground ฿62.2M
+        </div>
+    </div>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"CRM Pipeline","url":"/odoo/crm"},{"label":"Projects","url":"/odoo/project"},{"label":"Contacts","url":"/odoo/contacts"}]'>
+Demo Data — 4 โครงการตัวอย่าง:
+— **PRJ-2026-038: Sky Ground** ฿62.2M — โครงการหลักที่จะ demo วันนี้
+  • ลูกค้าไทย, Building Envelope + MEP, Negotiation stage
+  • มี 4 BOQ, 15 tasks, SO หลายรายการ
+— **PRJ-2026-001: ABC Japan** ฿1.35M — Air Quality สำหรับออฟฟิศญี่ปุ่น
+— PRJ-2025-045: XYZ — completed project (ERV)
+— PRJ-2026-010: John Smith — B2C residential
+
+Vendor: เอ็มไพร์ (TH) + Air Systems (SG)
+→ ครอบคลุมทุก scenario: B2B Thai, B2B Japan, B2C, international
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 5: 27 REQUIREMENTS SUMMARY                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>27 Requirements — สรุปความต้องการ</h2>
+    <p class="subtitle">จากการประชุมวันที่ 6 กุมภาพันธ์ 2569 — แบ่งเป็น 6 โดเมน 3 ประเภท</p>
+    <br>
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        <div class="card highlight-border" style="min-width: 130px;">
+            <div class="card-number">9</div>
+            <h4>Project</h4>
+            <p>BOQ · Budget Workflow<br>Project Linking · P&L</p>
+        </div>
+        <div class="card" style="min-width: 130px;">
+            <div class="card-number">6</div>
+            <h4>Accounting</h4>
+            <p>Tax · Currency · Assets<br>Deferred Rev. · Budget</p>
+        </div>
+        <div class="card" style="min-width: 130px;">
+            <div class="card-number">5</div>
+            <h4>Inventory</h4>
+            <p>Storable · Locations<br>Landed Cost · Stock</p>
+        </div>
+        <div class="card" style="min-width: 130px;">
+            <div class="card-number">4</div>
+            <h4>Sales</h4>
+            <p>CRM · Quotation<br>Commission</p>
+        </div>
+        <div class="card" style="min-width: 130px;">
+            <div class="card-number">3</div>
+            <h4>After-Sales</h4>
+            <p>Helpdesk · FSM<br>E-Signature</p>
+        </div>
+    </div>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 30px; align-items: center;">
+        <div style="text-align: center;">
+            <span class="badge config" style="font-size: 0.52em;">CONFIG — 16</span>
+            <p style="font-size: 0.38em; color: var(--text-muted); margin: 2px 0 0;">ตั้งค่าใน Odoo Standard</p>
+        </div>
+        <div style="text-align: center;">
+            <span class="badge extend" style="font-size: 0.52em;">EXTEND — 6</span>
+            <p style="font-size: 0.38em; color: var(--text-muted); margin: 2px 0 0;">ขยาย model ที่มีอยู่</p>
+        </div>
+        <div style="text-align: center;">
+            <span class="badge custom" style="font-size: 0.52em;">CUSTOM — 5</span>
+            <p style="font-size: 0.38em; color: var(--text-muted); margin: 2px 0 0;">พัฒนา model/view ใหม่</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+27 ข้อจาก meeting 6 ก.พ. แบ่งเป็น 6 โดเมน:
+— **Project 9 ข้อ** (มากสุด) — BOQ, budget workflow, project linking, P&amp;L
+— Accounting 6 ข้อ — tax, currency, assets, deferred, budget
+— Inventory 5 ข้อ — storable, locations, landed cost, stock
+— Sales 4 ข้อ — CRM, quotation, commission
+— After-sales 3 ข้อ — helpdesk, FSM, e-signature
+
+ประเภทการ implement:
+— CONFIG 16 ข้อ = ตั้งค่าใน Odoo standard (ไม่ต้องเขียน code)
+— EXTEND 6 ข้อ = ขยาย model ที่มีอยู่ (เพิ่ม field, override method)
+— CUSTOM 5 ข้อ = สร้าง model/view ใหม่ทั้งหมด
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 6: SOLUTION ARCHITECTURE                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Solution Architecture / สถาปัตยกรรมระบบ</h2>
+    <p class="subtitle">8 Custom Modules + 8 Enterprise + Odoo 19 Core</p>
+    <br>
+    <div style="font-size: 0.85em;">
+        <p style="font-size: 0.55em; font-weight: 700; color: var(--accent-dark); margin-bottom: 4px;">CUSTOM MODULES — Developed by Enersys</p>
+        <div class="module-box custom">coral_project_ext</div>
+        <div class="module-box custom">coral_project_analytics</div>
+        <div class="module-box custom">coral_demo</div>
+        <div class="module-box custom">coral_accounting_demo</div>
+        <br>
+        <div class="module-box custom">coral_inventory_demo</div>
+        <div class="module-box custom">coral_aftersales</div>
+        <div class="module-box custom">coral_sales_demo</div>
+        <div class="module-box custom">coral_timesheet_demo</div>
+
+        <div style="margin: 8px 0; font-size: 0.5em; color: var(--text-muted);">▼ depends on ▼</div>
+
+        <p style="font-size: 0.55em; font-weight: 700; color: var(--purple); margin-bottom: 4px;">ODOO 19 ENTERPRISE</p>
+        <div class="module-box enterprise">account_asset</div>
+        <div class="module-box enterprise">helpdesk</div>
+        <div class="module-box enterprise">industry_fsm</div>
+        <div class="module-box enterprise">sale_commission</div>
+        <br>
+        <div class="module-box enterprise">purchase_requisition</div>
+        <div class="module-box enterprise">stock_landed_costs</div>
+        <div class="module-box enterprise">account_budget</div>
+        <div class="module-box enterprise">sign</div>
+
+        <div style="margin: 8px 0; font-size: 0.5em; color: var(--text-muted);">▼ extends ▼</div>
+
+        <p style="font-size: 0.55em; font-weight: 700; color: var(--blue); margin-bottom: 4px;">ODOO 19 CORE</p>
+        <div class="module-box core">CRM</div>
+        <div class="module-box core">Sales</div>
+        <div class="module-box core">Purchase</div>
+        <div class="module-box core">Inventory</div>
+        <div class="module-box core">Accounting</div>
+        <div class="module-box core">Project</div>
+        <div class="module-box core">HR Timesheet</div>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+สถาปัตยกรรม 3 ชั้น:
+— **8 Custom Modules** (สีส้ม) — ที่ Enersys พัฒนาเอง
+  • coral_project_ext = BOQ + budget workflow + project linking
+  • coral_project_analytics = P&amp;L, cost tracking, PO controls
+  • coral_demo = base demo data
+  • coral_accounting_demo, coral_inventory_demo, coral_aftersales, coral_sales_demo
+— **8 Enterprise modules** (สีม่วง) — license Odoo Enterprise
+— **7 Core modules** (สีน้ำเงิน) — CRM, Sales, Purchase, Inventory, etc.
+
+ทุกอย่างทำงานร่วมกัน — module depends chain ลงมาตามลำดับ
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 7: END-TO-END FLOW                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>End-to-End Flow / 13 ขั้นตอนจาก Lead ถึง Report</h2>
+    <p class="subtitle">Primary: <span class="text-coral">PRJ-2026-038: Sky Ground Residence 38</span> (฿62.2M) | Secondary: PRJ-2026-001: ABC Japan (฿509K)</p>
+    <br>
+    <div class="flow-container" style="font-size: 0.95em;">
+        <span class="flow-step std">1. CRM Lead</span><span class="flow-arrow">→</span><span class="flow-step std">2. Quotation</span><span class="flow-arrow">→</span><span class="flow-step std">3. Project</span><span class="flow-arrow">→</span><span class="flow-step cust">4. BOQ→PR</span>
+        <br><br>
+        <span class="flow-step cust">5. PO</span><span class="flow-arrow">→</span><span class="flow-step std">6. Receive+LC</span><span class="flow-arrow">→</span><span class="flow-step std">7. Stock</span><span class="flow-arrow">→</span><span class="flow-step std">8. Invoice</span>
+        <br><br>
+        <span class="flow-step std">9. Helpdesk</span><span class="flow-arrow">→</span><span class="flow-step std">10. Timesheet</span><span class="flow-arrow">→</span><span class="flow-step cust">11. Plan vs Actual</span><span class="flow-arrow">→</span><span class="flow-step std">12. Commission</span>
+        <br><br>
+        <span class="flow-step report">13. Reports (Tax · Pipeline · Depreciation · Budget)</span>
+    </div>
+    <br>
+    <div style="font-size: 0.46em; display: flex; justify-content: center; gap: 20px;">
+        <span><span style="display:inline-block; width:12px; height:12px; background:var(--coral); border-radius:2px; vertical-align:middle;"></span> Standard Odoo</span>
+        <span><span style="display:inline-block; width:12px; height:12px; background:var(--accent); border-radius:2px; vertical-align:middle;"></span> Custom/Extended by Enersys</span>
+        <span><span style="display:inline-block; width:12px; height:12px; background:var(--purple); border-radius:2px; vertical-align:middle;"></span> Reporting & Analytics</span>
+    </div>
+    <p style="font-size: 0.44em; color: var(--text-secondary); margin-top: 8px;">
+        <strong>project_id</strong> ถูกผูกตลอด flow: SO → PO → Transfer → Invoice → Analytic → P&L = <strong>Full Traceability</strong>
+    </p>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"1. CRM","url":"/odoo/crm"},{"label":"2. Sales","url":"/odoo/sales"},{"label":"3. Project","url":"/odoo/project"},{"label":"5. Purchase","url":"/odoo/purchase"},{"label":"7. Inventory","url":"/odoo/inventory"},{"label":"8. Accounting","url":"/odoo/accounting"},{"label":"9. Helpdesk","url":"/odoo/helpdesk"}]'>
+End-to-End Flow — 13 ขั้นตอน:
+— นี่คือ flow หลักของ CoralLife จาก Lead ไปจนถึง Report
+— สีเขียว = Odoo standard, สีส้ม = custom/extended, สีม่วง = reporting
+
+**เน้น**: project_id ถูกผูกตลอด flow
+→ SO → PO → Transfer → Invoice → Analytic → P&amp;L = Full Traceability
+→ ทุกใบสั่งซื้อต้องระบุ project code (mandatory)
+
+DEMO FLOW:
+1. เปิด CRM → ดู pipeline → click Sky Ground
+2. เปิด SO ของ Sky Ground
+3. เปิด Project → ดู task kanban
+4. BOQ → สร้าง Purchase Requisition
+5-8. Purchase → Inventory → Invoice
+9-10. Helpdesk → Timesheet
+11. Plan vs Actual
+12. Commission
+13. Reports
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 7b: END-TO-END FLOW — DEMO SCREENSHOTS          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Demo Screenshots — Project & BOQ</h2>
+    <p class="subtitle">ภาพหน้าจอจากระบบจริง — PRJ-2026-038: Sky Ground Residence 38</p>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/05-project-list.png" alt="Project List">
+            <p class="screenshot-label">Project List — 5 projects</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/07-project-form.png" alt="Project Form">
+            <p class="screenshot-label">Project Form — Budget Workflow + BOQ Tab</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Projects","url":"/odoo/project"}]'>
+[Screenshot slide] — ภาพจากระบบจริง:
+— ซ้าย: Project List — มี 5 projects ใน kanban view
+— ขวา: Project Form — แสดง budget workflow 6 ขั้นตอน + BOQ tab
+
+*ถ้ามีเวลา*: กดเข้า demo จริง → เปิด Project → click Sky Ground → ดู tabs
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 8: CRM & SALES DEEP DIVE                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label sales">Demo Steps 1–2, 12</span>
+    <h2>CRM & Sales / การขายและ Pipeline</h2>
+    <div class="cols">
+        <div>
+            <h3>CRM Pipeline</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> 5 stages: New → Qualified → Proposal → Negotiation → Won</li>
+                <li><span class="check">✓</span> 7 demo leads — pipeline <strong>฿17M+</strong></li>
+                <li><span class="check">✓</span> รองรับ 3 ภาษา: TH / EN / JP</li>
+                <li><span class="check">✓</span> Lead → Opportunity → Quotation อัตโนมัติ</li>
+                <li><span class="check">✓</span> 4 CRM Tags: Air Quality, ERV, Maintenance, Residential</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Sales Order & Commission</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> SO ผูก <strong>Project Code</strong> (coral_project_ext)</li>
+                <li><span class="check">✓</span> VAT 7% auto — Fiscal Position (Domestic/Export/SG)</li>
+                <li><span class="check">✓</span> 13 products × 3 ภาษา with ref codes</li>
+                <li><span class="check">✓</span> Commission: Equip <strong>5%</strong> / Material <strong>3%</strong> / Service <strong>8%</strong></li>
+                <li><span class="check">✓</span> Quarterly settlement — auto from invoice</li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <table class="t compact" style="max-width: 600px; margin: 0 auto;">
+        <tr><th>Demo SO — ABC Japan</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+        <tr><td>ERV Unit 500CMH (ERV-001)</td><td>2</td><td>฿85,000</td><td>฿170,000</td></tr>
+        <tr><td>HEPA Air Purifier (AIR-001)</td><td>4</td><td>฿45,000</td><td>฿180,000</td></tr>
+        <tr><td>Air Duct 6" (MAT-001)</td><td>50m</td><td>฿500</td><td>฿25,000</td></tr>
+        <tr><td>HEPA Filter H13 (MAT-003)</td><td>4</td><td>฿3,500</td><td>฿14,000</td></tr>
+        <tr><td>Installation Service (SRV-001)</td><td>1</td><td>฿120,000</td><td>฿120,000</td></tr>
+        <tr style="font-weight:700; background: var(--coral-light);"><td colspan="3">Total + VAT 7%</td><td>฿544,630</td></tr>
+    </table>
+    <aside class="notes" data-timing="4min" data-demo-links='[{"label":"CRM Pipeline","url":"/odoo/crm"},{"label":"Sales Orders","url":"/odoo/sales"}]'>
+CRM &amp; Sales — 2 ส่วนหลัก:
+
+**CRM Pipeline:**
+— DEMO: เปิด /odoo/crm → ลบ filter "My Pipeline" → ดู 5 leads
+— ชี้ Sky Ground ฿62.2M ใน Negotiation stage
+— กดเข้า lead → แสดง tags, expected revenue, contact info
+— 3 ภาษา: ชื่อ lead เป็น bilingual TH/EN
+
+**Sales &amp; Commission:**
+— DEMO: เปิด /odoo/sales → ลบ filter → ดู SO list
+— กดเข้า SO ของ ABC Japan → แสดง 5 order lines
+— ชี้ project_id field ที่ผูกกับ SO (custom field)
+— Commission: Equipment 5%, Material 3%, Service 8%
+— VAT 7% auto จาก Fiscal Position
+
+ตาราง SO: ERV 2 × 85K + HEPA 4 × 45K + duct + filter + install = ฿544,630 รวม VAT
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 8b: CRM & SALES — DEMO SCREENSHOTS              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label sales">Live Screenshots</span>
+    <h2>CRM & Sales — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/01-crm-pipeline.png" alt="CRM Pipeline">
+            <p class="screenshot-label">CRM Pipeline — 5 Leads, ฿76M+ total</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/03-sales-orders.png" alt="Sales Orders">
+            <p class="screenshot-label">Sales Orders — 4 Quotations</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"CRM Pipeline","url":"/odoo/crm"},{"label":"Sales Orders","url":"/odoo/sales"}]'>
+[Screenshot] CRM list view + Sales orders list
+— ซ้าย: 5 leads ใน list view — ฿76M+ total, bilingual stage names
+— ขวา: 4 Sales Orders — ดู status, total amount
+    </aside>
+</section>
+
+<section>
+    <span class="section-label sales">Live Screenshots</span>
+    <h2>CRM Lead & Sales Order Detail</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/02-crm-lead-skyground.png" alt="Sky Ground Lead">
+            <p class="screenshot-label">Sky Ground Lead — ฿62.2M Negotiation</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/04-sales-order-skyground.png" alt="Sky Ground SO">
+            <p class="screenshot-label">SO S00004 — Sky Ground PIR + D&W lines</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"CRM Lead","url":"/odoo/crm"}]'>
+[Screenshot] Lead detail + SO detail
+— ซ้าย: Sky Ground lead — ฿62.2M, Negotiation stage, contact info
+— ขวา: SO S00004 — Sky Ground, PIR + D&amp;W order lines
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 8c: DOWN PAYMENT — SALES & PURCHASE              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label sales">Down Payment / เงินมัดจำ</span>
+    <h2>Down Payment Workflow / เงินมัดจำ</h2>
+    <p class="subtitle">Sales Down Payment (ลูกค้าจ่ายล่วงหน้า) + Purchase Prepayment (จ่ายซัพพลายเออร์ล่วงหน้า)</p>
+    <br>
+    <div class="cols">
+        <div>
+            <h3>Sales Down Payment</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> Wizard สร้าง Down Payment แบบ <strong>%</strong> หรือ <strong>จำนวนเงิน</strong></li>
+                <li><span class="check">✓</span> Down Payment Invoice สร้างอัตโนมัติ</li>
+                <li><span class="check">✓</span> <strong>หักเงินมัดจำ</strong> ใน Final Invoice อัตโนมัติ</li>
+                <li><span class="check">✓</span> รองรับ VAT 7% บนเงินมัดจำ</li>
+                <li><span class="check">✓</span> บัญชี: <code style="font-size:0.9em; background:#E3F2FD; padding:1px 4px; border-radius:3px;">212400</code> เงินรับล่วงหน้า</li>
+            </ul>
+            <table class="t compact" style="margin-top:8px; font-size:0.40em;">
+                <tr><th>Sales Order</th><th>Customer</th><th>SO Amount</th><th>DP %</th><th>DP Invoice</th></tr>
+                <tr>
+                    <td class="mono">S00001</td>
+                    <td>ABC Japan</td>
+                    <td>฿509,000</td>
+                    <td><strong>30%</strong></td>
+                    <td style="font-weight:700; color:var(--green);">฿152,700</td>
+                </tr>
+                <tr>
+                    <td class="mono">S00004</td>
+                    <td>Sky Ground</td>
+                    <td>฿49.3M</td>
+                    <td><strong>10%</strong></td>
+                    <td style="font-weight:700; color:var(--green);">฿4,936,038</td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <h3>Purchase Down Payment</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> Down Payment line บน Purchase Order</li>
+                <li><span class="check">✓</span> <strong>หักเงินมัดจำ</strong> ใน Final Vendor Bill</li>
+                <li><span class="check">✓</span> รองรับ VAT 7% ภาษีซื้อ</li>
+                <li><span class="check">✓</span> ผูก Project Code ตลอด flow</li>
+            </ul>
+            <table class="t compact" style="margin-top:8px; font-size:0.40em;">
+                <tr><th>Purchase Order</th><th>Vendor</th><th>PO Amount</th><th>DP %</th><th>DP Amount</th></tr>
+                <tr>
+                    <td class="mono">P00002</td>
+                    <td>ห้างฯ เอ็มไพร์ วัสดุ</td>
+                    <td>฿3,664,700</td>
+                    <td><strong>20%</strong></td>
+                    <td style="font-weight:700; color:var(--accent);">฿732,940</td>
+                </tr>
+            </table>
+            <br>
+            <h3>Flow</h3>
+            <div class="flow-container" style="font-size:0.85em;">
+                <span class="flow-step std" style="font-size:0.9em;">SO/PO Confirmed</span><span class="flow-arrow">→</span><span class="flow-step cust" style="font-size:0.9em;">Down Payment</span><span class="flow-arrow">→</span><span class="flow-step std" style="font-size:0.9em;">Final Invoice</span><span class="flow-arrow">→</span><span class="flow-step report" style="font-size:0.9em;">Auto Deduct</span>
+            </div>
+        </div>
+    </div>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"Sales","url":"/odoo/sales"},{"label":"Invoices","url":"/odoo/accounting"},{"label":"Purchase","url":"/odoo/purchase"}]'>
+Down Payment — เงินมัดจำ ทั้งฝั่งขายและซื้อ:
+
+**Sales Down Payment (ฝั่งขาย):**
+— ABC Japan: ยืนยัน SO แล้ว สร้าง down payment 30% = ฿152,700
+— Sky Ground: ยืนยัน SO แล้ว สร้าง down payment 10% = ฿4,936,038
+— ใช้ wizard sale.advance.payment.inv สร้างใบแจ้งหนี้เงินมัดจำ
+— เมื่อออก final invoice → หักเงินมัดจำที่จ่ายแล้วอัตโนมัติ
+
+**Purchase Down Payment (ฝั่งซื้อ):**
+— PO P00002: ห้างฯ เอ็มไพร์ วัสดุก่อสร้าง — วัสดุ PIR insulation
+— จำนวน ฿3.66M + down payment 20% = ฿732,940
+— ผูก project Sky Ground Residence 38
+
+**DEMO**: เปิด SO ABC Japan → ดู down payment line → กดดู Invoice
+→ เปิด PO P00002 → ดู down payment section line
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 8d: DOWN PAYMENT — DEMO SCREENSHOTS              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label sales">Live Screenshots</span>
+    <h2>Down Payment — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/19-so-abc-downpayment.png" alt="SO ABC Japan with Down Payment">
+            <p class="screenshot-label">SO S00001 ABC Japan — Confirmed with 30% Down Payment line</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/20-downpayment-invoice-abc.png" alt="Down Payment Invoice">
+            <p class="screenshot-label">INV/2026/00001 — Down Payment Invoice ฿152,700</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"SO S00001","url":"/odoo/sales"}]'>
+[Screenshot slide]:
+— ซ้าย: SO S00001 ABC Japan — ยืนยันแล้ว มี down payment line 30%
+— ขวา: Invoice INV/2026/00001 — Down payment ฿152,700 (posted)
+
+*ถ้ามีเวลา*: เปิด SO → scroll ดู down payment section → click Invoices button
+    </aside>
+</section>
+
+<section>
+    <span class="section-label sales">Live Screenshots</span>
+    <h2>Down Payment — PO & Sky Ground</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/21-so-skyground-downpayment.png" alt="SO Sky Ground with Down Payment">
+            <p class="screenshot-label">SO S00004 Sky Ground — 10% Down Payment (฿4.9M)</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/22-po-downpayment.png" alt="PO with Down Payment">
+            <p class="screenshot-label">PO P00002 Empire Materials — 20% Prepayment (฿732,940)</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"PO P00002","url":"/odoo/purchase"}]'>
+[Screenshot slide]:
+— ซ้าย: SO S00004 Sky Ground — ยืนยันแล้ว มี down payment 10% = ฿4.9M
+— ขวา: PO P00002 Empire Materials — PIR insulation + 20% prepayment ฿732,940
+
+ครอบคลุมทั้ง sales และ purchase down payment — flow ที่ใช้จริงในธุรกิจ construction
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 9: PROJECT & BOQ DEEP DIVE                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label project">Demo Steps 3–5</span>
+    <h2>Project, BOQ & Budget / โครงการ</h2>
+    <div class="cols">
+        <div>
+            <h3>BOQ System <span class="badge custom" style="font-size:0.7em;">CUSTOM</span></h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> BOQ per project: Draft → Confirmed → Done</li>
+                <li><span class="check">✓</span> BOQ → <strong>Purchase Requisition</strong> กดปุ่มเดียว</li>
+                <li><span class="check">✓</span> Auto-compute line subtotals + total</li>
+                <li><span class="check">✓</span> Demo: Sky Ground = <strong>4 BOQs</strong> (฿62.2M) | ABC Japan = 1 BOQ (฿509K)</li>
+            </ul>
+            <br>
+            <h3>Budget Workflow <span class="badge custom" style="font-size:0.7em;">CUSTOM</span></h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> 6-step approval on project form</li>
+                <li><span class="check">✓</span> Draft → Survey → Quote → Lock → Est → Approved</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Project Linking <span class="badge extend" style="font-size:0.7em;">EXTEND</span></h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> project_id on <strong>Sale Order</strong></li>
+                <li><span class="check">✓</span> project_id on <strong>Purchase Order</strong> (mandatory!)</li>
+                <li><span class="check">✓</span> project_id on <strong>Invoice / Bill</strong></li>
+                <li><span class="check">✓</span> project_id on <strong>Stock Transfer</strong></li>
+            </ul>
+            <br>
+            <h3>PO Controls <span class="badge extend" style="font-size:0.7em;">EXTEND</span></h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> <strong>Mandatory</strong> project code — saves blocked without it</li>
+                <li><span class="check">✓</span> Bilingual error: TH + EN</li>
+                <li><span class="check">✓</span> Auto <strong>analytic distribution</strong> from project account</li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <p class="text-sm text-center" style="color: var(--text-muted);">
+        Sky Ground: 15 tasks (3 workstreams × 5 phases) | ABC Japan: 5 tasks
+    </p>
+    <aside class="notes" data-timing="5min" data-demo-links='[{"label":"Projects","url":"/odoo/project"},{"label":"Purchase","url":"/odoo/purchase"}]'>
+Project &amp; BOQ — หัวใจของระบบ CoralLife:
+
+**BOQ System** (CUSTOM):
+— DEMO: Project menu → BOQ → เปิด BOQ-038-PIR
+— แสดง 5 lines: PIR Wall, Ceiling, Roof, Siga Tape, Labor
+— Total ฿8.1M — กดปุ่ม "Create Purchase Requisition" (อย่ากดจริง!)
+— BOQ workflow: Draft → Confirmed → Done
+
+**Budget Workflow** (CUSTOM):
+— DEMO: เปิด Project form → ชี้ 6 buttons: Draft, Survey, Quote, Lock, Est, Approved
+— Smart buttons: Tasks, Dashboard, Plan vs Actual
+
+**Project Linking** (EXTEND):
+— project_id ผูกบน SO, PO, Invoice, Transfer
+— DEMO: เปิด PO → ชี้ project_id field (mandatory)
+— ลองบันทึก PO โดยไม่ใส่ project → แสดง error bilingual
+
+Sky Ground: 15 tasks (3 workstreams × 5 phases)
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 9b: PROJECT & BOQ — DEMO SCREENSHOTS            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label project">Live Screenshots</span>
+    <h2>BOQ System — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/08-boq-list.png" alt="BOQ List">
+            <p class="screenshot-label">BOQ List — 5 BOQs across 2 projects</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/09-boq-detail-pir.png" alt="BOQ PIR Detail">
+            <p class="screenshot-label">BOQ-038-PIR: PIR Insulation — $8.1M, 5 lines</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"BOQ List","url":"/odoo/project"}]'>
+[Screenshot] BOQ list + BOQ detail
+— ซ้าย: 5 BOQs across 2 projects
+— ขวา: BOQ-038-PIR ฿8.1M — 5 lines, product codes, quantities
+— ชี้ปุ่ม "Create Purchase Requisition" + status bar
+    </aside>
+</section>
+
+<section>
+    <span class="section-label project">Live Screenshots</span>
+    <h2>Project Tasks — Sky Ground Residence 38</h2>
+    <div class="screenshot-container">
+        <img src="screenshots/06-project-skyground-tasks.png" alt="Project Tasks">
+        <p class="screenshot-label">Task Kanban — 15 tasks across Todo / In Progress / Review / Done stages</p>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Project Tasks","url":"/odoo/project"}]'>
+[Screenshot] Task Kanban — 15 tasks across 4 stages
+— Todo, In Progress, Review, Done
+— 3 workstreams: Insulation, D&amp;W, HVAC × 5 phases each
+— *ถ้ามีเวลา*: เปิดระบบจริง drag task ย้าย stage
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10: ACCOUNTING DEEP DIVE                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label accounting">Demo Steps 8, 13</span>
+    <h2>Accounting / บัญชีและการเงิน</h2>
+    <div class="cols-3">
+        <div>
+            <h3>Tax & Currency</h3>
+            <ul class="fl" style="font-size: 0.58em;">
+                <li><span class="check">✓</span> VAT 7% ซื้อ/ขาย</li>
+                <li><span class="check">✓</span> Zero-rated Export</li>
+                <li><span class="check">✓</span> 3 Fiscal Positions</li>
+                <li><span class="check">✓</span> THB · USD · JPY · SGD</li>
+                <li><span class="check">✓</span> Rates 2026 pre-set</li>
+            </ul>
+            <table class="t small compact" style="margin-top:6px;">
+                <tr><th>Currency</th><th>Rate (THB)</th></tr>
+                <tr><td>USD</td><td>34.50</td></tr>
+                <tr><td>JPY</td><td>0.23</td></tr>
+                <tr><td>SGD</td><td>25.80</td></tr>
+            </table>
+        </div>
+        <div>
+            <h3>Assets & Deferred</h3>
+            <ul class="fl" style="font-size: 0.58em;">
+                <li><span class="check">✓</span> Equipment: <strong>5 ปี</strong> linear</li>
+                <li><span class="check">✓</span> Office: <strong>3 ปี</strong> linear</li>
+                <li><span class="check">✓</span> ERV ฿850K → ฿14,167/mo</li>
+                <li><span class="check">✓</span> Office ฿150K → ฿4,167/mo</li>
+                <li><span class="check">✓</span> Service contract: 12 mo</li>
+                <li><span class="check">✓</span> Warranty: 24 mo</li>
+                <li><span class="check">✓</span> XYZ: ฿360K → ฿30K/mo</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Budget & Analytics</h3>
+            <ul class="fl" style="font-size: 0.58em;">
+                <li><span class="check">✓</span> Q1 2026 OpEx: <strong>฿1.5M</strong></li>
+                <li><span class="check">✓</span> Q1 2026 Rev: <strong>฿2.8M</strong></li>
+                <li><span class="check">✓</span> 3 Cost categories:</li>
+            </ul>
+            <table class="t small compact" style="margin-top:6px;">
+                <tr><th>Category</th><th>Code</th><th>Q1 Budget</th></tr>
+                <tr><td>ค่าแรง</td><td class="mono">LABOR</td><td>฿500K</td></tr>
+                <tr><td>ค่าวัสดุ</td><td class="mono">MATERIAL</td><td>฿800K</td></tr>
+                <tr><td>ค่าใช้จ่ายอื่น</td><td class="mono">OVERHEAD</td><td>฿200K</td></tr>
+            </table>
+            <ul class="fl" style="font-size: 0.54em; margin-top:6px;">
+                <li><span class="check">✓</span> Recurring: Rent ฿45K, Utility ฿12K, Insurance ฿8.5K</li>
+            </ul>
+        </div>
+    </div>
+    <p class="text-sm text-center mt-1">
+        <span class="badge module">coral_accounting_demo</span>
+        <span class="badge module">coral_project_analytics</span>
+        <span class="badge enterprise">account_asset</span>
+        <span class="badge enterprise">account_budget</span>
+    </p>
+    <aside class="notes" data-timing="4min" data-demo-links='[{"label":"Accounting","url":"/odoo/accounting"}]'>
+Accounting — 3 ด้านหลัก:
+
+**Tax &amp; Currency:**
+— VAT 7% ซื้อ/ขาย + Zero-rated Export
+— 3 Fiscal Positions: Domestic, Export, Singapore
+— 4 สกุลเงิน: THB, USD (34.50), JPY (0.23), SGD (25.80)
+
+**Assets &amp; Deferred:**
+— DEMO: เปิด Accounting → Assets → แสดง ERV ฿850K (5 ปี = ฿14,167/เดือน)
+— Deferred Revenue: service contract 12 เดือน, warranty 24 เดือน
+
+**Budget &amp; Analytics:**
+— Q1 2026: OpEx ฿1.5M, Revenue ฿2.8M
+— 3 cost categories: LABOR ฿500K, MATERIAL ฿800K, OVERHEAD ฿200K
+— Recurring entries: Rent ฿45K, Utility ฿12K, Insurance ฿8.5K
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10b: ACCOUNTING — DEMO SCREENSHOT               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label accounting">Live Screenshot</span>
+    <h2>Accounting Dashboard — หน้าจอจริง</h2>
+    <div class="screenshot-container">
+        <img src="screenshots/12-accounting-dashboard.png" alt="Accounting Dashboard">
+        <p class="screenshot-label">Accounting Dashboard — Sales, Purchases, Bank, Tax Returns</p>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Accounting","url":"/odoo/accounting"}]'>
+[Screenshot] Accounting Dashboard
+— แสดง Sales journal, Purchase journal, Bank, Tax Returns
+— *ถ้ามีเวลา*: เปิดระบบจริง → click เข้าดู journal entries
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10c: RECURRING, LOANS & FX                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label accounting">MOM #5, #6, #7</span>
+    <h2>Recurring, Loans & FX / ค่าใช้จ่ายประจำ สินเชื่อ อัตราแลกเปลี่ยน</h2>
+    <p class="subtitle">ค่าใช้จ่ายรายเดือน + สินเชื่อสำนักงาน + อัตราแลกเปลี่ยนหลายวัน</p>
+    <br>
+    <div class="cols-3">
+        <div>
+            <h3>Recurring Expenses (#5)</h3>
+            <table class="t compact" style="font-size: 0.40em;">
+                <tr><th>Entry</th><th>Account</th><th>฿/Month</th></tr>
+                <tr><td>Office Rent<br><span class="text-muted">ค่าเช่าสำนักงาน</span></td><td class="mono">613100</td><td style="font-weight:700;">45,000</td></tr>
+                <tr><td>Utilities<br><span class="text-muted">ค่าน้ำ-ไฟ</span></td><td class="mono">618400</td><td style="font-weight:700;">12,000</td></tr>
+                <tr><td>Insurance<br><span class="text-muted">ค่าประกัน</span></td><td class="mono">615801</td><td style="font-weight:700;">8,500</td></tr>
+                <tr style="font-weight:700; background: var(--coral-light);"><td colspan="2">Total / รวม</td><td>65,500</td></tr>
+            </table>
+            <p style="font-size:0.38em; color:var(--text-muted); margin-top:4px;">auto_post='monthly' | until 2026-12-31</p>
+        </div>
+        <div>
+            <h3>Loan (#6)</h3>
+            <ul class="fl" style="font-size: 0.54em;">
+                <li><span class="check">✓</span> <strong>฿2,000,000</strong> principal</li>
+                <li><span class="check">✓</span> <strong>36 months</strong> / 3 years</li>
+                <li><span class="check">✓</span> <strong>5%</strong> interest p.a.</li>
+                <li><span class="check">✓</span> Amortization schedule</li>
+                <li><span class="check">✓</span> Auto journal entries</li>
+            </ul>
+            <p style="font-size:0.40em; color:var(--text-secondary); margin-top:4px;">
+                สินเชื่อปรับปรุงสำนักงาน<br>
+                <span class="mono">221100</span> LT → <span class="mono">211200</span> ST → <span class="mono">621100</span> Interest
+            </p>
+        </div>
+        <div>
+            <h3>Exchange Rates (#7)</h3>
+            <table class="t compact" style="font-size: 0.40em;">
+                <tr><th>Currency</th><th>Date</th><th>THB Rate</th></tr>
+                <tr><td>SGD</td><td class="mono">2026-01-01</td><td>25.80</td></tr>
+                <tr><td>SGD</td><td class="mono">2026-02-15</td><td style="font-weight:700; color:var(--accent);">26.20</td></tr>
+                <tr><td>USD</td><td class="mono">2026-01-01</td><td>34.50</td></tr>
+                <tr><td>JPY</td><td class="mono">2026-01-01</td><td>0.23</td></tr>
+            </table>
+            <ul class="fl" style="font-size: 0.54em; margin-top:6px;">
+                <li><span class="check">✓</span> Multi-date rates demo</li>
+                <li><span class="check">✓</span> Auto exchange gain/loss</li>
+                <li><span class="check">✓</span> <span class="mono">421300</span> gain / <span class="mono">621200</span> loss</li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <p class="text-sm text-center">
+        <span class="badge module">coral_accounting_demo</span>
+        <span class="badge enterprise">account_loans</span>
+        <span class="badge enterprise">currency_rate_live</span>
+    </p>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"Journal Entries","url":"/odoo/accounting"},{"label":"Loans","url":"/odoo/accounting"},{"label":"Currencies","url":"/odoo/accounting"}]'>
+Recurring, Loans &amp; FX — 3 หัวข้อใน slide เดียว
+
+**Recurring Expenses (#5):**
+— 3 รายการ auto-post รายเดือน: ค่าเช่า ฿45K, ค่าน้ำ-ไฟ ฿12K, ค่าประกัน ฿8.5K
+— รวม ฿65,500/เดือน — Odoo สร้าง JE อัตโนมัติทุกเดือนจนถึง 2026-12-31
+— DEMO: เปิด Accounting → Journal Entries → ดูรายการ recurring
+
+**Loan (#6):**
+— สินเชื่อปรับปรุงสำนักงาน ฿2M / 36 เดือน / 5% ต่อปี
+— Odoo คำนวณตาราง amortization อัตโนมัติ (principal + interest แยก)
+— Auto journal entries ทุกเดือน: Long-term → Short-term reclassification
+— DEMO: เปิด Accounting → Loans → click ดู schedule
+
+**Exchange Rates (#7):**
+— SGD มี 2 rates: 25.80 (1 Jan) และ 26.20 (15 Feb) = ส่วนต่าง ฿0.40/SGD
+— เมื่อ reconcile invoice ที่ต่าง rate → Odoo คำนวณ exchange gain/loss อัตโนมัติ
+— บัญชี: 421300 กำไร / 621200 ขาดทุน จากอัตราแลกเปลี่ยน
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10d: ACCOUNTING EXTRA — DEMO SCREENSHOTS        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label accounting">Live Screenshots</span>
+    <h2>Recurring, Loans & FX — หน้าจอจริง</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="screenshot-container">
+            <img src="screenshots/23-recurring-entries.png" alt="Recurring Entries">
+            <p class="screenshot-label">Recurring Journal Entries — ฿65.5K/month</p>
+        </div>
+        <div class="screenshot-container">
+            <img src="screenshots/24-loan-amortization.png" alt="Loan Amortization">
+            <p class="screenshot-label">Office Renovation Loan — ฿2M / 36 months / 5%</p>
+        </div>
+        <div class="screenshot-container">
+            <img src="screenshots/25-exchange-rates.png" alt="Exchange Rates">
+            <p class="screenshot-label">SGD Currency — Multi-date rates (25.80 → 26.20)</p>
+        </div>
+        <div class="screenshot-container">
+            <img src="screenshots/26-journal-entry-form.png" alt="Journal Entry Form">
+            <p class="screenshot-label">Journal Entry — Debit/Credit detail (#11)</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Journal Entries","url":"/odoo/accounting"},{"label":"Loans","url":"/odoo/accounting"}]'>
+[Screenshots] 2×2 Grid — Accounting deep-dive
+— ซ้ายบน: Recurring entries list — 3 รายการรายเดือน
+— ขวาบน: Loan amortization schedule — ตาราง 36 งวด
+— ซ้ายล่าง: SGD currency with 2 rates — multi-date FX demo
+— ขวาล่าง: Journal entry form — debit/credit lines (#11 JE Print)
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10e: EXPENSE PAYMENTS (VENDOR BILLS)            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label accounting">Expense Payment Flow</span>
+    <h2>Expense Payments / จ่ายค่าใช้จ่ายประจำเดือน</h2>
+    <p class="subtitle">ระบบตั้งบิลรอไว้ → นักบัญชี Review → กด Confirm → จ่ายเงิน → ลงบัญชีอัตโนมัติ</p>
+    <br>
+    <div class="cols">
+        <div>
+            <h3>February Bills (Draft — รอ Review)</h3>
+            <table class="t compact" style="font-size: 0.40em;">
+                <tr><th>Vendor / ผู้ขาย</th><th>Ref</th><th>Amount (฿)</th><th>Due</th><th>Status</th></tr>
+                <tr>
+                    <td>สยาม พร็อพเพอร์ตี้<br><span class="text-muted">ค่าเช่าสำนักงาน</span></td>
+                    <td class="mono">INV-RENT-02</td>
+                    <td style="font-weight:700;">48,150</td>
+                    <td class="mono">05 Mar</td>
+                    <td><span class="badge" style="background:#FFF3E0; color:#E65100;">Draft</span></td>
+                </tr>
+                <tr>
+                    <td>การไฟฟ้า (MEA)<br><span class="text-muted">ค่าไฟฟ้า</span></td>
+                    <td class="mono">INV-ELEC-02</td>
+                    <td style="font-weight:700;">10,165</td>
+                    <td class="mono">15 Mar</td>
+                    <td><span class="badge" style="background:#FFF3E0; color:#E65100;">Draft</span></td>
+                </tr>
+                <tr>
+                    <td>การประปา (MWA)<br><span class="text-muted">ค่าน้ำประปา</span></td>
+                    <td class="mono">INV-WATER-02</td>
+                    <td style="font-weight:700;">4,387</td>
+                    <td class="mono">15 Mar</td>
+                    <td><span class="badge" style="background:#FFF3E0; color:#E65100;">Draft</span></td>
+                </tr>
+                <tr>
+                    <td>ทรู คอร์ป<br><span class="text-muted">ค่าอินเทอร์เน็ต</span></td>
+                    <td class="mono">INV-NET-02</td>
+                    <td style="font-weight:700;">2,675</td>
+                    <td class="mono">10 Mar</td>
+                    <td><span class="badge" style="background:#FFF3E0; color:#E65100;">Draft</span></td>
+                </tr>
+                <tr>
+                    <td>กรุงเทพประกันภัย<br><span class="text-muted">ค่าประกันอัคคีภัย</span></td>
+                    <td class="mono">INV-INS-02</td>
+                    <td style="font-weight:700;">8,500</td>
+                    <td class="mono">15 Mar</td>
+                    <td><span class="badge" style="background:#FFF3E0; color:#E65100;">Draft</span></td>
+                </tr>
+                <tr style="font-weight:700; background: var(--coral-light);">
+                    <td colspan="2">Total / รวม</td>
+                    <td>73,877</td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <h3>Workflow / ขั้นตอนการจ่าย</h3>
+            <div style="font-size: 0.48em; line-height: 1.8;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                    <span style="background:var(--coral-light); color:var(--coral-dark); padding:2px 8px; border-radius:4px; font-weight:700;">1</span>
+                    <span><strong>ตั้งบิล</strong> — สร้าง Vendor Bill จากใบแจ้งหนี้</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                    <span style="background:var(--coral-light); color:var(--coral-dark); padding:2px 8px; border-radius:4px; font-weight:700;">2</span>
+                    <span><strong>Review</strong> — นักบัญชีตรวจสอบ account, ยอด, VAT</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                    <span style="background:var(--coral-light); color:var(--coral-dark); padding:2px 8px; border-radius:4px; font-weight:700;">3</span>
+                    <span><strong>Confirm</strong> — กด Confirm → ลงบัญชี (Debit Expense / Credit Payable)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                    <span style="background:var(--coral-light); color:var(--coral-dark); padding:2px 8px; border-radius:4px; font-weight:700;">4</span>
+                    <span><strong>Register Payment</strong> — จ่ายเงิน (Debit Payable / Credit Bank)</span>
+                </div>
+            </div>
+            <br>
+            <h3>January (Paid) — ตัวอย่างที่จ่ายแล้ว</h3>
+            <table class="t compact" style="font-size: 0.38em;">
+                <tr><th>Bill</th><th>Amount</th><th>Status</th></tr>
+                <tr><td>ค่าเช่า ม.ค.</td><td>฿48,150</td><td><span class="badge" style="background:#E8F5E9; color:#2E7D32;">Paid</span></td></tr>
+                <tr><td>ค่าไฟฟ้า ม.ค.</td><td>฿8,774</td><td><span class="badge" style="background:#E8F5E9; color:#2E7D32;">Paid</span></td></tr>
+                <tr><td>ค่าน้ำ ม.ค.</td><td>฿4,066</td><td><span class="badge" style="background:#E3F2FD; color:#1565C0;">Posted</span></td></tr>
+            </table>
+        </div>
+    </div>
+    <br>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="screenshot-container">
+            <img src="screenshots/29-vendor-bills-draft.png" alt="Vendor Bills List">
+            <p class="screenshot-label">Vendor Bills — 5 รายการรอ Review + 3 รายการจ่ายแล้ว</p>
+        </div>
+        <div class="screenshot-container">
+            <img src="screenshots/30-vendor-bill-detail.png" alt="Vendor Bill Detail">
+            <p class="screenshot-label">Bill Detail — ค่าเช่า ฿48,150 พร้อม VAT 7% + Account Entry</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"Vendor Bills","url":"/odoo/accounting"}]'>
+[Expense Payments] — จ่ายค่าใช้จ่ายประจำเดือน
+
+WORKFLOW อธิบายให้ลูกค้า:
+1. **ตั้งบิล**: เมื่อได้รับใบแจ้งหนี้ (ค่าไฟ, ค่าน้ำ, ค่าเช่า) → สร้าง Vendor Bill ใน Odoo
+   - ระบบตั้ง account ให้อัตโนมัติตาม vendor
+   - VAT 7% คำนวณอัตโนมัติ
+
+2. **Review**: นักบัญชีเข้ามาตรวจสอบ
+   - เช็ค account code ถูกต้อง (613100 = ค่าเช่า, 618400 = ค่าไฟ)
+   - เช็คยอดตรงกับใบแจ้งหนี้
+   - เช็ค VAT ถูกต้อง
+
+3. **Confirm**: กดปุ่ม Confirm
+   - ระบบลงบัญชีอัตโนมัติ: Debit ค่าใช้จ่าย / Credit เจ้าหนี้การค้า
+   - JE สร้างอัตโนมัติ ไม่ต้องลงมือเอง
+
+4. **Register Payment**: กดจ่ายเงิน
+   - เลือกบัญชีธนาคาร / เงินสด
+   - ระบบลง: Debit เจ้าหนี้ / Credit ธนาคาร
+   - บิลเปลี่ยนสถานะเป็น Paid
+
+DEMO: กดเข้า Accounting → Vendors → Bills
+— แสดง 5 draft bills (ก.พ.) + 3 posted bills (ม.ค.)
+— กดเข้า bill ค่าเช่า → แสดง detail + journal items
+— สาธิต: กด Confirm → Register Payment → แสดงผลลงบัญชี
+
+SELLING POINT:
+— ไม่ต้องลงบัญชีซ้ำ — Confirm ครั้งเดียว ระบบสร้าง JE อัตโนมัติ
+— Dashboard แสดงยอด outstanding bills real-time
+— Due date tracking — ไม่พลาดจ่ายล่าช้า
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10f: ASSET DEPRECIATION & AMORTIZATION          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label accounting">MOM #3, #12</span>
+    <h2>Depreciation & Amortization / ค่าเสื่อมราคาและค่าตัดจำหน่าย</h2>
+    <p class="subtitle">สร้างสินทรัพย์ → ยืนยัน → ระบบตั้งรายการตัดค่าเสื่อมราคาอัตโนมัติรายเดือน</p>
+    <br>
+    <div class="cols">
+        <div>
+            <h3>Depreciation / ค่าเสื่อมราคา</h3>
+            <table class="t compact" style="font-size: 0.40em;">
+                <tr><th>Asset</th><th>Value (฿)</th><th>Method</th><th>Period</th><th>฿/Month</th></tr>
+                <tr>
+                    <td>ERV Unit 1000CMH<br><span class="text-muted">เครื่อง ERV</span></td>
+                    <td style="font-weight:700;">850,000</td>
+                    <td>Linear</td>
+                    <td>60 mo (5yr)</td>
+                    <td class="mono">~14,167</td>
+                </tr>
+                <tr>
+                    <td>Office Furniture & IT<br><span class="text-muted">เฟอร์นิเจอร์และ IT</span></td>
+                    <td style="font-weight:700;">150,000</td>
+                    <td>Linear</td>
+                    <td>36 mo (3yr)</td>
+                    <td class="mono">~4,167</td>
+                </tr>
+            </table>
+            <p style="font-size:0.36em; color:var(--text-muted); margin-top:4px;">
+                <span class="mono">123230</span> Fixed Asset → <span class="mono">123231</span> Accum. Depr. → <span class="mono">612400</span> Expense
+            </p>
+        </div>
+        <div>
+            <h3>Amortization / ค่าตัดจำหน่าย</h3>
+            <table class="t compact" style="font-size: 0.40em;">
+                <tr><th>Asset</th><th>Value (฿)</th><th>Method</th><th>Period</th><th>฿/Month</th></tr>
+                <tr>
+                    <td>Maintenance Contract<br><span class="text-muted">สัญญาบำรุงรักษา XYZ</span></td>
+                    <td style="font-weight:700;">360,000</td>
+                    <td>Linear</td>
+                    <td>12 mo (1yr)</td>
+                    <td class="mono">30,000</td>
+                </tr>
+            </table>
+            <p style="font-size:0.36em; color:var(--text-muted); margin-top:4px;">
+                <span class="mono">124100</span> Intangible → <span class="mono">124101</span> Accum. Amt. → <span class="mono">612950</span> Expense
+            </p>
+            <br>
+            <h3>How Auto-Posting Works</h3>
+            <ul class="fl" style="font-size: 0.48em;">
+                <li><span class="check">✓</span> Create asset → <strong>Validate</strong> → board generated</li>
+                <li><span class="check">✓</span> Past entries → <strong>posted immediately</strong></li>
+                <li><span class="check">✓</span> Future entries → <code>auto_post='at_date'</code></li>
+                <li><span class="check">✓</span> Odoo scheduler posts on due date — <strong>zero manual work</strong></li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="screenshot-container">
+            <img src="screenshots/27-asset-depreciation.png" alt="Asset Depreciation Board">
+            <p class="screenshot-label">ERV Unit — Depreciation Board (60 months, auto-posted)</p>
+        </div>
+        <div class="screenshot-container">
+            <img src="screenshots/24-loan-amortization.png" alt="Loan Amortization">
+            <p class="screenshot-label">Loan — Amortization Schedule (36 months, auto-posted)</p>
+        </div>
+    </div>
+    <br>
+    <p class="text-sm text-center">
+        <span class="badge module">coral_accounting_demo</span>
+        <span class="badge enterprise">account_asset</span>
+        <span class="badge enterprise">account_loans</span>
+    </p>
+    <aside class="notes" data-timing="2min" data-demo-links='[{"label":"Assets","url":"/odoo/accounting"},{"label":"Loans","url":"/odoo/accounting"}]'>
+[Depreciation & Amortization] — MOM #3 + #12
+
+KEY POINTS:
+— ค่าเสื่อมราคา (Depreciation): สินทรัพย์ถาวร เช่น เครื่อง ERV, เฟอร์นิเจอร์
+— ค่าตัดจำหน่าย (Amortization): สินทรัพย์ไม่มีตัวตน เช่น สัญญาบำรุงรักษา
+— ทั้งสองใช้ auto_post='at_date' เหมือนกัน — Odoo Scheduler ลงบัญชีอัตโนมัติ
+
+DEMO: กดเข้า Accounting → Accounting → Assets
+— แสดง ERV Unit: depreciation board 60 entries, 1 posted (Jan), 60 draft
+— แต่ละ entry มี auto_post='at_date' — เมื่อถึงวันที่ ระบบจะ post อัตโนมัติ
+— Book value ลดลงทุกเดือน: ฿850K → ฿836K → ฿822K → ...
+
+LOAN vs ASSET comparison:
+— Loan: ฿2M / 36 months → 106 JEs (payment + reclassification + reversal)
+— Asset: ฿850K / 60 months → 61 JEs (depreciation only)
+— ทั้งคู่ auto-post เหมือนกัน ไม่ต้องทำอะไร
+
+ผู้ใช้แค่สร้าง asset → กด Validate → จบ! ระบบจัดการให้หมด
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 11: INVENTORY DEEP DIVE                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label inventory">Demo Steps 6–7</span>
+    <h2>Inventory & Landed Costs / คลังสินค้า</h2>
+    <div class="cols">
+        <div>
+            <h3>Stock Management</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> <strong>9 storable</strong> products — Equipment & Materials</li>
+                <li><span class="check">✓</span> ป้องกัน <strong>negative stock</strong></li>
+                <li><span class="check">✓</span> Project-linked transfers (project_id on picking)</li>
+            </ul>
+            <table class="t compact" style="margin-top:8px; font-size: 0.42em;">
+                <tr><th>Product</th><th>Code</th><th>On Hand</th></tr>
+                <tr><td>ERV Unit 500CMH</td><td class="mono">ERV-001</td><td>5 units</td></tr>
+                <tr><td>ERV Unit 1000CMH</td><td class="mono">ERV-002</td><td>3 units</td></tr>
+                <tr><td>HEPA Air Purifier</td><td class="mono">AIR-001</td><td>10 units</td></tr>
+                <tr><td>UV Air Purifier</td><td class="mono">AIR-002</td><td>8 units</td></tr>
+                <tr><td>Air Duct 6"</td><td class="mono">MAT-001</td><td>200 meters</td></tr>
+                <tr><td>HEPA Filter H13</td><td class="mono">MAT-003</td><td>50 units</td></tr>
+                <tr><td>Carbon Filter</td><td class="mono">MAT-004</td><td>30 units</td></tr>
+            </table>
+        </div>
+        <div>
+            <h3>Custom Locations</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> <strong>WH/Stock</strong> — Main Warehouse (คลังหลัก)</li>
+                <li><span class="check">✓</span> <strong>Project Site / หน้างาน</strong> — on-site inventory</li>
+                <li><span class="check">✓</span> <strong>Borrowed Items / อุปกรณ์ยืม</strong> — equipment tracking</li>
+            </ul>
+            <br>
+            <h3>Landed Costs — Singapore Import</h3>
+            <table class="t compact" style="font-size: 0.42em;">
+                <tr><th>Cost Type</th><th>Description</th><th>Amount</th></tr>
+                <tr><td class="mono">COST-FREIGHT</td><td>ค่าขนส่งระหว่างประเทศ</td><td>฿15,000</td></tr>
+                <tr><td class="mono">COST-DUTY</td><td>ค่าภาษีนำเข้า</td><td>฿25,000</td></tr>
+                <tr style="font-weight:700; background: var(--coral-light);"><td colspan="2">Total Landed Cost</td><td>฿40,000</td></tr>
+            </table>
+            <p style="font-size:0.42em; color:var(--text-muted); margin-top:4px;">Split method: By Current Cost | Vendor: Air Systems Intl. (SG)</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="4min" data-demo-links='[{"label":"Products","url":"/odoo/inventory/products"},{"label":"Inventory","url":"/odoo/inventory"}]'>
+Inventory — คลังสินค้า:
+
+**Stock Management:**
+— 9 storable products: ERV, HEPA, UV, ducts, filters
+— DEMO: เปิด Products → click ERV Unit 500 → ดู stock tab
+— Negative stock prevention = ON
+— Project-linked transfers (project_id on picking)
+
+**Custom Locations:**
+— WH/Stock = คลังหลัก
+— Project Site / หน้างาน = inventory on-site
+— Borrowed Items / อุปกรณ์ยืม = equipment tracking
+
+**Landed Costs:**
+— Singapore Import demo: ค่าขนส่ง ฿15K + ภาษีนำเข้า ฿25K = ฿40K
+— Split method: By Current Cost
+— DEMO: เปิด Inventory → Landed Costs (ถ้ามีเวลา)
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 11b: INVENTORY — DEMO SCREENSHOTS               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label inventory">Live Screenshots</span>
+    <h2>Inventory & Products — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/11-inventory-products.png" alt="Inventory Products">
+            <p class="screenshot-label">Product Catalog — 33 products with prices</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/16-inventory-stock.png" alt="ERV Product Stock">
+            <p class="screenshot-label">ERV Unit 500CMH — Storable product with tracking</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Products","url":"/odoo/inventory/products"}]'>
+[Screenshot] Products + ERV detail
+— ซ้าย: 33 products in kanban — ราคา, รูปภาพ
+— ขวา: ERV Unit 500CMH — storable product, stock tracking
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 12: AFTER-SALES DEEP DIVE                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label aftersales">Demo Step 9</span>
+    <h2>After-Sales Service / บริการหลังการขาย</h2>
+    <div class="cols">
+        <div>
+            <h3>Helpdesk & SLA</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> Team: <strong>Maintenance & After-Sales</strong></li>
+                <li><span class="check">✓</span> SLA Response: <strong>4 ชั่วโมง</strong> (High Priority)</li>
+                <li><span class="check">✓</span> SLA Resolution: <strong>48 ชั่วโมง</strong> (Medium)</li>
+                <li><span class="check">✓</span> Auto-assignment: Balanced method</li>
+            </ul>
+            <br>
+            <h3>Demo Tickets</h3>
+            <table class="t compact" style="font-size:0.40em;">
+                <tr><th>Ticket</th><th>Customer</th><th>Priority</th></tr>
+                <tr><td>ERV Noise Issue<br><span class="text-muted">Serial #ERV2026-0042, 5F Zone A</span></td><td>ABC Japan</td><td style="color:var(--red);">High</td></tr>
+                <tr><td>Filter Replacement<br><span class="text-muted">4× ERV 1000CMH HEPA replacement</span></td><td>XYZ Property</td><td style="color:var(--amber);">Medium</td></tr>
+                <tr><td>Annual Maintenance<br><span class="text-muted">2× HEPA Purifier check + clean</span></td><td>Mr. Smith</td><td style="color:var(--green);">Low</td></tr>
+            </table>
+        </div>
+        <div>
+            <h3>Field Service Management</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> FSM task จาก Helpdesk ticket อัตโนมัติ</li>
+                <li><span class="check">✓</span> Planned date/time scheduling</li>
+                <li><span class="check">✓</span> Detailed <strong>checklists</strong> สำหรับช่าง</li>
+                <li><span class="check">✓</span> Tools & materials requirement tracking</li>
+            </ul>
+            <br>
+            <h3>E-Signature</h3>
+            <ul class="fl">
+                <li><span class="check">✓</span> ใบรับงาน <strong>digital sign-off</strong></li>
+                <li><span class="check">✓</span> ลูกค้าเซ็นรับบน tablet / phone</li>
+                <li><span class="check">✓</span> Legal compliance document</li>
+            </ul>
+            <br>
+            <div style="font-size:0.46em; border: 1px dashed var(--border); border-radius: var(--radius-md); padding: 8px; text-align: center; color: var(--text-secondary);">
+                <strong>FSM Demo:</strong> On-site ERV Inspection — ABC Japan<br>
+                18 Feb 2026, 09:00–12:00 | 8-point checklist
+            </div>
+        </div>
+    </div>
+    <p class="text-sm text-center mt-1">
+        <span class="badge module">coral_aftersales</span>
+        <span class="badge enterprise">helpdesk</span>
+        <span class="badge enterprise">industry_fsm</span>
+        <span class="badge enterprise">sign</span>
+    </p>
+    <aside class="notes" data-timing="4min" data-demo-links='[{"label":"Helpdesk","url":"/odoo/helpdesk"}]'>
+After-Sales — บริการหลังการขาย:
+
+**Helpdesk &amp; SLA:**
+— DEMO: เปิด /odoo/helpdesk → click Maintenance team → ดู 3 tickets
+— SLA: Response 4 ชม. (High), Resolution 48 ชม. (Medium)
+— Demo tickets: ERV Noise (High), Filter Replace (Med), Annual Maint (Low)
+— click ticket → แสดง SLA countdown, priority, customer info
+
+**FSM:**
+— สร้าง field service task จาก ticket อัตโนมัติ
+— Planned date/time, checklists, tools/materials
+— Demo: On-site ERV Inspection, 18 Feb, 8-point checklist
+
+**E-Signature:**
+— ลูกค้าเซ็นรับงานบน tablet/phone
+— Digital sign-off = legal compliance
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 12b: AFTER-SALES — DEMO SCREENSHOTS             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label aftersales">Live Screenshots</span>
+    <h2>Helpdesk & After-Sales — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/13-helpdesk-tickets.png" alt="Helpdesk Overview">
+            <p class="screenshot-label">Helpdesk Overview — Maintenance team: 3 Open tickets</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/14-helpdesk-ticket-detail.png" alt="Ticket Detail">
+            <p class="screenshot-label">ERV Noise Issue — ABC Japan, SLA 4 Hours</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Helpdesk","url":"/odoo/helpdesk"}]'>
+[Screenshot] Helpdesk overview + Ticket detail
+— ซ้าย: Maintenance team — 3 open tickets
+— ขวา: ERV Noise Issue — ABC Japan, SLA 4 Hours, High priority
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 13: REPORTING & P&L                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label reporting">Demo Steps 10–11, 13</span>
+    <h2>Reporting & Plan vs Actual / รายงาน</h2>
+    <div class="cols">
+        <div>
+            <h3>Plan vs Actual <span class="badge custom" style="font-size:0.7em;">CUSTOM SQL View</span></h3>
+            <ul class="fl" style="font-size: 0.58em;">
+                <li><span class="check">✓</span> BOQ Planned: <strong>฿62.2M</strong> (Sky Ground) + <strong>฿509K</strong> (ABC Japan)</li>
+                <li><span class="check">✓</span> Actual from analytic entries</li>
+                <li><span class="check">✓</span> Variance = Planned − Actual</li>
+                <li><span class="check">✓</span> Smart button on Project form</li>
+            </ul>
+            <table class="t compact" style="margin-top:6px; font-size: 0.38em;">
+                <tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr>
+                <tr><td>Feb 20</td><td>Material — ERV Units</td><td class="mono">MATERIAL</td><td>−฿170,000</td></tr>
+                <tr><td>Feb 22</td><td>Material — Ducts & Filters</td><td class="mono">MATERIAL</td><td>−฿25,000</td></tr>
+                <tr><td>Feb 25</td><td>Labor — Installation</td><td class="mono">LABOR</td><td>−฿80,000</td></tr>
+                <tr><td>Feb 28</td><td>Overhead — Transport</td><td class="mono">OVERHEAD</td><td>−฿15,000</td></tr>
+                <tr><td>Feb 28</td><td>Revenue — Partial billing</td><td>REVENUE</td><td style="color: var(--green);">+฿300,000</td></tr>
+            </table>
+        </div>
+        <div>
+            <h3>Standard Reports</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+                <div class="card" style="min-width: 120px; padding: 10px 14px;">
+                    <span class="card-icon" style="font-size: 1.2em;">🧾</span>
+                    <h4 style="font-size:0.6em;">Tax Report</h4>
+                    <p style="font-size:0.42em;">VAT 7% summary<br>Output vs Input</p>
+                </div>
+                <div class="card" style="min-width: 120px; padding: 10px 14px;">
+                    <span class="card-icon" style="font-size: 1.2em;">📉</span>
+                    <h4 style="font-size:0.6em;">Depreciation</h4>
+                    <p style="font-size:0.42em;">ERV ฿14,167/mo<br>Office ฿4,167/mo</p>
+                </div>
+                <div class="card" style="min-width: 120px; padding: 10px 14px;">
+                    <span class="card-icon" style="font-size: 1.2em;">🔮</span>
+                    <h4 style="font-size:0.6em;">Pipeline</h4>
+                    <p style="font-size:0.42em;">7 leads / ฿79M+<br>Conversion rates</p>
+                </div>
+                <div class="card" style="min-width: 120px; padding: 10px 14px;">
+                    <span class="card-icon" style="font-size: 1.2em;">💰</span>
+                    <h4 style="font-size:0.6em;">Budget</h4>
+                    <p style="font-size:0.42em;">Q1: ฿1.5M OpEx<br>฿2.8M Revenue</p>
+                </div>
+            </div>
+            <br>
+            <h3>Commission (Step 12)</h3>
+            <table class="t compact" style="font-size: 0.38em;">
+                <tr><th>Category</th><th>Rate</th><th>ABC Japan SO</th><th>Commission</th></tr>
+                <tr><td>Equipment</td><td>5%</td><td>฿350,000</td><td>฿17,500</td></tr>
+                <tr><td>Materials</td><td>3%</td><td>฿39,000</td><td>฿1,170</td></tr>
+                <tr><td>Services</td><td>8%</td><td>฿120,000</td><td>฿9,600</td></tr>
+                <tr style="font-weight:700; background: var(--coral-light);"><td colspan="2">Total</td><td>฿509,000</td><td>฿28,270</td></tr>
+            </table>
+        </div>
+    </div>
+    <aside class="notes" data-timing="4min" data-demo-links='[{"label":"CRM Reporting","url":"/odoo/crm"},{"label":"Projects","url":"/odoo/project"}]'>
+Reporting &amp; Plan vs Actual:
+
+**Plan vs Actual** (CUSTOM SQL View):
+— DEMO: เปิด Project → Sky Ground → click "Plan vs Actual" button
+— BOQ Planned ฿62.2M vs Actual จาก analytic entries
+— Variance = Planned − Actual
+— ตาราง: Material −฿170K, −฿25K | Labor −฿80K | Overhead −฿15K | Revenue +฿300K
+
+**Standard Reports:**
+— Tax Report: VAT 7% Output vs Input
+— Depreciation: ERV ฿14,167/mo, Office ฿4,167/mo
+— Pipeline: 7 leads / ฿79M+
+— Budget: Q1 ฿1.5M OpEx, ฿2.8M Revenue
+
+**Commission (Step 12):**
+— ABC Japan SO: Equipment 5% = ฿17.5K, Material 3% = ฿1.17K, Service 8% = ฿9.6K
+— Total commission: ฿28,270 on ฿509K SO
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 13b: REPORTING — DEMO SCREENSHOTS                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label reporting">Live Screenshots</span>
+    <h2>Reporting & Plan vs Actual — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/17-plan-vs-actual.png" alt="Plan vs Actual">
+            <p class="screenshot-label">Project Form — Budget Workflow + Plan vs Actual button</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/18-crm-reporting.png" alt="CRM Pipeline Analysis">
+            <p class="screenshot-label">CRM Pipeline Analysis — 5 stages, bar chart</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Projects","url":"/odoo/project"},{"label":"CRM Reporting","url":"/odoo/crm"}]'>
+[Screenshot] Plan vs Actual + CRM Pipeline Analysis
+— ซ้าย: Project form แสดง budget workflow + Plan vs Actual button
+— ขวา: CRM Pipeline Analysis bar chart — 5 stages bilingual
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 13c: TIMESHEET & TIME TRACKING                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label project">MOM #24</span>
+    <h2>Timesheet & Time Tracking / บันทึกเวลาทำงาน</h2>
+    <p class="subtitle">บันทึกชั่วโมงทำงานของพนักงานแต่ละคนต่อ Task/Project — คิดต้นทุนแรงงานอัตโนมัติ</p>
+    <br>
+    <div class="cols">
+        <div>
+            <h3>Employees / พนักงาน</h3>
+            <table class="t compact" style="font-size: 0.42em;">
+                <tr><th>Name</th><th>Role</th><th>฿/Hour</th></tr>
+                <tr><td>สมชาย วงศ์สกุล</td><td>Project Manager</td><td style="font-weight:700;">850</td></tr>
+                <tr><td>ณัฐพงศ์ ประเสริฐ</td><td>Site Engineer</td><td style="font-weight:700;">650</td></tr>
+                <tr><td>ประสิทธิ์ ไชโย</td><td>HVAC Technician</td><td style="font-weight:700;">450</td></tr>
+            </table>
+            <br>
+            <h3>Features</h3>
+            <ul class="fl" style="font-size: 0.56em;">
+                <li><span class="check">✓</span> บันทึกชั่วโมงต่อ Task ใน Project</li>
+                <li><span class="check">✓</span> คิดต้นทุนอัตโนมัติจาก Hourly Cost</li>
+                <li><span class="check">✓</span> Timesheet tab ในหน้า Project</li>
+                <li><span class="check">✓</span> รายงาน Timesheet เปรียบเทียบโครงการ</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Demo Timesheet Summary</h3>
+            <table class="t compact" style="font-size: 0.40em;">
+                <tr><th>Project</th><th>Tasks</th><th>Hours</th><th>Est. Cost</th></tr>
+                <tr>
+                    <td>PRJ-2026-001<br><span class="text-muted">ABC Japan</span></td>
+                    <td>Survey, Design,<br>Installation</td>
+                    <td style="font-weight:700;">34h</td>
+                    <td>฿24,200</td>
+                </tr>
+                <tr>
+                    <td>PRJ-2026-038<br><span class="text-muted">Sky Ground 38</span></td>
+                    <td>Drawing, Shop DWG,<br>HVAC, D&amp;W Install</td>
+                    <td style="font-weight:700;">56h</td>
+                    <td>฿38,600</td>
+                </tr>
+                <tr style="font-weight:700; background: var(--coral-light);">
+                    <td colspan="2">Total / รวม</td>
+                    <td>90h</td>
+                    <td>฿62,800</td>
+                </tr>
+            </table>
+            <br>
+            <div class="screenshot-container">
+                <img src="screenshots/28-timesheets.png" alt="Timesheet Entries" style="max-height: 200px;">
+                <p class="screenshot-label">Timesheet entries — ABC Japan project</p>
+            </div>
+        </div>
+    </div>
+    <p class="text-sm text-center mt-1">
+        <span class="badge module">coral_timesheet_demo</span>
+        <span class="badge enterprise">hr_timesheet</span>
+    </p>
+    <aside class="notes" data-timing="3min" data-demo-links='[{"label":"Timesheets","url":"/odoo/project"},{"label":"All Timesheets","url":"/odoo/timesheet"}]'>
+Timesheet &amp; Time Tracking — MOM #24
+
+**พนักงาน 3 คน:**
+— สมชาย (PM) ฿850/ชม. — ดูแลทุกโครงการ, review แบบ, ประสานงาน
+— ณัฐพงศ์ (Site Eng) ฿650/ชม. — ออกแบบ, shop drawing, ควบคุมงาน
+— ประสิทธิ์ (Tech) ฿450/ชม. — ติดตั้ง ERV, ท่อลม, หน้าต่าง
+
+**Demo Data:**
+— ABC Japan: 34 ชั่วโมง (Survey 8h, Design 10h, Installation 16h)
+— Sky Ground: 56 ชั่วโมง (Drawing, Shop DWG, HVAC, D&amp;W)
+— รวม 90 ชั่วโมง = ต้นทุนแรงงาน ~฿62,800
+
+**DEMO:**
+— เปิด Project → ABC Japan → ดู Timesheets tab
+— แสดง hours per task, cost per employee
+— *ถ้ามีเวลา*: เปิด Timesheet grid view → ดูภาพรวมทุกโครงการ
+
+**จุดขาย:**
+— ต้นทุนแรงงานคำนวณอัตโนมัติ → ป้อนเข้า Plan vs Actual ได้เลย
+— ผู้จัดการเห็นภาพรวมชั่วโมงทำงานทุกโครงการ
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 13d: CONTACTS & PURCHASE — DEMO SCREENSHOTS     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label reporting">Live Screenshots</span>
+    <h2>Contacts & Purchase Orders — หน้าจอจริง</h2>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/15-contacts.png" alt="Contacts">
+            <p class="screenshot-label">Contacts — Thai, Japanese & Singapore partners</p>
+        </div>
+        <div class="screenshot-container" style="flex: 1;">
+            <img src="screenshots/10-purchase-orders.png" alt="Purchase Orders">
+            <p class="screenshot-label">Purchase — RFQ with Project column</p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[{"label":"Contacts","url":"/odoo/contacts"},{"label":"Purchase Orders","url":"/odoo/purchase"}]'>
+[Screenshot] Contacts + Purchase Orders
+— ซ้าย: Contact list — Thai, Japanese, Singapore partners
+— ขวา: Purchase Orders list — 10 POs with vendor, buyer, total
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 14: TECHNICAL HIGHLIGHTS                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label technical">Development Summary</span>
+    <h2>Technical Highlights / ไฮไลท์ทางเทคนิค</h2>
+    <p class="subtitle">Custom development โดย Enersys — สรุป models, views, และ business logic ที่พัฒนา</p>
+    <br>
+    <div class="cols-3">
+        <div>
+            <h3 style="color: var(--accent-dark);">New Models (3)</h3>
+            <ul class="fl" style="font-size: 0.55em;">
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#FFF3E0; padding:1px 4px; border-radius:3px;">coral.project.boq</code><br>BOQ header + project link</li>
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#FFF3E0; padding:1px 4px; border-radius:3px;">coral.project.boq.line</code><br>BOQ line items + auto-compute</li>
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#FFF3E0; padding:1px 4px; border-radius:3px;">coral.project.budget.report</code><br>SQL View for P&L analysis</li>
+            </ul>
+        </div>
+        <div>
+            <h3 style="color: var(--accent-dark);">Extended Models (4)</h3>
+            <ul class="fl" style="font-size: 0.55em;">
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#E3F2FD; padding:1px 4px; border-radius:3px;">project.project</code><br>budget_state, boq_ids, boq_total</li>
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#E3F2FD; padding:1px 4px; border-radius:3px;">sale.order</code> project_id</li>
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#E3F2FD; padding:1px 4px; border-radius:3px;">account.move</code> project_id</li>
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#E3F2FD; padding:1px 4px; border-radius:3px;">stock.picking</code> project_id</li>
+                <li><span class="check">✓</span> <code style="font-size:0.9em; background:#E3F2FD; padding:1px 4px; border-radius:3px;">purchase.order</code> project_id<br>(mandatory + constraint + onchange)</li>
+            </ul>
+        </div>
+        <div>
+            <h3 style="color: var(--accent-dark);">Business Logic</h3>
+            <ul class="fl" style="font-size: 0.55em;">
+                <li><span class="check">✓</span> Budget workflow<br>6-state machine with buttons</li>
+                <li><span class="check">✓</span> BOQ → PR generation<br>Auto-create PR from BOQ lines</li>
+                <li><span class="check">✓</span> PO validation<br>Bilingual error messages</li>
+                <li><span class="check">✓</span> Auto analytic distribution<br>@onchange on PO lines</li>
+                <li><span class="check">✓</span> Plan vs Actual SQL View<br>JOIN boq + analytic_line</li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 24px; font-size: 0.48em; color: var(--text-secondary);">
+        <span>Security: access rules + record rules for project users</span>
+        <span>|</span>
+        <span>Views: XPath inherit for all extended forms/trees/search</span>
+        <span>|</span>
+        <span>Data: 8 modules × bilingual demo data</span>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+Technical Highlights — สำหรับ technical audience:
+
+**New Models (3):**
+— coral.project.boq + boq.line = BOQ system ทั้งหมด
+— coral.project.budget.report = SQL View สำหรับ P&amp;L analysis
+
+**Extended Models (4):**
+— project.project: budget_state, boq_ids, boq_total
+— sale.order, account.move, stock.picking, purchase.order: + project_id
+
+**Business Logic:**
+— Budget 6-state machine with button actions
+— BOQ → PR: auto-create purchase requisition from BOQ lines
+— PO validation: mandatory project_id + bilingual error
+— Auto analytic distribution: @onchange on PO lines
+— Plan vs Actual: SQL VIEW JOIN boq + analytic_line
+
+Security: access rules + record rules | XPath inherit views | 8 modules × bilingual data
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 15: REQUIREMENT COVERAGE (1-14)                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Requirement Coverage / ตาราง Requirements (1/2)</h2>
+    <p class="subtitle"><span class="text-coral" style="font-size: 1.1em;">27 / 27</span> — ครอบคลุม <strong>100%</strong> ของความต้องการทั้งหมด</p>
+    <table class="t compact">
+        <thead>
+            <tr><th>#</th><th>Requirement</th><th>Domain</th><th>Type</th><th>Module</th><th>Done</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>CRM lead tracking & pipeline (TH/EN/JP)</td><td>Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>2</td><td>Lead → Quotation conversion</td><td>Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">crm + sale</td><td><span class="check">✓</span></td></tr>
+            <tr><td>3</td><td>VAT 7% auto (Fiscal Position)</td><td>Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_accounting_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>4</td><td>Project Code on Sale Orders</td><td>Project</td><td><span class="badge extend">EXTEND</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>5</td><td>BOQ management per project</td><td>Project</td><td><span class="badge custom">CUSTOM</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>6</td><td>6-step budget approval workflow</td><td>Project</td><td><span class="badge custom">CUSTOM</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>7</td><td>BOQ → Purchase Requisition</td><td>Project</td><td><span class="badge custom">CUSTOM</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>8</td><td>Mandatory Project Code on PO</td><td>Project</td><td><span class="badge extend">EXTEND</span></td><td class="mono">coral_project_analytics</td><td><span class="check">✓</span></td></tr>
+            <tr><td>9</td><td>Auto analytic distribution on PO</td><td>Project</td><td><span class="badge extend">EXTEND</span></td><td class="mono">coral_project_analytics</td><td><span class="check">✓</span></td></tr>
+            <tr><td>10</td><td>VAT 7% + Zero-rated tax config</td><td>Accounting</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_accounting_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>11</td><td>Multi-currency (THB/USD/JPY/SGD)</td><td>Accounting</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_accounting_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>12</td><td>Asset depreciation (5yr + 3yr linear)</td><td>Accounting</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_accounting_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>13</td><td>Deferred revenue (12mo + 24mo)</td><td>Accounting</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_accounting_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>14</td><td>Quarterly budget planning (Q1 2026)</td><td>Accounting</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_accounting_demo</td><td><span class="check">✓</span></td></tr>
+        </tbody>
+    </table>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+Requirement Coverage 1-14:
+— ไล่ทีละข้อ — ทุกข้อมี ✓
+— เน้นข้อที่เป็น CUSTOM (สีแดง): #5 BOQ, #6 Budget workflow, #7 BOQ→PR
+— EXTEND (สีส้ม): #4 Project on SO, #8 Mandatory PO project, #9 Auto analytic
+— CONFIG (สีน้ำเงิน): ที่เหลือทั้งหมด = ตั้งค่าใน standard Odoo
+
+ถ้าลูกค้าถาม: "ข้อไหนยากที่สุด?" → #7 BOQ→PR generation + #8 PO validation
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 16: REQUIREMENT COVERAGE (15-27)                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Requirement Coverage / ตาราง Requirements (2/2)</h2>
+    <table class="t compact">
+        <thead>
+            <tr><th>#</th><th>Requirement</th><th>Domain</th><th>Type</th><th>Module</th><th>Done</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>15</td><td>Analytic entries per project + cost categories</td><td>Accounting</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_project_analytics</td><td><span class="check">✓</span></td></tr>
+            <tr><td>16</td><td>Storable product types (9 products)</td><td>Inventory</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_inventory_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>17</td><td>Custom locations (Project Site, Borrowed Items)</td><td>Inventory</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_inventory_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>18</td><td>Landed cost tracking (฿40K demo)</td><td>Inventory</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_inventory_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>19</td><td>Negative stock prevention</td><td>Inventory</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_inventory_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>20</td><td>Opening stock quantities (7 products)</td><td>Inventory</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_inventory_demo</td><td><span class="check">✓</span></td></tr>
+            <tr><td>21</td><td>Project Code on delivery orders / transfers</td><td>Project</td><td><span class="badge extend">EXTEND</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>22</td><td>Project Code on invoices / bills</td><td>Project</td><td><span class="badge extend">EXTEND</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>23</td><td>Helpdesk after-sales + SLA (4h / 48h)</td><td>After-Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_aftersales</td><td><span class="check">✓</span></td></tr>
+            <tr><td>24</td><td>Field Service Management (FSM)</td><td>After-Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_aftersales</td><td><span class="check">✓</span></td></tr>
+            <tr><td>25</td><td>E-Signature job acceptance (digital sign-off)</td><td>After-Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_aftersales</td><td><span class="check">✓</span></td></tr>
+            <tr><td>26</td><td>Plan vs Actual dashboard (SQL View + smart button)</td><td>Reporting</td><td><span class="badge custom">CUSTOM</span></td><td class="mono">coral_project_ext</td><td><span class="check">✓</span></td></tr>
+            <tr><td>27</td><td>Sales commission by category (5% / 3% / 8%)</td><td>Sales</td><td><span class="badge config">CONFIG</span></td><td class="mono">coral_sales_demo</td><td><span class="check">✓</span></td></tr>
+        </tbody>
+    </table>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+        <div class="stat-item" style="padding: 10px 20px;">
+            <div class="stat-value" style="font-size: 1.3em;">27/27</div>
+            <div class="stat-label">Requirements Met</div>
+        </div>
+        <div class="stat-item" style="padding: 10px 20px;">
+            <div class="stat-value" style="font-size: 1.3em; color: var(--blue);">16</div>
+            <div class="stat-label">CONFIG</div>
+        </div>
+        <div class="stat-item" style="padding: 10px 20px;">
+            <div class="stat-value" style="font-size: 1.3em; color: var(--accent);">6</div>
+            <div class="stat-label">EXTEND</div>
+        </div>
+        <div class="stat-item" style="padding: 10px 20px;">
+            <div class="stat-value" style="font-size: 1.3em; color: var(--red);">5</div>
+            <div class="stat-label">CUSTOM</div>
+        </div>
+    </div>
+    <aside class="notes" data-timing="1min" data-demo-links='[]'>
+Requirement Coverage 15-27:
+— ต่อจากหน้าที่แล้ว — เหลือข้อ 15-27
+— เน้น: #21-22 Project Code on delivery/invoices (EXTEND)
+— #26 Plan vs Actual (CUSTOM SQL View) — อันนี้ complex ที่สุด
+— #27 Commission by category — ใช้ Enterprise module sale_commission
+
+สรุป: **27/27 = 100%** | 16 CONFIG, 6 EXTEND, 5 CUSTOM
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 16b: USER ROLES & SECURITY                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label technical">Access Control</span>
+    <h2>User Roles & Security / สิทธิ์ผู้ใช้งาน</h2>
+    <p class="subtitle">Role-Based Access — แต่ละตำแหน่งเข้าถึงข้อมูลตามหน้าที่</p>
+    <br>
+    <table class="t compact" style="font-size: 0.42em;">
+        <thead>
+            <tr>
+                <th>Role / บทบาท</th>
+                <th>CRM</th>
+                <th>Sales</th>
+                <th>Project</th>
+                <th>Purchase</th>
+                <th>Inventory</th>
+                <th>Accounting</th>
+                <th>Helpdesk</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Managing Director</strong><br><span class="text-muted">กรรมการผู้จัดการ</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Sales Manager</strong><br><span class="text-muted">ผู้จัดการฝ่ายขาย</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td>View</td>
+                <td>-</td>
+                <td>-</td>
+                <td>View</td>
+                <td>View</td>
+            </tr>
+            <tr>
+                <td><strong>Project Manager</strong><br><span class="text-muted">ผู้จัดการโครงการ</span></td>
+                <td>View</td>
+                <td>View</td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td>View</td>
+                <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Engineer / Technician</strong><br><span class="text-muted">วิศวกร / ช่างเทคนิค</span></td>
+                <td>-</td>
+                <td>-</td>
+                <td>Own</td>
+                <td>-</td>
+                <td>View</td>
+                <td>-</td>
+                <td>Own</td>
+            </tr>
+            <tr>
+                <td><strong>Accountant</strong><br><span class="text-muted">นักบัญชี</span></td>
+                <td>-</td>
+                <td>View</td>
+                <td>View</td>
+                <td>View</td>
+                <td>View</td>
+                <td><span class="check">✓</span></td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td><strong>Procurement Officer</strong><br><span class="text-muted">จัดซื้อ</span></td>
+                <td>-</td>
+                <td>View</td>
+                <td>View</td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 24px; font-size: 0.42em;">
+        <span><span class="check">✓</span> = Full Access (Read/Write/Create/Delete)</span>
+        <span><strong>View</strong> = Read Only</span>
+        <span><strong>Own</strong> = Own Records Only</span>
+        <span><strong>-</strong> = No Access</span>
+    </div>
+    <br>
+    <ul class="fl" style="font-size: 0.48em;">
+        <li><span class="check">✓</span> <strong>Budget Approval</strong>: Only MD can approve budgets > ฿1M (6-step workflow)</li>
+        <li><span class="check">✓</span> <strong>PO Validation</strong>: Project Code mandatory — cannot confirm PO without it</li>
+        <li><span class="check">✓</span> <strong>Record Rules</strong>: Engineers see only their assigned tasks & tickets</li>
+    </ul>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+[User Roles & Security] — สิทธิ์ผู้ใช้งาน
+
+KEY POINTS:
+— ใช้ Odoo built-in groups + record rules
+— MD เห็นทุกอย่าง, Sales เห็นแค่ CRM/Sales, วิศวกรเห็นแค่ task ตัวเอง
+— Budget workflow: เฉพาะ MD อนุมัติงบ > ฿1M
+— PO ต้องมี Project Code เสมอ — ใส่ constraint ป้องกันลืม
+
+DEMO: ถ้ามีเวลา กดเข้า Settings → Users → แสดง access rights ของ admin
+— แต่ละ module มี ir.model.access.csv ควบคุม CRUD
+
+ข้อดี:
+— ลดความเสี่ยงข้อมูลรั่วไหล
+— ช่างเทคนิคเข้าระบบผ่านมือถือ เห็นแค่ task ตัวเอง
+— บัญชีเข้าถึง report ได้ แต่แก้ PO ไม่ได้
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 16c: DATA MIGRATION STRATEGY                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <span class="section-label technical">Phase 3 Detail</span>
+    <h2>Data Migration / แผนย้ายข้อมูล</h2>
+    <p class="subtitle">จากระบบเดิม → Odoo 19 — ย้ายทุกอย่างด้วย Script อัตโนมัติ</p>
+    <br>
+    <div class="cols">
+        <div>
+            <h3>Migration Scope / ขอบเขตข้อมูล</h3>
+            <table class="t compact" style="font-size: 0.42em;">
+                <tr><th>Data Type</th><th>Source</th><th>Volume (Est.)</th><th>Priority</th></tr>
+                <tr><td><strong>Customers & Vendors</strong><br><span class="text-muted">ลูกค้าและซัพพลายเออร์</span></td><td>Excel / Manual</td><td>~200 records</td><td style="color:var(--red); font-weight:700;">P1</td></tr>
+                <tr><td><strong>Products & BOMs</strong><br><span class="text-muted">สินค้าและส่วนประกอบ</span></td><td>Excel / Catalog</td><td>~150 SKUs</td><td style="color:var(--red); font-weight:700;">P1</td></tr>
+                <tr><td><strong>Chart of Accounts</strong><br><span class="text-muted">ผังบัญชี (Thai CoA)</span></td><td>l10n_th (built-in)</td><td>~120 accounts</td><td style="color:var(--amber); font-weight:700;">P1</td></tr>
+                <tr><td><strong>Opening Balances</strong><br><span class="text-muted">ยอดยกมา</span></td><td>Accountant</td><td>Trial balance</td><td style="color:var(--red); font-weight:700;">P1</td></tr>
+                <tr><td><strong>Active Projects</strong><br><span class="text-muted">โครงการที่ดำเนินอยู่</span></td><td>PM Sheets</td><td>~10 projects</td><td style="color:var(--amber); font-weight:700;">P2</td></tr>
+                <tr><td><strong>Historical SO/PO</strong><br><span class="text-muted">ใบสั่งซื้อ/ขายเดิม</span></td><td>Optional</td><td>~500 orders</td><td style="color:var(--green); font-weight:700;">P3</td></tr>
+            </table>
+        </div>
+        <div>
+            <h3>Migration Approach</h3>
+            <ul class="fl" style="font-size: 0.50em;">
+                <li><span class="check">✓</span> <strong>Phase 3a</strong>: Master data import (customers, products, CoA)</li>
+                <li><span class="check">✓</span> <strong>Phase 3b</strong>: Opening balances & inventory counts</li>
+                <li><span class="check">✓</span> <strong>Phase 3c</strong>: Active project transfer + BOQ setup</li>
+                <li><span class="check">✓</span> <strong>Validation</strong>: Trial balance reconciliation with accountant</li>
+            </ul>
+            <br>
+            <h3>Tools & Method</h3>
+            <ul class="fl" style="font-size: 0.50em;">
+                <li><span class="check">✓</span> <strong>CSV/Excel Import</strong> via Odoo built-in importer</li>
+                <li><span class="check">✓</span> <strong>Python Scripts</strong> via XML-RPC for bulk operations</li>
+                <li><span class="check">✓</span> <strong>Parallel Run</strong>: 2 weeks old system + new system</li>
+                <li><span class="check">✓</span> <strong>Cutover Weekend</strong>: Final data sync + Go-Live</li>
+            </ul>
+            <br>
+            <p style="font-size: 0.40em; padding: 6px 10px; background: var(--coral-light); border-radius: 6px; border-left: 3px solid var(--coral);">
+                <strong>Key Risk</strong>: Opening balance accuracy<br>
+                <strong>Mitigation</strong>: Parallel run + accountant sign-off before cutover
+            </p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+[Data Migration] — แผนย้ายข้อมูล (Phase 3 Detail)
+
+KEY POINTS:
+— P1 (Must-have): ลูกค้า, สินค้า, ผังบัญชี, ยอดยกมา
+— P2 (Important): โครงการที่ดำเนินอยู่ + BOQ
+— P3 (Nice-to-have): ประวัติ SO/PO เก่า
+
+APPROACH:
+— ใช้ Odoo built-in CSV importer สำหรับ master data (ลูกค้า, สินค้า)
+— ผังบัญชีไทยมาพร้อม l10n_th แล้ว — ไม่ต้อง import
+— Opening balance: บัญชีส่ง trial balance → เราสร้าง opening JE
+— โครงการที่ active: PM ส่ง sheet → เราสร้าง project + BOQ ใน Odoo
+
+TIMELINE:
+— Phase 3a (สัปดาห์ 1-2): Import master data
+— Phase 3b (สัปดาห์ 2-3): Opening balances + stock count
+— Phase 3c (สัปดาห์ 3-4): Active projects + reconciliation
+— Parallel run 2 สัปดาห์ → Cutover weekend → Go-Live
+
+RISK:
+— ยอดยกมาไม่ตรง → ต้อง reconcile กับนักบัญชีก่อน cutover
+— ใช้ parallel run ลดความเสี่ยง — ทำงาน 2 ระบบพร้อมกัน 2 สัปดาห์
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 17: IMPLEMENTATION TIMELINE                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Implementation Timeline / แผนดำเนินงาน</h2>
+    <p class="subtitle">5 Phases — February to June 2026</p>
+    <br>
+    <div style="max-width: 720px; margin: 0 auto;">
+        <div class="tl-row">
+            <div class="tl-label"><strong>Phase 1</strong><br>Feb 2026</div>
+            <div class="tl-bar" style="background: linear-gradient(90deg, var(--coral-darker), var(--coral-dark)); width: 100%;">
+                <span class="tl-marker" style="background: #A5D6A7;"></span>
+                Analysis & Development — วิเคราะห์และพัฒนา 7 modules
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-label"><strong>Phase 2</strong><br>Mar 2026</div>
+            <div class="tl-bar" style="background: linear-gradient(90deg, var(--coral), var(--coral)); width: 88%;">
+                <span class="tl-marker" style="background: #FFE082;"></span>
+                UAT & Customer Demo — ทดสอบและสาธิตระบบ
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-label"><strong>Phase 3</strong><br>Apr 2026</div>
+            <div class="tl-bar" style="background: var(--accent); width: 72%;">
+                Data Migration — ย้ายข้อมูลจากระบบเดิม
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-label"><strong>Phase 4</strong><br>May 2026</div>
+            <div class="tl-bar" style="background: var(--purple); width: 56%;">
+                User Training — อบรมผู้ใช้งานทุกแผนก
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-label"><strong>Phase 5</strong><br>Jun 2026</div>
+            <div class="tl-bar" style="background: var(--green); width: 42%;">
+                Go-Live & Hypercare Support
+            </div>
+        </div>
+    </div>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 28px; font-size: 0.48em;">
+        <span style="border-left: 3px solid var(--green); padding-left: 8px;"><strong>Phase 1:</strong> Done — 7 modules developed</span>
+        <span style="border-left: 3px solid var(--amber); padding-left: 8px;"><strong>Phase 2:</strong> Current — Demo & UAT</span>
+        <span style="border-left: 3px solid var(--text-muted); padding-left: 8px;"><strong>Phase 3–5:</strong> Pending customer approval</span>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+Implementation Timeline — 5 Phases:
+— **Phase 1 (Feb):** DONE — 7 modules developed + demo data
+— **Phase 2 (Mar):** NOW — Customer demo &amp; UAT ← เราอยู่ตรงนี้
+— Phase 3 (Apr): Data migration จากระบบเดิม
+— Phase 4 (May): User training ทุกแผนก
+— Phase 5 (Jun): Go-Live + Hypercare support
+
+ข้อสำคัญ: Phase 3-5 รอ customer approval
+→ "เมื่อทีมตกลง scope แล้ว เราพร้อมเริ่ม Phase 3 ได้ทันที"
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 18: WHY ODOO 19 + WHY ENERSYS                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+    <h2>Why Odoo 19 Enterprise / ทำไมต้อง Odoo 19</h2>
+    <p class="subtitle">All-in-One ERP — ระบบเดียวครบทุกแผนก ไม่ต้องซื้อหลายระบบ</p>
+    <br>
+    <div class="cols">
+        <div>
+            <h3>Odoo 19 Advantages</h3>
+            <ul class="fl" style="font-size: 0.52em;">
+                <li><span class="check">✓</span> <strong>All-in-One</strong>: CRM, Sales, Project, Accounting, Inventory, Helpdesk ในระบบเดียว</li>
+                <li><span class="check">✓</span> <strong>Modern UI</strong>: Web-based, responsive, ใช้ได้ทุกอุปกรณ์</li>
+                <li><span class="check">✓</span> <strong>Thai Localization</strong>: l10n_th ผังบัญชีไทย, ภาษีมูลค่าเพิ่ม, PND3/53</li>
+                <li><span class="check">✓</span> <strong>Multi-Language</strong>: TH / EN / JP — รองรับลูกค้าญี่ปุ่น-สิงคโปร์</li>
+                <li><span class="check">✓</span> <strong>Open Source Core</strong>: ปรับแต่งได้ไม่จำกัด ไม่ถูก vendor lock-in</li>
+                <li><span class="check">✓</span> <strong>Cost Effective</strong>: ค่า license ต่ำกว่า SAP/Oracle 5-10x</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Why Enersys / ทำไมเลือก Enersys</h3>
+            <ul class="fl" style="font-size: 0.52em;">
+                <li><span class="check">✓</span> <strong>Odoo Silver Partner</strong> — Certified implementation partner</li>
+                <li><span class="check">✓</span> <strong>ESCO Domain Expert</strong>: เข้าใจธุรกิจพลังงาน, HVAC, building solutions</li>
+                <li><span class="check">✓</span> <strong>Custom Development</strong>: 9 modules, 3 new models, 6 extended models</li>
+                <li><span class="check">✓</span> <strong>Thai Accounting</strong>: ผังบัญชีไทย, VAT, withholding tax, fiscal positions</li>
+                <li><span class="check">✓</span> <strong>Full Demo</strong>: 28 screenshots, real data, ทดสอบได้ทันที</li>
+                <li><span class="check">✓</span> <strong>Ongoing Support</strong>: Hypercare + monthly maintenance package</li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <div class="stat-item" style="padding: 8px 16px;">
+            <div class="stat-value" style="font-size: 1.1em;">27/27</div>
+            <div class="stat-label">Requirements</div>
+        </div>
+        <div class="stat-item" style="padding: 8px 16px;">
+            <div class="stat-value" style="font-size: 1.1em; color: var(--blue);">9</div>
+            <div class="stat-label">Custom Modules</div>
+        </div>
+        <div class="stat-item" style="padding: 8px 16px;">
+            <div class="stat-value" style="font-size: 1.1em; color: var(--green);">28</div>
+            <div class="stat-label">Demo Screens</div>
+        </div>
+        <div class="stat-item" style="padding: 8px 16px;">
+            <div class="stat-value" style="font-size: 1.1em; color: var(--accent);">100%</div>
+            <div class="stat-label">Coverage</div>
+        </div>
+        <div class="stat-item" style="padding: 8px 16px;">
+            <div class="stat-value" style="font-size: 1.1em; color: var(--coral);">5 mo</div>
+            <div class="stat-label">Go-Live</div>
+        </div>
+    </div>
+    <aside class="notes" data-timing="2min" data-demo-links='[]'>
+[Why Odoo 19 + Why Enersys] — Closing slide ก่อน Q&amp;A
+
+ODOO 19 ADVANTAGES:
+— All-in-One: ไม่ต้องซื้อระบบ CRM แยก, Accounting แยก, Project แยก
+— เทียบกับ SAP Business One: Odoo ถูกกว่า 5-10 เท่า + ยืดหยุ่นกว่า
+— Thai Localization: ผังบัญชีไทย + ภาษีมูลค่าเพิ่ม built-in (l10n_th)
+— Web-based: เข้าจากมือถือได้ ช่างเทคนิคทำงานหน้างาน
+
+WHY ENERSYS:
+— เข้าใจธุรกิจ ESCO: เคยทำ HVAC, building envelope, energy audit
+— ไม่ใช่แค่ตั้งค่า — พัฒนา custom modules ให้ตรงกับ workflow จริง
+— Demo ที่เห็นวันนี้: ข้อมูลจริง ทดสอบได้ ไม่ใช่แค่ mockup
+
+CLOSING NUMBERS:
+— 27/27 requirements ครบ 100%
+— 9 custom modules
+— 28 demo screenshots
+— Go-Live ภายใน 5 เดือน
+
+→ "ถ้ามีคำถามเพิ่มเติม เชิญถามได้เลยครับ"
+    </aside>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 19: Q&A                                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section data-background-color="#FAFAFA">
+    <div style="margin-top: 50px;">
+        <h1 style="font-size: 2.8em; margin-bottom: 6px;">Q&A</h1>
+        <h2 style="color: var(--coral); font-weight: 400; font-size: 1.1em; margin-top: 0;">ถาม-ตอบ</h2>
+        <br>
+        <p style="font-size: 0.72em;">ขอบคุณครับ / Thank you / ありがとうございます</p>
+        <br><br>
+        <div style="font-size: 0.52em; color: var(--text-secondary); line-height: 1.7;">
+            <p>
+                <strong style="color: var(--coral-dark); font-size: 1.1em;">CORAL LIFE CO., LTD.</strong><br>
+                28 Khlong Tan Nuea, Watthana, Bangkok 10110, Thailand<br>
+                Tel: 02-259-6688 &middot; info@corallife.co.th &middot; www.corallife.co.th
+            </p>
+        </div>
+        <br>
+        <div style="border-top: 1px solid var(--border-light); padding-top: 14px; max-width: 500px; margin: 0 auto;">
+            <p style="font-size: 0.45em; color: var(--text-muted); line-height: 1.5;">
+                Implemented by <strong style="color: var(--text-secondary);">Enersys Co., Ltd.</strong> — Odoo Silver Partner (Thailand)<br>
+                Powered by <strong style="color: var(--text-secondary);">Odoo 19 Enterprise</strong><br>
+                8 Custom Modules &middot; 27 Requirements &middot; 100% Coverage
+            </p>
+        </div>
+    </div>
+    <aside class="notes" data-timing="15min" data-demo-links='[{"label":"CRM","url":"/odoo/crm"},{"label":"Sales","url":"/odoo/sales"},{"label":"Projects","url":"/odoo/project"},{"label":"Purchase","url":"/odoo/purchase"},{"label":"Inventory","url":"/odoo/inventory/products"},{"label":"Accounting","url":"/odoo/accounting"},{"label":"Helpdesk","url":"/odoo/helpdesk"},{"label":"Contacts","url":"/odoo/contacts"}]'>
+Q&amp;A — เปิดให้ถาม
+
+คำถามที่อาจเจอ:
+— "ทำไมเลือก Odoo?" → Open-source + Enterprise modules, ปรับแต่งได้, ราคาเหมาะสม
+— "ย้ายข้อมูลอย่างไร?" → Phase 3 — import via CSV/API, validate ร่วมกับทีม
+— "Training ใช้เวลากี่วัน?" → 2-3 สัปดาห์, แบ่งตามแผนก
+— "Support หลัง go-live?" → Hypercare 1 เดือน + annual support contract
+— "เพิ่ม module ได้มั้ย?" → ได้ — Manufacturing, HR, eCommerce, etc.
+— "ภาษาญี่ปุ่นรองรับมั้ย?" → รองรับ — TH/EN/JP ทั้ง product names และ interface
+
+ปิด: ขอบคุณครับ สนใจสอบถามเพิ่มเติมติดต่อ info@corallife.co.th
+    </aside>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<!-- Lightbox overlay for fullscreen screenshots -->
+<div class="lightbox-overlay" id="lightbox">
+    <button class="lightbox-close" title="Close (Esc)">&times;</button>
+    <img src="" alt="Fullscreen Screenshot" id="lightbox-img">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+    const ODOO_BASE = 'http://localhost:8070';
+    let presenterVisible = false;
+
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        showSlideNumber: 'all',
+        transition: 'slide',
+        transitionSpeed: 'default',
+        width: 1280,
+        height: 720,
+        margin: 0.05,
+        center: true,
+        progress: true,
+        history: true,
+        keyboard: true,
+        overview: true,
+        touch: true,
+    });
+
+    function togglePresenter() {
+        presenterVisible = !presenterVisible;
+        const panel = document.getElementById('presenter-panel');
+        const bar = document.getElementById('demo-bar');
+        const btn = document.getElementById('presenter-toggle');
+        panel.classList.toggle('visible', presenterVisible);
+        bar.classList.toggle('visible', presenterVisible);
+        btn.classList.toggle('active', presenterVisible);
+        if (presenterVisible) updatePresenterPanel();
+    }
+
+    function updatePresenterPanel() {
+        const slide = Reveal.getCurrentSlide();
+        const notes = slide ? slide.querySelector('aside.notes') : null;
+        const panel = document.getElementById('presenter-panel');
+        const bar = document.getElementById('demo-bar');
+
+        if (!notes) {
+            panel.innerHTML = '<h4>No notes for this slide</h4>';
+            bar.innerHTML = '';
+            return;
+        }
+
+        const timing = notes.dataset.timing || '';
+        let demoLinks = [];
+        try { demoLinks = JSON.parse(notes.dataset.demoLinks || '[]'); } catch {}
+        const script = notes.textContent.trim();
+
+        // Build panel HTML
+        let html = '';
+        if (timing) html += `<div class="timing">&#9202; ${timing}</div>`;
+        html += `<div class="talk-script">${formatScript(script)}</div>`;
+        if (demoLinks.length) {
+            html += '<hr class="divider"><h4>Demo Links (click to open in Odoo)</h4><div class="demo-links">';
+            demoLinks.forEach(l => {
+                html += `<a href="${ODOO_BASE}${l.url}" target="_blank" class="demo-link">${l.label}</a>`;
+            });
+            html += '</div>';
+        }
+        panel.innerHTML = html;
+
+        // Update top demo bar
+        if (demoLinks.length) {
+            bar.innerHTML = demoLinks.map(l =>
+                `<a href="${ODOO_BASE}${l.url}" target="_blank" title="Open ${l.label} in Odoo">${l.label}</a>`
+            ).join('');
+        } else {
+            bar.innerHTML = '';
+        }
+    }
+
+    function formatScript(text) {
+        return text
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/^— /gm, '&bull; ')
+            .replace(/^  • /gm, '&nbsp;&nbsp;&nbsp;&bull; ')
+            .replace(/→/g, '&rarr;')
+            .replace(/\n/g, '<br>');
+    }
+
+    // Listen for slide changes
+    Reveal.on('slidechanged', () => {
+        if (presenterVisible) updatePresenterPanel();
+    });
+
+    // Keyboard shortcut: T to toggle presenter
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 't' || e.key === 'T') {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                togglePresenter();
+            }
+        }
+    });
+
+    // ─── Screenshot Lightbox ───────────────────────────────
+    (function() {
+        const overlay  = document.getElementById('lightbox');
+        const lbImg    = document.getElementById('lightbox-img');
+        const lbCap    = document.getElementById('lightbox-caption');
+        const closeBtn = overlay.querySelector('.lightbox-close');
+
+        function openLightbox(src, caption) {
+            lbImg.src = src;
+            lbCap.textContent = caption || '';
+            overlay.classList.add('active');
+            Reveal.configure({ keyboard: false });
+        }
+
+        function closeLightbox() {
+            overlay.classList.remove('active');
+            lbImg.src = '';
+            Reveal.configure({ keyboard: true });
+        }
+
+        document.querySelectorAll('.screenshot-container').forEach(function(container) {
+            var img = container.querySelector('img');
+            if (!img) return;
+
+            var btn = document.createElement('button');
+            btn.className = 'zoom-btn';
+            btn.innerHTML = '&#x26F6;';
+            btn.title = 'View fullscreen';
+            container.style.position = 'relative';
+            container.appendChild(btn);
+
+            var label = container.querySelector('.screenshot-label');
+            var caption = label ? label.textContent : (img.alt || '');
+
+            img.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openLightbox(img.src, caption);
+            });
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openLightbox(img.src, caption);
+            });
+        });
+
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay || e.target === lbImg) closeLightbox();
+        });
+        closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeLightbox();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
