@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Governance — คู่มือธรรมาภิบาลองค์กร | Enersys</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #0f766e;
+            --accent-color: #0f3460;
+            --accent-gold: #d4a843;
+            --text-color: #2d3436;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e1e8ed;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --gradient-primary: linear-gradient(135deg, #0f766e 0%, #134e4a 100%);
+            --gradient-secondary: linear-gradient(135deg, #d4a843 0%, #b8860b 100%);
+            --gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        [data-theme="dark"] {
+            --primary-color: #f8f9fa;
+            --secondary-color: #2dd4bf;
+            --accent-color: #4ecdc4;
+            --text-color: #e9ecef;
+            --light-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --border-color: #2d3748;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans Thai', 'DM Sans', sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background: var(--light-bg);
+            transition: all 0.3s ease;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        #progress-bar {
+            position: fixed; top: 0; left: 0; width: 0%; height: 4px;
+            background: var(--gradient-primary); z-index: 9999;
+            transition: width 0.3s ease;
+        }
+        .floating-controls {
+            position: fixed; bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; gap: 15px; z-index: 1000;
+        }
+        .control-btn {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--card-bg); border: 2px solid var(--border-color);
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 20px;
+            transition: all 0.3s ease; box-shadow: var(--shadow);
+        }
+        .control-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+        /* Hero */
+        .hero {
+            background: var(--gradient-primary); color: white;
+            padding: 100px 0 80px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+        .book-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem; font-weight: 700;
+            margin-bottom: 20px; line-height: 1.2;
+            position: relative;
+        }
+        .book-subtitle { font-size: 1.4rem; margin-bottom: 30px; opacity: 0.9; position: relative; }
+        .hero-quote {
+            max-width: 800px; margin: 40px auto; padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); border-radius: 15px;
+            border-left: 4px solid var(--accent-gold);
+            position: relative;
+        }
+        .quote-text { font-size: 1.2rem; font-style: italic; margin-bottom: 15px; line-height: 1.6; }
+        .quote-translation {
+            font-size: 1rem; opacity: 0.8;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 15px; margin-top: 15px;
+        }
+        .badges { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 30px; position: relative; }
+        .badge {
+            padding: 8px 20px; background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px); border-radius: 25px;
+            font-size: 0.9rem; font-weight: 500;
+        }
+
+        /* Info Grid */
+        section { padding: 80px 0; }
+        .section-title {
+            font-family: 'Crimson Pro', serif; font-size: 2.5rem;
+            font-weight: 700; margin-bottom: 20px;
+            color: var(--primary-color); text-align: center;
+        }
+        .section-subtitle {
+            text-align: center; font-size: 1.1rem;
+            color: var(--text-color); opacity: 0.8;
+            margin-bottom: 50px; max-width: 800px;
+            margin-left: auto; margin-right: auto;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px; margin-top: 40px;
+        }
+        .info-card {
+            text-align: center; padding: 25px 15px;
+            background: var(--light-bg); border-radius: 15px;
+            transition: all 0.3s ease; border: 2px solid var(--border-color);
+        }
+        .info-card:hover {
+            transform: translateY(-5px); box-shadow: var(--shadow-lg);
+            border-color: var(--secondary-color);
+        }
+        .info-icon { font-size: 2.2rem; margin-bottom: 12px; }
+        .info-label { font-size: 0.85rem; opacity: 0.7; margin-bottom: 6px; }
+        .info-value { font-size: 1.2rem; font-weight: 700; color: var(--secondary-color); }
+
+        /* Pillar Cards */
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; margin-top: 40px;
+        }
+        .pillar-card {
+            background: var(--card-bg); padding: 30px; border-radius: 16px;
+            box-shadow: var(--shadow); transition: all 0.3s ease;
+            border-top: 4px solid var(--secondary-color);
+            position: relative; overflow: hidden;
+        }
+        .pillar-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .pillar-card::after {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, transparent 50%, rgba(15,118,110,0.06) 50%);
+        }
+        .pillar-number {
+            display: inline-block; width: 45px; height: 45px;
+            background: var(--gradient-primary); color: white;
+            border-radius: 12px; text-align: center; line-height: 45px;
+            font-weight: 700; font-size: 1.2rem; margin-bottom: 15px;
+        }
+        .pillar-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: var(--primary-color); }
+        .pillar-card p { font-size: 0.95rem; line-height: 1.7; opacity: 0.85; }
+
+        /* Principle List */
+        .principle-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px; margin-top: 40px;
+        }
+        .principle-item {
+            background: var(--card-bg); padding: 25px; border-radius: 14px;
+            box-shadow: var(--shadow); border-left: 4px solid var(--accent-gold);
+            transition: all 0.3s ease;
+        }
+        .principle-item:hover { transform: translateX(5px); box-shadow: var(--shadow-lg); }
+        .principle-num {
+            display: inline-block; width: 35px; height: 35px;
+            background: var(--gradient-secondary); color: white; border-radius: 50%;
+            text-align: center; line-height: 35px;
+            font-weight: 600; margin-bottom: 12px;
+        }
+        .principle-item h4 { font-size: 1.05rem; margin-bottom: 8px; }
+        .principle-item p { font-size: 0.9rem; opacity: 0.8; }
+
+        /* Stats Banner */
+        .stats-banner {
+            background: var(--gradient-dark); color: white; padding: 80px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+        }
+        .stat-item { text-align: center; padding: 20px; }
+        .stat-number {
+            font-size: 3.5rem; font-weight: 700;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 10px;
+        }
+        .stat-label { font-size: 1rem; opacity: 0.85; }
+
+        /* Framework Comparison */
+        .comparison-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            margin-top: 40px; background: var(--card-bg);
+            border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-lg);
+        }
+        .comparison-table th {
+            background: var(--gradient-primary); color: white;
+            padding: 16px 20px; text-align: left; font-weight: 600; font-size: 0.95rem;
+        }
+        .comparison-table td {
+            padding: 14px 20px; border-top: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+        .comparison-table tr:hover td { background: rgba(15,118,110,0.04); }
+        .comparison-table .check { color: #10b981; font-weight: bold; }
+        .comparison-table .cross { color: #ef4444; }
+
+        /* Featured Quote */
+        .featured-quote {
+            max-width: 900px; margin: 50px auto; padding: 40px;
+            background: var(--card-bg); border-radius: 20px;
+            border-left: 6px solid var(--secondary-color);
+            box-shadow: var(--shadow-lg); position: relative;
+        }
+        .featured-quote-text {
+            font-size: 1.4rem; font-style: italic;
+            line-height: 1.8; margin-bottom: 20px;
+        }
+        .featured-quote-translation {
+            font-size: 1.05rem; opacity: 0.8;
+            padding-top: 20px; border-top: 2px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        .quote-source {
+            text-align: right; font-size: 0.9rem;
+            opacity: 0.7; font-style: italic;
+        }
+        .copy-btn {
+            position: absolute; top: 20px; right: 20px;
+            padding: 8px 15px; background: var(--secondary-color);
+            color: white; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover { transform: scale(1.05); box-shadow: var(--shadow); }
+
+        /* Checklist */
+        .checklist {
+            max-width: 800px; margin: 40px auto;
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow-lg); overflow: hidden;
+        }
+        .checklist-header {
+            background: var(--gradient-primary); color: white;
+            padding: 20px 30px; font-size: 1.2rem; font-weight: 600;
+        }
+        .checklist-item {
+            display: flex; align-items: flex-start; gap: 15px;
+            padding: 18px 30px; border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .checklist-item:hover { background: rgba(15,118,110,0.03); }
+        .checklist-item:last-child { border-bottom: none; }
+        .check-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+        .checklist-text { font-size: 0.95rem; }
+        .checklist-text strong { color: var(--secondary-color); }
+
+        /* Thai Context */
+        .thai-section {
+            background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(15,118,110,0.08));
+            border-radius: 20px; padding: 50px 40px; margin-top: 40px;
+        }
+        .thai-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem; margin-bottom: 25px;
+            color: var(--primary-color);
+        }
+        .thai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .thai-card {
+            background: var(--card-bg); padding: 25px; border-radius: 14px;
+            box-shadow: var(--shadow); border-top: 3px solid var(--accent-gold);
+        }
+        .thai-card h4 { font-size: 1rem; margin-bottom: 8px; color: var(--accent-gold); }
+        .thai-card p { font-size: 0.9rem; line-height: 1.7; opacity: 0.85; }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color); color: white;
+            padding: 60px 0 30px; margin-top: 80px;
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px; margin-bottom: 40px;
+        }
+        .footer-bottom {
+            text-align: center; padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1); opacity: 0.7;
+        }
+        @media (max-width: 768px) {
+            .book-title { font-size: 2.2rem; }
+            .section-title { font-size: 1.8rem; }
+            .comparison-table { font-size: 0.85rem; }
+            .thai-section { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <div class="floating-controls">
+        <button class="control-btn" id="theme-toggle" title="สลับธีม">🌓</button>
+        <button class="control-btn" id="scroll-top" title="กลับด้านบน">↑</button>
+    </div>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="book-title">Corporate Governance</h1>
+            <p class="book-subtitle">ธรรมาภิบาล — หลักการกำกับดูแลกิจการที่ดี</p>
+
+            <div class="hero-quote">
+                <p class="quote-text">"Good governance is not a luxury. It is a vital necessity for achieving prosperity and sustainable development."</p>
+                <p class="quote-translation">"ธรรมาภิบาลไม่ใช่สิ่งฟุ่มเฟือย แต่เป็นสิ่งจำเป็นอย่างยิ่งในการบรรลุความเจริญรุ่งเรืองและการพัฒนาที่ยั่งยืน"</p>
+            </div>
+
+            <div style="margin-top: 30px; position: relative;">
+                <p style="font-size: 1.5rem; font-weight: 600; margin-bottom: 8px;">คู่มือธรรมาภิบาลองค์กรฉบับสมบูรณ์</p>
+                <p>OECD Principles • SET CG Code • พ.ร.บ. หลักทรัพย์ • Thai IOD</p>
+            </div>
+
+            <div class="badges">
+                <span class="badge">🏛️ OECD / G20 Principles</span>
+                <span class="badge">🇹🇭 SET CG Code 2017</span>
+                <span class="badge">📋 Thai IOD Standards</span>
+                <span class="badge">🌏 ESG Integration</span>
+            </div>
+        </div>
+    </header>
+
+    <section style="padding: 60px 0; background: var(--card-bg);">
+        <div class="container">
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">📖</div>
+                    <div class="info-label">เนื้อหา</div>
+                    <div class="info-value">8 หมวด</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🏛️</div>
+                    <div class="info-label">มาตรฐานอ้างอิง</div>
+                    <div class="info-value">OECD / SET</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">📚</div>
+                    <div class="info-label">หมวดหมู่</div>
+                    <div class="info-value">Governance</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">⏱️</div>
+                    <div class="info-label">เวลาอ่าน</div>
+                    <div class="info-value">30 นาที</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">📊</div>
+                    <div class="info-label">ระดับ</div>
+                    <div class="info-value">ปานกลาง+</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🎯</div>
+                    <div class="info-label">กลุ่มเป้าหมาย</div>
+                    <div class="info-value">ผู้บริหาร / BOD</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concept -->
+    <section>
+        <div class="container">
+            <h2 class="section-title">ธรรมาภิบาลคืออะไร?</h2>
+            <p class="section-subtitle">Corporate Governance (CG) คือระบบที่กำกับดูแลและควบคุมองค์กร เพื่อสร้างความเชื่อมั่นให้ผู้มีส่วนได้เสียทุกฝ่าย</p>
+
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <div style="background: var(--card-bg); padding: 50px; border-radius: 20px; box-shadow: var(--shadow-lg); margin-bottom: 50px;">
+                    <h3 style="font-size: 1.8rem; color: var(--secondary-color); margin-bottom: 20px;">🎯 Core Definition</h3>
+                    <p style="font-size: 1.15rem; line-height: 1.9;">
+                        <strong>Corporate Governance</strong> คือชุดของกฎเกณฑ์ แนวปฏิบัติ และกระบวนการที่ใช้ในการกำกับดูแลและบริหารจัดการบริษัท เพื่อให้เกิดความสมดุลระหว่างผลประโยชน์ของ <strong>ผู้ถือหุ้น ผู้บริหาร ลูกค้า ซัพพลายเออร์ นักลงทุน รัฐบาล และชุมชน</strong> ธรรมาภิบาลที่ดีช่วยสร้าง<strong>ความโปร่งใส ความรับผิดชอบ และความยั่งยืน</strong>ในระยะยาว
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8 Principles (OECD + SET CG Code) -->
+    <section style="background: rgba(15,118,110,0.03);">
+        <div class="container">
+            <h2 class="section-title">8 หลักการสำคัญของธรรมาภิบาล</h2>
+            <p class="section-subtitle">ผสมผสานจาก OECD Principles of Corporate Governance และ SET CG Code 2017</p>
+
+            <div class="pillar-grid">
+                <div class="pillar-card">
+                    <div class="pillar-number">1</div>
+                    <h3>Accountability — ความรับผิดชอบ</h3>
+                    <p>คณะกรรมการต้องรับผิดชอบต่อผู้ถือหุ้นและผู้มีส่วนได้เสีย สามารถอธิบายการตัดสินใจทุกอย่างได้ มีระบบรายงานผลที่ชัดเจน</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">2</div>
+                    <h3>Transparency — ความโปร่งใส</h3>
+                    <p>เปิดเผยข้อมูลสารสนเทศที่สำคัญอย่างถูกต้อง ครบถ้วน ทันเวลา ทั้งข้อมูลทางการเงินและไม่ใช่การเงิน รวมถึงนโยบายค่าตอบแทน</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">3</div>
+                    <h3>Fairness — ความเป็นธรรม</h3>
+                    <p>ปฏิบัติต่อผู้ถือหุ้นทุกรายอย่างเท่าเทียม ไม่มีการเอาเปรียบผู้ถือหุ้นรายย่อย มีกลไกปกป้องผลประโยชน์ทุกฝ่าย</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">4</div>
+                    <h3>Responsibility — ความรับผิดชอบต่อสังคม</h3>
+                    <p>ดำเนินธุรกิจอย่างมีจริยธรรม คำนึงถึงผลกระทบต่อสิ่งแวดล้อมและสังคม ปฏิบัติตามกฎหมายอย่างเคร่งครัด</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">5</div>
+                    <h3>Independence — ความเป็นอิสระ</h3>
+                    <p>กรรมการอิสระต้องมีความเป็นอิสระในการตัดสินใจ ปราศจากอิทธิพล ผลประโยชน์ทับซ้อน หรือแรงกดดันจากฝ่ายบริหาร</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">6</div>
+                    <h3>Discipline — วินัย</h3>
+                    <p>ผู้บริหารและกรรมการต้องมีวินัยในการปฏิบัติหน้าที่ ยึดมั่นในจรรยาบรรณ ไม่ใช้อำนาจเพื่อประโยชน์ส่วนตัว</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">7</div>
+                    <h3>Social Awareness — จิตสำนึกสาธารณะ</h3>
+                    <p>ตระหนักถึงบทบาทขององค์กรต่อสังคมโดยรวม การสร้างคุณค่าร่วม (Shared Value) และ Stakeholder Capitalism</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">8</div>
+                    <h3>Sustainability — ความยั่งยืน</h3>
+                    <p>บูรณาการ ESG (Environment, Social, Governance) เข้าในกลยุทธ์ธุรกิจ สร้างคุณค่าระยะยาวโดยไม่ทำลายทรัพยากรอนาคต</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-banner">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; text-align: center; color: white;">สถิติที่ต้องรู้</h2>
+            <p style="text-align: center; opacity: 0.7; margin-bottom: 50px; color: white;">ผลการศึกษาเรื่องธรรมาภิบาลกับผลประกอบการ</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">+20%</div>
+                    <p class="stat-label">บริษัท CG ดี มี ROE สูงกว่าค่าเฉลี่ยตลาด</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8X</div>
+                    <p class="stat-label">บริษัทที่ได้ CG Rating 5 ดาว มีสภาพคล่องสูงกว่า 8 เท่า</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">70%</div>
+                    <p class="stat-label">นักลงทุนสถาบันใช้ CG Score เป็นเกณฑ์การลงทุน</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">-30%</div>
+                    <p class="stat-label">ลดความเสี่ยงคดีทุจริตและการฟ้องร้อง</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Board Structure -->
+    <section>
+        <div class="container">
+            <h2 class="section-title">โครงสร้างคณะกรรมการที่ดี</h2>
+            <p class="section-subtitle">Board of Directors Structure ตามแนวปฏิบัติสากลและ กลต.</p>
+
+            <div class="principle-list">
+                <div class="principle-item">
+                    <div class="principle-num">1</div>
+                    <h4>แยก Chairman & CEO</h4>
+                    <p>ประธานกรรมการไม่ควรเป็นบุคคลเดียวกับ CEO เพื่อถ่วงดุลอำนาจ (Separation of Powers)</p>
+                </div>
+                <div class="principle-item">
+                    <div class="principle-num">2</div>
+                    <h4>กรรมการอิสระ ≥ 1/3</h4>
+                    <p>ตามหลักเกณฑ์ ก.ล.ต. ต้องมีกรรมการอิสระอย่างน้อย 1 ใน 3 ของคณะกรรมการทั้งหมด</p>
+                </div>
+                <div class="principle-item">
+                    <div class="principle-num">3</div>
+                    <h4>คณะกรรมการตรวจสอบ</h4>
+                    <p>Audit Committee ต้องมีกรรมการอิสระอย่างน้อย 3 คน และมีความรู้ด้านบัญชี/การเงิน</p>
+                </div>
+                <div class="principle-item">
+                    <div class="principle-num">4</div>
+                    <h4>คณะกรรมการสรรหาและค่าตอบแทน</h4>
+                    <p>Nomination & Remuneration Committee กำหนดค่าตอบแทนอย่างเป็นธรรม เปิดเผย และสมเหตุสมผล</p>
+                </div>
+                <div class="principle-item">
+                    <div class="principle-num">5</div>
+                    <h4>คณะกรรมการบริหารความเสี่ยง</h4>
+                    <p>Risk Management Committee ประเมินและบริหารจัดการความเสี่ยงทั้งเชิงกลยุทธ์ การปฏิบัติงาน และการเงิน</p>
+                </div>
+                <div class="principle-item">
+                    <div class="principle-num">6</div>
+                    <h4>ความหลากหลายของกรรมการ</h4>
+                    <p>Board Diversity ทั้งเพศ อายุ ความเชี่ยวชาญ และประสบการณ์ เพื่อมุมมองที่รอบด้าน</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote -->
+    <section style="padding: 40px 0;">
+        <div class="container">
+            <div class="featured-quote">
+                <p class="featured-quote-text">"The board of directors is the guardian of the company's values, its strategic direction, and its long-term sustainability."</p>
+                <p class="featured-quote-translation">คณะกรรมการบริษัทคือผู้พิทักษ์ค่านิยมของบริษัท ทิศทางเชิงกลยุทธ์ และความยั่งยืนในระยะยาว</p>
+                <p class="quote-source">— OECD Corporate Governance Principles</p>
+                <button class="copy-btn" onclick="copyQuote(this)">📋 Copy</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Thai CG Context -->
+    <section>
+        <div class="container">
+            <h2 class="section-title">🇹🇭 บริบทธรรมาภิบาลไทย</h2>
+            <p class="section-subtitle">กฎหมายและเกณฑ์การกำกับดูแลที่เกี่ยวข้องสำหรับบริษัทไทย</p>
+
+            <div class="thai-section">
+                <h3>📜 กฎหมายและเกณฑ์สำคัญ</h3>
+                <div class="thai-grid">
+                    <div class="thai-card">
+                        <h4>📋 พ.ร.บ. หลักทรัพย์ฯ</h4>
+                        <p>กำหนดหน้าที่กรรมการ การเปิดเผยข้อมูล การป้องกัน Insider Trading และความรับผิดชอบต่อผู้ถือหุ้น</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>🏛️ SET CG Code 2017</h4>
+                        <p>หลักปฏิบัติ 8 ข้อสำหรับบริษัทจดทะเบียน: Apply or Explain — ปฏิบัติตามหรืออธิบายเหตุผล</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>⭐ CGR Rating (IOD)</h4>
+                        <p>สมาคมส่งเสริมสถาบันกรรมการบริษัทไทย (IOD) จัดระดับ 1-5 ดาว ประเมินจาก 5 หมวด</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>🔎 ก.ล.ต. (SEC Thailand)</h4>
+                        <p>กำกับตลาดทุน กำหนดเกณฑ์คุณสมบัติกรรมการอิสระ การรายงานรายการเกี่ยวโยง</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="thai-section" style="margin-top: 30px;">
+                <h3>⭐ CGR 5 หมวดการประเมิน</h3>
+                <div class="thai-grid">
+                    <div class="thai-card">
+                        <h4>1️⃣ สิทธิผู้ถือหุ้น</h4>
+                        <p>Rights of Shareholders — การเข้าร่วมประชุม การออกเสียง สิทธิในเงินปันผล</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>2️⃣ การปฏิบัติต่อผู้ถือหุ้นอย่างเท่าเทียม</h4>
+                        <p>Equitable Treatment — ป้องกัน Insider Trading ไม่เอาเปรียบผู้ถือหุ้นรายย่อย</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>3️⃣ บทบาทผู้มีส่วนได้เสีย</h4>
+                        <p>Role of Stakeholders — พนักงาน ลูกค้า คู่ค้า ชุมชน สิ่งแวดล้อม</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>4️⃣ การเปิดเผยข้อมูลและความโปร่งใส</h4>
+                        <p>Disclosure & Transparency — รายงานประจำปี 56-1 One Report</p>
+                    </div>
+                    <div class="thai-card">
+                        <h4>5️⃣ ความรับผิดชอบของคณะกรรมการ</h4>
+                        <p>Board Responsibilities — โครงสร้าง ความเป็นอิสระ การประเมินตนเอง</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison: Good vs Bad -->
+    <section style="background: rgba(15,118,110,0.03);">
+        <div class="container">
+            <h2 class="section-title">เปรียบเทียบ: ธรรมาภิบาลดี vs ไม่ดี</h2>
+            <p class="section-subtitle">ตัวชี้วัดที่แยกบริษัทที่มี CG ดีออกจากบริษัทที่มีปัญหา</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width:35%">ประเด็น</th>
+                        <th style="width:32%">✅ ธรรมาภิบาลดี</th>
+                        <th style="width:33%">❌ ธรรมาภิบาลไม่ดี</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>โครงสร้างคณะกรรมการ</strong></td>
+                        <td class="check">แยก Chairman/CEO, มีกรรมการอิสระเพียงพอ</td>
+                        <td class="cross">CEO เป็นทั้งประธานบอร์ด, ครอบครัวครอง</td>
+                    </tr>
+                    <tr>
+                        <td><strong>การเปิดเผยข้อมูล</strong></td>
+                        <td class="check">เปิดเผยทันเวลา ครบถ้วน ผ่านหลายช่องทาง</td>
+                        <td class="cross">ปิดบัง ล่าช้า เลือกเปิดเฉพาะส่วนดี</td>
+                    </tr>
+                    <tr>
+                        <td><strong>รายการเกี่ยวโยง</strong></td>
+                        <td class="check">ผ่านคณะกรรมการตรวจสอบ ราคาตลาด arm's length</td>
+                        <td class="cross">ทำรายการโดยไม่ขออนุมัติ เอื้อบุคคลภายใน</td>
+                    </tr>
+                    <tr>
+                        <td><strong>สิทธิผู้ถือหุ้นรายย่อย</strong></td>
+                        <td class="check">เสนอวาระล่วงหน้า เข้าถึงการประชุมได้ง่าย</td>
+                        <td class="cross">จำกัดการเข้าร่วม ไม่ตอบคำถาม เร่งลงมติ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>การบริหารความเสี่ยง</strong></td>
+                        <td class="check">มีคณะกรรมการความเสี่ยง ระบบ ERM ชัดเจน</td>
+                        <td class="cross">ไม่มีระบบ ตอบโต้เชิงรับ (reactive)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>จริยธรรมธุรกิจ</strong></td>
+                        <td class="check">Code of Conduct ชัดเจน มีช่องทาง Whistleblowing</td>
+                        <td class="cross">ไม่มีนโยบาย หรือมีแต่ไม่บังคับใช้จริง</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Self-Assessment Checklist -->
+    <section>
+        <div class="container">
+            <h2 class="section-title">📋 Self-Assessment Checklist</h2>
+            <p class="section-subtitle">ประเมินตนเอง: องค์กรของคุณมีธรรมาภิบาลระดับไหน?</p>
+
+            <div class="checklist">
+                <div class="checklist-header">🏛️ โครงสร้างและกระบวนการ</div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>แยก Chairman กับ CEO</strong> — ประธานกรรมการไม่ใช่คนเดียวกับ CEO</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>กรรมการอิสระ ≥ 1/3</strong> — มีกรรมการอิสระตามเกณฑ์ ก.ล.ต.</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>คณะกรรมการย่อย</strong> — มี Audit, Risk, Nomination & Remuneration Committee</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>ประเมินผลกรรมการ</strong> — มีการประเมินตนเองเป็นประจำทุกปี</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>Succession Plan</strong> — มีแผนสืบทอดตำแหน่งผู้บริหารสูงสุด</span></div>
+            </div>
+
+            <div class="checklist" style="margin-top: 20px;">
+                <div class="checklist-header">📊 ความโปร่งใสและการเปิดเผย</div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>รายงานทันเวลา</strong> — เปิดเผยข้อมูลสำคัญตาม SET timeline</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>56-1 One Report</strong> — จัดทำรายงานประจำปีฉบับสมบูรณ์</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>Related Party Transactions</strong> — เปิดเผยรายการเกี่ยวโยงทุกรายการ</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>Whistleblowing</strong> — มีช่องทางรับเรื่องร้องเรียนที่ปลอดภัย</span></div>
+            </div>
+
+            <div class="checklist" style="margin-top: 20px;">
+                <div class="checklist-header">🌱 ESG & ความยั่งยืน</div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>นโยบาย ESG</strong> — มีนโยบายด้านสิ่งแวดล้อม สังคม และธรรมาภิบาลชัดเจน</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>Anti-Corruption</strong> — เข้าร่วม CAC (Collective Action Coalition) หรือมีนโยบายต่อต้านทุจริต</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>Sustainability Report</strong> — จัดทำรายงานความยั่งยืนตามมาตรฐาน GRI / SASB</span></div>
+                <div class="checklist-item"><span class="check-icon">☐</span><span class="checklist-text"><strong>Code of Conduct</strong> — มีจรรยาบรรณธุรกิจและสื่อสารให้พนักงานทุกคนรับทราบ</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Takeaways -->
+    <section style="background: rgba(15,118,110,0.03);">
+        <div class="container">
+            <h2 class="section-title">Key Takeaways</h2>
+            <p class="section-subtitle">บทสรุปสำคัญที่ผู้บริหารทุกคนควรจดจำ</p>
+
+            <div class="pillar-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="pillar-card">
+                    <div class="pillar-number">💡</div>
+                    <h3>CG ≠ ต้นทุน แต่คือ การลงทุน</h3>
+                    <p>บริษัทที่มี CG ดี มีต้นทุนทางการเงินต่ำกว่า เข้าถึงตลาดทุนได้ง่ายกว่า และดึงดูดนักลงทุนคุณภาพ</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">🛡️</div>
+                    <h3>ป้องกันดีกว่าแก้ไข</h3>
+                    <p>ระบบ CG ที่แข็งแกร่งป้องกันปัญหาก่อนเกิด ลดความเสี่ยง fraud, corruption และ conflict of interest</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">🌏</div>
+                    <h3>ESG คือมาตรฐานใหม่</h3>
+                    <p>นักลงทุนสถาบันทั่วโลกใช้ ESG เป็นเกณฑ์ — บริษัทที่ไม่ปรับตัวจะถูกตัดออกจากดัชนี</p>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-number">🤝</div>
+                    <h3>Tone at the Top</h3>
+                    <p>วัฒนธรรมธรรมาภิบาลเริ่มจากผู้นำสูงสุด — Chairman และ CEO ต้องเป็นตัวอย่างที่ดี ไม่ใช่แค่กำหนดนโยบาย</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4 style="font-size: 1.3rem; margin-bottom: 20px;">📖 About This Guide</h4>
+                    <p><strong>Title:</strong> Corporate Governance — ธรรมาภิบาลองค์กร</p>
+                    <p><strong>Sources:</strong> OECD, SET, IOD, ก.ล.ต.</p>
+                    <p><strong>Target:</strong> ผู้บริหาร กรรมการ นักลงทุน</p>
+                    <p><strong>Updated:</strong> February 2026</p>
+                </div>
+                <div>
+                    <h4 style="font-size: 1.3rem; margin-bottom: 20px;">📚 แหล่งอ้างอิง</h4>
+                    <p>• OECD Principles of Corporate Governance (2023)</p>
+                    <p>• SET CG Code 2017</p>
+                    <p>• Thai IOD — CGR Assessment Framework</p>
+                    <p>• สำนักงาน ก.ล.ต. ประกาศเรื่องกรรมการอิสระ</p>
+                </div>
+                <div>
+                    <h4 style="font-size: 1.3rem; margin-bottom: 20px;">⚠️ Disclaimer</h4>
+                    <p style="line-height: 1.8;">คู่มือนี้จัดทำเพื่อการศึกษาเท่านั้น ไม่ได้เป็นคำแนะนำทางกฎหมาย กรุณาปรึกษาผู้เชี่ยวชาญสำหรับกรณีเฉพาะ</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Enersys Corporate Governance Guide</p>
+                <p style="margin-top: 10px;">สรุปโดย Tomz เพื่อการศึกษา</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+        });
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const newTheme = theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' || e.key === 'T') themeToggle.click();
+            if (e.key === 'Escape') window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('scroll-top').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function copyQuote(button) {
+            const quoteCard = button.closest('.featured-quote');
+            const quoteText = quoteCard.querySelector('.featured-quote-text').textContent;
+            navigator.clipboard.writeText(quoteText).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.style.background = '#27ae60';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
