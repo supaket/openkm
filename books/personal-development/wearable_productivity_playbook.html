@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wearable → Peak Productivity & Performance Playbook (Apple Watch + WHOOP + Research)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #fafbfe;
+      --bg2: #f0f3f9;
+      --card: #ffffff;
+      --text: #1a1d2e;
+      --muted: #5e6580;
+      --line: #e2e6f0;
+      --line-light: #eef1f8;
+
+      --accent: #4f6ef7;
+      --accent-soft: rgba(79,110,247,0.08);
+      --accent2: #0ea5a0;
+      --accent2-soft: rgba(14,165,160,0.08);
+      --gold: #c48b0c;
+      --gold-soft: rgba(196,139,12,0.08);
+      --good: #10b981;
+      --good-soft: rgba(16,185,129,0.08);
+      --warn: #f59e0b;
+      --warn-soft: rgba(245,158,11,0.08);
+      --bad: #ef4444;
+      --bad-soft: rgba(239,68,68,0.08);
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+      --radius: 20px;
+
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: 'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+      --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    html{scroll-behavior:smooth}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      font-size:15px;
+      color:var(--text);
+      background: var(--bg);
+      overflow-x:hidden;
+    }
+    a{color:var(--accent); text-decoration:none; font-weight:500}
+    a:hover{text-decoration:underline}
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:50;
+      background:rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:1180px; margin:0 auto; padding:16px 20px;}
+    .topbar{display:flex; gap:16px; align-items:center; flex-wrap:wrap;}
+    .title{display:flex; flex-direction:column; gap:3px; flex:1; min-width:280px;}
+    .title h1{margin:0; font-size:17px; font-weight:700; letter-spacing:-.3px; color:var(--text)}
+    .title .sub{color:var(--muted); font-size:12.5px; line-height:1.5; font-weight:400}
+    .search{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    input[type="search"]{
+      width:min(380px, 85vw);
+      background:var(--bg2);
+      border:1.5px solid var(--line);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:12px;
+      outline:none;
+      font-family:var(--sans);
+      font-size:13.5px;
+      transition: var(--transition);
+    }
+    input[type="search"]:focus{
+      border-color:var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    input[type="search"]::placeholder{color:var(--muted); opacity:0.7}
+    .btn{
+      background:var(--card);
+      border:1.5px solid var(--line);
+      color:var(--text);
+      padding:9px 16px;
+      border-radius:10px;
+      cursor:pointer;
+      user-select:none;
+      font-weight:500;
+      font-size:13px;
+      transition: var(--transition);
+    }
+    .btn:hover{border-color:var(--accent); color:var(--accent); box-shadow:var(--shadow-sm)}
+
+    /* Layout */
+    .grid{display:grid; grid-template-columns: 300px 1fr; gap:24px; align-items:start;}
+    @media (max-width: 1020px){ .grid{grid-template-columns:1fr;} nav{position:relative !important; top:auto !important;} }
+
+    /* Sidebar */
+    nav{
+      position:sticky; top:78px;
+      background:var(--card);
+      border:1.5px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    nav .navhead{
+      padding:18px 18px 14px;
+      border-bottom:1px solid var(--line-light);
+      background: linear-gradient(180deg, #f7f9ff, var(--card));
+    }
+    nav .navhead div:first-child{font-weight:800; letter-spacing:-.3px; font-size:15px; color:var(--text)}
+    nav .navhead .small{color:var(--muted); font-size:11.5px; margin-top:4px}
+    nav ul{list-style:none; margin:0; padding:8px}
+    nav li a{
+      display:block; padding:9px 14px; border-radius:10px;
+      color:var(--muted); border:1.5px solid transparent;
+      font-size:13.5px; font-weight:500;
+      transition:var(--transition);
+    }
+    nav li a:hover{
+      background:var(--accent-soft);
+      border-color:rgba(79,110,247,0.15);
+      color:var(--accent);
+      text-decoration:none;
+    }
+
+    /* Main Content */
+    main{display:flex; flex-direction:column; gap:24px; padding-bottom:60px;}
+    .card{
+      background:var(--card);
+      border:1.5px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transition: var(--transition);
+    }
+    .card:hover{box-shadow:var(--shadow-lg)}
+    .card .hd{
+      padding:24px 28px 20px;
+      border-bottom:1px solid var(--line-light);
+      background: linear-gradient(180deg, #f7f9ff 0%, var(--card) 100%);
+    }
+    .card .hd h2{
+      margin:0; font-size:18px; font-weight:700;
+      letter-spacing:-.3px; color:var(--text);
+    }
+    .card .hd p{margin:8px 0 0 0; color:var(--muted); line-height:1.65; font-size:14px}
+    .card .bd{padding:24px 28px}
+
+    /* Pills */
+    .pillrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+    .pill{
+      font-size:12px; color:var(--accent); font-weight:600;
+      padding:5px 12px; border-radius:999px;
+      border:1.5px solid rgba(79,110,247,0.2);
+      background:var(--accent-soft);
+      letter-spacing:-.1px;
+    }
+    .pill.gold{border-color:rgba(196,139,12,0.25); background:var(--gold-soft); color:var(--gold)}
+    .pill.good{border-color:rgba(16,185,129,0.3); background:var(--good-soft); color:var(--good)}
+    .pill.warn{border-color:rgba(245,158,11,0.3); background:var(--warn-soft); color:var(--warn)}
+    .pill.bad{border-color:rgba(239,68,68,0.3); background:var(--bad-soft); color:var(--bad)}
+
+    /* Grid Boxes */
+    .cols{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    @media (max-width: 920px){ .cols{grid-template-columns:1fr} }
+
+    .box{
+      background:var(--bg2);
+      border:1.5px solid var(--line-light);
+      border-radius:16px;
+      padding:20px;
+      transition: var(--transition);
+    }
+    .box:hover{border-color:var(--line); box-shadow:var(--shadow-sm)}
+    .box h3{margin:0 0 12px 0; font-size:14.5px; font-weight:700; color:var(--text); letter-spacing:-.2px}
+    .box p, .box li{color:var(--muted); line-height:1.75; font-size:14px}
+    .box ul{margin:8px 0 0 18px}
+    .box b{color:var(--text); font-weight:600}
+
+    .kbd{
+      font-family:var(--mono);
+      font-size:11.5px;
+      padding:2px 7px;
+      border:1.5px solid var(--line);
+      border-radius:6px;
+      background:var(--bg);
+      color:var(--text);
+      display:inline-block;
+    }
+
+    /* Details */
+    details{
+      border:1.5px solid var(--line-light);
+      border-radius:14px;
+      background:var(--bg2);
+      padding:14px 16px;
+      transition: var(--transition);
+    }
+    details:hover{border-color:var(--line)}
+    details[open]{background:var(--card); border-color:var(--line)}
+    details summary{
+      cursor:pointer; font-weight:600; color:var(--text); outline:none;
+      font-size:14px; letter-spacing:-.1px;
+    }
+    details summary::marker{color:var(--accent)}
+    details .inside{margin-top:12px; color:var(--muted); line-height:1.8; font-size:14px}
+    details .inside b{color:var(--text)}
+
+    /* Tables */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1.5px solid var(--line);
+      border-radius:14px;
+      background:var(--card);
+      overflow:hidden;
+    }
+    th,td{padding:13px 14px; border-bottom:1px solid var(--line-light); vertical-align:top; text-align:left;}
+    th{color:var(--muted); font-size:12px; font-weight:600; background:var(--bg2); text-transform:uppercase; letter-spacing:.5px}
+    td{color:var(--text); font-size:13.5px; line-height:1.65}
+    td b{color:var(--accent); font-weight:600}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--accent-soft)}
+
+    /* Notes */
+    .note{
+      width:100%; min-height:160px;
+      border-radius:14px;
+      border:1.5px solid var(--line);
+      background:var(--bg2);
+      color:var(--text);
+      padding:16px;
+      outline:none;
+      resize:vertical;
+      font-family:var(--sans);
+      font-size:14px;
+      line-height:1.7;
+      transition: var(--transition);
+    }
+    .note:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+
+    .footer-text{color:var(--muted); font-size:12px; padding:12px 0 0 0; text-align:left;}
+    .highlight{outline:2px solid rgba(79,110,247,0.3); background:var(--accent-soft); border-radius:var(--radius)}
+
+    /* WHOOP traffic bar */
+    .traffic{display:flex; height:10px; border-radius:8px; overflow:hidden; background:var(--bg2); margin:12px 0 0 0; border:1px solid var(--line-light)}
+    .t-red{background:linear-gradient(90deg,#fca5a5,#ef4444); width:33%}
+    .t-yellow{background:linear-gradient(90deg,#fde68a,#f59e0b); width:33%}
+    .t-green{background:linear-gradient(90deg,#6ee7b7,#10b981); width:34%}
+
+    /* Hero Banner */
+    .hero-banner{
+      padding:56px 0 44px;
+      text-align:center;
+      background: linear-gradient(160deg, #eef3ff 0%, #f0faf7 40%, #fef9ed 100%);
+      border-bottom:1px solid var(--line);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-banner::before{
+      content:''; position:absolute; inset:0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(79,110,247,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(14,165,160,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(196,139,12,0.04) 0%, transparent 50%);
+    }
+    .hero-banner h1{
+      font-size:clamp(28px, 5vw, 40px); font-weight:900;
+      letter-spacing:-.8px; margin:0 0 12px 0; position:relative;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--gold) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-banner p{
+      color:var(--muted); font-size:15px; max-width:700px;
+      margin:0 auto; line-height:1.7; position:relative;
+    }
+    .hero-badges{
+      display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+      margin-top:24px; position:relative;
+    }
+    .hero-badge{
+      padding:8px 18px; background:var(--card); border:1.5px solid var(--line);
+      border-radius:999px; font-size:13px; font-weight:600;
+      color:var(--text); box-shadow:var(--shadow-sm);
+    }
+
+    /* Section dividers */
+    .section-divider{
+      display:flex; align-items:center; gap:12px;
+      padding:8px 0; margin:8px 0;
+    }
+    .section-divider::before, .section-divider::after{
+      content:''; flex:1; height:1px; background:var(--line);
+    }
+    .section-divider span{
+      color:var(--muted); font-size:11px; font-weight:600;
+      text-transform:uppercase; letter-spacing:1px; white-space:nowrap;
+    }
+
+    /* Scroll reveal */
+    .reveal{opacity:0; transform: translateY(24px); transition: var(--transition);}
+    .reveal.active{opacity:1; transform: translateY(0);}
+
+    /* Bottom credit */
+    .credit{
+      text-align:center; padding:40px 20px;
+      color:var(--muted); font-size:12px; line-height:1.8;
+    }
+    .credit b{color:var(--text); font-weight:600}
+
+    @media (max-width:768px){
+      .card .hd, .card .bd{padding:18px 20px}
+      .hero-banner{padding:40px 20px 32px}
+      .box{padding:16px}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <h1>⌚ Wearable → Peak Productivity & Performance Playbook</h1>
+        <div class="sub">ฉบับผสมผสาน: <b>Apple Watch (Series 6)</b> + <b>WHOOP แนว Peak Performance</b> + <b>กรอบวิจัย Personal Informatics</b> • อัปเดต 2026-03-02</div>
+      </div>
+      <div class="search">
+        <input id="q" type="search" placeholder="ค้นหา เช่น Focus, HRV, Journal, Sleep, Strain, Review..." />
+        <button class="btn" onclick="clearSearch()">ล้าง</button>
+        <button class="btn" onclick="toggleAll()">พับ/ขยาย</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero-banner">
+  <div class="wrap">
+    <h1>Wearable → Peak Productivity</h1>
+    <p>เปลี่ยน Apple Watch จาก "แกดเจ็ตดูเวลา" เป็น <b>ระบบจัดการพลังงาน โฟกัส และการนอน</b> ด้วยกรอบวิจัย Personal Informatics + WHOOP Model</p>
+    <div class="hero-badges">
+      <span class="hero-badge">🎯 Actionable</span>
+      <span class="hero-badge">🧪 Research-backed</span>
+      <span class="hero-badge">⌚ Apple Watch + WHOOP</span>
+      <span class="hero-badge">📊 30-day Plan</span>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" style="margin-top:28px">
+  <div class="grid">
+    <nav>
+      <div class="navhead">
+        <div>สารบัญ</div>
+        <div class="small">คลิกเพื่อเลื่อน • ค้นหาแล้วไฮไลต์อัตโนมัติ</div>
+      </div>
+      <ul>
+        <li><a href="#start">0) วิธีใช้เอกสารนี้</a></li>
+        <li><a href="#northstar">1) North Star: Productivity ที่วัดได้</a></li>
+        <li><a href="#pi">2) Research Backbone: Personal Informatics</a></li>
+        <li><a href="#system">3) ระบบ 3 ชั้น: Noise → Focus → Energy</a></li>
+        <li><a href="#aw">4) Apple Watch Setup Preset</a></li>
+        <li><a href="#whoop">5) WHOOP Model: Strain • Recovery • Sleep</a></li>
+        <li><a href="#hybrid">6) Hybrid Workflow</a></li>
+        <li><a href="#journal">7) Journal / Tagging</a></li>
+        <li><a href="#review">8) Weekly Review + Experiments</a></li>
+        <li><a href="#plan30">9) แผน 30 วัน</a></li>
+        <li><a href="#templates">10) Templates</a></li>
+        <li><a href="#notes">11) โน้ตส่วนตัว</a></li>
+        <li><a href="#refs">12) References & Links</a></li>
+      </ul>
+    </nav>
+
+    <main>
+
+      <section id="start" class="card reveal">
+        <div class="hd">
+          <h2>0) วิธีใช้เอกสารนี้</h2>
+          <p>เป้าหมายคือทำให้ wearable ช่วยคุณ <b>ตัดสินใจดีขึ้น</b> และ <b>สร้างระบบที่ทำซ้ำได้</b> (ไม่ใช่แค่ดูกราฟ)</p>
+          <div class="pillrow">
+            <span class="pill good">Actionable</span>
+            <span class="pill">Focus</span>
+            <span class="pill gold">WHOOP-style</span>
+            <span class="pill warn">Trend-based</span>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="cols">
+            <div class="box">
+              <h3>หลักการ 4 ข้อ</h3>
+              <ul>
+                <li><b>วัดเพื่อเปลี่ยน</b>: ถ้าวัดแล้วไม่มี action → ปิด</li>
+                <li><b>เปลี่ยนทีละอย่าง</b>: ทำเป็น "experiment" 14 วัน</li>
+                <li><b>ดูเป็นแนวโน้ม</b>: 7–14 วัน ไม่ดูวันต่อวันจนเครียด</li>
+                <li><b>ระบบชนะใจ</b>: ใช้ Focus/automation ช่วย ไม่พึ่งวินัยล้วน ๆ</li>
+              </ul>
+            </div>
+            <div class="box">
+              <h3>ตัวชี้วัดแกน (เริ่มแค่นี้พอ)</h3>
+              <ul>
+                <li><b>Deep Work Minutes</b> (กำหนดเองจากบล็อกโฟกัส)</li>
+                <li><b>Interruptions</b> (นับคร่าว ๆ)</li>
+                <li><b>Sleep Duration + Consistency</b></li>
+                <li><b>Energy Signal</b> (เช่น HRV/RHR/Stress/Readiness แนวโน้ม)</li>
+              </ul>
+              <div class="footer-text">เริ่มง่าย ๆ ก่อน แล้วค่อยเพิ่มความละเอียด</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="northstar" class="card reveal">
+        <div class="hd">
+          <h2>1) North Star: Productivity ที่วัดได้ (ไม่หลอกตัวเอง)</h2>
+          <p>นิยาม productivity ให้เป็น "พฤติกรรม" ไม่ใช่ "ความรู้สึก" เพื่อให้ wearable ช่วยได้จริง</p>
+        </div>
+        <div class="bd">
+          <table>
+            <thead><tr><th>North Star</th><th>นิยาม</th><th>วัดยังไง</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Deep Work Blocks</b></td>
+                <td>โฟกัสงานคิดหนักแบบไร้สิ่งรบกวน</td>
+                <td>นับบล็อก 50–90 นาที/สัปดาห์</td>
+                <td>ใช้ Focus + Timer + allow-list</td>
+              </tr>
+              <tr>
+                <td><b>Response Windows</b></td>
+                <td>ตอบแชท/อีเมลเป็นช่วง ไม่ตอบทั้งวัน</td>
+                <td>กำหนด 2–3 ช่วง/วัน</td>
+                <td>ปิดเด้งนอกช่วง admin</td>
+              </tr>
+              <tr>
+                <td><b>Energy-fit Work</b></td>
+                <td>จับคู่ "ชนิดงาน" กับพลังงาน</td>
+                <td>เช็คสัญญาณก่อนเลือกงาน</td>
+                <td>วันพลังงานต่ำทำงานเบา</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="pi" class="card reveal">
+        <div class="hd">
+          <h2>2) Research Backbone: Personal Informatics 5 Stages</h2>
+          <p>ใช้โมเดล 5 ขั้นเพื่อกันหลงทาง: <b>Preparation → Collection → Integration → Reflection → Action</b></p>
+          <div class="pillrow">
+            <span class="pill">Preparation</span><span class="pill">Collection</span><span class="pill">Integration</span><span class="pill">Reflection</span><span class="pill good">Action</span>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="cols">
+            <div class="box">
+              <h3>แปลให้เป็นภาษางานจริง</h3>
+              <ul>
+                <li><b>Preparation</b>: ตั้งเป้าหมาย + เลือก metrics ที่มี action</li>
+                <li><b>Collection</b>: เก็บข้อมูลแบบสม่ำเสมอ (ไม่ต้องเยอะ)</li>
+                <li><b>Integration</b>: รวมข้อมูล + ใส่บริบท (Journal/Tags)</li>
+                <li><b>Reflection</b>: รีวิวรายสัปดาห์ (หา pattern 1 อย่าง)</li>
+                <li><b>Action</b>: เปลี่ยนทีละอย่าง 14 วัน แล้ววัดผล</li>
+              </ul>
+            </div>
+            <div class="box">
+              <h3>จุดพังยอดฮิต</h3>
+              <ul>
+                <li>เก็บข้อมูลได้ แต่ <b>ไม่รีวิว</b></li>
+                <li>รีวิวได้ แต่ <b>ไม่มี action</b></li>
+                <li>เปลี่ยนหลายอย่างพร้อมกัน → <b>ไม่รู้ว่าอะไรได้ผล</b></li>
+              </ul>
+              <div class="footer-text">ถ้าพัง ให้ย้อนกลับไปแก้ stage ก่อนหน้า</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="system" class="card reveal">
+        <div class="hd">
+          <h2>3) ระบบ 3 ชั้น: Noise → Focus → Energy</h2>
+          <p>นี่คือ blueprint หลักที่ใช้ได้กับทุก wearable (รวม Apple Watch / WHOOP)</p>
+        </div>
+        <div class="bd">
+          <div class="cols">
+            <div class="box">
+              <h3>ชั้น 1: Noise Kill (คุมสิ่งรบกวน)</h3>
+              <ul>
+                <li>ทำ allow-list notifications</li>
+                <li>แยก "อ่าน" ออกจาก "ทำ": นาฬิกาควรเป็น trigger ไม่ใช่ inbox</li>
+              </ul>
+            </div>
+            <div class="box">
+              <h3>ชั้น 2: Focus Engine (สร้างบล็อกโฟกัส)</h3>
+              <ul>
+                <li>Focus mode + Timer + พิธีเริ่มงาน 60 วินาที</li>
+                <li>วัดผลด้วย Deep Work Blocks/สัปดาห์</li>
+              </ul>
+            </div>
+          </div>
+          <div class="cols" style="margin-top:16px">
+            <div class="box">
+              <h3>ชั้น 3: Energy Management</h3>
+              <ul>
+                <li>ดู sleep/HRV/RHR/respiration (หรือ readiness) แบบแนวโน้ม</li>
+                <li>ใช้เพื่อเลือกชนิดงาน ไม่ใช่เพื่อ judge ตัวเอง</li>
+              </ul>
+            </div>
+            <div class="box">
+              <h3>ผลลัพธ์ที่ควรเกิด</h3>
+              <ul>
+                <li>Interruptions ลดลง</li>
+                <li>Deep work เพิ่มขึ้น</li>
+                <li>นอนดีขึ้น → ความนิ่ง/ความจำ/การตัดสินใจดีขึ้น</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="aw" class="card reveal">
+        <div class="hd">
+          <h2>4) Apple Watch (Series 6) Setup Preset</h2>
+          <p>โหมดงานจริงสำหรับ watchOS: ตั้งค่าให้ <b>Focus</b> เป็นตัวควบคุมสมอง และให้ Shortcut เริ่มงานลึกได้ในคลิกเดียว</p>
+          <div class="pillrow">
+            <span class="pill good">Deep Work</span>
+            <span class="pill">Meeting</span>
+            <span class="pill warn">Wind-down</span>
+          </div>
+        </div>
+        <div class="bd">
+          <details open>
+            <summary>4.1 ตั้ง Focus ให้ใช้งานเร็วบน Watch</summary>
+            <div class="inside">
+              <ul>
+                <li>บน Watch: กดปุ่มข้าง → Control Center → <b>Focus</b> → เลือกโหมด → ตั้งระยะเวลา</li>
+                <li>ตั้งบน iPhone แล้วให้ Watch mirror ตาม (เพื่อไม่ต้องเซ็ตซ้ำหลายที่)</li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>4.2 Notification Allow-list (แนะนำชุดเริ่มต้น)</summary>
+            <div class="inside">
+              <ul>
+                <li><b>เปิด</b>: Phone, Messages(เฉพาะคน), Calendar, Reminders, Auth/Bank(จำเป็น), Teams/Slack(เฉพาะ mention)</li>
+                <li><b>ปิด</b>: Social, News, Promotions, แอปที่ "อ่านแล้วไม่ได้ทำ action"</li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>4.3 Watch Face "Work" ที่ใช้จริง</summary>
+            <div class="inside">
+              <ul>
+                <li>แนะนำ <b>Modular / Infograph Modular</b></li>
+                <li>Complications: Calendar Next, Reminders Today, Timer, Focus, Battery</li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>4.4 Shortcut: Start Deep Work (คลิกเดียว)</summary>
+            <div class="inside">
+              <ol>
+                <li>Turn on Focus: Deep Work</li>
+                <li>Start Timer 50 นาที (หรือ 90 นาที)</li>
+                <li>(Optional) เปิด Notes/Notion/Obsidian</li>
+              </ol>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="whoop" class="card reveal">
+        <div class="hd">
+          <h2>5) WHOOP Model: Strain • Recovery • Sleep (เอามาใช้กับ "งาน" ได้)</h2>
+          <p>แนวคิด 3 เสาหลักของ WHOOP แปลงเป็น workflow ทำงาน: <b>ภาระ</b> (Strain) • <b>ความพร้อม</b> (Recovery) • <b>หนี้การนอน</b> (Sleep debt)</p>
+          <div class="pillrow">
+            <span class="pill gold">Strain 0–21</span>
+            <span class="pill gold">Recovery 0–100%</span>
+            <span class="pill gold">Sleep Coach</span>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="cols">
+            <div class="box">
+              <h3>Strain (ภาระ) → Workload Budget</h3>
+              <ul>
+                <li>คิดว่า "วันนี้สมอง/ร่างกายรับงานหนักได้แค่ไหน"</li>
+                <li>ถ้าพลังงานต่ำ ให้ทำงานเบา/งาน routine</li>
+                <li>ถ้าพลังงานสูง ค่อยทำงานคิดหนัก/ตัดสินใจ</li>
+              </ul>
+            </div>
+            <div class="box">
+              <h3>Recovery (ความพร้อม) → Decision Quality</h3>
+              <ul>
+                <li>ใช้สัญญาณ HRV/RHR/respiration/sleep เพื่อประเมิน "ความพร้อม"</li>
+                <li>หลักสำคัญ: ดูเป็น <b>trend</b> ไม่ panic รายวัน</li>
+                <li>ระบบสี (Green/Yellow/Red) ใช้เป็น "กฎเลือกงาน" ได้</li>
+              </ul>
+              <div class="traffic"><div class="t-red"></div><div class="t-yellow"></div><div class="t-green"></div></div>
+              <div class="footer-text">
+                Red = พัก/งานเบา • Yellow = รักษาระดับ • Green = งานหนัก/peak
+              </div>
+            </div>
+          </div>
+
+          <details style="margin-top:16px" open>
+            <summary>Sleep Coach → Productivity Accelerator</summary>
+            <div class="inside">
+              <ul>
+                <li>คิดเป็น 2 เรื่อง: <b>Sleep Need</b> (ควรนอนเท่าไหร่) และ <b>Consistency</b> (นอนเป็นเวลา)</li>
+                <li>ถ้าทำงานคิดหนักบ่อย ๆ ให้ prioritize ความสม่ำเสมอของเวลานอนก่อน</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="hybrid" class="card reveal">
+        <div class="hd">
+          <h2>6) Hybrid Workflow: เอา WHOOP-style ไปใช้กับ Apple Watch</h2>
+          <p>คุณใช้ Apple Watch อยู่แล้ว เราเอาวิธีคิดแบบ WHOOP (strain/recovery/journal) มาครอบด้วย "ระบบงาน"</p>
+        </div>
+        <div class="bd">
+          <table>
+            <thead><tr><th>WHOOP Concept</th><th>แปลเป็น Productivity</th><th>ทำบน Apple Watch/iPhone ยังไง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Strain Target</b></td>
+                <td>งบงานหนักของวัน</td>
+                <td>เช็ค sleep/ความง่วง แล้วตั้ง "จำนวน deep work blocks" (0–2)</td>
+              </tr>
+              <tr>
+                <td><b>Recovery</b></td>
+                <td>คุณภาพการตัดสินใจ/สมาธิ</td>
+                <td>ดูสัญญาณพื้นฐาน + ความรู้สึก + บริบท แล้วเลือกชนิดงาน</td>
+              </tr>
+              <tr>
+                <td><b>Journal</b></td>
+                <td>บันทึกพฤติกรรมที่มีผลต่อโฟกัส/นอน</td>
+                <td>ทำ "Tagging" 30 วินาที/วัน (คาเฟอีน/แอลกอฮอล์/ประชุมหนัก)</td>
+              </tr>
+              <tr>
+                <td><b>Monthly Assessment</b></td>
+                <td>สรุปว่าอะไรดัน/ทำลาย productivity</td>
+                <td>ทำ Weekly review ต่อเนื่อง 4 สัปดาห์ แล้วคัด top drivers</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="journal" class="card reveal">
+        <div class="hd">
+          <h2>7) Journal/Tagging: หา "ตัวขับเคลื่อน" ของโฟกัส/พลังงาน</h2>
+          <p>นี่คือส่วนที่ทำให้ wearable "คุ้ม" แบบก้าวกระโดด: คุณจะรู้ว่าอะไรทำให้การนอน/พลังงาน/โฟกัสดีขึ้นหรือแย่ลง</p>
+        </div>
+        <div class="bd">
+          <div class="cols">
+            <div class="box">
+              <h3>Tag 30 วิ/วัน (ตัวอย่าง)</h3>
+              <ul>
+                <li>caffeine@time / alcohol / heavy_meeting / travel / sick</li>
+                <li>workout_hard / late_screen / morning_sunlight</li>
+              </ul>
+              <div class="footer-text">เลือก 5–8 tag ที่เกี่ยวกับคุณจริง ๆ</div>
+            </div>
+            <div class="box">
+              <h3>กฎการวิเคราะห์แบบง่าย</h3>
+              <ul>
+                <li>ทำ 2–4 สัปดาห์ก่อนค่อยสรุป</li>
+                <li>หาความสัมพันธ์ "หนึ่งต่อหนึ่ง" ก่อน (เช่น คาเฟอีนหลังบ่าย 3 → นอนพัง)</li>
+                <li>อย่าพยายามหาคำตอบจาก 3 ตัวแปรพร้อมกัน</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" class="card reveal">
+        <div class="hd">
+          <h2>8) Weekly Review + Experiments (14 วัน)</h2>
+          <p>15 นาที/สัปดาห์ = จุดที่คนส่วนใหญ่ไม่ทำ แต่เป็นตัวชี้ชะตาความสำเร็จ</p>
+        </div>
+        <div class="bd">
+          <details open>
+            <summary>8.1 Weekly Review (15 นาที) — Checklist</summary>
+            <div class="inside">
+              <ol>
+                <li>สัปดาห์นี้ deep work กี่บล็อก? (เทียบกับเป้า)</li>
+                <li>อะไรทำให้หลุดโฟกัสบ่อยที่สุด? (Top 1)</li>
+                <li>การนอน: ระยะเวลา + ความสม่ำเสมอเป็นยังไง?</li>
+                <li>เลือก "เปลี่ยน 1 อย่าง" สำหรับ 14 วันถัดไป</li>
+              </ol>
+            </div>
+          </details>
+
+          <details>
+            <summary>8.2 ตัวอย่าง Experiments ที่คุ้มมาก</summary>
+            <div class="inside">
+              <table>
+                <thead><tr><th>Experiment</th><th>สิ่งที่เปลี่ยน (1 อย่าง)</th><th>วัดผล</th><th>ระยะ</th></tr></thead>
+                <tbody>
+                  <tr><td>Notification Diet</td><td>ปิดสั่นแอป X ทั้งหมด</td><td>Interruptions/วัน</td><td>14 วัน</td></tr>
+                  <tr><td>Wind-down</td><td>ปิดจอ 60 นาที ก่อนนอน</td><td>Sleep consistency</td><td>14 วัน</td></tr>
+                  <tr><td>Caffeine Cutoff</td><td>หยุดคาเฟอีนหลัง 14:00</td><td>Sleep duration + next-day energy</td><td>14 วัน</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="plan30" class="card reveal">
+        <div class="hd">
+          <h2>9) แผน 30 วัน (เวอร์ชันผสมผสาน)</h2>
+          <p>ตั้งค่า → ทำลูป → เก็บ journal → สรุป driver → ติดระบบให้ยาว</p>
+        </div>
+        <div class="bd">
+          <details open>
+            <summary>สัปดาห์ 1: Noise Kill + Focus Setup</summary>
+            <div class="inside">
+              <ul>
+                <li>ทำ allow-list notifications</li>
+                <li>สร้าง Focus: Deep Work / Meeting / Wind-down</li>
+                <li>ตั้ง Shortcut "Start Deep Work"</li>
+                <li>เริ่มบันทึก Sleep + Interruptions (อย่างน้อย 4 วัน)</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>สัปดาห์ 2: Deep Work Blocks</summary>
+            <div class="inside">
+              <ul>
+                <li>ทำ deep work อย่างน้อย 4 บล็อก/สัปดาห์</li>
+                <li>ทุกบล็อกต้องเปิด Focus + Timer</li>
+                <li>จด 1 บรรทัดหลังจบ: "ไหล/พัง เพราะอะไร"</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>สัปดาห์ 3: WHOOP-style Journal</summary>
+            <div class="inside">
+              <ul>
+                <li>เลือก 5–8 tags ที่เกี่ยวกับคุณ แล้ว tag 30 วิ/วัน</li>
+                <li>เริ่ม energy-fit work: วันต่ำทำงานเบา วันสูงทำงานหนัก</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>สัปดาห์ 4: Weekly Review + 14-day Experiment</summary>
+            <div class="inside">
+              <ul>
+                <li>ทำ Weekly Review 15 นาที แบบเวลาเดิม</li>
+                <li>เลือก 1 experiment ทำ 14 วัน</li>
+                <li>ตัด metrics ที่ไม่เกิด action ออก</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="templates" class="card reveal">
+        <div class="hd">
+          <h2>10) Templates (Copy/Paste)</h2>
+          <p>ใช้กับ Notion/Google Doc/Notes ได้ทันที</p>
+        </div>
+        <div class="bd">
+          <details open>
+            <summary>10.1 Daily Log (2 นาที)</summary>
+            <div class="inside">
+<pre style="white-space:pre-wrap; margin:0; font-family:var(--mono); color:var(--text); font-size:13px; background:var(--bg2); padding:16px; border-radius:12px; border:1px solid var(--line-light)">
+[DATE]
+Sleep: ___h | Consistency: (Y/N) | Quality(1-5): _
+Energy: (Low/Med/High) | Stress: (Low/Med/High)
+
+Deep Work (max 2 blocks):
+- Block #1: __:__-__:__ Task: _______________________
+- Block #2: __:__-__:__ Task: _______________________
+
+Interruptions (rough): ___
+Tags: caffeine@__, alcohol, heavy_meeting, travel, sick, workout_hard, late_screen, etc.
+
+One focus-protect action:
+- _________________________________________________
+</pre>
+            </div>
+          </details>
+
+          <details>
+            <summary>10.2 Weekly Review (15 นาที)</summary>
+            <div class="inside">
+<pre style="white-space:pre-wrap; margin:0; font-family:var(--mono); color:var(--text); font-size:13px; background:var(--bg2); padding:16px; border-radius:12px; border:1px solid var(--line-light)">
+[WEEK OF ___]
+1) Best day (why): ___________________________________
+2) Worst day (why): __________________________________
+3) One pattern noticed: _______________________________
+4) One change next 14 days: ___________________________
+5) Success metric: ____________________________________
+Keep / Stop / Start:
+- Keep: ______________________________________________
+- Stop: ______________________________________________
+- Start: _____________________________________________
+</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="notes" class="card reveal">
+        <div class="hd">
+          <h2>11) โน้ตส่วนตัว (เก็บในเครื่องคุณ)</h2>
+          <p>พิมพ์ daily log / review ได้เลย เก็บด้วย LocalStorage</p>
+        </div>
+        <div class="bd">
+          <textarea id="notesBox" class="note" placeholder="เริ่มพิมพ์ได้เลย..."></textarea>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
+            <button class="btn" onclick="saveNotes()">💾 บันทึก</button>
+            <button class="btn" onclick="loadNotes()">📂 โหลด</button>
+            <button class="btn" onclick="downloadNotes()">⬇️ ดาวน์โหลด .txt</button>
+            <button class="btn" onclick="wipeNotes()" style="border-color:rgba(239,68,68,0.4); color:var(--bad)">🗑️ ล้างโน้ต</button>
+          </div>
+          <div id="saveStatus" class="footer-text"></div>
+        </div>
+      </section>
+
+      <section id="refs" class="card reveal">
+        <div class="hd">
+          <h2>12) References & Links</h2>
+          <p>ลิงก์สำคัญสำหรับอ่านต่อ (งานวิจัย + คู่มือทางการ)</p>
+        </div>
+        <div class="bd">
+          <div class="cols">
+            <div class="box">
+              <h3>Research (Personal Informatics)</h3>
+              <ul>
+                <li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/1753326.1753409">Li, Dey, Forlizzi — Stage-Based Model (ACM DL)</a></li>
+                <li><a target="_blank" rel="noopener" href="https://www.ianli.com/publications/2010-ianli-chi-stage-based-model.pdf">PDF (Ian Li)</a></li>
+              </ul>
+            </div>
+            <div class="box">
+              <h3>Apple (Focus / Mirroring)</h3>
+              <ul>
+                <li><a target="_blank" rel="noopener" href="https://support.apple.com/guide/watch/use-focus-apd6640937c4/watchos">Use Focus on Apple Watch</a></li>
+                <li><a target="_blank" rel="noopener" href="https://support.apple.com/en-mk/guide/watch/apd890848603/watchos">Apple Watch Mirroring</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="cols" style="margin-top:16px">
+            <div class="box">
+              <h3>WHOOP (Journal / Basics)</h3>
+              <ul>
+                <li><a target="_blank" rel="noopener" href="https://support.whoop.com/s/article/WHOOP-Journal-Overview">WHOOP Journal Overview</a></li>
+                <li><a target="_blank" rel="noopener" href="https://support.whoop.com/s/article/WHOOP-Basics">WHOOP Basics</a></li>
+              </ul>
+              <div class="footer-text">ส่วน WHOOP-style ในเอกสารนี้ "ยึดแนวคิด" แล้วแปลเป็น workflow ทำงาน</div>
+            </div>
+            <div class="box">
+              <h3>ต้นฉบับที่คุณให้มา (WHOOP Manual Draft)</h3>
+              <ul>
+                <li>สไตล์การ์ด/แนวคิด Peak Performance ถูกนำมาผสมให้เข้ากับ playbook นี้</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider" style="margin:20px 28px"><span>Core Principles</span></div>
+        <div style="padding:0 28px 24px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center">
+          <span class="pill bad">Notification = ศัตรูโฟกัส</span>
+          <span class="pill good">Sleep/Consistency = ตัวคูณผลงาน</span>
+          <span class="pill">Weekly Review = ตัวทำให้ระบบอยู่ยาว</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="credit">
+  <b>⌚ Wearable → Peak Productivity Playbook</b><br>
+  Apple Watch + WHOOP Model + Personal Informatics Research<br>
+  อัปเดต 2026-03-02 • สร้างโดย Tomz
+</div>
+
+<script>
+  // Search highlight
+  const q = document.getElementById('q');
+  q.addEventListener('input', () => runSearch(q.value));
+
+  function runSearch(term){
+    term = (term || '').trim().toLowerCase();
+    const cards = Array.from(document.querySelectorAll('main .card'));
+    cards.forEach(c => c.classList.remove('highlight'));
+    if(!term) return;
+    cards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if(text.includes(term)) card.classList.add('highlight');
+    });
+  }
+  function clearSearch(){ q.value=''; runSearch(''); q.focus(); }
+
+  // Expand/collapse all details
+  function toggleAll(){
+    const d = Array.from(document.querySelectorAll('details'));
+    const anyClosed = d.some(x => !x.open);
+    d.forEach(x => x.open = anyClosed);
+  }
+
+  // Notes persistence
+  const KEY = "wearable_productivity_notes_v1";
+  const box = document.getElementById('notesBox');
+  const status = document.getElementById('saveStatus');
+
+  function saveNotes(){
+    localStorage.setItem(KEY, box.value);
+    status.textContent = "บันทึกแล้ว ✓ (" + new Date().toLocaleString() + ")";
+  }
+  function loadNotes(){
+    const v = localStorage.getItem(KEY) || "";
+    box.value = v;
+    status.textContent = v ? "โหลดโน้ตแล้ว ✓" : "ยังไม่มีโน้ตที่บันทึกไว้";
+  }
+  function wipeNotes(){
+    if(confirm("แน่ใจหรือไม่ว่าต้องการล้างโน้ตทั้งหมด?")){
+      localStorage.removeItem(KEY);
+      box.value = "";
+      status.textContent = "ล้างโน้ตแล้ว";
+    }
+  }
+  function downloadNotes(){
+    const content = box.value || "";
+    const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "wearable_productivity_notes.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // Scroll reveal
+  function reveal(){
+    const reveals = document.querySelectorAll(".reveal");
+    for (let i=0;i<reveals.length;i++) {
+      const windowHeight = window.innerHeight;
+      const elementTop = reveals[i].getBoundingClientRect().top;
+      const elementVisible = 100;
+      if (elementTop < windowHeight - elementVisible) {
+        reveals[i].classList.add("active");
+      }
+    }
+  }
+  window.addEventListener("scroll", reveal);
+  reveal();
+
+  // Auto-load notes
+  loadNotes();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHOOP 5 MG - The Quantified Elite Playbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --charcoal: #0F1115; 
+            --charcoal-card: #16181D; 
+            --gold: #D4AF37; 
+            --gold-light: #F3E5AB;
+            --neon-teal: #00F3FF; 
+            --neon-teal-dim: rgba(0, 243, 255, 0.15);
+            --whoop-green: #38C779;
+            --whoop-yellow: #FFB300;
+            --whoop-red: #FF4D4D;
+            --text-main: #E9EEF5;
+            --text-muted: #A7B2C3;
+            --line: #23283A;
+            --transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            background-color: var(--charcoal);
+            font-family: 'Prompt', sans-serif;
+            color: var(--text-main);
+            line-height: 1.7;
+            margin: 0;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(180deg, #06070B 0%, var(--charcoal) 40%, #06070B 100%),
+                radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 15% 70%, rgba(0, 243, 255, 0.04) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            background: linear-gradient(to right, #FFFFFF, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: var(--neon-teal);
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--charcoal-card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--gold), var(--neon-teal));
+            opacity: 0.5;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #FFF;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            color: var(--gold-light);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, li { color: var(--text-muted); font-size: 0.95rem; }
+        ul { padding-left: 20px; }
+        ul li { margin-bottom: 0.8rem; }
+        strong { color: var(--text-main); font-weight: 600; }
+
+        .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .pill {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .pill.teal { background: var(--neon-teal-dim); color: var(--neon-teal); border: 1px solid rgba(0, 243, 255, 0.3); }
+        .pill.gold { background: rgba(212, 175, 55, 0.1); color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.3); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .box {
+            background: rgba(11, 12, 16, 0.6);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .box h4 { margin: 0 0 10px 0; color: var(--neon-teal); font-size: 1rem; }
+
+        .quote-block {
+            border-left: 3px solid var(--gold);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: var(--text-main);
+        }
+
+        /* Recovery Traffic Light System */
+        .recovery-bar {
+            display: flex;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+            background: #333;
+        }
+        .rec-red { background: var(--whoop-red); width: 33%; }
+        .rec-yellow { background: var(--whoop-yellow); width: 33%; }
+        .rec-green { background: var(--whoop-green); width: 34%; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1 class="logo-text">WHOOP 5 MG</h1>
+            <div class="subtitle">Productivity & Bio-Hacking Playbook</div>
+            <p style="margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                เปลี่ยนข้อมูลชีวภาพให้เป็น "ระบบปรับตัว" เพื่อดึงศักยภาพสูงสุดของการทำงานและโฟกัส
+            </p>
+        </header>
+
+        <section class="card">
+            <div class="pill-row">
+                <span class="pill gold">Core Mindset</span>
+                <span class="pill teal">Quantified Self</span>
+            </div>
+            <h2>01 | The Philosophy: วัดเพื่อเปลี่ยน</h2>
+            <div class="quote-block">
+                "การวัดผลมีไว้เพื่อเปลี่ยนพฤติกรรม ไม่ใช่วัดเพื่อดูตัวเลขเฉยๆ" 
+            </div>
+            <p>จุดอ่อนสำคัญของคนที่สวมอุปกรณ์ติดตามตัวคือ <strong>การ Track เยอะเกินไปจนล้า</strong> (Tracking Fatigue) และจบลงที่การเสพติดตัวเลขโดยไม่เกิดการกระทำ คู่มือนี้ออกแบบมาเพื่อให้ WHOOP 5 MG ของคุณเป็นเครื่องมือในการตัดสินใจตามหลักการเหล่านี้:</p>
+            <ul>
+                <li><strong>ดูเป็นแนวโน้ม (Trend):</strong> อย่าตื่นตระหนกกับค่า HRV หรือ Recovery ที่ตกเพียงวันเดียว ให้ดูความสัมพันธ์ในรอบ 7-14 วัน</li>
+                <li><strong>ใส่บริบท (Context):</strong> ตัวเลขที่ปราศจากบริบทคือความว่างเปล่า ใช้ฟีเจอร์ <em>WHOOP Journal</em> เพื่อบันทึกพฤติกรรม (เช่น คาเฟอีน, แอลกอฮอล์, ความเครียด, การประชุมหนัก) เพื่อเป็นคำอธิบายให้สัญญาณเหล่านั้น</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <div class="pill-row">
+                <span class="pill teal">Deep Work</span>
+                <span class="pill gold">Noise Kill</span>
+            </div>
+            <h2>02 | Screenless Advantage: ตัวกรองสิ่งรบกวน</h2>
+            <p>Smartwatch ทั่วไปมักทำลายสมาธิด้วยการเป็น "Inbox บนข้อมือ" แต่ดีไซน์ <strong>ไร้หน้าจอ (Screenless)</strong> ของ WHOOP คือฟีเจอร์ระดับมาสเตอร์พีซสำหรับสาย Productivity</p>
+            
+            <div class="grid-2">
+                <div class="box">
+                    <h4>The Focus Rule</h4>
+                    <p>อุปกรณ์ของคุณไม่ควรสั่นเตือนทุกเรื่อง WHOOP จะสื่อสารกับคุณผ่าน Haptic Alert (การสั่น) เฉพาะเวลาที่จำเป็นต่อร่างกายจริงๆ เช่น ถึงเวลาที่ควรเข้านอน (Sleep Need) หรือเมื่อร่างกายฟื้นฟูถึงเป้าหมายแล้ว (Hit Recovery Goal)</p>
+                </div>
+                <div class="box">
+                    <h4>Deep Work Ritual</h4>
+                    <p>ใช้ WHOOP ควบคู่กับการตั้งเวลาทำงาน 50-90 นาที โดยไร้หน้าจอคอยดึงความสนใจ หากคุณถูกรบกวน ให้จดบันทึกไว้เพื่อนำไปทบทวนในตอนท้ายสัปดาห์ (Weekly Review)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="pill-row">
+                <span class="pill gold">Energy Mapping</span>
+                <span class="pill teal">Recovery Mode</span>
+            </div>
+            <h2>03 | Energy Management: เลือกงานตามพลังงาน</h2>
+            <p>ประสิทธิภาพ (Productivity) ไม่ใช่การทำทุกอย่างให้มากขึ้น แต่คือ <strong>"การทำสิ่งที่ยากในเวลาที่ร่างกายพร้อมที่สุด"</strong></p>
+            
+            <div class="recovery-bar">
+                <div class="rec-red"></div>
+                <div class="rec-yellow"></div>
+                <div class="rec-green"></div>
+            </div>
+
+            <ul>
+                <li><strong style="color: var(--whoop-green);">Green Recovery (สูง):</strong> ร่างกายพร้อมรับภาระหนัก (High Energy) → <strong>Action:</strong> ล็อกเวลาสำหรับ Deep Work, งานเขียน, การวางแผนกลยุทธ์ หรือการตัดสินใจสำคัญ</li>
+                <li><strong style="color: var(--whoop-yellow);">Yellow Recovery (กลาง):</strong> สภาวะรักษาระดับ → <strong>Action:</strong> เหมาะกับงานทั่วไป, การประชุม, หรืองานรีวิวเอกสาร</li>
+                <li><strong style="color: var(--whoop-red);">Red Recovery (ต่ำ):</strong> ระบบประสาทต้องการการพักผ่อน (Low Energy) → <strong>Action:</strong> เลี่ยงการตัดสินใจใหญ่ ให้ทำเพียงงาน Routine, จัดการอีเมล, หรือเคลียร์ Backlog จุกจิก</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <div class="pill-row">
+                <span class="pill teal">Framework</span>
+                <span class="pill gold">Weekly Review</span>
+            </div>
+            <h2>04 | The Optimization Loop</h2>
+            <p>ระบบที่คุณสามารถทำซ้ำได้ตลอดชีวิต เพื่อดึงศักยภาพสูงสุดผ่านกระบวนการ <strong>Track → Context → Review → Change</strong></p>
+
+            <div class="grid-2">
+                <div class="box">
+                    <h4>1. Track & Context (Daily)</h4>
+                    <p>ตื่นเช้ามา ให้ใช้เวลา 1 นาทีกับ <strong>WHOOP Journal</strong> ติ๊กเลือกบริบทของเมื่อวาน (เช่น กินเหล้าไหม? ประชุมดึกไหม?) นี่คือต้นทุนข้อมูลที่สำคัญที่สุด</p>
+                </div>
+                <div class="box">
+                    <h4>2. Review (15 Min/Week)</h4>
+                    <p>ล็อกเวลา 15 นาทีทุกสัปดาห์ เปิดดูข้อมูลใน WHOOP (หรือ Monthly Performance Assessment) ถามตัวเองว่า: "วันไหนงานไหลที่สุด? วันไหนโฟกัสพัง?"</p>
+                </div>
+            </div>
+            <div class="box" style="margin-top: 1.5rem;">
+                <h4>3. Change & Control (Experiment)</h4>
+                <p>จากข้อสังเกต ให้ <strong>"เลือกเปลี่ยนแค่ 1 อย่าง"</strong> (เช่น จะงดกาแฟหลังบ่าย 3) และทดลองทำเป็นเวลา 14 วัน จากนั้นใช้ WHOOP เป็นตัวชี้วัดผลลัพธ์ว่า Recovery หรือ Sleep Consistency ดีขึ้นหรือไม่</p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
