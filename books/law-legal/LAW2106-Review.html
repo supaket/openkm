@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW2106 กฎหมายอาญา ภาค 1 — สรุป + Flashcard + การ์ดจำด่วน</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Noto+Sans+Thai:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232733;
+    --surface3: #2c3040;
+    --border: #363b4a;
+    --text: #e8eaf0;
+    --text2: #a0a6b8;
+    --accent: #6c8cff;
+    --accent2: #4a6aff;
+    --green: #4ade80;
+    --green-bg: rgba(74,222,128,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+    --yellow: #fbbf24;
+    --yellow-bg: rgba(251,191,36,0.1);
+    --purple: #a78bfa;
+    --purple-bg: rgba(167,139,250,0.1);
+    --cyan: #22d3ee;
+    --cyan-bg: rgba(34,211,238,0.08);
+  }
+
+  body {
+    font-family: 'Noto Sans Thai', 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: linear-gradient(135deg, #1e2235 0%, #161929 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 32px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header p {
+    font-size: 0.85rem;
+    color: var(--text2);
+    margin-bottom: 18px;
+  }
+
+  /* ─── Tabs ─── */
+  .tabs {
+    display: flex;
+    gap: 0;
+  }
+  .tab-btn {
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text2);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text); background: rgba(108,140,255,0.05); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(108,140,255,0.08);
+  }
+
+  /* ─── Content Area ─── */
+  .content { padding: 28px 32px 60px; max-width: 960px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ─── Summary Tab ─── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--yellow);
+    margin: 18px 0 8px;
+  }
+  .section p, .section li {
+    font-size: 0.92rem;
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .section ul { padding-left: 20px; margin: 6px 0; }
+  .section li { margin-bottom: 4px; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 6px;
+  }
+  .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+
+  .highlight-box {
+    background: var(--cyan-bg);
+    border-left: 3px solid var(--cyan);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+    font-size: 0.9rem;
+  }
+
+  .step-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .step-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .step-card .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
+  .step-card h4 { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .step-card p { font-size: 0.82rem; color: var(--text2); }
+
+  .vs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.88rem;
+  }
+  .vs-table th {
+    background: var(--surface3);
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  .vs-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .vs-table tr:last-child td { border-bottom: none; }
+
+  /* ─── Flashcard Tab ─── */
+  .flashcard-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .fc-counter {
+    font-size: 0.85rem;
+    color: var(--text2);
+    margin-left: auto;
+  }
+  .fc-counter span { color: var(--accent); font-weight: 700; }
+
+  .flashcard-area {
+    perspective: 1200px;
+    margin-bottom: 24px;
+  }
+  .flashcard {
+    width: 100%;
+    min-height: 320px;
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .fc-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 36px 32px;
+    text-align: center;
+  }
+  .fc-front {
+    background: linear-gradient(145deg, #1e2440 0%, #1a1f35 100%);
+    border: 1px solid var(--border);
+  }
+  .fc-front .fc-label {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+  }
+  .fc-front .fc-question {
+    font-size: 1.15rem;
+    color: var(--text);
+    line-height: 1.8;
+    max-width: 600px;
+  }
+  .fc-front .fc-hint {
+    margin-top: 24px;
+    font-size: 0.78rem;
+    color: var(--text2);
+  }
+  .fc-back {
+    background: linear-gradient(145deg, #182030 0%, #141b28 100%);
+    border: 1px solid var(--accent);
+    transform: rotateY(180deg);
+  }
+  .fc-back .fc-answer-label {
+    font-size: 0.8rem;
+    color: var(--green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .fc-back .fc-answer-main {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-bottom: 14px;
+  }
+  .fc-back .fc-answer-detail {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.8;
+    max-width: 600px;
+  }
+
+  .fc-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .fc-btn {
+    padding: 10px 28px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .fc-btn:hover { background: var(--surface3); border-color: var(--accent); }
+  .fc-btn.primary { background: var(--accent2); border-color: var(--accent); color: #fff; }
+  .fc-btn.primary:hover { background: var(--accent); }
+  .fc-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .fc-score {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .fc-score-item {
+    text-align: center;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .fc-score-correct { background: var(--green-bg); color: var(--green); }
+  .fc-score-wrong { background: var(--red-bg); color: var(--red); }
+
+  .fc-self-check {
+    display: none;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .fc-self-check.visible { display: flex; }
+  .fc-check-btn {
+    padding: 8px 24px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .fc-check-btn.correct { background: var(--green); color: #0f1117; }
+  .fc-check-btn.correct:hover { background: #6ee7a0; }
+  .fc-check-btn.wrong { background: var(--red); color: #0f1117; }
+  .fc-check-btn.wrong:hover { background: #fca5a5; }
+
+  /* ─── Quick Cards Tab ─── */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .quick-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: all 0.2s;
+  }
+  .quick-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .quick-card .qc-section {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-bottom: 4px;
+  }
+  .quick-card .qc-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .quick-card .qc-body {
+    font-size: 0.84rem;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+  .quick-card .qc-body strong { color: var(--text); }
+
+  .quick-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .qc-divider {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--purple);
+    padding: 12px 0 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 700px) {
+    .header { padding: 20px 16px 0; }
+    .content { padding: 20px 16px 40px; }
+    .step-grid { grid-template-columns: 1fr; }
+    .quick-grid { grid-template-columns: 1fr; }
+    .tab-btn { padding: 10px 14px; font-size: 0.82rem; }
+    .section { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER + TABS ═══════════ -->
+<div class="header">
+  <h1><span>LAW2106</span> กฎหมายอาญา ภาค 1 (ภาคทั่วไป)</h1>
+  <p>สรุปเนื้อหา + Flashcard + การ์ดจำด่วนก่อนสอบ</p>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="summary">📖 สรุปเนื้อหา</button>
+    <button class="tab-btn" data-tab="flashcard">🃏 Flashcard เดามาตรา</button>
+    <button class="tab-btn" data-tab="quick">⚡ การ์ดจำด่วน</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!-- TAB 1 : สรุปเนื้อหา                  -->
+<!-- ══════════════════════════════════════ -->
+<div id="tab-summary" class="tab-content active">
+
+  <!-- โครงสร้างตอบข้อสอบ -->
+  <div class="section">
+    <h2>🔑 โครงสร้างการตอบข้อสอบ 4 ขั้นตอน</h2>
+    <p style="color:var(--text2); margin-bottom:14px;">ทุกข้อ <strong style="color:var(--red);">ต้อง</strong> วิเคราะห์ครบ 4 ขั้นนี้เสมอ — ข้ามขั้นคือเสียคะแนน</p>
+    <div class="step-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h4>การกระทำ</h4>
+        <p>มี "การกระทำ" ตาม กม.อาญาหรือไม่? = เคลื่อนไหวร่างกายโดยรู้สำนึก + อยู่ภายใต้บังคับจิตใจ (ถ้าละเมอ/ชัก/ถูกบังคับกาย → ไม่ใช่การกระทำ → จบ)</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h4>องค์ประกอบความผิด</h4>
+        <p>ครบองค์ประกอบภายนอก (ผู้กระทำ, การกระทำ, วัตถุ) + ภายใน (เจตนา ม.59 / ประมาท) หรือไม่?</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h4>เหตุยกเว้นความผิด</h4>
+        <p>มีเหตุที่ทำให้ไม่ผิดหรือไม่? → ป้องกัน (ม.68), จำเป็น (ม.67), ทำตามคำสั่ง (ม.70) ฯลฯ → ถ้ามี = ไม่มีความผิด</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <h4>เหตุยกเว้น/ลดโทษ</h4>
+        <p>บันดาลโทสะ (ม.72), วิกลจริต (ม.65), เด็ก < 15 ปี, ป้องกันเกินสมควร (ม.69) → ลดโทษหรือไม่ลงโทษ</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ม.59 เจตนา/ประมาท -->
+  <div class="section">
+    <h2>มาตรา 59 — เจตนาและประมาท <span class="badge badge-red">ออกทุกครั้ง</span></h2>
+
+    <h3>เจตนา (วรรค 2) — มี 2 แบบ</h3>
+    <table class="vs-table">
+      <tr><th style="width:35%">ประเภท</th><th>ความหมาย</th></tr>
+      <tr>
+        <td><strong style="color:var(--green)">ประสงค์ต่อผล</strong></td>
+        <td>มุ่งหมายให้เกิดผลนั้นโดยตรง — เช่น ตั้งใจยิง ก เพื่อให้ตาย</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--yellow)">ย่อมเล็งเห็นผล</strong></td>
+        <td>ไม่ได้ประสงค์โดยตรง แต่<strong>รู้ว่าผลจะเกิดแน่นอน</strong> — เช่น วางระเบิดฆ่า ก รู้ว่า ข นั่งข้างๆ ต้องตายด้วย</td>
+      </tr>
+    </table>
+
+    <h3>ประมาท (วรรค 4)</h3>
+    <div class="highlight-box">
+      กระทำโดย<strong>ปราศจากความระมัดระวัง</strong>ซึ่งบุคคลในภาวะเช่นนั้นจักต้องมีตามวิสัยและพฤติการณ์ + ผู้กระทำ<strong>อาจใช้ความระมัดระวังได้ แต่หาได้ใช้ให้เพียงพอไม่</strong>
+    </div>
+
+    <h3>วิธีไล่สาย</h3>
+    <p>มีเจตนา? → <strong style="color:var(--green)">ใช่</strong> → ประสงค์ต่อผล หรือ ย่อมเล็งเห็นผล?<br>
+    มีเจตนา? → <strong style="color:var(--red)">ไม่</strong> → ประมาทหรือไม่? → ใช่ = ผิดฐานประมาท / ไม่ = เหตุสุดวิสัย ไม่ต้องรับผิด</p>
+  </div>
+
+  <!-- ม.60 vs ม.61 -->
+  <div class="section">
+    <h2>มาตรา 60 vs 61 — พลาด กับ สำคัญผิด <span class="badge badge-red">ออกบ่อยมาก</span></h2>
+    <table class="vs-table">
+      <tr><th></th><th>ม.60 เจตนาโดยพลาด</th><th>ม.61 สำคัญผิดในตัวบุคคล</th></tr>
+      <tr>
+        <td><strong>สถานการณ์</strong></td>
+        <td>รู้ว่าเป้าหมายคือใคร แต่ <strong>"ยิงพลาด"</strong> ไปถูกคนอื่น</td>
+        <td><strong>เข้าใจผิด</strong> ว่าคนนี้คือเป้าหมาย จึงลงมือกระทำ</td>
+      </tr>
+      <tr>
+        <td><strong>ตัวอย่าง</strong></td>
+        <td>ยิง ก แต่กระสุนเบี่ยงไปถูก ข</td>
+        <td>จะฆ่า ก เห็น ข หน้าคล้าย จึงยิง ข ตาย</td>
+      </tr>
+      <tr>
+        <td><strong>ผล</strong></td>
+        <td>ถือว่ามีเจตนากระทำต่อผู้ที่ถูกกระทำ (ข) แต่โทษไม่หนักกว่าเจตนาตรง</td>
+        <td>ต้องรับผิดเสมือนกระทำต่อบุคคลที่ตั้งเจตนาไว้ (ก)</td>
+      </tr>
+      <tr>
+        <td><strong>จุดจำ</strong></td>
+        <td style="color:var(--cyan)">ผู้กระทำ "มองเห็น" เป้าหมายจริง แต่พลาดไป</td>
+        <td style="color:var(--purple)">"มองผิดคน" ตั้งแต่ต้น</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ม.62 -->
+  <div class="section">
+    <h2>มาตรา 62 — สำคัญผิดในข้อเท็จจริง <span class="badge badge-yellow">ออกบ่อย</span></h2>
+    <h3>วรรค 1 — สำคัญผิดว่ามีเหตุยกเว้น</h3>
+    <p>เข้าใจผิดว่ามีข้อเท็จจริงที่ทำให้ไม่ผิด/ยกเว้นความผิด/ยกเว้นโทษ → <strong style="color:var(--green)">ได้ประโยชน์จากความสำคัญผิดนั้น</strong></p>
+    <div class="highlight-box">
+      ตัวอย่าง: เข้าใจว่ากำลังถูกทำร้าย จึง "ป้องกัน" → แม้จริงๆ ไม่มีภัย ก็อ้าง ม.68 + ม.62 ว.1 ได้ = <strong>ป้องกันโดยสำคัญผิด</strong>
+    </div>
+    <h3>วรรค 2 — ไม่รู้ข้อเท็จจริงที่เป็นองค์ประกอบ</h3>
+    <p>ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบความผิด → <strong style="color:var(--red)">ไม่ถือว่ามีเจตนา</strong> (อาจเป็นประมาทเท่านั้น)</p>
+    <div class="highlight-box">
+      ตัวอย่าง: ยิงพุ่มไม้ คิดว่าเป็นสัตว์ แท้จริงเป็นคน → ไม่มีเจตนาฆ่า อาจผิดฐานประมาทเท่านั้น
+    </div>
+  </div>
+
+  <!-- ม.63 -->
+  <div class="section">
+    <h2>มาตรา 63 — ผลเกินเจตนา <span class="badge badge-yellow">ออกบ่อย</span></h2>
+    <p>ผลที่เกิดขึ้น <strong>เกินกว่า</strong> ที่ผู้กระทำประสงค์หรือเล็งเห็น → รับผิดเพียง <strong style="color:var(--yellow)">ประมาท</strong> สำหรับผลที่เกิน (ถ้า กม. บัญญัติให้ลงโทษได้)</p>
+    <div class="highlight-box">
+      <strong>ตัวอย่างคลาสสิก:</strong> ตั้งใจทำร้ายร่างกาย ม.295 แต่คนตาย → ม.290 ผลเกินเจตนาถึงตาย (โทษน้อยกว่าฆ่าโดยเจตนา ม.288)
+    </div>
+  </div>
+
+  <!-- ม.68 ป้องกัน -->
+  <div class="section">
+    <h2>มาตรา 68 — ป้องกัน <span class="badge badge-red">ออกทุกครั้ง</span></h2>
+    <p style="color:var(--text2);margin-bottom:12px;">องค์ประกอบ 5 ข้อ ต้องครบทุกข้อ:</p>
+    <table class="vs-table">
+      <tr><th style="width:8%">#</th><th>องค์ประกอบ</th><th>จุดสำคัญ</th></tr>
+      <tr><td><strong>1</strong></td><td>มีภยันตราย</td><td>ต้องเกิดจาก "การประทุษร้ายอันละเมิดต่อกฎหมาย" (ไม่ใช่จากสัตว์/ธรรมชาติ)</td></tr>
+      <tr><td><strong>2</strong></td><td>ใกล้จะถึง</td><td>กำลังจะเกิด หรือ กำลังเกิดอยู่ (ไม่ใช่เกิดไปแล้ว/ยังอีกนาน)</td></tr>
+      <tr><td><strong>3</strong></td><td>เพื่อป้องกันสิทธิ</td><td>ป้องกันตนเอง <strong>หรือ</strong> ผู้อื่นก็ได้</td></tr>
+      <tr><td><strong>4</strong></td><td>พอสมควรแก่เหตุ</td><td>ได้สัดส่วนกับภัยที่เกิด (ถูกต่อยด้วยมือเปล่า จะยิงปืนตอบ = เกินสมควร)</td></tr>
+      <tr><td><strong>5</strong></td><td>จำต้องกระทำ</td><td>ไม่มีทางหลีกเลี่ยงอื่นที่ดีกว่า</td></tr>
+    </table>
+    <div class="highlight-box">
+      <strong>ครบ 5 ข้อ</strong> → ไม่มีความผิด (ยกเว้นความผิดเลย)<br>
+      <strong>เกินสมควรแก่เหตุ</strong> → ยังผิด แต่ศาลลงโทษน้อยกว่ากฎหมายกำหนดเพียงใดก็ได้ (<strong>ม.69</strong>)
+    </div>
+  </div>
+
+  <!-- ม.67 vs ม.68 -->
+  <div class="section">
+    <h2>มาตรา 67 จำเป็น vs มาตรา 68 ป้องกัน <span class="badge badge-purple">ชอบออกคู่กัน</span></h2>
+    <table class="vs-table">
+      <tr><th></th><th>ม.67 จำเป็น</th><th>ม.68 ป้องกัน</th></tr>
+      <tr>
+        <td><strong>ที่มาของภัย</strong></td>
+        <td>ธรรมชาติ สัตว์ สถานการณ์ หรือคน<strong>ที่ไม่ใช่ผู้ทำละเมิด</strong></td>
+        <td>คนที่ทำ<strong>ประทุษร้ายอันละเมิดต่อกฎหมาย</strong></td>
+      </tr>
+      <tr>
+        <td><strong>ตอบโต้ใคร</strong></td>
+        <td>ทำลายทรัพย์สิน/สิทธิ<strong>บุคคลที่ 3</strong> ได้</td>
+        <td>ตอบโต้<strong>ผู้ก่อภัย</strong>โดยตรง</td>
+      </tr>
+      <tr>
+        <td><strong>ตัวอย่าง</strong></td>
+        <td>น้ำท่วม ทุบกำแพงบ้านคนอื่นเพื่อหนีน้ำ</td>
+        <td>โจรถือมีดจะแทง จึงใช้ไม้ตีโจร</td>
+      </tr>
+      <tr>
+        <td><strong>ผล</strong></td>
+        <td>ไม่มีความผิด (ถ้าพอสมควร)</td>
+        <td>ไม่มีความผิด (ถ้าพอสมควร)</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ความสัมพันธ์การกระทำกับผล -->
+  <div class="section">
+    <h2>ความสัมพันธ์ระหว่างการกระทำกับผล (Causation)</h2>
+    <table class="vs-table">
+      <tr><th>ทฤษฎี</th><th>หลักการ</th><th>ตัวอย่าง</th></tr>
+      <tr>
+        <td><strong style="color:var(--cyan)">เงื่อนไข</strong><br>(Conditio Sine Qua Non)</td>
+        <td>ถ้าไม่มีการกระทำนี้ ผลจะเกิดหรือไม่? ถ้าไม่เกิด = เป็นเหตุ</td>
+        <td>ก ยิง ข → ถ้า ก ไม่ยิง ข จะตายไหม? → ไม่ → การยิงเป็นเหตุ</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--purple)">เหตุที่เหมาะสม</strong><br>(Adequate Cause)</td>
+        <td>การกระทำนั้นมีลักษณะโดยทั่วไปที่จะทำให้เกิดผลเช่นนั้นหรือไม่? → ตัดเหตุแทรกซ้อนผิดปกติวิสัย</td>
+        <td>ก ทำร้าย ข เล็กน้อย → ข ไปหาหมอ → รถพยาบาลชน ข ตาย → รถชน = เหตุแทรกซ้อนผิดปกติ → ก ไม่ต้องรับผิดเรื่องตาย</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- หัวข้อออกสอบบ่อย -->
+  <div class="section">
+    <h2>📊 สถิติหัวข้อที่ออกสอบ (จากข้อสอบเก่า 10 ฉบับ)</h2>
+    <table class="vs-table">
+      <tr><th>หัวข้อ</th><th>ความถี่</th><th>ระดับ</th></tr>
+      <tr><td>ม.59 เจตนา/ประมาท</td><td>เกือบทุกครั้ง</td><td><span class="badge badge-red">สำคัญมาก</span></td></tr>
+      <tr><td>ม.68 ป้องกัน + ม.69 เกินสมควร</td><td>เกือบทุกครั้ง</td><td><span class="badge badge-red">สำคัญมาก</span></td></tr>
+      <tr><td>ม.60 พลาด / ม.61 สำคัญผิดในบุคคล</td><td>บ่อยมาก</td><td><span class="badge badge-red">สำคัญมาก</span></td></tr>
+      <tr><td>ม.62 สำคัญผิดในข้อเท็จจริง</td><td>บ่อย</td><td><span class="badge badge-yellow">สำคัญ</span></td></tr>
+      <tr><td>ม.63 ผลเกินเจตนา</td><td>บ่อย</td><td><span class="badge badge-yellow">สำคัญ</span></td></tr>
+      <tr><td>ม.67 จำเป็น</td><td>ปานกลาง</td><td><span class="badge badge-yellow">สำคัญ</span></td></tr>
+      <tr><td>ม.80 พยายาม</td><td>ปานกลาง</td><td><span class="badge badge-yellow">สำคัญ</span></td></tr>
+      <tr><td>ม.83-87 ตัวการ/ผู้สนับสนุน/ผู้ใช้</td><td>ปานกลาง</td><td><span class="badge badge-yellow">สำคัญ</span></td></tr>
+      <tr><td>ม.65 วิกลจริต / ม.70 ทำตามคำสั่ง</td><td>นานๆ ครั้ง</td><td><span class="badge badge-green">รู้ไว้</span></td></tr>
+    </table>
+  </div>
+
+  <!-- พยายาม ม.80 -->
+  <div class="section">
+    <h2>มาตรา 80 — พยายามกระทำความผิด <span class="badge badge-yellow">ออกบ่อย</span></h2>
+    <p><strong>หลัก:</strong> ลงมือกระทำความผิดแล้ว แต่กระทำไปไม่ตลอด หรือ กระทำไปตลอดแล้วแต่การกระทำไม่บรรลุผล</p>
+    <div class="highlight-box">
+      <strong>โทษ:</strong> 2 ใน 3 ของโทษที่กำหนดไว้สำหรับความผิดนั้น<br>
+      <strong>ตัวอย่าง:</strong> ยิง ก 1 นัดแต่ไม่ถูก → พยายามฆ่า ม.288 ประกอบ ม.80
+    </div>
+    <h3>แยก "พยายาม" กับ "ตระเตรียม"</h3>
+    <p><strong style="color:var(--green)">ตระเตรียม</strong> = ยังไม่ลงมือ (ซื้อปืน, สะกดรอยตาม) → ไม่ผิด (หลัก) ยกเว้น กม. บัญญัติเป็นพิเศษ<br>
+    <strong style="color:var(--red)">พยายาม</strong> = ลงมือแล้ว แต่ไม่สำเร็จ → ผิดฐานพยายาม ม.80</p>
+  </div>
+
+  <!-- ผู้มีส่วนร่วม -->
+  <div class="section">
+    <h2>มาตรา 83-87 — ผู้มีส่วนร่วมในการกระทำผิด <span class="badge badge-yellow">ออกบ่อย</span></h2>
+    <table class="vs-table">
+      <tr><th>มาตรา</th><th>ประเภท</th><th>ความหมาย</th><th>โทษ</th></tr>
+      <tr>
+        <td><strong>ม.83</strong></td>
+        <td style="color:var(--red)">ตัวการ</td>
+        <td>2 คนขึ้นไปร่วมกระทำความผิด</td>
+        <td>โทษเท่ากับผู้ลงมือ</td>
+      </tr>
+      <tr>
+        <td><strong>ม.84</strong></td>
+        <td style="color:var(--yellow)">ผู้ใช้</td>
+        <td>ก่อให้ผู้อื่นกระทำความผิดโดยยุยง ส่งเสริม บังคับ ฯลฯ</td>
+        <td>โทษเท่ากับตัวการ</td>
+      </tr>
+      <tr>
+        <td><strong>ม.86</strong></td>
+        <td style="color:var(--cyan)">ผู้สนับสนุน</td>
+        <td>ช่วยเหลือหรือให้ความสะดวกก่อน/ขณะกระทำผิด</td>
+        <td>2 ใน 3 ของโทษ</td>
+      </tr>
+    </table>
+    <div class="highlight-box">
+      <strong>แยก ม.83 กับ ม.86:</strong> ตัวการ (ม.83) = ร่วม "ลงมือ" หรือร่วมกันวางแผน+แบ่งหน้าที่ / ผู้สนับสนุน (ม.86) = แค่ช่วยเหลือ ไม่ได้เป็นส่วนของแผนหลัก เช่น ให้ยืมปืน, เปิดประตูให้
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- TAB 2 : Flashcard เดามาตรา            -->
+<!-- ══════════════════════════════════════ -->
+<div id="tab-flashcard" class="tab-content">
+
+  <div class="fc-score">
+    <div class="fc-score-item fc-score-correct">✓ ถูก: <span id="score-correct">0</span></div>
+    <div class="fc-score-item fc-score-wrong">✗ ผิด: <span id="score-wrong">0</span></div>
+  </div>
+
+  <div class="flashcard-controls">
+    <button class="fc-btn" id="btn-shuffle" onclick="shuffleCards()">🔀 สุ่มใหม่</button>
+    <button class="fc-btn" id="btn-reset" onclick="resetScore()">↻ รีเซ็ตคะแนน</button>
+    <div class="fc-counter">ข้อ <span id="fc-current">1</span> / <span id="fc-total">0</span></div>
+  </div>
+
+  <div class="flashcard-area" id="flashcard-area">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="fc-face fc-front">
+        <div class="fc-label">โจทย์ — เดามาตรา</div>
+        <div class="fc-question" id="fc-question"></div>
+        <div class="fc-hint">คลิกเพื่อเฉลย</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-answer-label">คำตอบ</div>
+        <div class="fc-answer-main" id="fc-answer"></div>
+        <div class="fc-answer-detail" id="fc-detail"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-self-check" id="fc-self-check">
+    <button class="fc-check-btn correct" onclick="markCorrect()">✓ ตอบถูก</button>
+    <button class="fc-check-btn wrong" onclick="markWrong()">✗ ตอบผิด</button>
+  </div>
+
+  <div class="fc-nav">
+    <button class="fc-btn" id="btn-prev" onclick="prevCard()">← ก่อนหน้า</button>
+    <button class="fc-btn primary" id="btn-next" onclick="nextCard()">ถัดไป →</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- TAB 3 : การ์ดจำด่วน                   -->
+<!-- ══════════════════════════════════════ -->
+<div id="tab-quick" class="tab-content">
+
+  <div class="section" style="background: linear-gradient(135deg, #1e2240 0%, #1a1d30 100%); border-color: var(--accent); margin-bottom:24px;">
+    <h2 style="color:var(--yellow);">⚡ การ์ดจำด่วน — เปิดดูก่อนเข้าห้องสอบ</h2>
+    <p style="color:var(--text2);">สรุปสั้นที่สุดของทุกมาตราสำคัญ แค่กวาดตาผ่านก็พอ</p>
+  </div>
+
+  <div class="quick-grid">
+
+    <div class="qc-divider">— หมวดเจตนา —</div>
+
+    <div class="quick-card">
+      <div class="qc-section">ม.59 ว.2</div>
+      <div class="qc-title">เจตนาประสงค์ต่อผล</div>
+      <div class="qc-body"><strong>มุ่งหมาย</strong>ให้เกิดผลโดยตรง<br>"ตั้งใจยิงให้ตาย"</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.59 ว.2</div>
+      <div class="qc-title">เจตนาย่อมเล็งเห็นผล</div>
+      <div class="qc-body"><strong>รู้ว่าผลจะเกิดแน่นอน</strong> แม้ไม่ได้ประสงค์โดยตรง<br>"ยิงฝูงชน รู้ว่าต้องถูกคน"</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.59 ว.4</div>
+      <div class="qc-title">ประมาท</div>
+      <div class="qc-body">ไม่เจตนา แต่<strong>ไม่ใช้ความระมัดระวัง</strong>ที่บุคคลในภาวะนั้นควรมี<br>"ขับรถเร็วในซอยแคบ ชนคนตาย"</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.59 ว.3</div>
+      <div class="qc-title">เจตนาโดยผลของกฎหมาย</div>
+      <div class="qc-body">กระทำโดย<strong>รู้สำนึกในการกระทำ</strong> แม้ไม่รู้ว่าเป็นความผิด<br>ก็ถือว่าเจตนา</div>
+    </div>
+
+    <div class="qc-divider">— หมวดพลาด / สำคัญผิด —</div>
+
+    <div class="quick-card">
+      <div class="qc-section">ม.60</div>
+      <div class="qc-title">เจตนาโดยพลาด</div>
+      <div class="qc-body">มุ่งที่ ก แต่ <strong>"พลาด"</strong> ไปถูก ข<br>→ ถือว่ามีเจตนาต่อ ข<br><strong>จำ:</strong> รู้เป้าหมาย แต่มือพลาด</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.61</div>
+      <div class="qc-title">สำคัญผิดในตัวบุคคล</div>
+      <div class="qc-body">จะฆ่า ก แต่ <strong>"เข้าใจผิด"</strong> ว่า ข คือ ก<br>→ ผิดเสมือนทำต่อ ก<br><strong>จำ:</strong> มองผิดคนตั้งแต่ต้น</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.62 ว.1</div>
+      <div class="qc-title">สำคัญผิดว่ามีเหตุยกเว้น</div>
+      <div class="qc-body">คิดว่ามีภัย จึงป้องกัน แต่<strong>จริงๆ ไม่มี</strong><br>→ ได้ประโยชน์จากความสำคัญผิด<br>"ป้องกันโดยสำคัญผิด"</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.62 ว.2</div>
+      <div class="qc-title">ไม่รู้ข้อเท็จจริงที่เป็นองค์ประกอบ</div>
+      <div class="qc-body">ไม่รู้ว่าเป็นคน ยิงคิดว่าเป็นสัตว์<br>→ <strong>ไม่มีเจตนา</strong> อาจเป็นแค่ประมาท</div>
+    </div>
+
+    <div class="qc-divider">— หมวดผลเกินเจตนา —</div>
+
+    <div class="quick-card full-width">
+      <div class="qc-section">ม.63</div>
+      <div class="qc-title">ผลเกินเจตนา</div>
+      <div class="qc-body">ตั้งใจทำร้าย (ม.295) แต่คนตาย → ม.290 | ตั้งใจฆ่า = ม.288 | <strong>ผลเกิน = รับผิดเพียงประมาทสำหรับส่วนที่เกิน</strong></div>
+    </div>
+
+    <div class="qc-divider">— หมวดเหตุยกเว้นความผิด —</div>
+
+    <div class="quick-card">
+      <div class="qc-section">ม.68</div>
+      <div class="qc-title">ป้องกัน</div>
+      <div class="qc-body"><strong>5 องค์ประกอบ:</strong> ภัยจากคนละเมิด กม. + ใกล้จะถึง + ป้องกันสิทธิ + พอสมควร + จำต้องทำ<br><strong>ครบ → ไม่ผิด</strong></div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.69</div>
+      <div class="qc-title">ป้องกันเกินสมควร</div>
+      <div class="qc-body">ป้องกันแต่<strong>เกินกว่าพอสมควรแก่เหตุ</strong><br>→ ยังผิด แต่ศาลลดโทษได้เท่าใดก็ได้</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.67</div>
+      <div class="qc-title">จำเป็น</div>
+      <div class="qc-body">ภัยจาก <strong>ธรรมชาติ/สัตว์/สถานการณ์</strong><br>ทำต่อบุคคลที่ 3 ได้ + ต้องไม่เกินสมควร<br><strong>จำ: ม.67 ภัยจากอื่น / ม.68 ภัยจากคน</strong></div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.70</div>
+      <div class="qc-title">ทำตามคำสั่ง</div>
+      <div class="qc-body">กระทำตามคำสั่งของ จพง. แม้คำสั่งนั้นมิชอบ<br>ถ้า<strong>สุจริตเชื่อว่าชอบ + ไม่เกินสมควร</strong><br>→ ไม่ต้องรับโทษ</div>
+    </div>
+
+    <div class="qc-divider">— หมวดเหตุลดโทษ —</div>
+
+    <div class="quick-card">
+      <div class="qc-section">ม.65</div>
+      <div class="qc-title">วิกลจริต</div>
+      <div class="qc-body"><strong>ไม่สามารถรู้ผิดชอบ</strong>หรือบังคับตนได้ → ไม่ต้องรับโทษ<br>รู้ผิดชอบได้บ้าง → ศาลลดโทษได้</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.72</div>
+      <div class="qc-title">บันดาลโทสะ</div>
+      <div class="qc-body">ถูก<strong>ข่มเหงอย่างร้ายแรงด้วยเหตุอันไม่เป็นธรรม</strong><br>จึงกระทำในขณะนั้น → ศาลลดโทษได้</div>
+    </div>
+
+    <div class="qc-divider">— หมวดพยายาม —</div>
+
+    <div class="quick-card">
+      <div class="qc-section">ม.80</div>
+      <div class="qc-title">พยายาม</div>
+      <div class="qc-body">ลงมือแล้ว แต่ไม่ตลอด / ตลอดแล้วแต่ไม่บรรลุผล<br><strong>โทษ: 2/3 ของโทษที่กำหนด</strong></div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.81</div>
+      <div class="qc-title">พยายามที่เป็นไปไม่ได้</div>
+      <div class="qc-body">กระทำที่<strong>ไม่มีทางบรรลุผลอย่างแน่แท้</strong><br>เช่น ยิงศพ (ตายแล้ว) → ศาลไม่ลงโทษก็ได้</div>
+    </div>
+
+    <div class="qc-divider">— หมวดผู้มีส่วนร่วม —</div>
+
+    <div class="quick-card">
+      <div class="qc-section">ม.83</div>
+      <div class="qc-title">ตัวการ</div>
+      <div class="qc-body">≥ 2 คน <strong>ร่วมกันกระทำผิด</strong><br>โทษ: เท่ากับผู้ลงมือ</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.84</div>
+      <div class="qc-title">ผู้ใช้</div>
+      <div class="qc-body"><strong>ก่อให้</strong>ผู้อื่นกระทำผิด (ยุยง/บังคับ)<br>โทษ: เท่ากับตัวการ</div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.86</div>
+      <div class="qc-title">ผู้สนับสนุน</div>
+      <div class="qc-body"><strong>ช่วยเหลือ/ให้ความสะดวก</strong> ก่อน/ขณะทำผิด<br>โทษ: <strong>2/3 ของโทษ</strong></div>
+    </div>
+    <div class="quick-card">
+      <div class="qc-section">ม.87</div>
+      <div class="qc-title">สนับสนุนโดยให้ทรัพย์สิน</div>
+      <div class="qc-body">ผู้สนับสนุนที่<strong>ให้เงินหรือทรัพย์สิน</strong><br>โทษ: เท่ากับผู้สนับสนุน</div>
+    </div>
+
+    <div class="qc-divider">— สูตรจำด่วน —</div>
+
+    <div class="quick-card full-width" style="border-color: var(--yellow);">
+      <div class="qc-title" style="font-size:1rem; color:var(--yellow);">สูตรจำด่วน 60 วินาที</div>
+      <div class="qc-body" style="font-size:0.9rem; line-height: 2;">
+        <strong style="color:var(--text)">ม.59</strong> = เจตนา (ประสงค์/เล็งเห็น) + ประมาท |
+        <strong style="color:var(--text)">ม.60</strong> = พลาด (มือพลาด) |
+        <strong style="color:var(--text)">ม.61</strong> = สำคัญผิดตัวบุคคล (ตาพลาด) |
+        <strong style="color:var(--text)">ม.62</strong> = สำคัญผิดข้อเท็จจริง |
+        <strong style="color:var(--text)">ม.63</strong> = ผลเกินเจตนา |
+        <strong style="color:var(--text)">ม.65</strong> = วิกลจริต |
+        <strong style="color:var(--text)">ม.67</strong> = จำเป็น (ภัยจากอื่น) |
+        <strong style="color:var(--text)">ม.68</strong> = ป้องกัน (ภัยจากคน) |
+        <strong style="color:var(--text)">ม.69</strong> = ป้องกันเกินสมควร |
+        <strong style="color:var(--text)">ม.70</strong> = ตามคำสั่ง |
+        <strong style="color:var(--text)">ม.72</strong> = บันดาลโทสะ |
+        <strong style="color:var(--text)">ม.80</strong> = พยายาม (2/3 โทษ) |
+        <strong style="color:var(--text)">ม.83</strong> = ตัวการ |
+        <strong style="color:var(--text)">ม.84</strong> = ผู้ใช้ |
+        <strong style="color:var(--text)">ม.86</strong> = ผู้สนับสนุน (2/3 โทษ)
+      </div>
+    </div>
+
+    <div class="quick-card full-width" style="border-color: var(--cyan);">
+      <div class="qc-title" style="font-size:1rem; color:var(--cyan);">โครงสร้างตอบ 4 ขั้น (ท่องให้ขึ้นใจ)</div>
+      <div class="qc-body" style="font-size:0.95rem; line-height: 2.2;">
+        <strong style="color:var(--accent)">① การกระทำ</strong> → <strong style="color:var(--accent)">② องค์ประกอบความผิด</strong> (ภายนอก + ภายใน/เจตนา) → <strong style="color:var(--accent)">③ เหตุยกเว้นความผิด</strong> (ป้องกัน/จำเป็น) → <strong style="color:var(--accent)">④ เหตุยกเว้น/ลดโทษ</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+// ─── Tab switching ───
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ─── Flashcard data ───
+const cards = [
+  {
+    q: "นาย ก ใช้ปืนยิงนาย ข แต่กระสุนพลาดไปถูกนาย ค ที่ยืนอยู่ข้างๆ ถึงแก่ความตาย",
+    a: "มาตรา 60",
+    d: "เจตนาโดยพลาด — รู้เป้าหมาย (ข) แต่ \"มือพลาด\" ไปถูกคนอื่น (ค) → ถือว่ามีเจตนาต่อ ค"
+  },
+  {
+    q: "นาย ก ต้องการฆ่านาย ข เห็นนาย ค หน้าคล้ายนาย ข ในที่มืด จึงยิงนาย ค ตาย",
+    a: "มาตรา 61",
+    d: "สำคัญผิดในตัวบุคคล — \"เข้าใจผิด\" ว่า ค คือ ข → ผิดเสมือนกระทำต่อ ข"
+  },
+  {
+    q: "นาย ก ยิงปืนเข้าไปในพุ่มไม้ คิดว่าเป็นหมูป่า แต่ปรากฏว่าเป็นคนซ่อนอยู่ ถูกยิงตาย",
+    a: "มาตรา 62 วรรค 2",
+    d: "ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบความผิด (ไม่รู้ว่าเป็นคน) → ไม่มีเจตนาฆ่า อาจเป็นประมาท"
+  },
+  {
+    q: "นาย ก ได้ยินเสียงเปิดประตูตอนดึก เข้าใจว่ามีโจร จึงยิงไป 1 นัด ปรากฏว่าเป็นลูกชายตัวเอง",
+    a: "มาตรา 62 วรรค 1 ประกอบ มาตรา 68",
+    d: "สำคัญผิดว่ามีภยันตราย (คิดว่ามีโจร) → ป้องกันโดยสำคัญผิด → ได้ประโยชน์จากความสำคัญผิดนั้น"
+  },
+  {
+    q: "นาย ก ต่อยนาย ข 1 หมัด ที่หน้า ตั้งใจแค่ทำร้าย แต่นาย ข ล้มหัวฟาดพื้นถึงแก่ความตาย",
+    a: "มาตรา 63",
+    d: "ผลเกินเจตนา — ตั้งใจทำร้ายร่างกาย (ม.295) แต่ผลคือตาย → ม.290 ทำร้ายจนถึงตาย (ไม่ใช่ ม.288 ฆ่า)"
+  },
+  {
+    q: "นาย ก วางระเบิดรถนาย ข ขณะนาย ค นั่งอยู่ด้วย รู้แน่ว่า ค ต้องตายแน่ แต่ก็ทำ",
+    a: "มาตรา 59 วรรค 2 (ย่อมเล็งเห็นผล)",
+    d: "เจตนาย่อมเล็งเห็นผล — ไม่ได้ประสงค์ต่อ ค โดยตรง แต่ \"รู้ว่าผลจะเกิดอย่างแน่นอน\" → ถือว่ามีเจตนาต่อ ค"
+  },
+  {
+    q: "น้ำท่วมหนัก นาย ก ทุบกำแพงบ้านนาย ข เพื่อหนีน้ำ",
+    a: "มาตรา 67",
+    d: "จำเป็น — ภัยมาจากธรรมชาติ (น้ำท่วม) ไม่ใช่จากคน → ทำต่อทรัพย์สินบุคคลที่ 3 ได้ ≠ ม.68 (ป้องกัน)"
+  },
+  {
+    q: "โจรถือมีดวิ่งเข้ามาจะแทงนาย ก นาย ก หยิบท่อนไม้ตีโจร 1 ที จนโจรล้มสลบ",
+    a: "มาตรา 68",
+    d: "ป้องกัน — ภัยจากคนละเมิด กม. + ใกล้จะถึง + ป้องกันสิทธิตน + พอสมควร + จำต้องทำ → ครบ 5 ข้อ = ไม่มีความผิด"
+  },
+  {
+    q: "นาย ก ถูกนาย ข ต่อยหน้า 1 หมัด นาย ก จึงชักปืนยิงนาย ข ตาย",
+    a: "มาตรา 69 (ป้องกันเกินสมควร)",
+    d: "ป้องกันแต่เกินกว่าพอสมควรแก่เหตุ — ถูกต่อยด้วยมือเปล่าแต่ยิงปืนตอบ = ไม่ได้สัดส่วน → ยังผิด แต่ศาลลดโทษได้"
+  },
+  {
+    q: "นาย ก ตั้งใจจะฆ่านาย ข จึงใช้ปืนยิง 1 นัด แต่พลาดไม่ถูก ข วิ่งหนีไปได้",
+    a: "มาตรา 80",
+    d: "พยายามกระทำความผิด — ลงมือแล้ว (ยิง) แต่ไม่บรรลุผล → ม.288 ฆ่า ประกอบ ม.80 พยายาม โทษ 2/3"
+  },
+  {
+    q: "นาย ก จ้างนาย ข ให้ไปฆ่านาย ค โดยให้เงิน 50,000 บาท",
+    a: "มาตรา 84",
+    d: "ผู้ใช้ — ก่อให้ผู้อื่นกระทำผิด (จ้างวาน) → นาย ก เป็นผู้ใช้ โทษเท่ากับตัวการ"
+  },
+  {
+    q: "นาย ก กับนาย ข ร่วมกันวางแผนปล้นร้านทอง โดย ก ถือปืน ข ถือถุง ทั้งสองเข้าไปในร้าน",
+    a: "มาตรา 83",
+    d: "ตัวการ — ≥ 2 คนร่วมกันกระทำผิด (ร่วมวางแผน + แบ่งหน้าที่ + ร่วมลงมือ) → โทษเท่ากัน"
+  },
+  {
+    q: "นาย ก รู้ว่านาย ข จะไปฆ่าคน จึงให้นาย ข ยืมปืน",
+    a: "มาตรา 86",
+    d: "ผู้สนับสนุน — ช่วยเหลือ/ให้ความสะดวก (ให้ยืมปืน) ก่อนกระทำผิด → โทษ 2/3"
+  },
+  {
+    q: "นาย ก เป็นคนวิกลจริต ไม่สามารถรู้ผิดชอบได้ ใช้มีดแทงนาย ข ตาย",
+    a: "มาตรา 65",
+    d: "วิกลจริต — ไม่สามารถรู้ผิดชอบหรือบังคับตนเองได้ → ไม่ต้องรับโทษ (แม้กระทำครบองค์ประกอบ)"
+  },
+  {
+    q: "นาย ก กำลังกินข้าว นาย ข เดินมาตบหน้านาย ก 3 ที ต่อหน้าแฟน นาย ก โกรธมากจึงแทงนาย ข ทันที",
+    a: "มาตรา 72",
+    d: "บันดาลโทสะ — ถูกข่มเหงอย่างร้ายแรงด้วยเหตุอันไม่เป็นธรรม → กระทำในขณะนั้น → ยังผิด แต่ศาลลดโทษได้"
+  },
+  {
+    q: "ทหารปฏิบัติตามคำสั่งผู้บังคับบัญชาให้ยิงผู้ต้องสงสัย โดยเชื่อโดยสุจริตว่าคำสั่งนั้นชอบด้วยกฎหมาย",
+    a: "มาตรา 70",
+    d: "ทำตามคำสั่ง จพง. — สุจริตเชื่อว่าคำสั่งชอบ + ไม่เกินสมควร → ไม่ต้องรับโทษ"
+  },
+  {
+    q: "นาย ก ขับรถด้วยความเร็ว 120 กม./ชม. ในเขตชุมชน ชนคนข้ามถนนตาย",
+    a: "มาตรา 59 วรรค 4 (ประมาท)",
+    d: "ประมาท — ไม่มีเจตนาฆ่า แต่ปราศจากความระมัดระวังที่ควรมี (ขับเร็วเกินในเขตชุมชน) → ผิดฐานประมาท"
+  },
+  {
+    q: "นาย ก ยิงศพนาย ข ที่ตายไปแล้ว 2 ชั่วโมง โดยคิดว่านาย ข ยังมีชีวิต",
+    a: "มาตรา 81",
+    d: "พยายามที่เป็นไปไม่ได้อย่างแน่แท้ — วัตถุแห่งการกระทำ (ศพ) ไม่มีทางบรรลุผลฆ่าได้ → ศาลจะไม่ลงโทษก็ได้"
+  },
+  {
+    q: "นาย ก ทำร้าย ข เล็กน้อย → ข ไปรพ. → รถพยาบาลถูกรถบรรทุกชน ข ตาย นาย ก ต้องรับผิดฐานฆ่าหรือไม่?",
+    a: "ทฤษฎีเหตุที่เหมาะสม (Adequate Cause)",
+    d: "รถชน = เหตุแทรกซ้อนที่ผิดปกติวิสัย ตัดความสัมพันธ์ระหว่างการกระทำกับผล → ก ไม่ต้องรับผิดเรื่องตาย (รับผิดแค่ทำร้ายร่างกาย)"
+  },
+  {
+    q: "นาย ก จะฆ่านาย ข จึงไปซื้อปืน สะกดรอยตาม ข เป็นเวลา 3 วัน แต่ยังไม่ได้ลงมือ ผิดฐานพยายามฆ่าหรือไม่?",
+    a: "ไม่ผิด — เป็นเพียง \"ตระเตรียม\"",
+    d: "ตระเตรียม ≠ พยายาม — ยังไม่ \"ลงมือ\" กระทำผิด → ไม่ผิดฐานพยายาม (ม.80 ต้องลงมือแล้ว)"
+  }
+];
+
+let currentIndex = 0;
+let isFlipped = false;
+let scoreCorrect = 0;
+let scoreWrong = 0;
+let shuffled = [...cards];
+
+function renderCard() {
+  const card = shuffled[currentIndex];
+  document.getElementById('fc-question').textContent = card.q;
+  document.getElementById('fc-answer').textContent = card.a;
+  document.getElementById('fc-detail').textContent = card.d;
+  document.getElementById('fc-current').textContent = currentIndex + 1;
+  document.getElementById('fc-total').textContent = shuffled.length;
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+
+  // Reset flip
+  isFlipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fc-self-check').classList.remove('visible');
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped');
+  if (isFlipped) {
+    document.getElementById('fc-self-check').classList.add('visible');
+  } else {
+    document.getElementById('fc-self-check').classList.remove('visible');
+  }
+}
+
+function nextCard() {
+  if (currentIndex < shuffled.length - 1) {
+    currentIndex++;
+    renderCard();
+  }
+}
+
+function prevCard() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderCard();
+  }
+}
+
+function markCorrect() {
+  scoreCorrect++;
+  document.getElementById('score-correct').textContent = scoreCorrect;
+  document.getElementById('fc-self-check').classList.remove('visible');
+  if (currentIndex < shuffled.length - 1) {
+    setTimeout(() => nextCard(), 300);
+  }
+}
+
+function markWrong() {
+  scoreWrong++;
+  document.getElementById('score-wrong').textContent = scoreWrong;
+  document.getElementById('fc-self-check').classList.remove('visible');
+  if (currentIndex < shuffled.length - 1) {
+    setTimeout(() => nextCard(), 300);
+  }
+}
+
+function shuffleCards() {
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  currentIndex = 0;
+  renderCard();
+}
+
+function resetScore() {
+  scoreCorrect = 0;
+  scoreWrong = 0;
+  document.getElementById('score-correct').textContent = '0';
+  document.getElementById('score-wrong').textContent = '0';
+  currentIndex = 0;
+  shuffleCards();
+}
+
+// Init
+renderCard();
+</script>
+
+</body>
+</html>
