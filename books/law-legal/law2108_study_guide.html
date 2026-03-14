@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LAW2108 — ติวสอบ + Flip Cards</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
+
+:root {
+  --blue: #2b6cb0; --blue-light: #ebf8ff; --blue-border: #bee3f8;
+  --green: #276749; --green-light: #f0fff4; --green-border: #c6f6d5;
+  --purple: #553c9a; --purple-light: #faf5ff; --purple-border: #e9d8fd;
+  --orange: #c05621; --orange-light: #fffaf0; --orange-border: #feebc8;
+  --red: #c53030; --red-light: #fff5f5; --red-border: #fed7d7;
+  --dark: #1a202c; --gray: #718096; --light: #f7fafc;
+  --radius: 10px; --shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: #edf2f7;
+  color: var(--dark);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ─── STICKY HEADER ─── */
+.app-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%);
+  color: white;
+  padding: 16px 16px 0;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
+.app-header-top { text-align: center; padding-bottom: 12px; }
+.app-header h1 { font-size: 18px; font-weight: 800; }
+.app-header p  { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+
+/* ─── TABS ─── */
+.tabs {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+.tab-btn {
+  flex: 1; padding: 10px 4px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  color: white;
+  border-bottom-color: #fbd38d;
+}
+
+/* ─── PANELS ─── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ─── STUDY PANEL ─── */
+.study-panel { padding: 14px; max-width: 680px; margin: 0 auto; }
+
+/* Pattern box */
+.pattern-box {
+  background: #fffbeb;
+  border: 2px solid #f6ad55;
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.pattern-box h3 {
+  color: #92400e; font-size: 14px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.pattern-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+}
+.pattern-item {
+  background: white; border-radius: 8px;
+  padding: 10px 6px; text-align: center;
+  border: 1px solid #f6ad55;
+}
+.q-num { font-size: 20px; font-weight: 800; color: #c05621; }
+.q-topic { font-size: 12px; font-weight: 700; color: var(--dark); margin: 2px 0; }
+.q-matraa { font-size: 11px; color: var(--gray); line-height: 1.4; }
+
+/* Formula */
+.formula-box {
+  background: linear-gradient(135deg,#1a365d,#2c5282);
+  color: white; border-radius: var(--radius);
+  padding: 14px; margin-bottom: 14px;
+}
+.formula-box h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; opacity: 0.9; }
+.formula-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+.f-step {
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 8px 4px; text-align: center;
+}
+.f-num { font-size: 20px; font-weight: 800; color: #fbd38d; }
+.f-text { font-size: 11px; margin-top: 2px; }
+.f-detail { font-size: 10px; opacity: 0.65; margin-top: 2px; line-height: 1.3; }
+
+/* Section */
+.section { border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow); }
+.sec-hdr {
+  padding: 11px 14px; color: white;
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none;
+}
+.sec-hdr .toggle { margin-left: auto; font-size: 18px; transition: transform 0.3s; }
+.sec-hdr.collapsed .toggle { transform: rotate(-90deg); }
+.sec-body { padding: 12px 14px; background: white; }
+.sec-body.collapsed { display: none; }
+
+.s-blue .sec-hdr  { background: var(--blue); }
+.s-green .sec-hdr { background: var(--green); }
+.s-purple .sec-hdr{ background: var(--purple); }
+.s-orange .sec-hdr{ background: var(--orange); }
+
+/* Matraa card */
+.mc {
+  border-radius: 8px; padding: 11px 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid;
+}
+.s-blue   .mc { border-color: var(--blue);   background: var(--blue-light); }
+.s-green  .mc { border-color: var(--green);  background: var(--green-light); }
+.s-purple .mc { border-color: var(--purple); background: var(--purple-light); }
+.s-orange .mc { border-color: var(--orange); background: var(--orange-light); }
+
+.mc-num {
+  font-size: 14px; font-weight: 800; margin-bottom: 4px;
+}
+.s-blue   .mc-num { color: var(--blue); }
+.s-green  .mc-num { color: var(--green); }
+.s-purple .mc-num { color: var(--purple); }
+.s-orange .mc-num { color: var(--orange); }
+
+.mc-body { font-size: 13px; color: #2d3748; }
+.note {
+  border-radius: 6px; padding: 6px 9px;
+  font-size: 12px; line-height: 1.5; margin-top: 7px;
+}
+.note.trap { background: #fff5f5; border-left: 3px solid #fc8181; color: var(--red); }
+.note.tip  { background: var(--blue-light); border-left: 3px solid #63b3ed; color: #2c5282; }
+
+/* Quick table */
+.qtable { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+.qtable th {
+  padding: 7px 8px; color: white; text-align: left; font-weight: 600;
+}
+.s-blue   .qtable th { background: var(--blue); }
+.s-green  .qtable th { background: var(--green); }
+.s-purple .qtable th { background: var(--purple); }
+.s-orange .qtable th { background: var(--orange); }
+
+.qtable td { padding: 7px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+.qtable tr:last-child td { border-bottom: none; }
+.qtable tr:nth-child(even) td { background: #f9fafb; }
+.ok  { color: #276749; font-weight: 700; }
+.no  { color: var(--red); font-weight: 700; }
+.warn{ color: #c05621; font-weight: 700; }
+
+/* Quick ref box */
+.qref {
+  background: var(--dark); color: white;
+  border-radius: var(--radius); padding: 14px;
+  margin-bottom: 14px;
+}
+.qref h3 { font-size: 14px; font-weight: 700; color: #fbd38d; margin-bottom: 10px; }
+.qref .qtable th { background: #2d3748; }
+.qref .qtable td { color: #e2e8f0; border-bottom-color: #4a5568; }
+.qref .qtable tr:nth-child(even) td { background: #2d3748; }
+
+
+/* ─── FLIP PANEL ─── */
+.flip-panel { padding: 12px; max-width: 700px; margin: 0 auto; }
+
+/* filter row */
+.filter-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 10px; align-items: center;
+}
+.fbtn {
+  border: none; border-radius: 16px; padding: 5px 12px;
+  font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; opacity: 0.55; transition: all 0.18s;
+}
+.fbtn.active { opacity: 1; transform: scale(1.07); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.fbtn.fall  { background: #e2e8f0; color: var(--dark); }
+.fbtn.fblue { background: var(--blue-border); color: var(--blue); }
+.fbtn.fgreen{ background: var(--green-border); color: var(--green); }
+.fbtn.fpurple{background: var(--purple-border);color: var(--purple);}
+.fbtn.forange{background: var(--orange-border);color: var(--orange);}
+.fbtn.fred  { background: var(--red-border); color: var(--red); }
+.fbtn.fshuffle{ background: #4a5568; color: white; }
+
+.flip-stats { font-size: 12px; color: var(--gray); margin-bottom: 10px; }
+.flip-stats span { color: #c05621; font-weight: 700; }
+
+/* card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 520px) {
+  .card-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* flip card */
+.cw {
+  perspective: 900px;
+  height: 165px;
+  cursor: pointer;
+}
+.cw.gone { display: none; }
+
+.card {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+  border-radius: var(--radius);
+}
+.cw.flipped .card { transform: rotateY(180deg); }
+
+.cface {
+  position: absolute; inset: 0;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 12px; text-align: center;
+  overflow: hidden;
+}
+
+/* front */
+.cfront {
+  color: white;
+}
+.cfront::after {
+  content: ''; position: absolute;
+  bottom: -18px; left: -18px;
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+.cfront.cblue  { background: linear-gradient(135deg, #2b6cb0, #4299e1); }
+.cfront.cgreen { background: linear-gradient(135deg, #276749, #38a169); }
+.cfront.cpurple{ background: linear-gradient(135deg, #553c9a, #805ad5); }
+.cfront.corange{ background: linear-gradient(135deg, #c05621, #ed8936); }
+.cfront.cred   { background: linear-gradient(135deg, #9b2c2c, #e53e3e); }
+
+.c-badge {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 12px; padding: 2px 10px;
+  font-size: 10px; font-weight: 600;
+  margin-bottom: 6px; z-index: 1;
+}
+.c-mnum { font-size: 26px; font-weight: 800; line-height: 1; z-index: 1; }
+.c-msub { font-size: 10px; opacity: 0.7; z-index: 1; }
+.c-mtitle { font-size: 13px; font-weight: 700; margin-top: 5px; z-index: 1; }
+.c-hint {
+  position: absolute; bottom: 7px; right: 10px;
+  font-size: 9px; opacity: 0.5; z-index: 1;
+}
+
+/* back */
+.cback {
+  background: white;
+  transform: rotateY(180deg);
+  padding: 11px 12px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+}
+.cb-tag {
+  display: inline-block; border-radius: 10px;
+  padding: 2px 9px; font-size: 10px; font-weight: 700;
+  margin-bottom: 6px; color: white;
+}
+.cb-tag.cblue  { background: var(--blue); }
+.cb-tag.cgreen { background: var(--green); }
+.cb-tag.cpurple{ background: var(--purple); }
+.cb-tag.corange{ background: var(--orange); }
+.cb-tag.cred   { background: var(--red); }
+.cb-title { font-size: 12.5px; font-weight: 700; color: var(--dark); margin-bottom: 5px; line-height: 1.3; }
+.cb-body  { font-size: 11.5px; color: #2d3748; line-height: 1.55; }
+.cb-note  {
+  margin-top: 6px; border-radius: 5px;
+  padding: 5px 7px; font-size: 11px; line-height: 1.4;
+}
+.cb-note.trap { background: #fff5f5; border-left: 2px solid #fc8181; color: var(--red); }
+.cb-note.tip  { background: var(--blue-light); border-left: 2px solid #63b3ed; color: #2c5282; }
+.cb-note.dika { background: #fffaf0; border-left: 2px solid #f6ad55; color: #744210; }
+
+/* print */
+@media print {
+  .app-header { position: static; }
+  .panel { display: block !important; }
+  .tabs, .filter-row { display: none; }
+  .cw { height: auto; perspective: none; }
+  .card { transform: none !important; }
+  .cback { position: static; transform: none; }
+  .cfront { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<div class="app-header">
+  <div class="app-header-top">
+    <h1>📚 LAW2108 ติวสอบ + Flip Cards</h1>
+    <p>เช่าทรัพย์ · เช่าซื้อ · จ้างแรงงาน · จ้างทำของ | ม.รามคำแหง 2567</p>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('study',this)">📖 ติวสอบ</button>
+    <button class="tab-btn" onclick="switchTab('flip',this)">🃏 Flip Cards</button>
+    <button class="tab-btn" onclick="switchTab('ref',this)">⚡ จำด่วน</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════ PANEL: ติวสอบ ═══════════════ -->
+<div id="panel-study" class="panel active">
+<div class="study-panel">
+
+  <!-- Pattern -->
+  <div class="pattern-box">
+    <h3>🎯 PATTERN ข้อสอบ — 3 ข้อ × 25 คะแนน</h3>
+    <div class="pattern-grid">
+      <div class="pattern-item">
+        <div class="q-num">ข้อ 1</div>
+        <div class="q-topic">เช่าทรัพย์</div>
+        <div class="q-matraa">ม.538 · ม.544 · ม.554</div>
+      </div>
+      <div class="pattern-item">
+        <div class="q-num">ข้อ 2</div>
+        <div class="q-topic">เช่าซื้อ</div>
+        <div class="q-matraa">ม.574 วรรคหนึ่ง</div>
+      </div>
+      <div class="pattern-item">
+        <div class="q-num">ข้อ 3</div>
+        <div class="q-topic">จ้างแรงงาน + จ้างทำของ</div>
+        <div class="q-matraa">ม.575·582·583·587·593·605</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula -->
+  <div class="formula-box">
+    <h3>✍️ สูตรเขียนคำตอบ 4 ขั้น</h3>
+    <div class="formula-steps">
+      <div class="f-step">
+        <div class="f-num">①</div>
+        <div class="f-text">หลักกฎหมาย</div>
+        <div class="f-detail">"ตาม ป.พ.พ. ..."</div>
+      </div>
+      <div class="f-step">
+        <div class="f-num">②</div>
+        <div class="f-text">อ้างมาตรา</div>
+        <div class="f-detail">"ม.___ บัญญัติว่า..."</div>
+      </div>
+      <div class="f-step">
+        <div class="f-num">③</div>
+        <div class="f-text">วินิจฉัย</div>
+        <div class="f-detail">"กรณีตามปัญหา..."</div>
+      </div>
+      <div class="f-step">
+        <div class="f-num">④</div>
+        <div class="f-text">สรุป</div>
+        <div class="f-detail">"ดังนั้น...ตามเหตุผลข้างต้น"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── เช่าทรัพย์ ── -->
+  <div class="section s-blue">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      📘 ข้อ 1 — เช่าทรัพย์ (ม.537–571)
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 538 — หลักฐานเป็นหนังสือ</div>
+        <div class="mc-body">เช่าอสังหาริมทรัพย์ <strong>"เกินกว่า 3 ปี"</strong> หรือตลอดชีวิต<br>→ ต้องทำเป็นหนังสือ <strong>และ</strong> จดทะเบียน ไม่งั้นบังคับได้แค่ <strong>3 ปี</strong></div>
+        <div class="note trap">⚠️ "3 ปีพอดี" ไม่ต้องจดทะเบียน! — กับดักออกสอบทุกปี</div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 544 — ห้ามโอน / เช่าช่วง</div>
+        <div class="mc-body">ผู้เช่า <strong>ห้ามโอนการเช่า</strong> หรือ <strong>เช่าช่วง</strong> โดยไม่ได้รับความยินยอม<br>ถ้าฝ่าฝืน → ผู้ให้เช่า <strong>บอกเลิกได้ทันที</strong></div>
+        <div class="note tip">💡 ไม่ต้องบอกกล่าวก่อน! — ต่างจาก ม.554</div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 553 + 554 — บอกเลิกเมื่อไม่สงวนทรัพย์</div>
+        <div class="mc-body"><strong>ม.553</strong> ผู้เช่าต้องสงวนทรัพย์อย่าง<strong>วิญญูชน</strong> + ซ่อมแซมเล็กน้อย<br><strong>ม.554</strong> ถ้าผู้เช่าฝ่าฝืน → ผู้ให้เช่าต้อง <strong>บอกกล่าวก่อน</strong> → ไม่แก้ไข → บอกเลิกได้</div>
+        <div class="note trap">⚠️ ม.554 ต้องบอกกล่าวก่อนเสมอ — ถ้าข้ามขั้นตอน = ผิดวิธี</div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐ มาตรา 569 — สัญญาผูกพันผู้รับโอน</div>
+        <div class="mc-body">ขายทรัพย์ที่เช่า → สัญญาเช่า <strong>ไม่ระงับ</strong> ผู้ซื้อรับทั้งสิทธิ์และหน้าที่ต่อผู้เช่า (ถ้าสัญญาเช่าสมบูรณ์)</div>
+      </div>
+
+      <table class="qtable">
+        <tr><th>สถานการณ์</th><th>ผล</th></tr>
+        <tr><td>เช่า 3 ปีพอดี ไม่จดทะเบียน</td><td class="ok">สัญญาสมบูรณ์ ✓</td></tr>
+        <tr><td>เช่าเกิน 3 ปี ไม่จดทะเบียน</td><td class="warn">บังคับได้แค่ 3 ปี</td></tr>
+        <tr><td>ผู้เช่าเช่าช่วงโดยไม่ยินยอม</td><td class="no">บอกเลิกทันที (ม.544)</td></tr>
+        <tr><td>ผู้เช่าไม่สงวนทรัพย์</td><td class="warn">บอกกล่าวก่อน→บอกเลิก (ม.554)</td></tr>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- ── เช่าซื้อ ── -->
+  <div class="section s-green">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      📗 ข้อ 2 — เช่าซื้อ (ม.572–574)
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐ มาตรา 572 — นิยามเช่าซื้อ</div>
+        <div class="mc-body">เจ้าของ <strong>"ให้เช่า"</strong> + ให้คำมั่นว่าจะ <strong>"ขาย"</strong> เมื่อชำระครบ<br>⚠️ ต้องทำเป็น <strong>หนังสือ</strong> — ถ้าไม่ทำ = <strong>โมฆะ</strong></div>
+        <div class="note trap">⚠️ ไม่มีหนังสือ = โมฆะทันที! (ต่างจากเช่าทรัพย์)</div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 574 วรรคหนึ่ง — บอกเลิก + ริบ</div>
+        <div class="mc-body">ผิดนัด <strong>2 คราวติดๆ กัน</strong> หรือผิดสัญญาข้อ<strong>สำคัญ</strong><br>→ บอกเลิก<strong>ได้ทันที</strong> + <strong>ริบ</strong>เงินที่จ่ายแล้ว + <strong>ยึดทรัพย์</strong>คืน</div>
+        <div class="note trap">⚠️ เรียกค่างวดที่เหลือทั้งหมด = ทำไม่ได้! ขัดความสงบเรียบร้อย (ฎ.859/2524)<br>เรียกได้แค่ค่างวดที่ค้างจริงก่อนสัญญาสิ้นสุด</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── จ้างแรงงาน ── -->
+  <div class="section s-purple">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      📙 ข้อ 3ก — จ้างแรงงาน (ม.575–586)
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐ มาตรา 575 — นิยาม</div>
+        <div class="mc-body">ลูกจ้าง <strong>ทำงาน</strong> | นายจ้าง <strong>ให้สินจ้างตลอดเวลา</strong>ทำงาน → เน้น <strong>"กระบวนการ"</strong></div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 577 — โอนสิทธิ์ / รับคนแทน</div>
+        <div class="mc-body"><strong>ว.1</strong> นายจ้างโอนสิทธิ์ → ต้องได้ยินยอมจาก<strong>ลูกจ้าง</strong><br><strong>ว.2</strong> ลูกจ้างรับคนแทน → ต้องได้ยินยอมจาก<strong>นายจ้าง</strong><br><strong>ว.3</strong> ฝ่าฝืน → <strong>บอกเลิกได้</strong></div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 582 — บอกเลิกปกติ</div>
+        <div class="mc-body">ไม่มีกำหนดเวลา → บอกเลิกโดย <strong>บอกกล่าวล่วงหน้า</strong><br>ณ คราวจ่ายสินจ้าง เพื่อให้มีผล<strong>คราวถัดไป</strong> แต่ ≤ <strong>3 เดือน</strong></div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 583 — บอกเลิกทันที ⚡</div>
+        <div class="mc-body">ลูกจ้าง <strong>จงใจขัดคำสั่ง</strong> / <strong>ละเลยไม่นำพา</strong> / ผิด<strong>ร้ายแรง</strong> / ไม่สมกับเป็นลูกจ้าง<br>→ บอกเลิก<strong>ได้ทันที ไม่ต้องล่วงหน้า</strong></div>
+        <div class="note trap">⚠️ ม.582 = ต้องบอกล่วงหน้า | ม.583 = บอกเลิกทันที — สองมาตรานี้ต่างกัน!</div>
+      </div>
+
+      <table class="qtable">
+        <tr><th>สถานการณ์</th><th>มาตรา</th><th>บอกล่วงหน้า?</th></tr>
+        <tr><td>บอกเลิกปกติ</td><td>ม.582</td><td class="ok">ต้อง (≤3 เดือน)</td></tr>
+        <tr><td>ลูกจ้างผิดร้ายแรง</td><td>ม.583</td><td class="no">ไม่ต้อง</td></tr>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- ── จ้างทำของ ── -->
+  <div class="section s-orange">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      📒 ข้อ 3ข — จ้างทำของ (ม.587–607)
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐ มาตรา 587 — นิยาม</div>
+        <div class="mc-body">ผู้รับจ้าง <strong>ทำงานจนสำเร็จ</strong> | ผู้ว่าจ้างให้สินจ้างแลก<strong>ผลสำเร็จ</strong><br>→ เน้น <strong>"ผลสำเร็จ"</strong> ≠ จ้างแรงงาน (กระบวนการ)</div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐ มาตรา 593 — วัสดุบกพร่อง</div>
+        <div class="mc-body">วัสดุที่ผู้ว่าจ้างส่งมา<strong>บกพร่อง</strong> หรือแบบ<strong>ไม่ถูกต้อง</strong><br>→ ผู้รับจ้างต้อง <strong>"บอกกล่าวโดยพลัน"</strong> — ไม่บอก = รับผิดชอบเอง</div>
+      </div>
+
+      <div class="mc">
+        <div class="mc-num">⭐⭐⭐ มาตรา 605 — บอกเลิกได้เสมอ</div>
+        <div class="mc-body">ผู้ว่าจ้างจะบอกเลิก<strong>เมื่อใดก็ได้</strong> แม้เริ่มงานแล้ว<br><strong>แต่ต้องชดใช้ค่าสินไหมทดแทน</strong> แก่ผู้รับจ้าง</div>
+        <div class="note trap">⚠️ บอกเลิกได้ แต่ต้องจ่ายค่าสินไหม! ไม่ใช่เลิกแล้วไม่ต้องรับผิดชอบ</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /study-panel -->
+</div><!-- /panel-study -->
+
+
+<!-- ═══════════════ PANEL: FLIP CARDS ═══════════════ -->
+<div id="panel-flip" class="panel">
+<div class="flip-panel">
+
+  <div class="filter-row">
+    <button class="fbtn fall active" onclick="filterCards('all',this)">ทั้งหมด</button>
+    <button class="fbtn fblue"   onclick="filterCards('blue',this)">📘 เช่าทรัพย์</button>
+    <button class="fbtn fgreen"  onclick="filterCards('green',this)">📗 เช่าซื้อ</button>
+    <button class="fbtn fpurple" onclick="filterCards('purple',this)">📙 จ้างแรงงาน</button>
+    <button class="fbtn forange" onclick="filterCards('orange',this)">📒 จ้างทำของ</button>
+    <button class="fbtn fred"    onclick="filterCards('red',this)">⚖️ ฎีกา</button>
+    <button class="fbtn fshuffle" onclick="shuffleCards()">🔀 สุ่ม</button>
+  </div>
+  <div class="flip-stats">แสดง <span id="fcount">15</span> การ์ด · แตะเพื่อพลิก</div>
+
+  <div class="card-grid" id="card-grid">
+
+    <!-- เช่าทรัพย์ -->
+    <div class="cw" data-cat="blue" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cblue">
+          <div class="c-badge">เช่าทรัพย์</div>
+          <div class="c-mnum">ม.538</div>
+          <div class="c-mtitle">หลักฐานเป็นหนังสือ</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cblue">เช่าทรัพย์</span>
+          <div class="cb-title">ม.538 — หลักฐานเป็นหนังสือ</div>
+          <div class="cb-body">เช่า <strong>"เกินกว่า 3 ปี"</strong> → ต้องหนังสือ + จดทะเบียน<br>ถ้าไม่จดทะเบียน = บังคับได้แค่ <strong>3 ปี</strong></div>
+          <div class="cb-note trap">⚠️ "3 ปีพอดี" ไม่ต้องจดทะเบียน!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="blue" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cblue">
+          <div class="c-badge">เช่าทรัพย์</div>
+          <div class="c-mnum">ม.544</div>
+          <div class="c-mtitle">ห้ามโอน / เช่าช่วง</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cblue">เช่าทรัพย์</span>
+          <div class="cb-title">ม.544 — ห้ามโอน / เช่าช่วง</div>
+          <div class="cb-body">ผู้เช่าห้ามโอน/เช่าช่วงโดยไม่ได้รับยินยอม<br>ฝ่าฝืน → ผู้ให้เช่า <strong>บอกเลิกทันที</strong></div>
+          <div class="cb-note tip">💡 ไม่ต้องบอกกล่าวก่อน ≠ ม.554</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="blue" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cblue">
+          <div class="c-badge">เช่าทรัพย์</div>
+          <div class="c-mnum">ม.553</div>
+          <div class="c-mtitle">หน้าที่ผู้เช่า</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cblue">เช่าทรัพย์</span>
+          <div class="cb-title">ม.553 — หน้าที่ผู้เช่า</div>
+          <div class="cb-body">ต้องสงวนทรัพย์อย่าง <strong>วิญญูชน</strong><br>+ <strong>บำรุงรักษา + ซ่อมแซมเล็กน้อย</strong></div>
+          <div class="cb-note tip">💡 วิญญูชน = คนธรรมดา ไม่ใช่ผู้เชี่ยวชาญ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="blue" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cblue">
+          <div class="c-badge">เช่าทรัพย์</div>
+          <div class="c-mnum">ม.554</div>
+          <div class="c-mtitle">บอกเลิกสัญญาเช่า</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cblue">เช่าทรัพย์</span>
+          <div class="cb-title">ม.554 — บอกเลิกสัญญาเช่า</div>
+          <div class="cb-body">ผู้เช่าฝ่าฝืน ม.552/553 หรือข้อสัญญา<br>→ ต้อง <strong>บอกกล่าวก่อน</strong> → ไม่แก้ → <strong>บอกเลิกได้</strong></div>
+          <div class="cb-note trap">⚠️ ต้องบอกกล่าวก่อนเสมอ!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="blue" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cblue">
+          <div class="c-badge">เช่าทรัพย์</div>
+          <div class="c-mnum">ม.569</div>
+          <div class="c-mtitle">ผูกพันผู้รับโอน</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cblue">เช่าทรัพย์</span>
+          <div class="cb-title">ม.569 — สัญญาผูกพันผู้รับโอน</div>
+          <div class="cb-body">ขายทรัพย์ที่เช่า → สัญญาเช่า <strong>ไม่ระงับ</strong><br>ผู้ซื้อรับทั้ง <strong>สิทธิ์และหน้าที่</strong> ต่อผู้เช่า</div>
+          <div class="cb-note tip">💡 สัญญาต้องสมบูรณ์ตามกฎหมายก่อน</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- เช่าซื้อ -->
+    <div class="cw" data-cat="green" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cgreen">
+          <div class="c-badge">เช่าซื้อ</div>
+          <div class="c-mnum">ม.572</div>
+          <div class="c-mtitle">นิยามเช่าซื้อ</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cgreen">เช่าซื้อ</span>
+          <div class="cb-title">ม.572 — นิยามเช่าซื้อ</div>
+          <div class="cb-body">เจ้าของ <strong>"ให้เช่า"</strong> + ให้คำมั่นจะ <strong>"ขาย"</strong> เมื่อชำระครบ<br>⚠️ ต้องทำเป็น <strong>หนังสือ</strong> ไม่งั้น = <strong>โมฆะ</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="green" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cgreen">
+          <div class="c-badge">เช่าซื้อ ⭐⭐⭐</div>
+          <div class="c-mnum">ม.574</div>
+          <div class="c-msub">วรรคหนึ่ง</div>
+          <div class="c-mtitle">บอกเลิก + ริบเงิน</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cgreen">เช่าซื้อ</span>
+          <div class="cb-title">ม.574 ว.1 — บอกเลิก + ริบ</div>
+          <div class="cb-body">ผิดนัด <strong>2 คราวติดๆ</strong> หรือผิดสัญญาข้อ<strong>สำคัญ</strong><br>→ บอกเลิก<strong>ทันที</strong> + <strong>ริบ</strong>เงิน + <strong>ยึด</strong>ทรัพย์</div>
+          <div class="cb-note trap">⚠️ เรียกค่างวดที่เหลือ = ไม่ได้! (ฎ.859/2524)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- จ้างแรงงาน -->
+    <div class="cw" data-cat="purple" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cpurple">
+          <div class="c-badge">จ้างแรงงาน</div>
+          <div class="c-mnum">ม.575</div>
+          <div class="c-mtitle">นิยามจ้างแรงงาน</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cpurple">จ้างแรงงาน</span>
+          <div class="cb-title">ม.575 — นิยาม</div>
+          <div class="cb-body">ลูกจ้าง <strong>ทำงาน</strong> | นายจ้าง <strong>ให้สินจ้างตลอดเวลา</strong>ทำงาน<br>เน้น <strong>"กระบวนการ"</strong></div>
+          <div class="cb-note tip">💡 ≠ ม.587 จ้างทำของ ที่เน้น "ผลสำเร็จ"</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="purple" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cpurple">
+          <div class="c-badge">จ้างแรงงาน</div>
+          <div class="c-mnum">ม.577</div>
+          <div class="c-mtitle">โอนสิทธิ์ / รับคนแทน</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cpurple">จ้างแรงงาน</span>
+          <div class="cb-title">ม.577 — โอนสิทธิ์</div>
+          <div class="cb-body"><strong>ว.1</strong> นายจ้างโอนสิทธิ์ → ต้องได้ยินยอมจาก<strong>ลูกจ้าง</strong><br><strong>ว.2</strong> ลูกจ้างรับคนแทน → ต้องได้ยินยอมจาก<strong>นายจ้าง</strong><br><strong>ว.3</strong> ฝ่าฝืน → <strong>บอกเลิกได้</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="purple" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cpurple">
+          <div class="c-badge">จ้างแรงงาน</div>
+          <div class="c-mnum">ม.582</div>
+          <div class="c-mtitle">บอกเลิกปกติ</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cpurple">จ้างแรงงาน</span>
+          <div class="cb-title">ม.582 — บอกเลิกปกติ</div>
+          <div class="cb-body">ไม่มีกำหนดเวลา → <strong>บอกกล่าวล่วงหน้า</strong><br>ณ คราวจ่ายสินจ้าง ให้มีผล<strong>คราวถัดไป</strong><br>แต่ไม่เกิน <strong>3 เดือน</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="purple" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cpurple">
+          <div class="c-badge">จ้างแรงงาน ⭐⭐⭐</div>
+          <div class="c-mnum">ม.583</div>
+          <div class="c-mtitle">บอกเลิกทันที ⚡</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cpurple">จ้างแรงงาน</span>
+          <div class="cb-title">ม.583 — บอกเลิกทันที</div>
+          <div class="cb-body"><strong>จงใจขัดคำสั่ง</strong> / <strong>ละเลยไม่นำพา</strong> / ผิด<strong>ร้ายแรง</strong> / ไม่สมกับเป็นลูกจ้าง<br>→ บอกเลิก<strong>ทันที ไม่ต้องล่วงหน้า</strong></div>
+          <div class="cb-note trap">⚠️ ต่างจาก ม.582 ที่ต้องบอกล่วงหน้าก่อน</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- จ้างทำของ -->
+    <div class="cw" data-cat="orange" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront corange">
+          <div class="c-badge">จ้างทำของ</div>
+          <div class="c-mnum">ม.587</div>
+          <div class="c-mtitle">นิยามจ้างทำของ</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag corange">จ้างทำของ</span>
+          <div class="cb-title">ม.587 — นิยาม</div>
+          <div class="cb-body">ผู้รับจ้าง <strong>ทำงานจนสำเร็จ</strong><br>ผู้ว่าจ้างให้สินจ้างแลก <strong>ผลสำเร็จ</strong></div>
+          <div class="cb-note tip">💡 เน้น "ผลสำเร็จ" ≠ จ้างแรงงาน (กระบวนการ)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="orange" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront corange">
+          <div class="c-badge">จ้างทำของ</div>
+          <div class="c-mnum">ม.593</div>
+          <div class="c-mtitle">วัสดุบกพร่อง</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag corange">จ้างทำของ</span>
+          <div class="cb-title">ม.593 — วัสดุบกพร่อง</div>
+          <div class="cb-body">วัสดุ<strong>บกพร่อง</strong> หรือแบบ<strong>ไม่ถูกต้อง</strong><br>→ ผู้รับจ้างต้อง <strong>บอกกล่าวโดยพลัน</strong></div>
+          <div class="cb-note trap">⚠️ ไม่แจ้ง = รับผิดชอบเอง!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="orange" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront corange">
+          <div class="c-badge">จ้างทำของ ⭐⭐⭐</div>
+          <div class="c-mnum">ม.605</div>
+          <div class="c-mtitle">บอกเลิกได้เสมอ</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag corange">จ้างทำของ</span>
+          <div class="cb-title">ม.605 — บอกเลิกได้เสมอ</div>
+          <div class="cb-body">ผู้ว่าจ้างบอกเลิก<strong>เมื่อใดก็ได้</strong> แม้เริ่มงานแล้ว<br><strong>แต่ต้องชดใช้ค่าสินไหมทดแทน</strong></div>
+          <div class="cb-note trap">⚠️ บอกเลิกได้ แต่ต้องจ่ายค่าสินไหม!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ฎีกา -->
+    <div class="cw" data-cat="red" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cred">
+          <div class="c-badge">ฎีกา — เช่าซื้อ</div>
+          <div class="c-mnum" style="font-size:22px">ฎ.859</div>
+          <div class="c-msub">/2524</div>
+          <div class="c-mtitle">เรียกค่างวดที่เหลือ</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cred">ฎีกา 859/2524</span>
+          <div class="cb-title">เรียกค่างวดเช่าซื้อที่เหลือทั้งหมด</div>
+          <div class="cb-body">ข้อตกลงให้จ่ายค่างวดที่เหลือทั้งหมดเมื่อสัญญาเลิก → ขัด ม.574 ว.2 → <strong>ใช้บังคับไม่ได้!</strong></div>
+          <div class="cb-note dika">🔑 เรียกได้แค่ค่างวดที่ค้างจริงก่อนสัญญาสิ้นสุด</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="red" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cred">
+          <div class="c-badge">หลักกฎหมาย</div>
+          <div class="c-mnum" style="font-size:18px">ม.544</div>
+          <div class="c-msub">vs ม.554</div>
+          <div class="c-mtitle">บอกเลิกทันที vs บอกกล่าวก่อน</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cred">เปรียบเทียบ</span>
+          <div class="cb-title">ม.544 vs ม.554</div>
+          <div class="cb-body"><strong>ม.544</strong> (โอน/เช่าช่วง)<br>→ บอกเลิก<strong>ทันที</strong> ไม่ต้องบอกกล่าว<br><br><strong>ม.554</strong> (ไม่สงวนทรัพย์)<br>→ ต้อง<strong>บอกกล่าวก่อน</strong> → ไม่แก้ → บอกเลิก</div>
+          <div class="cb-note dika">🔑 กับดักข้อสอบ: 2 มาตรานี้ผลต่างกัน!</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /card-grid -->
+</div><!-- /flip-panel -->
+</div><!-- /panel-flip -->
+
+
+<!-- ═══════════════ PANEL: จำด่วน ═══════════════ -->
+<div id="panel-ref" class="panel">
+<div class="study-panel">
+
+  <div class="qref">
+    <h3>⚡ การ์ดจำด่วน — เปิดดูก่อนเข้าห้องสอบ</h3>
+    <table class="qtable">
+      <tr><th>สถานการณ์</th><th>ม.</th><th>ผล</th></tr>
+      <tr><td>เช่า 3 ปีพอดี ไม่จดทะเบียน</td><td>538</td><td class="ok">สัญญาสมบูรณ์!</td></tr>
+      <tr><td>เช่าเกิน 3 ปี ไม่จดทะเบียน</td><td>538</td><td class="warn">บังคับได้แค่ 3 ปี</td></tr>
+      <tr><td>เช่าช่วงโดยไม่ยินยอม</td><td>544</td><td class="no">บอกเลิกทันที</td></tr>
+      <tr><td>ผู้เช่าไม่สงวนทรัพย์</td><td>553+554</td><td class="warn">บอกกล่าวก่อน→บอกเลิก</td></tr>
+      <tr><td>ขายทรัพย์ที่เช่า</td><td>569</td><td class="ok">ผู้ซื้อผูกพันด้วย</td></tr>
+      <tr><td>เช่าซื้อไม่มีหนังสือ</td><td>572</td><td class="no">โมฆะ!</td></tr>
+      <tr><td>เช่าซื้อผิดนัด 2 งวดติดๆ</td><td>574ว.1</td><td class="no">บอกเลิกทันที+ริบ</td></tr>
+      <tr><td>เรียกค่างวดที่เหลือทั้งหมด</td><td>574ว.2</td><td class="no">ทำไม่ได้! (ฎ.859/2524)</td></tr>
+      <tr><td>นายจ้างโอนสิทธิ์ไม่ยินยอม</td><td>577ว.1</td><td class="no">ไม่ชอบด้วยกฎหมาย</td></tr>
+      <tr><td>บอกเลิกจ้างแรงงานปกติ</td><td>582</td><td class="warn">บอกล่วงหน้า ≤3 เดือน</td></tr>
+      <tr><td>ลูกจ้างผิดร้ายแรง</td><td>583</td><td class="no">บอกเลิกทันที</td></tr>
+      <tr><td>วัสดุจ้างทำของบกพร่อง</td><td>593</td><td class="warn">ผู้รับจ้างต้องแจ้งทันที</td></tr>
+      <tr><td>ผู้ว่าจ้างเปลี่ยนใจเลิกสัญญา</td><td>605</td><td class="warn">บอกเลิกได้แต่จ่ายค่าสินไหม</td></tr>
+    </table>
+  </div>
+
+  <!-- เปรียบเทียบ -->
+  <div class="section s-blue" style="margin-bottom:14px">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      🔍 เปรียบเทียบ ม.544 vs ม.554
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+      <table class="qtable">
+        <tr><th>ประเด็น</th><th>ม.544</th><th>ม.554</th></tr>
+        <tr><td>เหตุ</td><td>โอน/เช่าช่วงไม่ยินยอม</td><td>ไม่สงวนทรัพย์</td></tr>
+        <tr><td>ต้องบอกกล่าวก่อน?</td><td class="no">ไม่ต้อง</td><td class="ok">ต้องบอกกล่าวก่อน</td></tr>
+        <tr><td>บอกเลิก</td><td>ทันที</td><td>หลังจากไม่แก้ไข</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section s-purple" style="margin-bottom:14px">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      🔍 เปรียบเทียบ ม.582 vs ม.583
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+      <table class="qtable">
+        <tr><th>ประเด็น</th><th>ม.582</th><th>ม.583</th></tr>
+        <tr><td>เหตุ</td><td>บอกเลิกปกติ</td><td>ผิดร้ายแรง</td></tr>
+        <tr><td>บอกล่วงหน้า?</td><td class="ok">ต้อง (≤3 เดือน)</td><td class="no">ไม่ต้อง</td></tr>
+        <tr><td>ผล</td><td>มีผลคราวถัดไป</td><td>มีผลทันที</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section s-green" style="margin-bottom:14px">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      🔍 เปรียบเทียบ จ้างแรงงาน vs จ้างทำของ
+      <span class="toggle">▾</span>
+    </div>
+    <div class="sec-body">
+      <table class="qtable">
+        <tr><th>ประเด็น</th><th>จ้างแรงงาน ม.575</th><th>จ้างทำของ ม.587</th></tr>
+        <tr><td>เน้นที่</td><td>กระบวนการทำงาน</td><td>ผลสำเร็จของงาน</td></tr>
+        <tr><td>สินจ้าง</td><td>ตลอดเวลาทำงาน</td><td>เมื่องานสำเร็จ</td></tr>
+        <tr><td>ผู้ว่าจ้างบอกเลิก</td><td>ม.582/583</td><td>ม.605 (ได้เสมอ)</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div><!-- /panel-ref -->
+
+
+<script>
+// Tab switching
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Collapsible sections
+function toggleSec(hdr) {
+  hdr.classList.toggle('collapsed');
+  hdr.nextElementSibling.classList.toggle('collapsed');
+}
+
+// Flip card
+function flipCard(el) {
+  el.classList.toggle('flipped');
+}
+
+// Filter cards
+function filterCards(cat, btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const cards = document.querySelectorAll('.cw');
+  let n = 0;
+  cards.forEach(c => {
+    if (cat === 'all' || c.dataset.cat === cat) {
+      c.classList.remove('gone');
+      n++;
+    } else {
+      c.classList.add('gone');
+      c.classList.remove('flipped');
+    }
+  });
+  document.getElementById('fcount').textContent = n;
+}
+
+// Shuffle
+function shuffleCards() {
+  const grid = document.getElementById('card-grid');
+  const visible = [...grid.querySelectorAll('.cw:not(.gone)')];
+  visible.forEach(c => c.classList.remove('flipped'));
+  for (let i = visible.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    grid.appendChild(visible[j]);
+    grid.appendChild(visible[i]);
+  }
+}
+</script>
+</body>
+</html>
