@@ -409,6 +409,12 @@ body {
       </div>
 
       <div class="mc">
+        <div class="mc-num">⭐⭐ มาตรา 552 — หน้าที่ผู้ให้เช่า</div>
+        <div class="mc-body">ผู้ให้เช่าจำต้อง <strong>ส่งมอบทรัพย์สินในสภาพซ่อมแซมดีแล้ว</strong><br>และต้อง <strong>ซ่อมแซมทรัพย์ที่ชำรุดบกพร่อง</strong> ระหว่างสัญญาเช่า (ยกเว้นซ่อมแซมเล็กน้อย = หน้าที่ผู้เช่า ม.553)</div>
+        <div class="note tip">💡 หน้าที่ผู้ให้เช่า = ซ่อมแซมใหญ่ | หน้าที่ผู้เช่า (ม.553) = ซ่อมแซมเล็กน้อย</div>
+      </div>
+
+      <div class="mc">
         <div class="mc-num">⭐⭐⭐ มาตรา 553 + 554 — บอกเลิกเมื่อไม่สงวนทรัพย์</div>
         <div class="mc-body"><strong>ม.553</strong> ผู้เช่าต้องสงวนทรัพย์อย่าง<strong>วิญญูชน</strong> + ซ่อมแซมเล็กน้อย<br><strong>ม.554</strong> ถ้าผู้เช่าฝ่าฝืน → ผู้ให้เช่าต้อง <strong>บอกกล่าวก่อน</strong> → ไม่แก้ไข → บอกเลิกได้</div>
         <div class="note trap">⚠️ ม.554 ต้องบอกกล่าวก่อนเสมอ — ถ้าข้ามขั้นตอน = ผิดวิธี</div>
@@ -542,7 +548,7 @@ body {
     <button class="fbtn fred"    onclick="filterCards('red',this)">⚖️ ฎีกา</button>
     <button class="fbtn fshuffle" onclick="shuffleCards()">🔀 สุ่ม</button>
   </div>
-  <div class="flip-stats">แสดง <span id="fcount">15</span> การ์ด · แตะเพื่อพลิก</div>
+  <div class="flip-stats">แสดง <span id="fcount">16</span> การ์ด · แตะเพื่อพลิก</div>
 
   <div class="card-grid" id="card-grid">
 
@@ -560,6 +566,23 @@ body {
           <div class="cb-title">ม.538 — หลักฐานเป็นหนังสือ</div>
           <div class="cb-body">เช่า <strong>"เกินกว่า 3 ปี"</strong> → ต้องหนังสือ + จดทะเบียน<br>ถ้าไม่จดทะเบียน = บังคับได้แค่ <strong>3 ปี</strong></div>
           <div class="cb-note trap">⚠️ "3 ปีพอดี" ไม่ต้องจดทะเบียน!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw" data-cat="blue" onclick="flipCard(this)">
+      <div class="card">
+        <div class="cface cfront cblue">
+          <div class="c-badge">เช่าทรัพย์</div>
+          <div class="c-mnum">ม.552</div>
+          <div class="c-mtitle">หน้าที่ผู้ให้เช่า</div>
+          <div class="c-hint">แตะ →</div>
+        </div>
+        <div class="cface cback">
+          <span class="cb-tag cblue">เช่าทรัพย์</span>
+          <div class="cb-title">ม.552 — หน้าที่ผู้ให้เช่า</div>
+          <div class="cb-body">ต้อง <strong>ส่งมอบในสภาพซ่อมแซมดีแล้ว</strong><br>+ <strong>ซ่อมแซมใหญ่</strong>ระหว่างสัญญา (≠ ม.553 ผู้เช่าซ่อมเล็กน้อย)</div>
+          <div class="cb-note tip">💡 ม.552 = ผู้ให้เช่า | ม.553 = ผู้เช่า</div>
         </div>
       </div>
     </div>
@@ -838,6 +861,7 @@ body {
       <tr><th>สถานการณ์</th><th>ม.</th><th>ผล</th></tr>
       <tr><td>เช่า 3 ปีพอดี ไม่จดทะเบียน</td><td>538</td><td class="ok">สัญญาสมบูรณ์!</td></tr>
       <tr><td>เช่าเกิน 3 ปี ไม่จดทะเบียน</td><td>538</td><td class="warn">บังคับได้แค่ 3 ปี</td></tr>
+      <tr><td>ผู้ให้เช่าต้องส่งมอบทรัพย์สภาพดี</td><td>552</td><td class="ok">หน้าที่ผู้ให้เช่า (ซ่อมแซมใหญ่)</td></tr>
       <tr><td>เช่าช่วงโดยไม่ยินยอม</td><td>544</td><td class="no">บอกเลิกทันที</td></tr>
       <tr><td>ผู้เช่าไม่สงวนทรัพย์</td><td>553+554</td><td class="warn">บอกกล่าวก่อน→บอกเลิก</td></tr>
       <tr><td>ขายทรัพย์ที่เช่า</td><td>569</td><td class="ok">ผู้ซื้อผูกพันด้วย</td></tr>
