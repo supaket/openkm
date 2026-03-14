@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aigentica ARM — Sales Pitch 2026</title>
+<style>
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+:root {
+  --bg: #0a0f1e;
+  --bg-card: rgba(15, 23, 42, 0.7);
+  --bg-glass: rgba(255,255,255,0.05);
+  --blue: #3b82f6;
+  --cyan: #06b6d4;
+  --amber: #f59e0b;
+  --emerald: #10b981;
+  --purple: #8b5cf6;
+  --red: #ef4444;
+  --gray: #64748b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Thai', sans-serif;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  overflow: hidden;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  z-index: 1000;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px var(--blue);
+}
+
+/* ============================================
+   SLIDE COUNTER
+   ============================================ */
+#slide-counter {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  font-size: 14px;
+  color: var(--text-muted);
+  z-index: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   NAV HINTS
+   ============================================ */
+#nav-hints {
+  position: fixed;
+  bottom: 24px;
+  left: 32px;
+  font-size: 12px;
+  color: rgba(148,163,184,0.4);
+  z-index: 1000;
+}
+
+/* ============================================
+   SLIDES CONTAINER
+   ============================================ */
+.slides {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+  padding: 60px 80px;
+  overflow: hidden;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.slide-title {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.slide-subtitle {
+  font-size: 22px;
+  color: var(--text-muted);
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-amber {
+  background: linear-gradient(135deg, var(--amber), #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-red {
+  background: linear-gradient(135deg, var(--red), #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-emerald {
+  background: linear-gradient(135deg, var(--emerald), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-text {
+  text-shadow: 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(59,130,246,0.2);
+}
+
+.glow-red {
+  text-shadow: 0 0 40px rgba(239,68,68,0.5), 0 0 80px rgba(239,68,68,0.2);
+}
+
+/* ============================================
+   GLASS CARD
+   ============================================ */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.glass:hover {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+}
+
+/* ============================================
+   BROWSER MOCKUP
+   ============================================ */
+.browser-mockup {
+  background: #111827;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(59,130,246,0.15);
+  max-width: 900px;
+  width: 100%;
+  transform: perspective(1200px) rotateX(2deg);
+}
+
+.browser-mockup.no-tilt {
+  transform: none;
+}
+
+.browser-bar {
+  background: #1e293b;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.browser-dot.r { background: #ef4444; }
+.browser-dot.y { background: #f59e0b; }
+.browser-dot.g { background: #10b981; }
+
+.browser-url {
+  flex: 1;
+  background: #0f172a;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.browser-mockup img {
+  width: 100%;
+  display: block;
+}
+
+/* Full-width variant */
+.browser-mockup.fullwidth {
+  max-width: 1100px;
+  transform: none;
+}
+
+/* ============================================
+   PHONE MOCKUP
+   ============================================ */
+.phone-mockup {
+  width: 260px;
+  background: #111827;
+  border-radius: 36px;
+  padding: 12px;
+  border: 3px solid #334155;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+
+.phone-screen {
+  background: #1e293b;
+  border-radius: 26px;
+  height: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.phone-notch {
+  width: 100px;
+  height: 6px;
+  background: #334155;
+  border-radius: 3px;
+  margin: 0 auto 16px;
+}
+
+/* ============================================
+   STAT CARDS
+   ============================================ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.stat-number {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============================================
+   MODULE GRID
+   ============================================ */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.module-card {
+  padding: 24px;
+  cursor: default;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-top: 3px solid transparent;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.module-card .icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.module-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.module-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============================================
+   COMPARISON TABLE
+   ============================================ */
+.compare-table {
+  width: 100%;
+  max-width: 800px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.compare-table th {
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.compare-table th:first-child {
+  text-align: left;
+  width: 40%;
+}
+
+.compare-table th.highlight {
+  background: rgba(59,130,246,0.1);
+  border-top: 2px solid var(--blue);
+  border-radius: 12px 12px 0 0;
+}
+
+.compare-table td {
+  padding: 12px 24px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.compare-table td:first-child {
+  color: var(--text-muted);
+}
+
+.compare-table td:nth-child(2) {
+  text-align: center;
+  background: rgba(59,130,246,0.05);
+}
+
+.compare-table td:nth-child(3) {
+  text-align: center;
+}
+
+.check {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(16,185,129,0.2);
+  color: var(--emerald);
+  line-height: 24px;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 0 12px rgba(16,185,129,0.3);
+}
+
+.cross {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(100,116,139,0.15);
+  color: #475569;
+  line-height: 24px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ============================================
+   SCREENSHOT WITH CALLOUTS
+   ============================================ */
+.screenshot-wrapper {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+}
+
+.callout {
+  position: absolute;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid rgba(59,130,246,0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #93c5fd;
+  white-space: nowrap;
+  box-shadow: 0 0 20px rgba(59,130,246,0.2);
+}
+
+.callout.tl { top: 15%; left: -8%; }
+.callout.tr { top: 15%; right: -8%; }
+.callout.bl { bottom: 15%; left: -8%; }
+.callout.br { bottom: 15%; right: -8%; }
+
+/* ============================================
+   CATEGORY PILLS
+   ============================================ */
+.pill-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.pill {
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+/* ============================================
+   FLOW / TIMELINE
+   ============================================ */
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  margin: 32px 0;
+  flex-wrap: wrap;
+}
+
+.flow-step {
+  text-align: center;
+  padding: 24px 20px;
+  min-width: 180px;
+  flex: 0 0 auto;
+}
+
+.flow-step .step-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.flow-step h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.flow-step p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.flow-arrow {
+  font-size: 24px;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   CHANNEL CARDS
+   ============================================ */
+.channel-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.channel-card {
+  text-align: center;
+  padding: 24px 16px;
+  min-width: 120px;
+  transition: transform 0.3s;
+}
+
+.channel-card:hover { transform: translateY(-4px); }
+
+.channel-card .ch-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.channel-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ============================================
+   PRICING CARDS
+   ============================================ */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 900px;
+  width: 100%;
+}
+
+.pricing-card {
+  padding: 36px 28px;
+  text-align: center;
+  position: relative;
+}
+
+.pricing-card.featured {
+  border-color: var(--blue);
+  box-shadow: 0 0 40px rgba(59,130,246,0.2);
+  transform: scale(1.05);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+}
+
+.pricing-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pricing-price {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 16px 0;
+}
+
+.pricing-price span {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.pricing-features {
+  list-style: none;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.pricing-features li {
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.pricing-features li::before {
+  content: "✓ ";
+  color: var(--emerald);
+  font-weight: 700;
+}
+
+/* ============================================
+   TIMELINE HORIZONTAL
+   ============================================ */
+.timeline-h {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  max-width: 900px;
+  width: 100%;
+  position: relative;
+}
+
+.timeline-node {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding-top: 40px;
+}
+
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(59,130,246,0.3);
+}
+
+.timeline-node:first-child::before { left: 50%; }
+.timeline-node:last-child::before { right: 50%; }
+
+.timeline-dot {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 12px rgba(59,130,246,0.5);
+  z-index: 2;
+}
+
+.timeline-node h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.timeline-node p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   SECURITY GRID
+   ============================================ */
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.security-card {
+  padding: 24px;
+}
+
+.security-card .s-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.security-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.security-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============================================
+   BEFORE / AFTER
+   ============================================ */
+.ba-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.ba-card {
+  padding: 24px;
+}
+
+.ba-card .ba-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.ba-card .ba-metric {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.ba-card .ba-values {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.ba-card .ba-before {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.ba-card .ba-after {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.ba-card .ba-delta {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(16,185,129,0.15);
+  color: var(--emerald);
+}
+
+.ba-card .ba-delta.negative {
+  background: rgba(239,68,68,0.15);
+  color: var(--red);
+}
+
+/* ============================================
+   PARTICLES
+   ============================================ */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: rgba(59,130,246,0.3);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* ============================================
+   CTA BUTTON
+   ============================================ */
+.cta-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 18px 48px;
+  border-radius: 60px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 40px rgba(59,130,246,0.4);
+  transition: transform 0.3s, box-shadow 0.3s;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.cta-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 60px rgba(59,130,246,0.6);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 40px rgba(59,130,246,0.4); }
+  50% { box-shadow: 0 0 60px rgba(59,130,246,0.6); }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+.animate-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.slide.active .animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide.active .animate-in.d1 { transition-delay: 0.1s; }
+.slide.active .animate-in.d2 { transition-delay: 0.2s; }
+.slide.active .animate-in.d3 { transition-delay: 0.3s; }
+.slide.active .animate-in.d4 { transition-delay: 0.4s; }
+.slide.active .animate-in.d5 { transition-delay: 0.5s; }
+.slide.active .animate-in.d6 { transition-delay: 0.6s; }
+.slide.active .animate-in.d7 { transition-delay: 0.7s; }
+.slide.active .animate-in.d8 { transition-delay: 0.8s; }
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ============================================
+   UTILITY
+   ============================================ */
+.text-center { text-align: center; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.mb-40 { margin-bottom: 40px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.gap-24 { gap: 24px; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+.flex-col { flex-direction: column; }
+.w-full { width: 100%; }
+.max-w-800 { max-width: 800px; }
+.max-w-1000 { max-width: 1000px; }
+
+.tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ============================================
+   SLIDE BG VARIANTS
+   ============================================ */
+.bg-red-tint {
+  background: radial-gradient(ellipse at center, rgba(239,68,68,0.08) 0%, var(--bg) 70%);
+}
+
+.bg-blue-tint {
+  background: radial-gradient(ellipse at center, rgba(59,130,246,0.06) 0%, var(--bg) 70%);
+}
+
+.bg-dark-extra {
+  background: #060a15;
+}
+
+/* ============================================
+   PRINT
+   ============================================ */
+@media print {
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    page-break-after: always;
+    pointer-events: all !important;
+    height: 100vh;
+  }
+  #progress, #slide-counter, #nav-hints { display: none; }
+  .particles { display: none; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .slide { padding: 40px 24px; }
+  .slide-title { font-size: 32px; }
+  .slide-subtitle { font-size: 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .module-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .security-grid { grid-template-columns: repeat(2, 1fr); }
+  .ba-grid { grid-template-columns: 1fr; }
+  .stat-number { font-size: 36px; }
+  .compare-table { font-size: 12px; }
+  .callout { display: none; }
+  .browser-mockup { transform: none; }
+}
+
+/* ============================================
+   LAPTOP MOCKUP (Cover)
+   ============================================ */
+.laptop-mockup {
+  position: relative;
+  max-width: 700px;
+  width: 80%;
+}
+
+.laptop-screen {
+  background: #111827;
+  border-radius: 8px 8px 0 0;
+  border: 3px solid #334155;
+  border-bottom: none;
+  overflow: hidden;
+  box-shadow: 0 -5px 40px rgba(59,130,246,0.2), 0 25px 60px rgba(0,0,0,0.5);
+}
+
+.laptop-screen img {
+  width: 100%;
+  display: block;
+}
+
+.laptop-base {
+  height: 14px;
+  background: linear-gradient(180deg, #334155, #1e293b);
+  border-radius: 0 0 8px 8px;
+  position: relative;
+}
+
+.laptop-base::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 4px;
+  background: #475569;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Pillar card */
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.pillar-card {
+  padding: 24px;
+  text-align: center;
+}
+
+.pillar-card .p-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.pillar-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pillar-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Tech badges */
+.tech-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.tech-badge {
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(59,130,246,0.3);
+  background: rgba(59,130,246,0.08);
+  color: #93c5fd;
+}
+
+/* Report pills */
+.report-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.report-pill {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--bg-glass);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Benefit items */
+.benefit-list {
+  list-style: none;
+  max-width: 400px;
+}
+
+.benefit-list li {
+  padding: 8px 0;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.benefit-list li::before {
+  content: "→ ";
+  color: var(--blue);
+  font-weight: 700;
+}
+
+/* Client logos */
+.client-logos {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  opacity: 0.5;
+}
+
+.client-logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 12px 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+
+/* Two-col layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1000px;
+  width: 100%;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .two-col { grid-template-columns: 1fr; }
+  .pillar-grid { grid-template-columns: 1fr; }
+}
+
+/* Floating stats overlay */
+.floating-overlay {
+  position: absolute;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: rgba(10,15,30,0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59,130,246,0.3);
+  font-size: 14px;
+  font-weight: 600;
+  color: #93c5fd;
+  box-shadow: 0 0 20px rgba(59,130,246,0.2);
+}
+</style>
+</head>
+<body>
+
+<div id="progress" style="width: 0%"></div>
+<div id="slide-counter">1 / 21</div>
+<div id="nav-hints">← → Space | Swipe</div>
+
+<div class="slides">
+
+<!-- ==================== SLIDE 1: COVER ==================== -->
+<div class="slide active" id="slide-1">
+  <div class="particles" id="particles-1"></div>
+  <div class="text-center animate-in" style="margin-bottom: 40px;">
+    <div style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px;" class="animate-in d1">Account Receivable Management</div>
+    <h1 style="font-size: 80px; font-weight: 900; letter-spacing: -3px; line-height: 1;" class="animate-in d2">
+      <span class="gradient-text glow-text">Aigentica ARM</span>
+    </h1>
+    <p style="font-size: 24px; color: var(--text-muted); margin-top: 16px; font-weight: 300;" class="animate-in d3">
+      เก็บเร็วขึ้น เก็บได้มากขึ้น ถูกกฎหมายทุกขั้นตอน
+    </p>
+  </div>
+  <div class="laptop-mockup animate-in d4">
+    <div class="laptop-screen">
+      <img src="../../packages/web/tests/screenshots/02-dashboard.png" alt="Dashboard" loading="eager">
+    </div>
+    <div class="laptop-base"></div>
+  </div>
+  <div style="margin-top: 32px; font-size: 13px; color: rgba(148,163,184,0.4);" class="animate-in d5">2026</div>
+</div>
+
+<!-- ==================== SLIDE 2: THE PROBLEM ==================== -->
+<div class="slide bg-red-tint" id="slide-2">
+  <div class="text-center mb-40">
+    <h2 class="slide-title gradient-text-red glow-red animate-in">วิกฤตหนี้ไทย</h2>
+    <p class="slide-subtitle animate-in d1">ปัญหาที่ทุกบริษัทสินเชื่อต้องเผชิญ</p>
+  </div>
+  <div class="stat-grid">
+    <div class="glass stat-card animate-in d2">
+      <div class="stat-number gradient-text-red" data-count="1000000" data-suffix="">1,000,000</div>
+      <div class="stat-label">ล้านบาท NPL<br>หนี้เสียทั้งระบบ</div>
+    </div>
+    <div class="glass stat-card animate-in d3">
+      <div class="stat-number gradient-text-red" data-count="7.2" data-suffix="%" data-decimal="1">7.2%</div>
+      <div class="stat-label">SME NPL Ratio<br>สูงสุดในรอบ 5 ปี</div>
+    </div>
+    <div class="glass stat-card animate-in d4">
+      <div class="stat-number gradient-text-amber" data-count="500000" data-prefix="฿" data-suffix="">500,000</div>
+      <div class="stat-label">ค่าปรับทวงผิดกฎหมาย<br>ต่อกรณี</div>
+    </div>
+    <div class="glass stat-card animate-in d5">
+      <div class="stat-number gradient-text-red" data-count="80" data-suffix="%">80%</div>
+      <div class="stat-label">ยังใช้ Excel + กระดาษ<br>ในการติดตามหนี้</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: THE SOLUTION ==================== -->
+<div class="slide bg-blue-tint" id="slide-3">
+  <div class="text-center mb-40">
+    <h2 class="slide-title animate-in"><span class="gradient-text">One Platform. Everything.</span></h2>
+    <p class="slide-subtitle animate-in d1">ระบบเดียวครบทุกงานเก็บหนี้</p>
+  </div>
+  <div class="module-grid">
+    <div class="glass module-card animate-in d2" style="border-top-color: var(--blue);">
+      <div class="icon">&#127919;</div>
+      <h3>Collection Workbench</h3>
+      <p>หน้าจอเดียวจัดการทุกอย่าง Priority-based queue</p>
+    </div>
+    <div class="glass module-card animate-in d3" style="border-top-color: var(--cyan);">
+      <div class="icon">&#129302;</div>
+      <h3>AI Risk Engine</h3>
+      <p>วิเคราะห์ความเสี่ยง จัดลำดับอัตโนมัติ</p>
+    </div>
+    <div class="glass module-card animate-in d4" style="border-top-color: var(--purple);">
+      <div class="icon">&#9881;&#65039;</div>
+      <h3>Rule Engine (28+ กฎ)</h3>
+      <p>ตั้งค่าผ่าน UI ไม่ต้องแก้โค้ด</p>
+    </div>
+    <div class="glass module-card animate-in d5" style="border-top-color: var(--emerald);">
+      <div class="icon">&#128737;&#65039;</div>
+      <h3>Compliance Guard</h3>
+      <p>พ.ร.บ.ทวงหนี้ + PDPA อัตโนมัติ</p>
+    </div>
+    <div class="glass module-card animate-in d3" style="border-top-color: #22c55e;">
+      <div class="icon">&#128241;</div>
+      <h3>Omnichannel</h3>
+      <p>LINE OA + PromptPay QR + โทร + SMS</p>
+    </div>
+    <div class="glass module-card animate-in d4" style="border-top-color: var(--amber);">
+      <div class="icon">&#128506;&#65039;</div>
+      <h3>Field Visit & Repo</h3>
+      <p>GPS + ถ่ายรูป + offline mode</p>
+    </div>
+    <div class="glass module-card animate-in d5" style="border-top-color: #f472b6;">
+      <div class="icon">&#127970;</div>
+      <h3>Vendor Management</h3>
+      <p>มอบหมาย ติดตาม คำนวณค่าคอม</p>
+    </div>
+    <div class="glass module-card animate-in d6" style="border-top-color: var(--cyan);">
+      <div class="icon">&#128202;</div>
+      <h3>Analytics & Wallboard</h3>
+      <p>Real-time dashboard บน TV</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: VS COMPETITION ==================== -->
+<div class="slide" id="slide-4">
+  <div class="text-center mb-40">
+    <h2 class="slide-title animate-in"><span class="gradient-text">เราต่างอย่างไร</span></h2>
+    <p class="slide-subtitle animate-in d1">เปรียบเทียบกับระบบนำเข้าจากต่างประเทศ</p>
+  </div>
+  <table class="compare-table animate-in d2">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="highlight">Aigentica ARM</th>
+        <th>ระบบนำเข้า</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>AI Priority Scoring</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>Rule Engine 28+ กฎ</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>LINE OA Integration</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>PromptPay QR Payment</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>PDPA + พ.ร.บ.ทวงหนี้ Built-in</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>All-in-One Platform</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>Thai Development Team</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>Mobile App (Field + Repo)</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>Real-time Wallboard</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      <tr><td>Keyboard Shortcuts</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== SLIDE 5: COLLECTION WORKBENCH ==================== -->
+<div class="slide" id="slide-5">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text">หน้าจอเดียว ทำได้ทุกอย่าง</span></h2>
+    <p class="slide-subtitle animate-in d1">Collection Workbench — ออกแบบมาเพื่อพนักงานเก็บหนี้</p>
+  </div>
+  <div class="screenshot-wrapper animate-in d2">
+    <div class="browser-mockup">
+      <div class="browser-bar">
+        <div class="browser-dot r"></div>
+        <div class="browser-dot y"></div>
+        <div class="browser-dot g"></div>
+        <div class="browser-url">app.aigentica.ai/debtors</div>
+      </div>
+      <img src="../../packages/web/tests/screenshots/03-debtors-list.png" alt="Debtors List">
+    </div>
+    <div class="callout tl">25 rows/page — Dense data</div>
+    <div class="callout tr">1-click detail panel</div>
+    <div class="callout bl">Aging color-coded</div>
+    <div class="callout br">Keyboard shortcuts &#8984;K</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: RULE ENGINE ==================== -->
+<div class="slide" id="slide-6">
+  <div class="text-center mb-24">
+    <h2 class="slide-title animate-in"><span class="gradient-text">สมองของระบบ</span></h2>
+    <p class="slide-subtitle animate-in d1">28+ กฎ 5 หมวด — ตั้งค่าผ่าน UI ไม่ต้องแก้โค้ด</p>
+  </div>
+  <div class="browser-mockup animate-in d2" style="max-width: 800px;">
+    <div class="browser-bar">
+      <div class="browser-dot r"></div>
+      <div class="browser-dot y"></div>
+      <div class="browser-dot g"></div>
+      <div class="browser-url">app.aigentica.ai/rules</div>
+    </div>
+    <img src="../../packages/web/tests/screenshots/15-rules.png" alt="Rules">
+  </div>
+  <div class="pill-row animate-in d3">
+    <span class="pill" style="border-color: var(--blue); color: #93c5fd; background: rgba(59,130,246,0.1);">&#128336; การทวงถาม</span>
+    <span class="pill" style="border-color: var(--amber); color: #fbbf24; background: rgba(245,158,11,0.1);">&#128200; การยกระดับ</span>
+    <span class="pill" style="border-color: var(--emerald); color: #6ee7b7; background: rgba(16,185,129,0.1);">&#128176; ค่าคอมมิชชั่น</span>
+    <span class="pill" style="border-color: var(--purple); color: #c4b5fd; background: rgba(139,92,246,0.1);">&#128179; การชำระเงิน</span>
+    <span class="pill" style="border-color: var(--gray); color: #94a3b8; background: rgba(100,116,139,0.1);">&#128221; การบันทึก</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: COMPLIANCE GUARD ==================== -->
+<div class="slide" id="slide-7">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text-emerald">ทวงถูกกฎหมาย 100%</span></h2>
+    <p class="slide-subtitle animate-in d1">Rule Engine ตรวจทุกครั้ง — ก่อนทำอะไรทุกอย่าง</p>
+  </div>
+  <div class="flow-row animate-in d2">
+    <div class="flow-step glass">
+      <div class="step-icon">&#128100;</div>
+      <h4>พนักงานกดโทร</h4>
+      <p>ต้องการติดต่อลูกหนี้</p>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="flow-step glass" style="border: 1px solid var(--blue);">
+      <div class="step-icon">&#9881;&#65039;</div>
+      <h4>Rule Engine เช็ค</h4>
+      <p>เวลา, ความถี่, กฎหมาย</p>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="flow-step glass">
+      <div class="step-icon">&#9989;</div>
+      <h4>อนุญาต / BLOCK</h4>
+      <p>พร้อมเหตุผลชัดเจน</p>
+    </div>
+  </div>
+  <div style="display: flex; gap: 40px; justify-content: center; margin-top: 32px;">
+    <div class="text-center animate-in d3">
+      <div style="font-size: 80px; font-weight: 900; color: var(--emerald);" data-count="0" data-suffix="">0</div>
+      <div style="font-size: 16px; color: var(--text-muted);">ค่าปรับ (บาท)</div>
+    </div>
+    <div class="text-center animate-in d4">
+      <div style="font-size: 80px; font-weight: 900;" data-count="100" data-suffix="%"><span class="gradient-text">100%</span></div>
+      <div style="font-size: 16px; color: var(--text-muted);">Audit Trail</div>
+    </div>
+  </div>
+  <p class="animate-in d5" style="margin-top: 24px; font-size: 14px; color: var(--text-muted); text-align: center;">
+    พ.ร.บ.ทวงถามหนี้ 2558 + PDPA — built-in ตั้งแต่ DNA
+  </p>
+</div>
+
+<!-- ==================== SLIDE 8: OMNICHANNEL ==================== -->
+<div class="slide" id="slide-8">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text">เข้าถึงลูกหนี้ทุกช่องทาง</span></h2>
+    <p class="slide-subtitle animate-in d1">Omnichannel — ติดต่อได้ทุกทางที่ลูกหนี้สะดวก</p>
+  </div>
+  <div class="channel-row animate-in d2">
+    <div class="glass channel-card" style="box-shadow: 0 0 20px rgba(34,197,94,0.2);">
+      <div class="ch-icon">&#128172;</div>
+      <h4 style="color: #22c55e;">LINE OA</h4>
+    </div>
+    <div class="glass channel-card" style="box-shadow: 0 0 20px rgba(59,130,246,0.2);">
+      <div class="ch-icon">&#128222;</div>
+      <h4 style="color: var(--blue);">โทรศัพท์</h4>
+    </div>
+    <div class="glass channel-card" style="box-shadow: 0 0 20px rgba(6,182,212,0.2);">
+      <div class="ch-icon">&#128172;</div>
+      <h4 style="color: var(--cyan);">SMS</h4>
+    </div>
+    <div class="glass channel-card" style="box-shadow: 0 0 20px rgba(100,116,139,0.2);">
+      <div class="ch-icon">&#9993;&#65039;</div>
+      <h4 style="color: var(--gray);">Email</h4>
+    </div>
+    <div class="glass channel-card" style="box-shadow: 0 0 20px rgba(245,158,11,0.2);">
+      <div class="ch-icon">&#128231;</div>
+      <h4 style="color: var(--amber);">จดหมาย</h4>
+    </div>
+    <div class="glass channel-card" style="box-shadow: 0 0 20px rgba(139,92,246,0.2);">
+      <div class="ch-icon">&#128694;</div>
+      <h4 style="color: var(--purple);">ภาคสนาม</h4>
+    </div>
+  </div>
+  <div class="text-center mt-32 animate-in d3">
+    <div style="font-size: 64px; font-weight: 900;" class="gradient-text-emerald" data-count="54" data-suffix="">54</div>
+    <div style="font-size: 18px; color: var(--text-muted);">ล้านคนใช้ LINE ในไทย</div>
+  </div>
+  <p class="animate-in d4" style="margin-top: 16px; font-size: 14px; color: var(--text-muted);">คู่แข่งไม่มี LINE integration — เราเข้าถึงลูกหนี้ได้มากกว่า</p>
+</div>
+
+<!-- ==================== SLIDE 9: AI-POWERED ==================== -->
+<div class="slide bg-blue-tint" id="slide-9">
+  <div class="text-center mb-24">
+    <h2 class="slide-title animate-in"><span class="gradient-text">AI ที่เข้าใจภาษาไทย</span></h2>
+    <p class="slide-subtitle animate-in d1">วิเคราะห์ แนะนำ จัดลำดับ — อัตโนมัติ</p>
+  </div>
+  <div class="two-col">
+    <div class="browser-mockup no-tilt animate-in d2" style="max-width: 500px;">
+      <div class="browser-bar">
+        <div class="browser-dot r"></div>
+        <div class="browser-dot y"></div>
+        <div class="browser-dot g"></div>
+        <div class="browser-url">app.aigentica.ai/ai-insights</div>
+      </div>
+      <img src="../../packages/web/tests/screenshots/22-ai-insights.png" alt="AI Insights">
+    </div>
+    <div>
+      <div class="pillar-grid" style="grid-template-columns: 1fr; max-width: 340px;">
+        <div class="glass pillar-card animate-in d3" style="text-align: left;">
+          <div class="p-icon">&#127919;</div>
+          <h4>Risk Scoring</h4>
+          <p>วิเคราะห์ความเสี่ยงจากพฤติกรรมการชำระ ประวัติการติดต่อ</p>
+        </div>
+        <div class="glass pillar-card animate-in d4" style="text-align: left;">
+          <div class="p-icon">&#128203;</div>
+          <h4>Priority Queue</h4>
+          <p>ใครควรโทรก่อน? AI จัดลำดับให้อัตโนมัติ</p>
+        </div>
+        <div class="glass pillar-card animate-in d5" style="text-align: left;">
+          <div class="p-icon">&#128161;</div>
+          <h4>Strategy Advisor</h4>
+          <p>แนะนำ action ที่ดีที่สุดสำหรับลูกหนี้แต่ละราย</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="animate-in d6" style="margin-top: 24px; font-size: 13px; color: var(--text-muted);">Powered by Genesis AI Platform</p>
+</div>
+
+<!-- ==================== SLIDE 10: WALLBOARD ==================== -->
+<div class="slide bg-dark-extra" id="slide-10">
+  <div class="text-center mb-24">
+    <h2 class="slide-title animate-in"><span class="gradient-text">Real-time Command Center</span></h2>
+    <p class="slide-subtitle animate-in d1">ดูทุกอย่างจากจอเดียว — อัปเดตแบบ real-time</p>
+  </div>
+  <div style="position: relative; width: 100%; max-width: 1100px;" class="animate-in d2">
+    <img src="../../packages/web/tests/screenshots/13-wallboard.png" alt="Wallboard"
+         style="width: 100%; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+    <div class="floating-overlay" style="top: 10%; right: 3%;">&#9889; อัปเดตทุก 5 วินาที</div>
+    <div class="floating-overlay" style="bottom: 10%; left: 3%;">&#128250; เปิดบน TV ในออฟฟิศ</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: MOBILE APP ==================== -->
+<div class="slide" id="slide-11">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text">1 App 2 โหมด</span></h2>
+    <p class="slide-subtitle animate-in d1">Field Visit + Repossession ในแอปเดียว</p>
+  </div>
+  <div class="two-col" style="align-items: center;">
+    <div class="flex-center animate-in d2">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div style="font-size: 40px; margin-bottom: 16px;">&#128506;&#65039;</div>
+          <div style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Aigentica Field</div>
+          <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+            GPS Check-in<br>
+            ถ่ายรูป 4 ด้าน<br>
+            Offline Mode<br>
+            Real-time Sync
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="animate-in d3">
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Features</h3>
+        <ul class="benefit-list">
+          <li>GPS Check-in — พิสูจน์ว่าไปจริง</li>
+          <li>ถ่ายรูป 4 ด้าน + Serial Number</li>
+          <li>Offline Mode — ใช้ได้แม้ไม่มีเน็ต</li>
+          <li>Real-time Sync — ข้อมูลขึ้นทันที</li>
+          <li>Digital Signature — ลงนามในแอป</li>
+        </ul>
+      </div>
+      <div class="glass" style="padding: 16px 20px; display: inline-block;">
+        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">คู่แข่ง: 2 apps แยก</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--emerald);">เรา: 1 app ครบ &#10003;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: VENDOR MANAGEMENT ==================== -->
+<div class="slide" id="slide-12">
+  <div class="text-center mb-24">
+    <h2 class="slide-title animate-in"><span class="gradient-text">มอบหมาย ติดตาม คำนวณค่าคอม</span></h2>
+    <p class="slide-subtitle animate-in d1">Vendor Management — จัดการตัวแทนภายนอก</p>
+  </div>
+  <div class="two-col">
+    <div class="browser-mockup no-tilt animate-in d2" style="max-width: 520px;">
+      <div class="browser-bar">
+        <div class="browser-dot r"></div>
+        <div class="browser-dot y"></div>
+        <div class="browser-dot g"></div>
+        <div class="browser-url">app.aigentica.ai/vendors</div>
+      </div>
+      <img src="../../packages/web/tests/screenshots/16-vendors.png" alt="Vendors">
+    </div>
+    <div class="animate-in d3">
+      <ul class="benefit-list">
+        <li>มอบบัญชีให้ vendor ผ่านระบบ</li>
+        <li>ติดตาม performance real-time</li>
+        <li>คำนวณค่าคอมมิชชั่นอัตโนมัติ</li>
+        <li>Vendor Portal — เข้าดูบัญชีที่ได้รับมอบหมาย</li>
+        <li>สิทธิ์การเข้าถึงแยกตาม role</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 13: PAYMENT & COMMISSION ==================== -->
+<div class="slide" id="slide-13">
+  <div class="text-center mb-24">
+    <h2 class="slide-title animate-in"><span class="gradient-text-amber">PromptPay QR &#10132; จ่าย &#10132; ตัดยอด &#10132; ค่าคอม</span></h2>
+    <p class="slide-subtitle animate-in d1">ลูกหนี้จ่ายผ่านมือถือ — ระบบทำทุกอย่างอัตโนมัติ</p>
+  </div>
+  <div class="browser-mockup animate-in d2" style="max-width: 800px; margin-bottom: 32px;">
+    <div class="browser-bar">
+      <div class="browser-dot r"></div>
+      <div class="browser-dot y"></div>
+      <div class="browser-dot g"></div>
+      <div class="browser-url">app.aigentica.ai/payments</div>
+    </div>
+    <img src="../../packages/web/tests/screenshots/07-payments.png" alt="Payments">
+  </div>
+  <div class="flow-row animate-in d3">
+    <div class="glass" style="padding: 14px 20px; text-align: center;">
+      <div style="font-size: 24px;">&#128179;</div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 4px;">QR Code</div>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="glass" style="padding: 14px 20px; text-align: center;">
+      <div style="font-size: 24px;">&#128176;</div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 4px;">ชำระเงิน</div>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="glass" style="padding: 14px 20px; text-align: center;">
+      <div style="font-size: 24px;">&#128196;</div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 4px;">ตัดยอดอัตโนมัติ</div>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="glass" style="padding: 14px 20px; text-align: center;">
+      <div style="font-size: 24px;">&#128184;</div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 4px;">คำนวณค่าคอม</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 14: SECURITY ==================== -->
+<div class="slide" id="slide-14">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text-emerald">ปลอดภัย ถูกกฎหมาย</span></h2>
+    <p class="slide-subtitle animate-in d1">Enterprise-grade security ตั้งแต่วันแรก</p>
+  </div>
+  <div class="security-grid">
+    <div class="glass security-card animate-in d2">
+      <div class="s-icon">&#128737;&#65039;</div>
+      <h4>PDPA Compliance</h4>
+      <p>ปฏิบัติตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล ครบถ้วน</p>
+    </div>
+    <div class="glass security-card animate-in d3">
+      <div class="s-icon">&#128064;</div>
+      <h4>Data Masking</h4>
+      <p>ซ่อนข้อมูลสำคัญ ดูได้เฉพาะคนที่มีสิทธิ์</p>
+    </div>
+    <div class="glass security-card animate-in d4">
+      <div class="s-icon">&#128203;</div>
+      <h4>Audit Trail</h4>
+      <p>บันทึกทุก action ย้อนดูได้ตลอด 7 ปี</p>
+    </div>
+    <div class="glass security-card animate-in d3">
+      <div class="s-icon">&#128274;</div>
+      <h4>RBAC</h4>
+      <p>6 roles — Admin, Supervisor, Collector, Field, Vendor, Client</p>
+    </div>
+    <div class="glass security-card animate-in d4">
+      <div class="s-icon">&#127908;</div>
+      <h4>Voice Recording</h4>
+      <p>บันทึกเสียงสนทนาอัตโนมัติ เก็บใน S3 เข้ารหัส</p>
+    </div>
+    <div class="glass security-card animate-in d5">
+      <div class="s-icon">&#128272;</div>
+      <h4>Encryption</h4>
+      <p>TLS 1.3 + AES-256 at rest ข้อมูลปลอดภัยทุกจุด</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 15: REPORTS ==================== -->
+<div class="slide" id="slide-15">
+  <div class="text-center mb-24">
+    <h2 class="slide-title animate-in"><span class="gradient-text">รายงานครบ ส่งได้ทันที</span></h2>
+    <p class="slide-subtitle animate-in d1">Dashboard + รายงานสำเร็จรูป + Export</p>
+  </div>
+  <div class="browser-mockup animate-in d2" style="max-width: 800px; margin-bottom: 24px;">
+    <div class="browser-bar">
+      <div class="browser-dot r"></div>
+      <div class="browser-dot y"></div>
+      <div class="browser-dot g"></div>
+      <div class="browser-url">app.aigentica.ai/analytics</div>
+    </div>
+    <img src="../../packages/web/tests/screenshots/23-analytics.png" alt="Analytics">
+  </div>
+  <div class="report-pills animate-in d3">
+    <span class="report-pill">Aging Report</span>
+    <span class="report-pill">Collection Rate</span>
+    <span class="report-pill">Commission Report</span>
+    <span class="report-pill">Compliance Report</span>
+    <span class="report-pill">BOT Format</span>
+    <span class="report-pill">Excel / PDF Export</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 16: CASE STUDY ==================== -->
+<div class="slide" id="slide-16">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text-amber">กรณีศึกษา: Rico Office Solutions</span></h2>
+    <p class="slide-subtitle animate-in d1">ให้เช่าเครื่องถ่ายเอกสาร พรินเตอร์ แล็ปท็อป — ลูกหนี้ 500+ ราย</p>
+  </div>
+  <div class="ba-grid">
+    <div class="glass ba-card animate-in d2">
+      <div class="ba-label">Before &rarr; After</div>
+      <div class="ba-metric">สายโทร/วัน</div>
+      <div class="ba-values">
+        <span class="ba-before">25</span>
+        <span class="ba-after gradient-text" data-count="86" data-suffix="">86</span>
+        <span class="ba-delta">+244%</span>
+      </div>
+    </div>
+    <div class="glass ba-card animate-in d3">
+      <div class="ba-label">Before &rarr; After</div>
+      <div class="ba-metric">Collection / เดือน</div>
+      <div class="ba-values">
+        <span class="ba-before">&#3647;1.7M</span>
+        <span class="ba-after gradient-text-amber" data-count="2.34" data-suffix="M" data-prefix="&#3647;" data-decimal="2">&#3647;2.34M</span>
+        <span class="ba-delta">+&#3647;640K</span>
+      </div>
+    </div>
+    <div class="glass ba-card animate-in d4">
+      <div class="ba-label">Before &rarr; After</div>
+      <div class="ba-metric">NPL 90+ วัน</div>
+      <div class="ba-values">
+        <span class="ba-before">18%</span>
+        <span class="ba-after gradient-text-emerald" data-count="10" data-suffix="%">10%</span>
+        <span class="ba-delta negative">-44%</span>
+      </div>
+    </div>
+    <div class="glass ba-card animate-in d5">
+      <div class="ba-label">Before &rarr; After</div>
+      <div class="ba-metric">ค่าปรับทวงผิดกฎหมาย</div>
+      <div class="ba-values">
+        <span class="ba-before">&#3647;150K</span>
+        <span class="ba-after" style="color: var(--emerald);" data-count="0" data-prefix="&#3647;" data-suffix="">&#3647;0</span>
+        <span class="ba-delta">-100%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17: TECH STACK ==================== -->
+<div class="slide" id="slide-17">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text">เทคโนโลยีระดับ Enterprise</span></h2>
+    <p class="slide-subtitle animate-in d1">สร้างด้วย stack ที่ scale ได้ มั่นคง ปลอดภัย</p>
+  </div>
+  <div class="tech-badges animate-in d2 mb-40">
+    <span class="tech-badge">&#9729;&#65039; Cloud-native</span>
+    <span class="tech-badge">&#128268; API-first</span>
+    <span class="tech-badge">&#127912;&#65039; White-label</span>
+    <span class="tech-badge">&#127970; Multi-tenant</span>
+    <span class="tech-badge">&#128241; Mobile-first</span>
+    <span class="tech-badge">&#128274; Zero-trust Security</span>
+  </div>
+  <div class="module-grid animate-in d3" style="grid-template-columns: repeat(4, 1fr); max-width: 800px;">
+    <div class="text-center">
+      <div style="font-size: 28px; margin-bottom: 8px;">&#9889;</div>
+      <div style="font-size: 13px; font-weight: 700;">FastAPI</div>
+      <div style="font-size: 11px; color: var(--text-muted);">Python 3.12</div>
+    </div>
+    <div class="text-center">
+      <div style="font-size: 28px; margin-bottom: 8px;">&#9883;&#65039;</div>
+      <div style="font-size: 13px; font-weight: 700;">Next.js 14</div>
+      <div style="font-size: 11px; color: var(--text-muted);">TypeScript</div>
+    </div>
+    <div class="text-center">
+      <div style="font-size: 28px; margin-bottom: 8px;">&#128241;</div>
+      <div style="font-size: 13px; font-weight: 700;">React Native</div>
+      <div style="font-size: 11px; color: var(--text-muted);">Expo SDK 52</div>
+    </div>
+    <div class="text-center">
+      <div style="font-size: 28px; margin-bottom: 8px;">&#128024;</div>
+      <div style="font-size: 13px; font-weight: 700;">PostgreSQL</div>
+      <div style="font-size: 11px; color: var(--text-muted);">+ Redis</div>
+    </div>
+  </div>
+  <p class="animate-in d4 mt-32" style="font-size: 14px; color: var(--text-muted);">ISO/IEC 29110 Certified</p>
+</div>
+
+<!-- ==================== SLIDE 18: PRICING ==================== -->
+<div class="slide" id="slide-18">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text-amber">ราคาคุ้มค่า ROI ชัดเจน</span></h2>
+    <p class="slide-subtitle animate-in d1">เลือกแพ็คเกจที่เหมาะกับธุรกิจ</p>
+  </div>
+  <div class="pricing-grid animate-in d2">
+    <div class="glass pricing-card">
+      <h3>Starter</h3>
+      <div style="font-size: 13px; color: var(--text-muted);">สำหรับธุรกิจขนาดเล็ก</div>
+      <div class="pricing-price gradient-text-amber">&#3647;15-25K<span>/เดือน</span></div>
+      <ul class="pricing-features">
+        <li>ลูกหนี้ไม่เกิน 500 ราย</li>
+        <li>ผู้ใช้ 5 คน</li>
+        <li>Rule Engine พื้นฐาน</li>
+        <li>LINE + PromptPay</li>
+        <li>รายงานมาตรฐาน</li>
+      </ul>
+    </div>
+    <div class="glass pricing-card featured">
+      <div class="pricing-badge">แนะนำ</div>
+      <h3>Professional</h3>
+      <div style="font-size: 13px; color: var(--text-muted);">สำหรับธุรกิจขนาดกลาง</div>
+      <div class="pricing-price gradient-text">&#3647;45-80K<span>/เดือน</span></div>
+      <ul class="pricing-features">
+        <li>ลูกหนี้ไม่จำกัด</li>
+        <li>ผู้ใช้ 20 คน</li>
+        <li>Rule Engine 28+ กฎ</li>
+        <li>AI Risk Scoring</li>
+        <li>Telephony + Wallboard</li>
+        <li>Mobile App</li>
+        <li>Vendor Management</li>
+        <li>API Access</li>
+      </ul>
+    </div>
+    <div class="glass pricing-card">
+      <h3>Enterprise</h3>
+      <div style="font-size: 13px; color: var(--text-muted);">สำหรับองค์กรขนาดใหญ่</div>
+      <div class="pricing-price" style="color: var(--text);">Custom</div>
+      <ul class="pricing-features">
+        <li>ทุกอย่างใน Professional</li>
+        <li>White-label branding</li>
+        <li>Dedicated server</li>
+        <li>SLA 99.9%</li>
+        <li>On-premise option</li>
+        <li>Custom integration</li>
+        <li>Priority support 24/7</li>
+      </ul>
+    </div>
+  </div>
+  <div class="text-center mt-24 animate-in d3">
+    <p style="font-size: 16px; color: var(--emerald); font-weight: 600;">ทดลองฟรี 30 วัน — ไม่มีค่าติดตั้ง</p>
+    <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">เก็บเพิ่ม 10% = คืนทุนเดือนแรก</p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 19: TIMELINE ==================== -->
+<div class="slide" id="slide-19">
+  <div class="text-center mb-40">
+    <h2 class="slide-title animate-in"><span class="gradient-text">ใช้งานได้ภายใน 2-4 สัปดาห์</span></h2>
+    <p class="slide-subtitle animate-in d1">ไม่ต้องรอ 6 เดือนเหมือนระบบอื่น</p>
+  </div>
+  <div class="timeline-h animate-in d2">
+    <div class="timeline-node">
+      <div class="timeline-dot"></div>
+      <h4 style="color: var(--blue);">สัปดาห์ 1-2</h4>
+      <p>Setup + Data Migration<br>นำเข้าข้อมูลลูกหนี้</p>
+    </div>
+    <div class="timeline-node">
+      <div class="timeline-dot"></div>
+      <h4 style="color: var(--cyan);">สัปดาห์ 3</h4>
+      <p>Integration + Training<br>เชื่อมต่อ LINE, PromptPay</p>
+    </div>
+    <div class="timeline-node">
+      <div class="timeline-dot"></div>
+      <h4 style="color: var(--amber);">สัปดาห์ 4</h4>
+      <p>Pilot Run<br>ทดลองกับข้อมูลจริง</p>
+    </div>
+    <div class="timeline-node">
+      <div class="timeline-dot" style="background: var(--emerald); box-shadow: 0 0 12px rgba(16,185,129,0.5);"></div>
+      <h4 style="color: var(--emerald);">Go-Live!</h4>
+      <p>เปิดใช้งานเต็มรูปแบบ<br>พร้อม support</p>
+    </div>
+  </div>
+  <div class="glass animate-in d3" style="margin-top: 48px; padding: 16px 28px; text-align: center; max-width: 500px;">
+    <span style="font-size: 14px; color: var(--text-muted);">คู่แข่ง: 3-6 เดือน</span>
+    <span style="margin: 0 12px; color: rgba(255,255,255,0.2);">|</span>
+    <span style="font-size: 14px; font-weight: 700; color: var(--emerald);">เรา: 2-4 สัปดาห์</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 20: ABOUT ENERSYS ==================== -->
+<div class="slide" id="slide-20">
+  <div class="text-center mb-32">
+    <h2 class="slide-title animate-in"><span class="gradient-text">สร้างโดยคนไทย เข้าใจตลาดไทย</span></h2>
+    <p class="slide-subtitle animate-in d1">Enersys Innovation Co., Ltd.</p>
+  </div>
+  <div class="two-col animate-in d2" style="max-width: 800px;">
+    <div>
+      <div class="glass" style="padding: 32px;">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Company Profile</h3>
+        <ul style="list-style: none; line-height: 2; font-size: 14px; color: var(--text-muted);">
+          <li>&#128197; ก่อตั้ง 2012 (13+ ปี)</li>
+          <li>&#128101; 15+ พนักงาน</li>
+          <li>&#127942; ISO/IEC 29110 Certified</li>
+          <li>&#129309; Odoo Silver Partner</li>
+          <li>&#127470;&#127481; ทีมพัฒนาคนไทย 100%</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">ลูกค้าที่ไว้วางใจ</div>
+      <div class="client-logos">
+        <span class="client-logo">PTT</span>
+        <span class="client-logo">KTB</span>
+        <span class="client-logo">GSB</span>
+        <span class="client-logo">GMM Grammy</span>
+        <span class="client-logo">Central</span>
+      </div>
+      <div style="margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+        ประสบการณ์ Enterprise Software 13+ ปี<br>
+        เชี่ยวชาญ ERP, CRM, Custom Solutions
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 21: CTA ==================== -->
+<div class="slide" id="slide-21">
+  <div class="particles" id="particles-21"></div>
+  <div class="text-center">
+    <h2 style="font-size: 48px; font-weight: 800; margin-bottom: 24px; line-height: 1.3;" class="animate-in">
+      พร้อมเพิ่มประสิทธิภาพ<br><span class="gradient-text glow-text">การเก็บหนี้?</span>
+    </h2>
+    <p class="animate-in d1" style="font-size: 18px; color: var(--text-muted); margin-bottom: 40px;">
+      NPL เพิ่มทุกวัน — ยิ่งรอ ยิ่งเก็บยาก
+    </p>
+    <div class="animate-in d2">
+      <button class="cta-btn" onclick="window.open('mailto:sales@aigentica.ai')">&#128197; นัด Demo ฟรี</button>
+    </div>
+    <div class="animate-in d3" style="margin-top: 40px; font-size: 15px; color: var(--text-muted); line-height: 2;">
+      &#128231; sales@aigentica.ai<br>
+      &#128222; 02-xxx-xxxx<br>
+      &#128172; LINE: @aigentica
+    </div>
+    <div class="animate-in d4" style="margin-top: 32px;">
+      <span class="tag" style="background: rgba(16,185,129,0.15); color: var(--emerald); border: 1px solid rgba(16,185,129,0.3);">ทดลองฟรี 30 วัน</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .slides -->
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================
+  // SLIDE NAVIGATION
+  // ============================================
+  const totalSlides = 21;
+  let currentSlide = 1;
+  let isTransitioning = false;
+
+  const progressBar = document.getElementById('progress');
+  const slideCounter = document.getElementById('slide-counter');
+
+  function goToSlide(n) {
+    if (isTransitioning) return;
+    if (n < 1 || n > totalSlides) return;
+    if (n === currentSlide) return;
+
+    isTransitioning = true;
+
+    const oldSlide = document.getElementById('slide-' + currentSlide);
+    const newSlide = document.getElementById('slide-' + n);
+
+    if (oldSlide) oldSlide.classList.remove('active');
+    if (newSlide) newSlide.classList.add('active');
+
+    currentSlide = n;
+    updateProgress();
+    triggerCounters(newSlide);
+
+    setTimeout(function() { isTransitioning = false; }, 600);
+  }
+
+  function nextSlide() { goToSlide(currentSlide + 1); }
+  function prevSlide() { goToSlide(currentSlide - 1); }
+
+  function updateProgress() {
+    const pct = ((currentSlide) / totalSlides) * 100;
+    progressBar.style.width = pct + '%';
+    slideCounter.textContent = currentSlide + ' / ' + totalSlides;
+  }
+
+  // ============================================
+  // KEYBOARD NAV
+  // ============================================
+  document.addEventListener('keydown', function(e) {
+    switch(e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault();
+        nextSlide();
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+      case 'PageUp':
+        e.preventDefault();
+        prevSlide();
+        break;
+      case 'Home':
+        e.preventDefault();
+        goToSlide(1);
+        break;
+      case 'End':
+        e.preventDefault();
+        goToSlide(totalSlides);
+        break;
+    }
+  });
+
+  // ============================================
+  // TOUCH / SWIPE
+  // ============================================
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) nextSlide();
+      else prevSlide();
+    }
+  }, { passive: true });
+
+  // ============================================
+  // ANIMATED COUNTERS
+  // ============================================
+  function triggerCounters(slide) {
+    if (!slide) return;
+    const counters = slide.querySelectorAll('[data-count]');
+    counters.forEach(function(el) {
+      const target = parseFloat(el.getAttribute('data-count'));
+      const suffix = el.getAttribute('data-suffix') || '';
+      const prefix = el.getAttribute('data-prefix') || '';
+      const decimal = parseInt(el.getAttribute('data-decimal') || '0', 10);
+      const duration = 1200;
+      const startTime = performance.now();
+
+      function animate(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // ease-out
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = target * eased;
+
+        let display;
+        if (decimal > 0) {
+          display = current.toFixed(decimal);
+        } else {
+          display = Math.floor(current).toLocaleString();
+        }
+
+        // Preserve gradient class
+        const gradientClass = el.querySelector('span');
+        if (gradientClass) {
+          gradientClass.textContent = prefix + display + suffix;
+        } else {
+          el.textContent = prefix + display + suffix;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      // Delay counter start slightly
+      setTimeout(function() {
+        requestAnimationFrame(animate);
+      }, 400);
+    });
+  }
+
+  // ============================================
+  // PARTICLES
+  // ============================================
+  function createParticles(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.width = (2 + Math.random() * 4) + 'px';
+      p.style.height = p.style.width;
+      p.style.opacity = 0.1 + Math.random() * 0.3;
+      container.appendChild(p);
+    }
+  }
+
+  createParticles('particles-1');
+  createParticles('particles-21');
+
+  // ============================================
+  // INIT
+  // ============================================
+  updateProgress();
+  // Trigger counters on first slide after slight delay
+  setTimeout(function() {
+    triggerCounters(document.getElementById('slide-1'));
+  }, 800);
+
+})();
+</script>
+</body>
+</html>
