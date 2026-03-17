@@ -1083,6 +1083,24 @@ body {
   color: #93c5fd;
   box-shadow: 0 0 20px rgba(59,130,246,0.2);
 }
+
+/* ─── Lightbox ─── */
+.lightbox-overlay {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh; z-index: 99999;
+  background: rgba(0,0,0,0.92);
+  justify-content: center; align-items: center;
+  cursor: zoom-out;
+}
+.lightbox-overlay.active { display: flex; }
+.lightbox-overlay img {
+  max-width: 95vw; max-height: 95vh;
+  object-fit: contain; border-radius: 8px;
+  box-shadow: 0 0 60px rgba(59,130,246,0.3);
+}
+.laptop-screen img, .slide img[src*="screenshots"] {
+  cursor: zoom-in;
+}
 </style>
 </head>
 <body>
@@ -1980,6 +1998,23 @@ body {
   }, 800);
 
 })();
+</script>
+
+<!-- Lightbox overlay -->
+<div class="lightbox-overlay" id="lightbox" onclick="this.classList.remove('active')">
+  <img id="lightbox-img" src="" alt="Enlarged screenshot">
+</div>
+<script>
+document.querySelectorAll('.laptop-screen img, .slide img[src*="screenshots"]').forEach(function(img) {
+  img.addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('lightbox-img').src = img.src;
+    document.getElementById('lightbox').classList.add('active');
+  });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
+});
 </script>
 </body>
 </html>

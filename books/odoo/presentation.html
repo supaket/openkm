@@ -220,6 +220,23 @@
             .reveal { font-size: 26px; }
             .card-grid.cols-5 { grid-template-columns: 1fr 1fr 1fr; }
         }
+        /* ─── Lightbox ─── */
+        .lightbox-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh; z-index: 9999;
+            background: rgba(0,0,0,0.92);
+            justify-content: center; align-items: center;
+            cursor: zoom-out;
+        }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-overlay img {
+            max-width: 95vw; max-height: 95vh;
+            object-fit: contain; border-radius: 8px;
+            box-shadow: 0 0 60px rgba(0,255,224,0.2);
+        }
+        .screenshot, .screenshot-full, .screenshot-row img {
+            cursor: zoom-in;
+        }
     </style>
 </head>
 <body>
@@ -988,6 +1005,11 @@
         </div><!-- /slides -->
     </div><!-- /reveal -->
 
+    <!-- Lightbox overlay -->
+    <div class="lightbox-overlay" id="lightbox" onclick="this.classList.remove('active')">
+        <img id="lightbox-img" src="" alt="Enlarged screenshot">
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
     <script>
         Reveal.initialize({
@@ -1012,10 +1034,17 @@
             }
         });
 
-        // Hide presenter notes by default (press N to show)
-        document.addEventListener('DOMContentLoaded', () => {
-            // Notes visible by default for presenter, hidden for audience
-            // Press 'N' key to toggle
+        // Lightbox: click any screenshot to enlarge
+        document.querySelectorAll('.screenshot, .screenshot-full, .screenshot-row img').forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('lightbox-img').src = img.src;
+                document.getElementById('lightbox').classList.add('active');
+            });
+        });
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
         });
     </script>
 </body>
