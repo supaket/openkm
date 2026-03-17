@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enersys Thailand × Odoo 19 Enterprise — Live Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --neon-cyan: #00FFE0;
+            --neon-blue: #00AAFF;
+            --neon-purple: #B44DFF;
+            --neon-pink: #FF3CAC;
+            --neon-orange: #FF6B35;
+            --neon-green: #39FF14;
+            --neon-yellow: #FFE600;
+            --bg-dark: #0A0E1A;
+            --bg-card: #111827;
+            --bg-card-hover: #1E293B;
+            --text-white: #F1F5F9;
+            --text-muted: #94A3B8;
+            --glass: rgba(255,255,255,0.05);
+            --glass-border: rgba(255,255,255,0.1);
+            --glow-cyan: 0 0 20px rgba(0,255,224,0.3);
+            --glow-blue: 0 0 20px rgba(0,170,255,0.3);
+        }
+
+        /* ─── Base ─── */
+        .reveal {
+            font-family: 'Noto Sans Thai', 'Segoe UI', sans-serif;
+            color: var(--text-white);
+            font-size: 32px;
+        }
+        .reveal .slides { text-align: left; }
+        .reveal .slides section { padding: 30px 50px; }
+
+        .reveal h1 {
+            font-size: 2.6em; font-weight: 900; letter-spacing: -0.04em;
+            text-transform: none; margin-bottom: 0.15em; line-height: 1.1;
+        }
+        .reveal h2 {
+            font-size: 1.8em; font-weight: 800; letter-spacing: -0.03em;
+            text-transform: none; margin-bottom: 0.2em; line-height: 1.15;
+        }
+        .reveal h3 {
+            font-size: 1.2em; font-weight: 700; letter-spacing: -0.01em;
+            text-transform: none; margin-bottom: 0.2em;
+        }
+        .reveal p { font-size: 0.85em; line-height: 1.6; color: var(--text-muted); }
+
+        /* ─── Backgrounds ─── */
+        .reveal .slides section {
+            background: var(--bg-dark);
+        }
+        .reveal .slide-background { background: var(--bg-dark) !important; }
+
+        /* ─── Gradient Texts ─── */
+        .grad-cyan { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .grad-fire { background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .grad-purple { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .grad-green { background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .grad-gold { background: linear-gradient(135deg, var(--neon-yellow), var(--neon-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* ─── Glow Accents ─── */
+        .glow-line {
+            height: 4px; border-radius: 2px; margin: 12px 0 20px; width: 120px;
+        }
+        .glow-cyan { background: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+        .glow-fire { background: var(--neon-orange); box-shadow: 0 0 20px rgba(255,107,53,0.4); }
+        .glow-purple { background: var(--neon-purple); box-shadow: 0 0 20px rgba(180,77,255,0.4); }
+        .glow-green { background: var(--neon-green); box-shadow: 0 0 20px rgba(57,255,20,0.3); }
+        .glow-gold { background: var(--neon-yellow); box-shadow: 0 0 20px rgba(255,230,0,0.3); }
+
+        /* ─── Cards ─── */
+        .card-grid { display: grid; gap: 16px; margin-top: 16px; }
+        .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        .card-grid.cols-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+
+        .card {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 20px; transition: all 0.3s;
+        }
+        .card:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
+        .card .card-num {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.55em;
+            font-weight: 700; margin-bottom: 6px; display: block;
+        }
+        .card .card-title {
+            font-size: 0.7em; font-weight: 700; color: var(--text-white);
+            margin-bottom: 4px; line-height: 1.3;
+        }
+        .card .card-desc {
+            font-size: 0.5em; color: var(--text-muted); line-height: 1.5;
+        }
+
+        /* ─── Demo Link Buttons ─── */
+        .demo-btn {
+            display: inline-block; padding: 10px 24px; border-radius: 8px;
+            font-size: 0.65em; font-weight: 700; text-decoration: none;
+            transition: all 0.3s; margin: 4px;
+        }
+        .demo-btn.cyan { background: rgba(0,255,224,0.15); color: var(--neon-cyan); border: 1px solid rgba(0,255,224,0.3); }
+        .demo-btn.cyan:hover { background: rgba(0,255,224,0.25); box-shadow: var(--glow-cyan); }
+        .demo-btn.fire { background: rgba(255,107,53,0.15); color: var(--neon-orange); border: 1px solid rgba(255,107,53,0.3); }
+        .demo-btn.fire:hover { background: rgba(255,107,53,0.25); }
+        .demo-btn.purple { background: rgba(180,77,255,0.15); color: var(--neon-purple); border: 1px solid rgba(180,77,255,0.3); }
+        .demo-btn.purple:hover { background: rgba(180,77,255,0.25); }
+        .demo-btn.green { background: rgba(57,255,20,0.15); color: var(--neon-green); border: 1px solid rgba(57,255,20,0.3); }
+        .demo-btn.green:hover { background: rgba(57,255,20,0.25); }
+
+        /* ─── Big Stats ─── */
+        .stat-row { display: flex; gap: 24px; margin: 16px 0; }
+        .stat { text-align: center; flex: 1; }
+        .stat .num {
+            font-size: 2.2em; font-weight: 900; line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .stat .label { font-size: 0.55em; color: var(--text-muted); margin-top: 4px; }
+
+        /* ─── Flow Diagram ─── */
+        .flow { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+        .flow .step {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: 8px; padding: 10px 18px; font-size: 0.6em; font-weight: 600;
+        }
+        .flow .arrow { color: var(--neon-cyan); font-size: 0.8em; }
+
+        /* ─── Tag ─── */
+        .tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.5em; font-weight: 600; margin: 2px;
+        }
+        .tag.thb { background: rgba(0,255,224,0.15); color: var(--neon-cyan); }
+        .tag.usd { background: rgba(57,255,20,0.15); color: var(--neon-green); }
+        .tag.cny { background: rgba(255,230,0,0.15); color: var(--neon-yellow); }
+
+        /* ─── Presenter Notes ─── */
+        .presenter-note {
+            background: rgba(255,230,0,0.08); border-left: 3px solid var(--neon-yellow);
+            padding: 10px 16px; border-radius: 0 8px 8px 0; margin-top: 16px;
+            font-size: 0.5em; color: var(--neon-yellow); line-height: 1.6;
+        }
+        .presenter-note::before { content: '🎤 '; }
+
+        /* ─── Slide Number ─── */
+        .reveal .slide-number {
+            background: rgba(0,255,224,0.2); color: var(--neon-cyan);
+            font-family: 'JetBrains Mono', monospace; font-size: 14px;
+            font-weight: 700; padding: 4px 10px; border-radius: 6px 0 0 0;
+        }
+
+        /* ─── Top Glow Bar ─── */
+        .brand-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 100;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue), var(--neon-purple), var(--neon-pink));
+        }
+
+        /* ─── Scenario Header ─── */
+        .scenario-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
+        }
+        .scenario-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8em; font-weight: 900; min-width: 80px;
+        }
+
+        /* ─── Index Grid ─── */
+        .index-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 14px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; text-decoration: none;
+            border: 1px solid transparent;
+        }
+        .index-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--glass-border);
+        }
+        .index-item .idx-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700; font-size: 0.6em; min-width: 32px;
+        }
+        .index-item .idx-title {
+            font-size: 0.55em; font-weight: 600; color: var(--text-white);
+        }
+
+        /* ─── Screenshots ─── */
+        .screenshot {
+            border-radius: 10px; border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+            max-width: 100%; max-height: 280px; object-fit: cover;
+            object-position: top left; margin-top: 10px;
+        }
+        .screenshot-full {
+            border-radius: 10px; border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+            max-width: 100%; max-height: 340px; object-fit: contain;
+            margin-top: 10px;
+        }
+        .screenshot-row { display: flex; gap: 12px; margin-top: 10px; }
+        .screenshot-row img { flex: 1; max-width: 48%; }
+
+        /* ─── Logo Footer ─── */
+        .logo-footer {
+            position: fixed; bottom: 12px; right: 24px; z-index: 100;
+            opacity: 0.7; transition: opacity 0.3s;
+        }
+        .logo-footer:hover { opacity: 1; }
+        .logo-footer img {
+            height: 32px; filter: invert(1) brightness(2);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 1200px) {
+            .reveal { font-size: 26px; }
+            .card-grid.cols-5 { grid-template-columns: 1fr 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="brand-bar"></div>
+    <div class="logo-footer"><img src="screenshots/logo_enersys.png" alt="Enersys"></div>
+    <div class="reveal">
+        <div class="slides">
+
+<!-- ============================================================ -->
+<!-- SLIDE 0: TITLE -->
+<!-- ============================================================ -->
+<section>
+    <div style="text-align:center; padding-top: 20px;">
+        <img src="screenshots/logo_enersys.png" alt="Enersys" style="height:80px; filter:invert(1) brightness(2); margin-bottom:16px;">
+        <p style="font-size:0.6em; font-weight:600; color:var(--neon-cyan); letter-spacing:0.15em; text-transform:uppercase;">Enersys Thailand × Odoo 19 Enterprise</p>
+        <h1 style="text-align:center;"><span class="grad-cyan">ระบบ ERP ครบวงจร</span></h1>
+        <h1 style="text-align:center; font-size:1.8em;"><span class="grad-fire">สำหรับธุรกิจผลิต-ขาย-คลัง-ขนส่ง</span></h1>
+        <div class="glow-line glow-cyan" style="margin:20px auto; width:200px;"></div>
+        <p style="text-align:center; font-size:0.75em; color:var(--text-muted);">Manufacturing · Sales & POS · Inventory · Warehouse · Logistics</p>
+        <div style="margin-top:40px;">
+            <a href="https://odoo.enersys.co" target="_blank" class="demo-btn cyan" style="font-size:0.8em; padding:14px 40px;">
+                🚀 เข้า Live Demo → odoo.enersys.co
+            </a>
+        </div>
+        <p style="text-align:center; font-size:0.5em; color:var(--text-muted); margin-top:20px;">Login: admin / admin</p>
+    </div>
+    <div class="presenter-note">เปิดด้วย: "สวัสดีครับ วันนี้จะโชว์ให้ดูว่า Odoo 19 จัดการทุกขั้นตอนธุรกิจได้ยังไง ตั้งแต่สั่งผลิต ขาย จัดคลัง ส่งของ — ทุกอย่างเชื่อมกันหมดครับ"</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 1: INDEX -->
+<!-- ============================================================ -->
+<section>
+    <h2><span class="grad-cyan">📋 20 Scenarios</span></h2>
+    <div class="glow-line glow-cyan"></div>
+    <div class="card-grid cols-4" style="font-size:0.95em;">
+        <div>
+            <p style="font-size:0.6em; font-weight:800; color:var(--neon-cyan);">🏭 MANUFACTURING</p>
+            <a href="#/2" class="index-item"><span class="idx-num" style="color:var(--neon-cyan);">01</span><span class="idx-title">สั่งผลิตจาก BoM</span></a>
+            <a href="#/3" class="index-item"><span class="idx-num" style="color:var(--neon-cyan);">02</span><span class="idx-title">Sub-assembly</span></a>
+            <a href="#/4" class="index-item"><span class="idx-num" style="color:var(--neon-cyan);">03</span><span class="idx-title">Quality Check</span></a>
+            <a href="#/5" class="index-item"><span class="idx-num" style="color:var(--neon-cyan);">04</span><span class="idx-title">Auto Replenishment</span></a>
+            <a href="#/6" class="index-item"><span class="idx-num" style="color:var(--neon-cyan);">05</span><span class="idx-title">Lot & วันหมดอายุ</span></a>
+        </div>
+        <div>
+            <p style="font-size:0.6em; font-weight:800; color:var(--neon-orange);">🛒 SALES & POS</p>
+            <a href="#/7" class="index-item"><span class="idx-num" style="color:var(--neon-orange);">06</span><span class="idx-title">ขาย B2B</span></a>
+            <a href="#/8" class="index-item"><span class="idx-num" style="color:var(--neon-orange);">07</span><span class="idx-title">Multi-Currency</span></a>
+            <a href="#/9" class="index-item"><span class="idx-num" style="color:var(--neon-orange);">08</span><span class="idx-title">POS หน้าร้าน</span></a>
+            <a href="#/10" class="index-item"><span class="idx-num" style="color:var(--neon-orange);">09</span><span class="idx-title">Quotation → Delivery</span></a>
+            <a href="#/11" class="index-item"><span class="idx-num" style="color:var(--neon-orange);">10</span><span class="idx-title">ส่วนลด & Net 30</span></a>
+        </div>
+        <div>
+            <p style="font-size:0.6em; font-weight:800; color:var(--neon-green);">📦 STOCK & INVENTORY</p>
+            <a href="#/12" class="index-item"><span class="idx-num" style="color:var(--neon-green);">11</span><span class="idx-title">รับวัตถุดิบ (GRN)</span></a>
+            <a href="#/13" class="index-item"><span class="idx-num" style="color:var(--neon-green);">12</span><span class="idx-title">ตรวจนับสต็อก</span></a>
+            <a href="#/14" class="index-item"><span class="idx-num" style="color:var(--neon-green);">13</span><span class="idx-title">Landed Cost</span></a>
+            <a href="#/15" class="index-item"><span class="idx-num" style="color:var(--neon-green);">14</span><span class="idx-title">Reorder Rules</span></a>
+            <a href="#/16" class="index-item"><span class="idx-num" style="color:var(--neon-green);">15</span><span class="idx-title">Barcode Scan</span></a>
+        </div>
+        <div>
+            <p style="font-size:0.6em; font-weight:800; color:var(--neon-purple);">🚛 WAREHOUSE & LOGISTICS</p>
+            <a href="#/17" class="index-item"><span class="idx-num" style="color:var(--neon-purple);">16</span><span class="idx-title">3-step Receipt</span></a>
+            <a href="#/18" class="index-item"><span class="idx-num" style="color:var(--neon-purple);">17</span><span class="idx-title">Pick + Pack + Ship</span></a>
+            <a href="#/19" class="index-item"><span class="idx-num" style="color:var(--neon-purple);">18</span><span class="idx-title">Internal Transfer</span></a>
+            <a href="#/20" class="index-item"><span class="idx-num" style="color:var(--neon-purple);">19</span><span class="idx-title">Dropship</span></a>
+            <a href="#/21" class="index-item"><span class="idx-num" style="color:var(--neon-purple);">20</span><span class="idx-title">Return & Credit</span></a>
+        </div>
+    </div>
+    <div class="presenter-note">สไลด์นี้เป็น Index — คลิกแต่ละ scenario เพื่อกระโดดไปดูรายละเอียดได้เลย ถ้าคนถามเรื่องไหนก็ click ตรงไปเลย</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 1: สั่งผลิตจาก BoM -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-cyan">01</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-cyan">สั่งผลิตเครื่องดื่มวิตามิน</span></h2>
+            <p style="margin:0; font-size:0.6em;">Manufacturing Order จาก Bill of Materials อัตโนมัติ</p>
+        </div>
+    </div>
+    <div class="glow-line glow-cyan"></div>
+    <div class="flow">
+        <div class="step">📋 BoM สูตรผลิต</div><span class="arrow">→</span>
+        <div class="step">🏭 สร้าง MO</div><span class="arrow">→</span>
+        <div class="step">⚙️ คำนวณวัตถุดิบ</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-cyan);">✅ ผลิตเสร็จ</div>
+    </div>
+    <div class="card-grid cols-2" style="margin-top:12px;">
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-cyan);">สูตรผลิต FG001 (100 กระป๋อง)</span>
+            <div class="card-desc">
+                • RM001 ผงวิตามิน = <strong style="color:var(--neon-cyan);">2 kg</strong><br>
+                • RM002 น้ำเชื่อม = <strong style="color:var(--neon-cyan);">5 ลิตร</strong><br>
+                • RM003 กระป๋อง = <strong style="color:var(--neon-cyan);">100 ชิ้น</strong><br>
+                • RM004 ฉลาก = <strong style="color:var(--neon-cyan);">0.1 ม้วน</strong>
+            </div>
+        </div>
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-orange);">MO#1 — ผลิต 500 กระป๋อง</span>
+            <div class="card-desc">
+                ระบบคำนวณวัตถุดิบอัตโนมัติ:<br>
+                • RM001 = <strong style="color:var(--neon-orange);">10 kg</strong><br>
+                • RM002 = <strong style="color:var(--neon-orange);">25 ลิตร</strong><br>
+                • RM003 = <strong style="color:var(--neon-orange);">500 ชิ้น</strong><br>
+                • RM004 = <strong style="color:var(--neon-orange);">0.5 ม้วน</strong>
+            </div>
+        </div>
+    </div>
+    <img src="screenshots/01_manufacturing_orders.png" class="screenshot" alt="Manufacturing Orders">
+    <div style="margin-top:8px;">
+        <a href="https://odoo.enersys.co/odoo/manufacturing" target="_blank" class="demo-btn cyan">🏭 เปิด Manufacturing →</a>
+    </div>
+    <div class="presenter-note">เปิด Manufacturing > Manufacturing Orders > MO#1 → โชว์ว่าระบบคำนวณ component จาก BoM ให้อัตโนมัติ แค่กรอกจำนวนที่ต้องการผลิต</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 2: Sub-assembly -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-cyan">02</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-cyan">ผลิตซ้อนผลิต (Sub-assembly)</span></h2>
+            <p style="margin:0; font-size:0.6em;">FG002 แพ็กกล่อง 24 กระป๋อง → ต้องผลิต FG001 ก่อน</p>
+        </div>
+    </div>
+    <div class="glow-line glow-cyan"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-purple);">MO: FG001 x 480</div><span class="arrow">→</span>
+        <div class="step">กระป๋องพร้อม</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-cyan);">MO: FG002 x 20</div><span class="arrow">→</span>
+        <div class="step">แพ็กกล่อง + RM005</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">✅ 20 กล่อง</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-cyan);">BoM ซ้อน 2 ชั้น</span>
+        <div class="card-desc">
+            <strong style="color:var(--text-white);">FG002</strong> (1 กล่อง) = FG001 x 24 กระป๋อง + RM005 x 1 กล่องลูกฟูก<br>
+            <strong style="color:var(--text-white);">FG001</strong> (100 กระป๋อง) = RM001 + RM002 + RM003 + RM004<br><br>
+            สั่งผลิต FG002 x 20 กล่อง → ระบบสร้าง MO สำหรับ FG001 x 480 กระป๋องให้อัตโนมัติ
+        </div>
+    </div>
+    <img src="screenshots/01_manufacturing_orders.png" class="screenshot" alt="01_manufacturing_orders">
+    <a href="https://odoo.enersys.co/odoo/manufacturing" target="_blank" class="demo-btn cyan">🏭 ดู MO ทั้ง 2 รายการ →</a>
+    <div class="presenter-note">เปิด MO#2 (FG002) โชว์ component ที่เป็น FG001 → คลิก FG001 จะเห็น MO ที่ถูกสร้างมา chain กัน โชว์ว่า Odoo จัดการ multi-level BoM ได้</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 3: Quality Check -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-cyan">03</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-cyan">Quality Check</span></h2>
+            <p style="margin:0; font-size:0.6em;">ตรวจ pH และปริมาณวิตามินก่อนบรรจุกระป๋อง</p>
+        </div>
+    </div>
+    <div class="glow-line glow-cyan"></div>
+    <div class="card-grid cols-2">
+        <div class="card" style="border-left: 3px solid var(--neon-green);">
+            <span class="card-num" style="color:var(--neon-green);">✅ Quality Point #1</span>
+            <div class="card-title">ตรวจค่า pH (pH Level Check)</div>
+            <div class="card-desc">ค่า pH ต้องอยู่ระหว่าง 3.0 - 4.5<br>ถ้าผ่าน → ดำเนินการบรรจุ<br>ถ้าไม่ผ่าน → Quality Alert</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--neon-green);">
+            <span class="card-num" style="color:var(--neon-green);">✅ Quality Point #2</span>
+            <div class="card-title">ตรวจปริมาณวิตามิน (Vitamin Content)</div>
+            <div class="card-desc">วิตามินรวมต้อง ≥ 100% RDI/กระป๋อง<br>ตรวจทุก batch ก่อนปิดฝา</div>
+        </div>
+    </div>
+    <div class="card" style="margin-top:12px; border-left: 3px solid var(--neon-orange);">
+        <span class="card-num" style="color:var(--neon-orange);">⚠️ Quality Alert: QA-2026-001</span>
+        <div class="card-desc">ตรวจพบค่า pH = 4.8 <strong style="color:var(--neon-orange);">สูงกว่ามาตรฐาน</strong> ใน Lot#VIT-2026-001 → รอตรวจซ้ำ</div>
+    </div>
+    <img src="screenshots/03_quality_alerts.png" class="screenshot" alt="03_quality_alerts">
+    <a href="https://odoo.enersys.co/odoo/quality/alerts" target="_blank" class="demo-btn cyan">🔬 ดู Quality Alerts →</a>
+    <a href="https://odoo.enersys.co/odoo/quality/control-points" target="_blank" class="demo-btn fire">📋 ดู Control Points →</a>
+    <div class="presenter-note">เปิด Quality > Alerts > QA-2026-001 โชว์ว่าระบบแจ้งเตือนทันทีเมื่อพบปัญหา สามารถ trace กลับไปหา Lot ต้นทางได้</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 4: Auto Replenishment -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-cyan">04</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-cyan">Auto Replenishment</span></h2>
+            <p style="margin:0; font-size:0.6em;">วัตถุดิบไม่พอ → สร้าง Purchase Order อัตโนมัติ</p>
+        </div>
+    </div>
+    <div class="glow-line glow-cyan"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-orange);">⚠️ MO ต้องใช้ RM001</div><span class="arrow">→</span>
+        <div class="step">Stock ไม่พอ!</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📝 สร้าง PO อัตโนมัติ</div><span class="arrow">→</span>
+        <div class="step">US Global Ingredients</div>
+    </div>
+    <div class="stat-row" style="margin-top:20px;">
+        <div class="stat"><div class="num grad-fire">$3,600</div><div class="label">มูลค่า PO (USD)</div></div>
+        <div class="stat"><div class="num grad-cyan">50 kg</div><div class="label">RM001 ผงวิตามิน</div></div>
+        <div class="stat"><div class="num grad-green">$72/kg</div><div class="label">ราคาต่อหน่วย</div></div>
+    </div>
+    <img src="screenshots/09_purchase_orders.png" class="screenshot" alt="09_purchase_orders">
+    <a href="https://odoo.enersys.co/odoo/purchase" target="_blank" class="demo-btn cyan">📝 ดู Purchase Orders →</a>
+    <div class="presenter-note">เปิด Purchase > Orders > PO#1 → โชว์ว่าเป็น USD เพราะซื้อจาก US Global อัตราแลกเปลี่ยนคำนวณอัตโนมัติ</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 5: Lot & Expiry -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-cyan">05</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-cyan">Lot Tracking & วันหมดอายุ</span></h2>
+            <p style="margin:0; font-size:0.6em;">ติดตามสินค้าจาก Lot ต้นทาง ถึงลูกค้า พร้อมแจ้งเตือนหมดอายุ</p>
+        </div>
+    </div>
+    <div class="glow-line glow-cyan"></div>
+    <div class="card-grid cols-2">
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-cyan);">Lot: VIT-2026-001</span>
+            <div class="card-title">FG001 เครื่องดื่มวิตามิน</div>
+            <div class="card-desc">วันหมดอายุ: <strong style="color:var(--neon-orange);">13 ก.ย. 2569</strong><br>สถานะ: ใช้งาน (Active)<br>Traceability: RM001 Lot VITBLEND-2026-A01</div>
+        </div>
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-cyan);">Lot: VIT-2026-002</span>
+            <div class="card-title">FG001 เครื่องดื่มวิตามิน</div>
+            <div class="card-desc">Batch ที่ 2 — ผลิตจาก<br>Lot RM002: SYRUP-2026-B01<br>Full traceability ทุกขั้นตอน</div>
+        </div>
+    </div>
+    <img src="screenshots/05_lots_serial.png" class="screenshot" alt="05_lots_serial">
+    <a href="https://odoo.enersys.co/odoo/inventory/products" target="_blank" class="demo-btn cyan">📦 ดู Products & Lots →</a>
+    <div class="presenter-note">เปิด Inventory > Products > FG001 > Lot/Serial Numbers → โชว์ VIT-2026-001 กดดู Traceability Report จะเห็น chain ของวัตถุดิบที่ใช้</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 6: B2B Sale -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-fire">06</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-fire">ขาย B2B ให้ ไทยฟู้ด</span></h2>
+            <p style="margin:0; font-size:0.6em;">Sale Order → Delivery → Invoice ครบจบ</p>
+        </div>
+    </div>
+    <div class="glow-line glow-fire"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-orange);">📝 Sale Order</div><span class="arrow">→</span>
+        <div class="step">📦 Delivery</div><span class="arrow">→</span>
+        <div class="step">💰 Invoice</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">✅ ชำระเงิน</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-orange);">SO#1 — บริษัท ไทยฟู้ด คอร์ปอเรชั่น</span>
+        <div class="card-desc" style="font-size:0.6em;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--glass-border);">
+                    <td style="padding:6px 0;">FG002 — เครื่องดื่มวิตามิน แพ็กกล่อง 24</td>
+                    <td style="text-align:right; color:var(--neon-cyan);">100 กล่อง</td>
+                    <td style="text-align:right; color:var(--neon-cyan);">฿780</td>
+                    <td style="text-align:right; font-weight:700; color:var(--neon-orange);">฿78,000</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <img src="screenshots/06_sales_orders.png" class="screenshot" alt="06_sales_orders">
+    <a href="https://odoo.enersys.co/odoo/sales" target="_blank" class="demo-btn fire">🛒 ดู Sales Orders →</a>
+    <div class="presenter-note">เปิด Sales > SO#1 → โชว์ Delivery button (smart button) → Invoice → Payment ครบ flow ขาย end-to-end</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 7: Multi-Currency -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-fire">07</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-fire">ขายหลายสกุลเงิน (USD)</span></h2>
+            <p style="margin:0; font-size:0.6em;">Exchange rate คำนวณอัตโนมัติ — THB, USD, CNY</p>
+        </div>
+    </div>
+    <div class="glow-line glow-fire"></div>
+    <div class="stat-row">
+        <div class="stat"><div class="num" style="color:var(--neon-cyan);">THB</div><div class="label">สกุลเงินหลัก 🇹🇭</div></div>
+        <div class="stat"><div class="num" style="color:var(--neon-green);">USD</div><div class="label">ลูกค้าต่างประเทศ 🇺🇸</div></div>
+        <div class="stat"><div class="num" style="color:var(--neon-yellow);">CNY</div><div class="label">ซัพพลายเออร์จีน 🇨🇳</div></div>
+    </div>
+    <div class="card">
+        <span class="card-num" style="color:var(--neon-green);">SO#2 — Pacific Health Distributors Inc. (USD)</span>
+        <div class="card-desc">FG001 x 1,000 กระป๋อง @ <strong style="color:var(--neon-green);">$1.00 USD</strong> = <strong style="color:var(--neon-green);">$1,000 USD</strong><br>
+        ระบบแปลงเป็น THB ตาม exchange rate อัตโนมัติ<br>
+        Journal: INV-USD (สมุดรายวันขาย - ดอลลาร์)</div>
+    </div>
+    <img src="screenshots/06_sales_orders.png" class="screenshot" alt="06_sales_orders">
+    <a href="https://odoo.enersys.co/odoo/sales" target="_blank" class="demo-btn fire">🛒 ดู SO#2 (USD) →</a>
+    <a href="https://odoo.enersys.co/odoo/accounting/journals" target="_blank" class="demo-btn green">💰 ดู Journals →</a>
+    <div class="presenter-note">เปิด SO#2 โชว์ currency = USD → เปิด Accounting > Journals โชว์ INV-USD, BILL-CNY ที่แยกตามสกุลเงิน</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 8: POS -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-fire">08</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-fire">POS ขายหน้าร้าน</span></h2>
+            <p style="margin:0; font-size:0.6em;">สแกน Barcode → ชำระเงิน → ตัด Stock ทันที</p>
+        </div>
+    </div>
+    <div class="glow-line glow-fire"></div>
+    <div class="flow">
+        <div class="step">📱 เปิด POS Session</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-orange);">🔍 สแกน Barcode</div><span class="arrow">→</span>
+        <div class="step">💳 ชำระเงิน</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📦 Stock ตัดทันที</div>
+    </div>
+    <div class="card-grid cols-2" style="margin-top:12px;">
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-cyan);">Barcodes พร้อมสแกน</span>
+            <div class="card-desc" style="font-family:'JetBrains Mono',monospace;">
+                FG001: <strong style="color:var(--neon-cyan);">8850001000011</strong><br>
+                FG002: <strong style="color:var(--neon-cyan);">8850001000028</strong><br>
+                RM001: <strong style="color:var(--neon-cyan);">8850001100018</strong><br>
+                RM003: <strong style="color:var(--neon-cyan);">8850001100032</strong>
+            </div>
+        </div>
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-orange);">ตัวอย่างการขาย POS</span>
+            <div class="card-desc">
+                สแกน FG001 x 6 กระป๋อง<br>
+                ราคา: 6 × ฿35 = <strong style="color:var(--neon-orange);">฿210</strong><br>
+                ชำระเงินสด/QR/บัตร<br>
+                Stock ลดทันที → real-time
+            </div>
+        </div>
+    </div>
+    <img src="screenshots/08_pos_config.png" class="screenshot" alt="08_pos_config">
+    <a href="https://odoo.enersys.co/pos/ui" target="_blank" class="demo-btn fire">📱 เปิด POS →</a>
+    <div class="presenter-note">คลิก POS → เปิด Session "Enersys Shop" → สแกนหรือค้นหาสินค้า → ชำระเงิน → โชว์ว่า stock ลดลงทันที</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 9: Quotation Flow -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-fire">09</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-fire">Quotation → SO → Delivery</span></h2>
+            <p style="margin:0; font-size:0.6em;">ส่งใบเสนอราคาให้ เอเชีย รีเทล กรุ๊ป — รอลูกค้า confirm</p>
+        </div>
+    </div>
+    <div class="glow-line glow-fire"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-yellow);">📄 Quotation</div><span class="arrow">→</span>
+        <div class="step">📧 ส่งให้ลูกค้า</div><span class="arrow">→</span>
+        <div class="step">✅ Confirm</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-orange);">📝 Sale Order</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📦 Delivery</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-yellow);">Quotation#3 — เอเชีย รีเทล กรุ๊ป (รอ confirm)</span>
+        <div class="card-desc" style="font-size:0.6em;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--glass-border);">
+                    <td style="padding:4px 0;">FG001 — เครื่องดื่มวิตามิน 250ml</td>
+                    <td style="text-align:right;">500 ชิ้น × ฿35</td>
+                    <td style="text-align:right; font-weight:700; color:var(--neon-cyan);">฿17,500</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--glass-border);">
+                    <td style="padding:4px 0;">FG002 — แพ็กกล่อง 24</td>
+                    <td style="text-align:right;">50 กล่อง × ฿780</td>
+                    <td style="text-align:right; font-weight:700; color:var(--neon-cyan);">฿39,000</td>
+                </tr>
+                <tr><td colspan="2" style="padding:4px 0; font-weight:700;">รวม</td>
+                    <td style="text-align:right; font-weight:900; color:var(--neon-orange); font-size:1.1em;">฿56,500</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <img src="screenshots/06_sales_orders.png" class="screenshot" alt="06_sales_orders">
+    <a href="https://odoo.enersys.co/odoo/sales" target="_blank" class="demo-btn fire">📄 เปิด Quotation#3 →</a>
+    <div class="presenter-note">เปิด SO#3 (Quotation status) → กด "Send by Email" โชว์ PDF → จากนั้น Confirm → โชว์ว่า Delivery Order ถูกสร้างอัตโนมัติ</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 10: Discount & Payment Term -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-fire">10</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-fire">ส่วนลด 5% + Net 30 วัน</span></h2>
+            <p style="margin:0; font-size:0.6em;">เงื่อนไขพิเศษให้ สยาม ออโต้พาร์ท แมนูแฟคเจอริ่ง</p>
+        </div>
+    </div>
+    <div class="glow-line glow-fire"></div>
+    <div class="stat-row">
+        <div class="stat"><div class="num grad-fire">฿148,200</div><div class="label">ยอดหลังหักส่วนลด</div></div>
+        <div class="stat"><div class="num grad-cyan">5%</div><div class="label">Discount</div></div>
+        <div class="stat"><div class="num grad-gold">Net 30</div><div class="label">Payment Term</div></div>
+    </div>
+    <div class="card">
+        <span class="card-num" style="color:var(--neon-orange);">SO#4 — สยาม ออโต้พาร์ท</span>
+        <div class="card-desc">FG002 x 200 กล่อง @ ฿780 = ฿156,000<br>
+        Discount 5% = <strong style="color:var(--neon-green);">-฿7,800</strong><br>
+        Net Amount = <strong style="color:var(--neon-orange);">฿148,200</strong><br>
+        ชำระภายใน 30 วัน (Net 30)</div>
+    </div>
+    <img src="screenshots/06_sales_orders.png" class="screenshot" alt="06_sales_orders">
+    <a href="https://odoo.enersys.co/odoo/sales" target="_blank" class="demo-btn fire">🛒 ดู SO#4 →</a>
+    <div class="presenter-note">เปิด SO#4 → โชว์คอลัมน์ Disc.% = 5% และ Payment Terms = Net 30 → สร้าง Invoice โชว์ due date 30 วัน</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 11: GRN -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-green">11</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-green">รับวัตถุดิบเข้าคลัง (GRN)</span></h2>
+            <p style="margin:0; font-size:0.6em;">Goods Receipt Note — RM001 จาก US Global + Quality Inspect</p>
+        </div>
+    </div>
+    <div class="glow-line glow-green"></div>
+    <div class="flow">
+        <div class="step">📝 PO Confirmed</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📦 Receipt</div><span class="arrow">→</span>
+        <div class="step">🔬 Quality Check</div><span class="arrow">→</span>
+        <div class="step">📋 Assign Lot#</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-cyan);">✅ เข้า Stock</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-green);">PO#2 — US Global Ingredients (USD)</span>
+        <div class="card-desc">RM001 ผงวิตามินออร์แกนิค x 50 kg @ $72/kg = $3,600 USD<br>
+        → Receipt สร้างอัตโนมัติ → กำหนด Lot: VITBLEND-2026-A01<br>
+        → ตรวจ Quality ก่อนเข้าคลัง</div>
+    </div>
+    <a href="https://odoo.enersys.co/odoo/purchase" target="_blank" class="demo-btn green">📝 ดู PO →</a>
+    <img src="screenshots/13_receipts.png" class="screenshot" alt="13_receipts">
+    <a href="https://odoo.enersys.co/odoo/inventory/receipts" target="_blank" class="demo-btn cyan">📦 ดู Receipts →</a>
+    <div class="presenter-note">เปิด Purchase > PO#2 → คลิก Receipt (smart button) → Validate → โชว์ Lot assignment → stock เพิ่มขึ้นทันที</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 12: Inventory Adjustment -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-green">12</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-green">ตรวจนับสต็อก (Inventory Adj.)</span></h2>
+            <p style="margin:0; font-size:0.6em;">RM003 กระป๋อง — ยอดจริง 9,800 vs ระบบ 10,000</p>
+        </div>
+    </div>
+    <div class="glow-line glow-green"></div>
+    <div class="stat-row">
+        <div class="stat"><div class="num" style="color:var(--text-muted);">10,000</div><div class="label">ยอดในระบบ</div></div>
+        <div class="stat"><div class="num grad-fire">9,800</div><div class="label">ยอดนับจริง</div></div>
+        <div class="stat"><div class="num" style="color:var(--neon-orange);">-200</div><div class="label">ส่วนต่าง</div></div>
+    </div>
+    <div class="card">
+        <div class="card-desc">เปิดหน้า Inventory Adjustments → เลือก RM003 → กรอกยอดจริง 9,800<br>
+        → Apply → ระบบสร้าง Stock Move ปรับลด 200 ชิ้นให้อัตโนมัติ<br>
+        → รายงาน Inventory Valuation อัปเดตทันที</div>
+    </div>
+    <img src="screenshots/10_inventory_products.png" class="screenshot" alt="10_inventory_products">
+    <a href="https://odoo.enersys.co/odoo/inventory/products" target="_blank" class="demo-btn green">📦 ดู Inventory →</a>
+    <div class="presenter-note">เปิด Inventory > Products > RM003 > Update Quantity → โชว์ inventory_quantity = 9,800 → Apply All → stock ปรับเป็น 9,800</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 13: Landed Cost -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-green">13</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-green">Landed Cost</span></h2>
+            <p style="margin:0; font-size:0.6em;">ต้นทุนจริง = ราคาสินค้า + ค่าขนส่ง + ศุลกากร + ประกัน</p>
+        </div>
+    </div>
+    <div class="glow-line glow-green"></div>
+    <div class="card-grid cols-2">
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-green);">ราคาซื้อ</span>
+            <div class="card-desc" style="font-size:0.65em;">
+                RM001 x 100 kg @ $72/kg<br>
+                <strong style="color:var(--neon-green); font-size:1.3em;">$7,200 USD</strong>
+            </div>
+        </div>
+        <div class="card">
+            <span class="card-num" style="color:var(--neon-orange);">+ Landed Costs</span>
+            <div class="card-desc" style="font-size:0.65em;">
+                ค่าขนส่งทางเรือ: <strong>$800</strong><br>
+                ค่าศุลกากร (5%): <strong>$360</strong><br>
+                ค่าประกันภัย (1%): <strong>$72</strong><br>
+                <strong style="color:var(--neon-orange); font-size:1.3em;">= $8,432 → $84.32/kg</strong>
+            </div>
+        </div>
+    </div>
+    <img src="screenshots/12_stock_valuation.png" class="screenshot" alt="12_stock_valuation">
+    <a href="https://odoo.enersys.co/odoo/inventory/landed-costs" target="_blank" class="demo-btn green">💰 ดู Landed Costs →</a>
+    <div class="presenter-note">เปิด Inventory > Landed Costs → สร้างใหม่ → เลือก Receipt ของ PO#3 → เพิ่ม 3 cost lines → Validate → โชว์ unit cost เปลี่ยนจาก $72 เป็น $84.32/kg</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 14: Reorder Rules -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-green">14</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-green">Reordering Rules</span></h2>
+            <p style="margin:0; font-size:0.6em;">RM003 กระป๋อง — Min 500, Max 5,000 → Auto PO</p>
+        </div>
+    </div>
+    <div class="glow-line glow-green"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-orange);">Stock < 500</div><span class="arrow">→</span>
+        <div class="step">⚡ Trigger Rule</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📝 Auto สร้าง PO</div><span class="arrow">→</span>
+        <div class="step">แพคเกจโปร</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-cyan);">เติม 5,000 ชิ้น</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <div class="card-desc" style="font-size:0.7em;">
+            <strong style="color:var(--text-white);">RM003 — กระป๋องอลูมิเนียม 250ml</strong><br>
+            Min Quantity: <strong style="color:var(--neon-orange);">500</strong> ชิ้น<br>
+            Max Quantity: <strong style="color:var(--neon-green);">5,000</strong> ชิ้น<br>
+            Preferred Vendor: บริษัท แพคเกจโปร @ ฿3.50/ชิ้น<br>
+            → เมื่อ stock ลดต่ำกว่า 500 → สร้าง PO สั่งเติม 5,000 อัตโนมัติ
+        </div>
+    </div>
+    <img src="screenshots/11_inventory_overview.png" class="screenshot" alt="11_inventory_overview">
+    <a href="https://odoo.enersys.co/odoo/inventory/reordering-rules" target="_blank" class="demo-btn green">⚡ ดู Reorder Rules →</a>
+    <div class="presenter-note">เปิด Inventory > Reordering Rules → โชว์ rule RM003 → Run Scheduler เพื่อ trigger → โชว์ PO ที่ถูกสร้างอัตโนมัติ</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 15: Barcode -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-green">15</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-green">Barcode Scanning</span></h2>
+            <p style="margin:0; font-size:0.6em;">สแกนหยิบสินค้า → Pick & Pack → Validate</p>
+        </div>
+    </div>
+    <div class="glow-line glow-green"></div>
+    <div class="flow">
+        <div class="step">📱 เปิด Barcode App</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">🔍 สแกนสินค้า</div><span class="arrow">→</span>
+        <div class="step">✅ ยืนยันจำนวน</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-cyan);">📦 Validate</div>
+    </div>
+    <div class="card" style="margin-top:12px; font-family:'JetBrains Mono',monospace; text-align:center;">
+        <div style="font-size:2em; letter-spacing:0.1em; color:var(--neon-cyan); font-weight:700;">
+            |||||| |||| |||||| ||||
+        </div>
+        <div style="font-size:0.7em; margin-top:8px; color:var(--text-muted);">
+            FG001: <strong style="color:var(--neon-cyan);">8850001000011</strong> &nbsp;&nbsp;|&nbsp;&nbsp;
+            FG002: <strong style="color:var(--neon-orange);">8850001000028</strong>
+        </div>
+    </div>
+    <img src="screenshots/25_barcode_app.png" class="screenshot" alt="25_barcode_app">
+    <a href="https://odoo.enersys.co/odoo/barcode" target="_blank" class="demo-btn green">📱 เปิด Barcode App →</a>
+    <div class="presenter-note">เปิด Barcode app → เลือก Delivery Order → สแกน barcode (หรือพิมพ์) → ยืนยัน → Validate โชว์ real-time stock update</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 16: 3-step Receipt -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-purple">16</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-purple">3-Step Receipt</span></h2>
+            <p style="margin:0; font-size:0.6em;">รับสินค้า → Input Zone → Quality Check → Stock</p>
+        </div>
+    </div>
+    <div class="glow-line glow-purple"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-purple);">🚚 Receive</div><span class="arrow">→</span>
+        <div class="step">📥 Input Zone</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-yellow);">🔬 Quality</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📦 Stock</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-purple);">PO#4 — ไทย นิวทริชั่น ซัพพลาย</span>
+        <div class="card-desc">RM002 น้ำเชื่อมข้าวโพด x 100 ลิตร @ ฿85 = ฿8,500<br><br>
+        ระบบสร้าง <strong style="color:var(--neon-purple);">3 Transfers</strong> อัตโนมัติ:<br>
+        1️⃣ <strong>Receipt</strong> → สินค้าเข้า Input Zone<br>
+        2️⃣ <strong>Internal</strong> → Input → Quality Control Zone<br>
+        3️⃣ <strong>Internal</strong> → Quality → Stock (ผ่าน QC แล้ว)</div>
+    </div>
+    <img src="screenshots/13_receipts.png" class="screenshot" alt="13_receipts">
+    <a href="https://odoo.enersys.co/odoo/inventory" target="_blank" class="demo-btn purple">📦 ดู Transfers →</a>
+    <div class="presenter-note">เปิด Inventory > Receipts → โชว์ 3 transfers ที่ chain กัน → Validate ทีละ step → สินค้าย้าย location ตาม flow</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 17: Pick Pack Ship -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-purple">17</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-purple">Pick + Pack + Ship</span></h2>
+            <p style="margin:0; font-size:0.6em;">3-step Delivery — หยิบ → แพ็ก → จัดส่ง</p>
+        </div>
+    </div>
+    <div class="glow-line glow-purple"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-cyan);">📋 SO Confirm</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-purple);">🔍 Pick</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-orange);">📦 Pack</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">🚚 Ship</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-purple);">SO#5 — โกลบอล โลจิสติกส์ พาร์ทเนอร์ส</span>
+        <div class="card-desc">FG001 x 240 กระป๋อง + FG002 x 10 กล่อง<br><br>
+        1️⃣ <strong style="color:var(--neon-purple);">Pick</strong> → หยิบจาก Stock shelves<br>
+        2️⃣ <strong style="color:var(--neon-orange);">Pack</strong> → แพ็กที่ Packing Zone + ติดฉลาก<br>
+        3️⃣ <strong style="color:var(--neon-green);">Ship</strong> → ส่งขึ้นรถ → จัดส่งลูกค้า</div>
+    </div>
+    <img src="screenshots/14_deliveries.png" class="screenshot" alt="14_deliveries">
+    <a href="https://odoo.enersys.co/odoo/inventory/deliveries" target="_blank" class="demo-btn purple">🚚 ดู Deliveries →</a>
+    <div class="presenter-note">เปิด Inventory > Delivery Orders → กรอง SO#5 → จะเห็น 3 operations: Pick, Pack, Ship → Validate ทีละ step</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 18: Internal Transfer -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-purple">18</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-purple">Internal Transfer</span></h2>
+            <p style="margin:0; font-size:0.6em;">โอนย้าย FG001 จาก Stock → Output Zone เตรียมจัดส่ง</p>
+        </div>
+    </div>
+    <div class="glow-line glow-purple"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-cyan);">📦 WH/Stock</div><span class="arrow">→</span>
+        <div class="step">🔄 Internal Transfer</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📤 WH/Output</div>
+    </div>
+    <div class="stat-row" style="margin-top:20px;">
+        <div class="stat"><div class="num grad-cyan">200</div><div class="label">FG001 กระป๋อง</div></div>
+        <div class="stat"><div class="num grad-purple">Stock → Output</div><div class="label">เตรียมจัดส่ง</div></div>
+    </div>
+    <img src="screenshots/15_internal_transfers.png" class="screenshot" alt="15_internal_transfers">
+    <a href="https://odoo.enersys.co/odoo/inventory/internal-transfers" target="_blank" class="demo-btn purple">🔄 ดู Internal Transfers →</a>
+    <div class="presenter-note">เปิด Inventory > Internal Transfers → โชว์ transfer FG001 x 200 จาก Stock ไป Output → Validate → stock ย้าย location</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 19: Dropship -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-purple">19</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-purple">Dropship</span></h2>
+            <p style="margin:0; font-size:0.6em;">เครื่องจักรจาก Shanghai Tech → ส่งตรงให้ สยาม ออโต้พาร์ท</p>
+        </div>
+    </div>
+    <div class="glow-line glow-purple"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-orange);">🛒 ลูกค้าสั่ง</div><span class="arrow">→</span>
+        <div class="step">📝 SO + PO</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-yellow);">🇨🇳 Shanghai Tech ส่ง</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">📦 ถึงลูกค้าตรง</div>
+    </div>
+    <div class="card-grid cols-2" style="margin-top:12px;">
+        <div class="card" style="border-left:3px solid var(--neon-orange);">
+            <span class="card-num" style="color:var(--neon-orange);">SO → สยาม ออโต้พาร์ท</span>
+            <div class="card-desc">MACH-001 เครื่องซีลฝากระป๋อง<br><strong style="color:var(--neon-orange);">฿850,000 THB</strong></div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--neon-yellow);">
+            <span class="card-num" style="color:var(--neon-yellow);">PO → Shanghai Tech</span>
+            <div class="card-desc">MACH-001 Auto Can Sealing Machine<br><strong style="color:var(--neon-yellow);">¥128,000 CNY</strong></div>
+        </div>
+    </div>
+    <img src="screenshots/09_purchase_orders.png" class="screenshot" alt="09_purchase_orders">
+    <a href="https://odoo.enersys.co/odoo/purchase" target="_blank" class="demo-btn purple">📝 ดู PO (CNY) →</a>
+    <a href="https://odoo.enersys.co/odoo/sales" target="_blank" class="demo-btn fire">🛒 ดู SO (THB) →</a>
+    <div class="presenter-note">โชว์ว่าสินค้าไม่ผ่านคลังเรา — Supplier ส่งตรงให้ลูกค้า เราเป็นคนกลาง กำไร = ฿850,000 - (¥128,000 × rate)</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCENARIO 20: Return -->
+<!-- ============================================================ -->
+<section>
+    <div class="scenario-header">
+        <span class="scenario-num grad-purple">20</span>
+        <div>
+            <h2 style="margin:0;"><span class="grad-purple">Return & Credit Note</span></h2>
+            <p style="margin:0; font-size:0.6em;">โกลบอล โลจิสติกส์ คืนสินค้า FG002 — บรรจุภัณฑ์เสียหาย</p>
+        </div>
+    </div>
+    <div class="glow-line glow-purple"></div>
+    <div class="flow">
+        <div class="step" style="border-color:var(--neon-orange);">📞 ลูกค้าแจ้งคืน</div><span class="arrow">→</span>
+        <div class="step">🔄 Reverse Transfer</div><span class="arrow">→</span>
+        <div class="step">📦 สินค้ากลับคลัง</div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--neon-green);">💳 Credit Note</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+        <span class="card-num" style="color:var(--neon-orange);">SO#6 (เดิม) → Return 5 กล่อง</span>
+        <div class="card-desc">
+            สินค้าส่งไปเมื่อ 7 วันก่อน: FG002 x 30 กล่อง @ ฿780 = ฿23,400<br>
+            ลูกค้าแจ้งคืน: <strong style="color:var(--neon-orange);">5 กล่อง</strong> (บรรจุภัณฑ์เสียหายระหว่างขนส่ง)<br><br>
+            ขั้นตอน:<br>
+            1️⃣ เปิด Delivery Order → กด <strong>Return</strong><br>
+            2️⃣ ระบุจำนวน 5 กล่อง → Validate<br>
+            3️⃣ เปิด Invoice → กด <strong>Credit Note</strong> → ฿3,900
+        </div>
+    </div>
+    <img src="screenshots/06_sales_orders.png" class="screenshot" alt="06_sales_orders">
+    <a href="https://odoo.enersys.co/odoo/sales" target="_blank" class="demo-btn purple">🔄 ดู SO#6 →</a>
+    <div class="presenter-note">เปิด SO#6 → Delivery → กด Return → กรอก 5 → Validate → กลับไป Invoice → Add Credit Note ฿3,900 → โชว์ full refund flow</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CLOSING SLIDE -->
+<!-- ============================================================ -->
+<section>
+    <div style="text-align:center; padding-top:40px;">
+        <h1 style="text-align:center;"><span class="grad-cyan">ทุกธุรกิจ ทุกขั้นตอน</span></h1>
+        <h1 style="text-align:center; font-size:2em;"><span class="grad-fire">จบในระบบเดียว</span></h1>
+        <div class="glow-line glow-cyan" style="margin:24px auto; width:200px;"></div>
+        <div class="stat-row" style="max-width:800px; margin:30px auto;">
+            <div class="stat"><div class="num grad-cyan">20</div><div class="label">Scenarios</div></div>
+            <div class="stat"><div class="num grad-fire">7</div><div class="label">Modules</div></div>
+            <div class="stat"><div class="num grad-green">3</div><div class="label">Currencies</div></div>
+            <div class="stat"><div class="num grad-purple">Real</div><div class="label">Live Demo</div></div>
+        </div>
+        <div style="margin-top:30px;">
+            <a href="https://odoo.enersys.co" target="_blank" class="demo-btn cyan" style="font-size:0.9em; padding:16px 50px;">
+                🚀 ทดลองใช้งาน → odoo.enersys.co
+            </a>
+        </div>
+        <p style="text-align:center; font-size:0.6em; color:var(--text-muted); margin-top:16px;">Login: admin / admin</p>
+        <div style="margin-top:30px;">
+            <img src="screenshots/logo_enersys.png" alt="Enersys" style="height:60px; filter:invert(1) brightness(2); margin-bottom:10px;">
+            <p style="text-align:center; font-size:0.7em; color:var(--neon-cyan);">
+                <strong>Enersys Thailand Co., Ltd.</strong><br>
+                <span style="color:var(--text-muted);">contact@enersys.co.th</span>
+            </p>
+        </div>
+    </div>
+    <div class="presenter-note">ปิดด้วย: "ทั้ง 20 scenarios นี้ใช้ข้อมูลจริงบนระบบจริง ท่านสามารถเข้าไปทดลองได้เลยที่ odoo.enersys.co — สนใจ implement ในองค์กร ติดต่อเราได้เลยครับ"</div>
+</section>
+
+        </div><!-- /slides -->
+    </div><!-- /reveal -->
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            transition: 'slide',
+            transitionSpeed: 'fast',
+            controls: true,
+            controlsLayout: 'edges',
+            progress: true,
+            center: false,
+            keyboard: {
+                // Press 'N' to toggle presenter notes
+                78: function() {
+                    document.querySelectorAll('.presenter-note').forEach(el => {
+                        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+                    });
+                }
+            }
+        });
+
+        // Hide presenter notes by default (press N to show)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Notes visible by default for presenter, hidden for audience
+            // Press 'N' key to toggle
+        });
+    </script>
+</body>
+</html>
