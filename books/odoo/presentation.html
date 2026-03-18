@@ -237,6 +237,114 @@
         .screenshot, .screenshot-full, .screenshot-row img {
             cursor: zoom-in;
         }
+
+        /* ─── Auto-Play Control ─── */
+        .ap-fab {
+            position: fixed; bottom: 20px; left: 20px; z-index: 10000;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            border: none; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,170,255,0.4);
+            transition: all 0.3s ease; font-size: 20px; color: #0A0E1A;
+        }
+        .ap-fab:hover { transform: scale(1.1); box-shadow: 0 4px 30px rgba(0,255,224,0.5); }
+        .ap-fab.playing {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            animation: ap-pulse 2s infinite;
+        }
+        @keyframes ap-pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(57,255,20,0.3); }
+            50% { box-shadow: 0 4px 30px rgba(57,255,20,0.6); }
+        }
+
+        .ap-backdrop {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh; z-index: 10001;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            justify-content: center; align-items: center;
+        }
+        .ap-backdrop.active { display: flex; }
+
+        .ap-panel {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 28px 32px; min-width: 320px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,255,224,0.1);
+        }
+        .ap-panel h3 {
+            font-size: 1em; font-weight: 800; margin: 0 0 20px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-align: center;
+        }
+
+        .ap-row {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 16px; justify-content: center;
+        }
+        .ap-label {
+            font-size: 0.55em; color: var(--text-muted); min-width: 60px;
+            text-align: right; font-weight: 600;
+        }
+        .ap-input {
+            width: 72px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: var(--bg-dark); color: var(--text-white); text-align: center;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.65em; font-weight: 700;
+        }
+        .ap-input:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,255,224,0.2); }
+        .ap-unit { font-size: 0.5em; color: var(--text-muted); }
+
+        .ap-slide-info {
+            text-align: center; font-size: 0.5em; color: var(--text-muted);
+            margin-bottom: 16px; font-family: 'JetBrains Mono', monospace;
+        }
+        .ap-slide-info span { color: var(--neon-cyan); font-weight: 700; }
+
+        .ap-btns { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+        .ap-btn {
+            padding: 10px 18px; border-radius: 10px; border: 1px solid var(--glass-border);
+            background: var(--bg-dark); color: var(--text-white); cursor: pointer;
+            font-size: 0.6em; font-weight: 700; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .ap-btn:hover { background: var(--bg-card-hover); border-color: var(--neon-cyan); }
+        .ap-btn.primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            color: #0A0E1A; border-color: transparent; min-width: 100px; justify-content: center;
+        }
+        .ap-btn.primary:hover { opacity: 0.9; }
+        .ap-btn.danger {
+            background: rgba(255,60,172,0.15); color: var(--neon-pink);
+            border-color: rgba(255,60,172,0.3);
+        }
+        .ap-btn.danger:hover { background: rgba(255,60,172,0.25); }
+
+        .ap-jump-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+        .ap-jump-label { font-size: 0.5em; color: var(--text-muted); text-align: center; margin-bottom: 8px; }
+        .ap-jump-input {
+            width: 56px; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: var(--bg-dark); color: var(--text-white); text-align: center;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.6em; font-weight: 700;
+        }
+        .ap-jump-input:focus { outline: none; border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(180,77,255,0.2); }
+
+        .ap-close {
+            display: block; margin: 8px auto 0; padding: 6px 20px; border-radius: 8px;
+            border: 1px solid var(--glass-border); background: transparent;
+            color: var(--text-muted); cursor: pointer; font-size: 0.5em;
+            transition: all 0.2s;
+        }
+        .ap-close:hover { color: var(--text-white); border-color: var(--text-muted); }
+
+        .ap-progress {
+            width: 100%; height: 4px; border-radius: 2px; background: var(--bg-dark);
+            margin-bottom: 16px; overflow: hidden;
+        }
+        .ap-progress-bar {
+            height: 100%; border-radius: 2px; width: 0%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+            transition: width 0.3s linear;
+        }
     </style>
 </head>
 <body>
@@ -1005,6 +1113,34 @@
         </div><!-- /slides -->
     </div><!-- /reveal -->
 
+    <!-- Auto-Play FAB -->
+    <button class="ap-fab" id="apFab" title="Auto-Play Control">&#9654;</button>
+
+    <!-- Auto-Play Panel -->
+    <div class="ap-backdrop" id="apBackdrop">
+        <div class="ap-panel" onclick="event.stopPropagation()">
+            <h3>Auto-Play Control</h3>
+            <div class="ap-slide-info">Slide <span id="apCurrent">1</span> / <span id="apTotal">1</span></div>
+            <div class="ap-progress"><div class="ap-progress-bar" id="apProgressBar"></div></div>
+            <div class="ap-row">
+                <span class="ap-label">Interval</span>
+                <input type="number" class="ap-input" id="apInterval" value="5" min="1" max="120" step="1">
+                <span class="ap-unit">sec</span>
+            </div>
+            <div class="ap-btns">
+                <button class="ap-btn" id="apPrev" title="Previous">&#9664; Prev</button>
+                <button class="ap-btn primary" id="apPlayPause">&#9654; Play</button>
+                <button class="ap-btn" id="apNext" title="Next">Next &#9654;</button>
+            </div>
+            <div class="ap-jump-label">Jump to slide</div>
+            <div class="ap-jump-row">
+                <input type="number" class="ap-jump-input" id="apJumpInput" min="1" placeholder="#">
+                <button class="ap-btn" id="apJumpBtn">Go</button>
+            </div>
+            <button class="ap-close" id="apClose">Close</button>
+        </div>
+    </div>
+
     <!-- Lightbox overlay -->
     <div class="lightbox-overlay" id="lightbox" onclick="this.classList.remove('active')">
         <img id="lightbox-img" src="" alt="Enlarged screenshot">
@@ -1044,8 +1180,154 @@
         });
         // Close lightbox with Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
+            if (e.key === 'Escape') {
+                document.getElementById('lightbox').classList.remove('active');
+                document.getElementById('apBackdrop').classList.remove('active');
+            }
         });
+
+        // ─── Auto-Play Controller ───
+        (function() {
+            const fab = document.getElementById('apFab');
+            const backdrop = document.getElementById('apBackdrop');
+            const playPauseBtn = document.getElementById('apPlayPause');
+            const intervalInput = document.getElementById('apInterval');
+            const prevBtn = document.getElementById('apPrev');
+            const nextBtn = document.getElementById('apNext');
+            const jumpInput = document.getElementById('apJumpInput');
+            const jumpBtn = document.getElementById('apJumpBtn');
+            const closeBtn = document.getElementById('apClose');
+            const currentEl = document.getElementById('apCurrent');
+            const totalEl = document.getElementById('apTotal');
+            const progressBar = document.getElementById('apProgressBar');
+
+            let timer = null;
+            let playing = false;
+            let countdown = 0;
+            let tickInterval = null;
+
+            function getTotalSlides() {
+                return Reveal.getTotalSlides();
+            }
+
+            function getCurrentIndex() {
+                // Flatten index: horizontal slide number
+                const indices = Reveal.getIndices();
+                return indices.h + 1;
+            }
+
+            function updateInfo() {
+                const total = getTotalSlides();
+                const current = getCurrentIndex();
+                currentEl.textContent = current;
+                totalEl.textContent = total;
+                jumpInput.max = total;
+                progressBar.style.width = ((current / total) * 100) + '%';
+            }
+
+            function startPlay() {
+                const sec = parseInt(intervalInput.value) || 5;
+                playing = true;
+                fab.classList.add('playing');
+                fab.innerHTML = '&#10074;&#10074;';
+                playPauseBtn.innerHTML = '&#10074;&#10074; Pause';
+                playPauseBtn.classList.add('danger');
+                playPauseBtn.classList.remove('primary');
+
+                clearInterval(timer);
+                clearInterval(tickInterval);
+                countdown = sec;
+
+                timer = setInterval(() => {
+                    if (Reveal.isLastSlide()) {
+                        Reveal.slide(0); // loop back
+                    } else {
+                        Reveal.next();
+                    }
+                    updateInfo();
+                    countdown = sec;
+                }, sec * 1000);
+
+                // Tick progress within each interval (visual feedback)
+                tickInterval = setInterval(() => {
+                    countdown = Math.max(0, countdown - 0.1);
+                }, 100);
+            }
+
+            function stopPlay() {
+                playing = false;
+                fab.classList.remove('playing');
+                fab.innerHTML = '&#9654;';
+                playPauseBtn.innerHTML = '&#9654; Play';
+                playPauseBtn.classList.remove('danger');
+                playPauseBtn.classList.add('primary');
+                clearInterval(timer);
+                clearInterval(tickInterval);
+                timer = null;
+            }
+
+            // FAB click → open panel
+            fab.addEventListener('click', () => {
+                updateInfo();
+                backdrop.classList.add('active');
+            });
+
+            // Close panel
+            closeBtn.addEventListener('click', () => backdrop.classList.remove('active'));
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) backdrop.classList.remove('active');
+            });
+
+            // Play / Pause
+            playPauseBtn.addEventListener('click', () => {
+                if (playing) { stopPlay(); } else { startPlay(); }
+            });
+
+            // Prev / Next
+            prevBtn.addEventListener('click', () => {
+                Reveal.prev();
+                updateInfo();
+                if (playing) { stopPlay(); startPlay(); } // reset timer
+            });
+            nextBtn.addEventListener('click', () => {
+                Reveal.next();
+                updateInfo();
+                if (playing) { stopPlay(); startPlay(); }
+            });
+
+            // Jump to slide
+            function jumpToSlide() {
+                const num = parseInt(jumpInput.value);
+                if (num >= 1 && num <= getTotalSlides()) {
+                    Reveal.slide(num - 1);
+                    updateInfo();
+                    if (playing) { stopPlay(); startPlay(); }
+                }
+                jumpInput.value = '';
+            }
+            jumpBtn.addEventListener('click', jumpToSlide);
+            jumpInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') jumpToSlide();
+            });
+
+            // Interval change while playing → restart with new interval
+            intervalInput.addEventListener('change', () => {
+                if (playing) { stopPlay(); startPlay(); }
+            });
+
+            // FAB toggle: click when panel is closed = open, also allow double-click to quick play/pause
+            fab.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                backdrop.classList.remove('active');
+                if (playing) { stopPlay(); } else { startPlay(); }
+            });
+
+            // Sync slide info on Reveal slide change
+            Reveal.on('slidechanged', updateInfo);
+
+            // Initial update
+            Reveal.on('ready', updateInfo);
+        })();
     </script>
 </body>
 </html>
