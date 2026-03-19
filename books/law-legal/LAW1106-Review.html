@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW1106 ประวัติศาสตร์กฎหมายไทยและระบบกฎหมายหลัก — สรุป + Flashcard + การ์ดจำด่วน</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Noto Sans Thai',sans-serif;
+    background:#F5F0E8;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.8;
+  }
+  #root { min-height:100vh; }
+  .fc-perspective { perspective:1200px; }
+  .fc-card { width:100%; min-height:320px; position:relative; transform-style:preserve-3d; transition:transform 0.5s ease; cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:36px 32px; text-align:center; }
+  .fc-back { transform:rotateY(180deg); }
+  .qc:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(139,115,85,0.1) !important; }
+  .qc { transition: all 0.25s ease; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:3px; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  .ant-table-cell { line-height:1.9 !important; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const {
+  ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+  Row, Col, Divider, Alert, Statistic, Flex
+} = antd;
+const { Content } = Layout;
+const { Title, Text, Paragraph } = Typography;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  amber:'#B5986A', amberDark:'#7A6548',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62',
+  white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+
+// ════════════════════════════════════════════
+// DATA — สรุปเนื้อหา 4 หัวข้อ
+// ════════════════════════════════════════════
+
+const summaryData = [
+  {
+    key:'trasamduang',
+    title:'📜 1. กฎหมายตราสามดวง (สมัย ร.1)',
+    tags:[['ออกทุกครั้ง','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="warning" showIcon message="เหตุจากเรื่อง 'นายบุญศรี ช่างเหล็กหลวง' ฟ้องหย่าภรรยา กฎหมายเก่าขัดแย้ง → ร.1 ตั้งคณะ 11 คน ชำระกฎหมาย พ.ศ. 2347" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>สาเหตุและการตรา</Title>
+        <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.green}}>เหตุ:</strong> นายบุญศรี ช่างเหล็กหลวง ฟ้องหย่าภรรยา แต่กฎหมายเก่าขัดแย้งกัน{'\n'}
+            <strong style={{color:C.green}}>คณะชำระ:</strong> ร.1 ตั้งคณะ 11 คน ชำระกฎหมายทั้งหมด{'\n'}
+            <strong style={{color:C.green}}>ผลลัพธ์:</strong> 29 ลักษณะ มากกว่า 1,600 บท (มาตรา) ● ตราประทับ 3 ดวง{'\n'}
+            <strong style={{color:C.green}}>ปีที่ตรา:</strong> พ.ศ. 2347 (จุลศักราช 1166) ● <strong>ยกเลิก พ.ศ. 2481</strong>
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.amberDark}}>ตรา 3 ดวง ⭐⭐⭐</Title>
+        <Table dataSource={[
+          {k:'1',e:'ตราราชสีห์',d:'ฝ่ายพลเรือน (สมุหนายก)'},
+          {k:'2',e:'ตราคชสีห์',d:'ฝ่ายทหาร (สมุหพระกลาโหม)'},
+          {k:'3',e:'ตราบัวแก้ว',d:'ฝ่ายพระคลัง (กรมท่า/หัวเมือง)'},
+        ]} columns={[
+          {title:'#',dataIndex:'k',width:45,render:v=><Tag color="gold" style={{fontWeight:700}}>{v}</Tag>},
+          {title:'ตรา',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'หน่วยงาน',dataIndex:'d',render:v=><Text style={{color:C.text2}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.red}}>คัมภีร์พระธรรมศาสตร์ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.red}}>คือ:</strong> คัมภีร์ชุมนุมกฎเกณฑ์แห่งความยุติธรรม จากอินเดีย (ศาสนาพราหมณ์){'\n'}
+            <strong style={{color:C.red}}>ศักดิ์:</strong> สูงสุด เทียบรัฐธรรมนูญ ← ถ้าพระอัยการขัดกับพระธรรมศาสตร์ = พระธรรมศาสตร์ชนะ{'\n'}
+            <strong style={{color:C.red}}>ที่มา "คดีไร่แดง":</strong> ชาย 2 คนทะเลาะเรื่องผลแดง → พระโมนสารตัดสิน → จดเป็นลักษณ์อักษร → สอนพระเจ้าสมมิติราช → กลายเป็นคัมภีร์พระธรรมศาสตร์
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.purple}}>หลักอินทภาษ — อคติ 4 ประการ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.purple}}>หลักการ:</strong> ผู้พิพากษาต้องปราศจากอคติทั้ง 4 ประการ{'\n'}
+            <strong style={{color:C.purple}}>① ฉันทาคติ</strong> = ลำเอียงเพราะ<Tag color="purple">รัก/โลภ</Tag>{'\n'}
+            <strong style={{color:C.purple}}>② โทสคติ</strong> = ลำเอียงเพราะ<Tag color="purple">โกรธ</Tag>{'\n'}
+            <strong style={{color:C.purple}}>③ ภยาคติ</strong> = ลำเอียงเพราะ<Tag color="purple">กลัว</Tag>{'\n'}
+            <strong style={{color:C.purple}}>④ โมหคติ</strong> = ลำเอียงเพราะ<Tag color="purple">หลง/เขลา</Tag>
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.blue}}>กฎหมาย 16 หลังคาเรือน vs 3 เส้น 15 วา</Title>
+        <Table dataSource={[
+          {k:'ที่มา',a:'ล้านนา (พระเจ้ามังราย/มังรายศาสตร์)',b:'กรุงศรีอยุธยา/ตราสามดวง'},
+          {k:'เนื้อหา',a:'16 สาเหตุแห่งการวิวาท',b:'ความรับผิดของคนในหมู่บ้าน'},
+          {k:'หลักการ',a:'แยกประเภทความผิด 16 แบบ',b:'สมาชิกหมู่บ้านร่วมรับผิดชอบในเขตพื้นที่'},
+        ]} columns={[
+          {title:'ประเด็น',dataIndex:'k',width:80,render:v=><Text strong>{v}</Text>},
+          {title:'16 หลังคาเรือน (มังรายศาสตร์)',dataIndex:'a'},
+          {title:'3 เส้น 15 วา (ตราสามดวง)',dataIndex:'b'},
+        ]} pagination={false} size="small" rowKey="k" />
+      </div>
+    )
+  },
+  {
+    key:'montienban',
+    title:'👑 2. กฎมณเฑียรบาล ว่าด้วยการสืบราชสันตติวงศ์ (ร.6)',
+    tags:[['เน้นสอบ','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message="ออกสมัยรัชกาลที่ 6 (พ.ศ. 2467) — เป็นกฎหมายพิเศษเฉพาะสถาบันพระมหากษัตริย์ ยังมีผลบังคับใช้ปัจจุบัน" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.red}}>มาตรา 9 — จัดลำดับการสืบสันตติวงศ์ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.red}}>หลัก:</strong> สืบราชสมบัติเฉพาะฝ่ายชาย เรียงตามอาวุโส{'\n'}
+            <strong style={{color:C.red}}>ลำดับ:</strong> ① พระราชโอรส (องค์ใหญ่ก่อน) → ② พระราชนัดดา → ③ พระอนุชา → ④ พระราชวงศ์ฝ่ายชายตามสายโลหิต{'\n'}
+            <strong style={{color:C.red}}>สาระสำคัญ:</strong> ถ้าหมดสายหนึ่ง → ข้ามไปสายถัดไปตามลำดับ
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.red}}>มาตรา 11 — ห้ามสตรีสืบราชสมบัติ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.purple}}>บัญญัติชัด:</strong> สตรีไม่มีสิทธิ์สืบราชสันตติวงศ์{'\n'}
+            <strong style={{color:C.purple}}>ผล:</strong> ราชสมบัติสืบทอดเฉพาะฝ่ายชายเท่านั้น{'\n'}
+            <strong style={{color:C.purple}}>เปรียบเทียบ:</strong> ต่างจากหลายประเทศยุโรปที่อนุญาตให้สตรีขึ้นครองราชย์
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.blue}}>มาตรา 13 — กรณีราชวงศ์สูญสิ้น ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.blue}}>หลัก:</strong> หากราชวงศ์ฝ่ายชายสูญสิ้นลง{'\n'}
+            <strong style={{color:C.blue}}>กลไก:</strong> รัฐสภา (หรือองค์กรที่กำหนด) มีอำนาจเลือกพระบรมวงศานุวงศ์ที่เหมาะสม{'\n'}
+            <strong style={{color:C.blue}}>ฐานะ:</strong> เป็นกลไกสำรองสุดท้ายของระบบสืบสันตติวงศ์
+          </Text>
+        </Card>
+
+        <Alert type="warning" showIcon message={<span><strong>จำสั้น:</strong> ม.9 = จัดลำดับ (ชาย+อาวุโส) | ม.11 = ห้ามสตรี | ม.13 = รัฐสภาเลือกเมื่อสายสิ้น</span>} />
+      </div>
+    )
+  },
+  {
+    key:'civilcommon',
+    title:'⚖️ 3. ความแตกต่าง Civil Law & Common Law',
+    tags:[['ออกทุกครั้ง','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message="Rene David แบ่งระบบกฎหมายโลก 4 ระบบ: Romano-Germanic / Common Law / Socialist Law / Religious & Traditional Law" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>ตารางเปรียบเทียบ 5 มิติ ⭐⭐⭐</Title>
+        <Table dataSource={[
+          {k:'ที่มา/กำเนิด',a:'กฎหมายโรมัน (Jus Civile) → ยุโรปแผ่นดินใหญ่',b:'อังกฤษ (King\'s Court / Royal Court)'},
+          {k:'แหล่งกฎหมาย',a:'ลายลักษณ์อักษร (Written Law) ประมวลกฎหมาย (Code)',b:'จารีตประเพณี + คำพิพากษา (Judge-made Law)'},
+          {k:'ระบบศาล',a:'ผู้พิพากษาอาชีพตัดสินทั้งข้อเท็จจริง+ข้อกฎหมาย',b:'ระบบลูกขุน 12 คน (Jury) ตัดสินข้อเท็จจริง'},
+          {k:'การตีความ',a:'ยึดตัวบทกฎหมาย ไม่ยึดบรรทัดฐาน',b:'Precedent (Stare Decisis) คดีเดิมผูกพันคดีใหม่'},
+          {k:'ประเทศที่ใช้',a:'ฝรั่งเศส เยอรมัน ไทย บราซิล สเปน',b:'อังกฤษ อเมริกา ออสเตรเลีย แคนาดา สิงคโปร์'},
+        ]} columns={[
+          {title:'ประเด็น',dataIndex:'k',width:110,render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'Civil Law (โรมาโน-เยอรมานิค)',dataIndex:'a',render:v=><Text style={{color:C.text2}}>{v}</Text>},
+          {title:'Common Law (อังกฤษ)',dataIndex:'b',render:v=><Text style={{color:C.text2}}>{v}</Text>},
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.purple}}>Equity ใน Common Law</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.purple}}>เหตุ:</strong> Common Law แข็งตัว ไม่ยืดหยุ่น → ราษฎรร้องขอความเป็นธรรมต่อกษัตริย์{'\n'}
+            <strong style={{color:C.purple}}>ผล:</strong> จัดตั้งศาล Chancery (ค.ศ. 1485) โดย Lord Chancellor{'\n'}
+            <strong style={{color:C.purple}}>รวมกัน:</strong> ค.ศ. 1875 Judicature Acts → รวม Common Law + Equity เป็นระบบเดียว
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.red}}>The King Can Do No Wrong ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.red}}>ที่มา:</strong> Divine Right of King (เทวสิทธิ์) → Thomas Hobbes สนับสนุนทฤษฎีสมบูรณาญาสิทธิราชย์{'\n'}
+            <strong style={{color:C.red}}>ความหมาย:</strong> กษัตริย์ทำทุกอย่างได้ ผู้เสนอแนะ(รัฐมนตรี)รับผิดแทน{'\n'}
+            <strong style={{color:C.red}}>Timeline:</strong> พระเจ้าจอห์น → Magna Carta 1215 → ชาร์ลส์ที่ 1 ถูกประหาร → ครอมเวลล์ (สาธารณรัฐ) → ชาร์ลส์ที่ 2 ประนีประนอมสภา{'\n'}
+            <strong style={{color:C.red}}>ไทย:</strong> ม.6 รธน.2560 "องค์พระมหากษัตริย์ทรงดำรงอยู่ในฐานะอันเป็นที่เคารพสักการะ ผู้ใดจะละเมิดมิได้"
+          </Text>
+        </Card>
+
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.cyan}}>Magna Carta (ค.ศ. 1215)</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                กฎบัตรสิทธิ สมัยพระเจ้าจอห์น ● 63 ข้อ จำกัดอำนาจกษัตริย์ ● ต้นแบบรัฐธรรมนูญอังกฤษ ● ผลสำคัญ 3 ประการ: ① ปฏิรูปมหาสภา ② คุ้มครองเสรีภาพ ③ สิทธิขุนนางตรวจสอบอำนาจ
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.blue}}>ไทยใช้ระบบอะไร?</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                Civil Law (โรมาโน-เยอรมานิค) ● รับกฎหมายจากฝรั่งเศส เยอรมัน ● ปพพ. ปอ. พรบ.ต่างๆ เป็นลายลักษณ์อักษร ● แหล่งกฎหมายไทย 3 แหล่ง: กฎหมายดั้งเดิม + ประเทศที่ใช้ประมวล + Common Law (บางส่วน)
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'roman',
+    title:'🏛️ 4. คุณค่าพิเศษของกฎหมายโรมัน 3 ประการ',
+    tags:[['ออกทุกครั้ง','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message="ข้อสอบมักถามให้อธิบายคุณค่าพิเศษของกฎหมายโรมัน 3 ประการ พร้อมตัวอย่าง" style={{marginBottom:16}} />
+
+        <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:12}}>
+          <Flex gap={12} align="start">
+            <Tag color="gold" style={{fontWeight:900,fontSize:18,padding:'4px 14px'}}>①</Tag>
+            <div>
+              <Text strong style={{color:C.green,fontSize:15}}>คุณค่าทางประวัติศาสตร์</Text><br/>
+              <Text style={{color:C.text2,lineHeight:2}}>กฎหมายโรมันมีพัฒนาการต่อเนื่องกว่า <Tag color="success">1,300+ ปี</Tag>{'\n'}จาก 753 ปีก่อนคศ. (กฎหมาย 12 โต๊ะ) ถึง ค.ศ. 565 (Corpus Juris Civilis ของจัสติเนียน){'\n'}เป็นประวัติศาสตร์กฎหมายที่ยาวนานและต่อเนื่องที่สุดในโลก</Text>
+            </div>
+          </Flex>
+        </Card>
+
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:12}}>
+          <Flex gap={12} align="start">
+            <Tag color="gold" style={{fontWeight:900,fontSize:18,padding:'4px 14px'}}>②</Tag>
+            <div>
+              <Text strong style={{color:C.purple,fontSize:15}}>คุณค่าในตัวเอง (Intrinsic Value)</Text><br/>
+              <Text style={{color:C.text2,lineHeight:2}}>เป็นนิติศาสตร์แท้จริง คิดอย่างเป็นระบบ มีเหตุมีผล{'\n'}ถูกเรียกว่า <Tag color="purple">"Written Reason" / คัมภีร์แห่งสติปัญญา</Tag>{'\n'}นักนิติศาสตร์โรมัน (Jurist) พัฒนาหลักการกฎหมายอย่างมีวิทยาศาสตร์</Text>
+            </div>
+          </Flex>
+        </Card>
+
+        <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,marginBottom:16}}>
+          <Flex gap={12} align="start">
+            <Tag color="gold" style={{fontWeight:900,fontSize:18,padding:'4px 14px'}}>③</Tag>
+            <div>
+              <Text strong style={{color:C.blue,fontSize:15}}>คุณค่าจากการยอมรับของชนชาติต่างๆ</Text><br/>
+              <Text style={{color:C.text2,lineHeight:2}}>ชนชาติต่างๆ ในยุโรปยอมรับนำมาใช้เป็น "กฎหมายกลาง" ของทวีปยุโรป{'\n'}ขยายอิทธิพลไปทั่วโลก → รากฐานของระบบ <Tag color="processing">Civil Law</Tag> ที่ใช้ใน 60%+ ของประเทศทั่วโลก</Text>
+            </div>
+          </Flex>
+        </Card>
+
+        <Title level={5} style={{color:C.amberDark}}>กฎหมายสำคัญ (เพิ่มเติม)</Title>
+        <Table dataSource={[
+          {k:'กฎหมาย 12 โต๊ะ',y:'449 ปีก่อนคศ.',d:'กฎหมายโรมันลายลักษณ์อักษรฉบับแรก จารึกบนแผ่นทองสัมฤทธิ์ 12 แผ่น'},
+          {k:'Corpus Juris Civilis',y:'ค.ศ. 529-534',d:'ประมวลกฎหมายโรมันฉบับสมบูรณ์ โดยจัสติเนียน: Code/Digest/Institutes/Novels'},
+          {k:'กฎหมายฮัมมูราบี',y:'1,754 ปีก่อนคศ.',d:'บาบิโลน 282 บทบัญญัติ หลัก "ตาต่อตา" (Lex Talionis) แบ่ง 3 ชนชั้น: Awellu/Muskinu/Ardu'},
+        ]} columns={[
+          {title:'กฎหมาย',dataIndex:'k',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'ปี',dataIndex:'y',width:120,render:v=><Tag color="gold">{v}</Tag>},
+          {title:'รายละเอียด',dataIndex:'d',render:v=><Text style={{color:C.text2}}>{v}</Text>},
+        ]} pagination={false} size="small" rowKey="k" />
+      </div>
+    )
+  },
+];
+
+// ════════════════════════════════════════════
+// FLASHCARDS — {q, a, d, star, exam}
+// ════════════════════════════════════════════
+const flashcards = [
+  // ── กฎหมายตราสามดวง ──
+  {q:'กฎหมายตราสามดวง เกิดขึ้นเพราะเหตุใด? ปีอะไร?',a:'เรื่องนายบุญศรี พ.ศ.2347',d:'นายบุญศรีช่างเหล็กหลวงฟ้องหย่าภรรยา กฎหมายเก่าขัดแย้ง → ร.1 ตั้งคณะ 11 คนชำระกฎหมาย → ตรา พ.ศ. 2347',star:3,exam:true},
+  {q:'กฎหมายตราสามดวง มีกี่ลักษณะ กี่บท? ตรา 3 ดวงคืออะไร?',a:'29 ลักษณะ 1,600+ บท',d:'ตราราชสีห์=พลเรือน(สมุหนายก) / ตราคชสีห์=ทหาร(สมุหพระกลาโหม) / ตราบัวแก้ว=พระคลัง(กรมท่า)',star:3,exam:true},
+  {q:'คัมภีร์พระธรรมศาสตร์คืออะไร? มีศักดิ์อย่างไร?',a:'กฎหมายสูงสุด เทียบรธน.',d:'คัมภีร์กฎเกณฑ์ความยุติธรรมจากอินเดีย(พราหมณ์) ศักดิ์สูงสุดเทียบรัฐธรรมนูญ ถ้าพระอัยการขัด→พระธรรมศาสตร์ชนะ',star:3,exam:true},
+  {q:'"คดีไร่แดง" สำคัญอย่างไรต่อกฎหมายไทย?',a:'ต้นกำเนิดคัมภีร์พระธรรมศาสตร์',d:'ชาย 2 คนทะเลาะเรื่องผลแดง → พระโมนสารตัดสิน → จดเป็นลักษณ์อักษร → สอนพระเจ้าสมมิติราช → กลายเป็นคัมภีร์',star:2,exam:true},
+  {q:'หลักอินทภาษคืออะไร? อคติ 4 ประการมีอะไรบ้าง?',a:'อคติ 4: ฉันทา/โทส/ภย/โมห',d:'ฉันทาคติ=รัก/โลภ / โทสคติ=โกรธ / ภยาคติ=กลัว / โมหคติ=หลง/เขลา ★ ผู้พิพากษาต้องปราศจากอคติทั้ง 4',star:3,exam:true},
+  {q:'กฎหมาย 16 หลังคาเรือน (มังรายศาสตร์) คืออะไร?',a:'16 สาเหตุวิวาท ล้านนา',d:'กฎหมายล้านนาโดยพระเจ้ามังราย 16 สาเหตุแห่งวิวาท ≠ กฎหมาย 3 เส้น 15 วา (ตราสามดวง=ความรับผิดหมู่บ้าน)',star:2,exam:true},
+  {q:'กฎหมาย 3 เส้น 15 วา ต่างจาก 16 หลังคาเรือนอย่างไร?',a:'3 เส้น15วา=รับผิดหมู่บ้าน / 16=วิวาท',d:'3 เส้น 15 วา=ความรับผิดร่วมของสมาชิกหมู่บ้านในเขตที่เกิดเหตุ (ตราสามดวง) / 16 หลังคาเรือน=แยกประเภทสาเหตุวิวาท (มังรายศาสตร์)',star:2,exam:true},
+  {q:'กฎหมายตราสามดวงถูกยกเลิกเมื่อใด? มีกี่ฉบับ?',a:'ยกเลิก พ.ศ. 2481 / 3 ฉบับ',d:'ยกเลิก พ.ศ. 2481 ใช้มากกว่า 100 ปี / มี 3 ฉบับเก็บที่: ห้องเครื่อง+หอหลวง+ศาลหลวง',star:1,exam:false},
+  {q:'พระธรรมศาสตร์ใช้อย่างไรในกฎหมายตราสามดวง?',a:'เป็นกฎหมายสูงสุด(เทียบรธน.)',d:'เป็น "กฎหมายสูงสุด" ถ้าบทบัญญัติอื่นขัดกับพระธรรมศาสตร์ → พระธรรมศาสตร์ชนะ / ใช้ร่วมกับพระอัยการ 29 ลักษณะ',star:2,exam:true},
+
+  // ── กฎมณเฑียรบาล ร.6 ──
+  {q:'กฎมณเฑียรบาลว่าด้วยการสืบราชสันตติวงศ์ ออกสมัยใด?',a:'ร.6 พ.ศ. 2467',d:'ออกสมัยรัชกาลที่ 6 (พ.ศ. 2467) เป็นกฎหมายพิเศษเฉพาะสถาบันพระมหากษัตริย์ ยังมีผลบังคับใช้ปัจจุบัน',star:3,exam:true},
+  {q:'มาตรา 9 กฎมณเฑียรบาล กำหนดอะไร?',a:'จัดลำดับสืบสันตติวงศ์',d:'ลำดับ: พระราชโอรส(อาวุโส)→นัดดา→อนุชา→พระราชวงศ์ฝ่ายชาย / เรียงตามอาวุโส / ฝ่ายชายเท่านั้น',star:3,exam:true},
+  {q:'มาตรา 11 กฎมณเฑียรบาล กำหนดอะไร?',a:'ห้ามสตรีสืบราชสมบัติ',d:'สตรีไม่มีสิทธิ์สืบราชสันตติวงศ์ → ราชสมบัติสืบทอดเฉพาะฝ่ายชายเท่านั้น',star:3,exam:true},
+  {q:'มาตรา 13 กฎมณเฑียรบาล กำหนดอะไร?',a:'สายสิ้น → รัฐสภาเลือก',d:'กรณีราชวงศ์ฝ่ายชายสูญสิ้นลง → รัฐสภามีอำนาจเลือกพระบรมวงศานุวงศ์ที่เหมาะสม = กลไกสำรอง',star:3,exam:true},
+  {q:'จำสั้น กฎมณเฑียรบาล 3 มาตราว่าอะไร?',a:'9=ลำดับ 11=ห้ามหญิง 13=รัฐสภา',d:'ม.9=จัดลำดับ(ฝ่ายชาย+อาวุโส) / ม.11=ห้ามสตรีสืบ / ม.13=รัฐสภาเลือกเมื่อสิ้นสาย',star:3,exam:true},
+  {q:'กฎมณเฑียรบาลต่างจากกฎหมายตราสามดวงอย่างไร?',a:'ตราสามดวง=ทั่วไป / กฎมณเฑียรบาล=พิเศษ',d:'ตราสามดวง=กฎหมายทั่วไปปกครองประชาชน(2347→2481) / กฎมณเฑียรบาล=กฎหมายพิเศษเฉพาะสถาบันพระมหากษัตริย์ ยังมีผลบังคับ',star:3,exam:true},
+
+  // ── Civil Law vs Common Law ──
+  {q:'Civil Law และ Common Law ต่างกันในเรื่องแหล่งที่มาอย่างไร?',a:'Civil=ลายลักษณ์อักษร / Common=จารีต+คำพิพากษา',d:'Civil Law=ลายลักษณ์อักษร(ประมวลกฎหมาย/Code) จากโรมัน / Common Law=จารีตประเพณี+คำพิพากษา(Judge-made law) ไม่เป็นลายลักษณ์อักษร จากอังกฤษ',star:3,exam:true},
+  {q:'ระบบลูกขุน (Jury) พบในระบบกฎหมายใด?',a:'Common Law — 12 คน',d:'Common Law ลูกขุน 12 คนตัดสินข้อเท็จจริง / ผู้พิพากษาตัดสินข้อกฎหมาย / ≠ Civil Law ที่ผู้พิพากษาอาชีพตัดสินทั้งหมด',star:3,exam:true},
+  {q:'Precedent (บรรทัดฐาน/Stare Decisis) ใช้ในระบบใด?',a:'Common Law',d:'คดีที่มีข้อเท็จจริงเหมือนกันต้องตัดสินตามแนวเดิม / Civil Law ไม่ยึดบรรทัดฐาน ใช้ตัวบทกฎหมายเป็นหลัก',star:3,exam:true},
+  {q:'ที่มาของ Civil Law และ Common Law?',a:'Civil=โรมัน / Common=อังกฤษ',d:'Civil Law=กฎหมายโรมัน(Jus Civile) ขยายผ่านยุโรป ● ประเทศ:ฝรั่งเศส เยอรมัน ไทย / Common Law=อังกฤษ(King\'s Court) ● ประเทศ:อังกฤษ อเมริกา ออสเตรเลีย',star:3,exam:true},
+  {q:'Equity ใน Common Law คืออะไร?',a:'ระบบความยุติธรรม ศาล Chancery',d:'Common Law แข็งตัว→ราษฎรร้องกษัตริย์→ศาล Chancery(ค.ศ.1485) Lord Chancellor→รวม ค.ศ.1875 Judicature Acts',star:2,exam:true},
+  {q:'The King Can Do No Wrong มีที่มาและความหมายอย่างไร?',a:'เทวสิทธิ์ → กษัตริย์เหนือกฎหมาย',d:'Divine Right of King(เทวสิทธิ์) + Thomas Hobbes → กษัตริย์ทำทุกอย่างได้ ผู้เสนอแนะรับผิดแทน → ไทย ม.6 รธน.2560',star:3,exam:true},
+  {q:'The King Can Do No Wrong ปรากฏในรัฐธรรมนูญไทยอย่างไร?',a:'ม.6 รธน.2560',d:'"องค์พระมหากษัตริย์ทรงดำรงอยู่ในฐานะอันเป็นที่เคารพสักการะ ผู้ใดจะละเมิดมิได้ ผู้ใดจะกล่าวหาหรือฟ้องร้องในทางใดๆ มิได้" ● รับรองในเดนมาร์ก เบลเยียม นอร์เวย์',star:3,exam:true},
+  {q:'Magna Carta คืออะไร? เกิดขึ้นเมื่อใด?',a:'กฎบัตรสิทธิ ค.ศ.1215',d:'สมัยพระเจ้าจอห์น 63 ข้อจำกัดอำนาจกษัตริย์ ● ต้นแบบรัฐธรรมนูญ ● ผล: ①ปฏิรูปมหาสภา ②คุ้มครองเสรีภาพ ③สิทธิขุนนางตรวจสอบ',star:2,exam:true},
+  {q:'Rene David แบ่งระบบกฎหมายโลกเป็นกี่ระบบ?',a:'4 ระบบ',d:'① Romano-Germanic(Civil Law) ② Common Law ③ Socialist Law(สังคมนิยม-Marx/Lenin) ④ Religious & Traditional Law(ศาสนา/จารีต)',star:2,exam:true},
+  {q:'ไทยจัดอยู่ในระบบกฎหมายใด?',a:'Civil Law (โรมาโน-เยอรมานิค)',d:'รับกฎหมายจากฝรั่งเศส เยอรมัน มาบัญญัติเป็นประมวลกฎหมาย ● ปพพ. ปอ. พรบ.ต่างๆ เป็นลายลักษณ์อักษร',star:2,exam:false},
+
+  // ── คุณค่ากฎหมายโรมัน ──
+  {q:'คุณค่ากฎหมายโรมัน ประการที่ 1 คืออะไร?',a:'คุณค่าทางประวัติศาสตร์ 1,300+ ปี',d:'มีพัฒนาการต่อเนื่องกว่า 1,300 ปี จาก 753 ปีก่อนคศ.(12 โต๊ะ) ถึง ค.ศ.565(Corpus Juris Civilis) ยาวนานที่สุดในโลก',star:3,exam:true},
+  {q:'คุณค่ากฎหมายโรมัน ประการที่ 2 คืออะไร?',a:'คุณค่าในตัวเอง "คัมภีร์แห่งสติปัญญา"',d:'นิติศาสตร์แท้จริง คิดเป็นระบบมีเหตุผล เรียกว่า "Written Reason / คัมภีร์แห่งสติปัญญา" นักนิติศาสตร์โรมัน(Jurist)พัฒนาอย่างเป็นวิทยาศาสตร์',star:3,exam:true},
+  {q:'คุณค่ากฎหมายโรมัน ประการที่ 3 คืออะไร?',a:'การยอมรับของชนชาติต่างๆ',d:'ยุโรปนำมาใช้เป็น "กฎหมายกลาง" ของทวีป ● ขยายอิทธิพลไปทั่วโลก → รากฐาน Civil Law ที่ใช้ใน 60%+ ของประเทศทั่วโลก',star:3,exam:true},
+  {q:'กฎหมาย 12 โต๊ะ (The Twelve Tables) คืออะไร?',a:'กฎหมายโรมันฉบับแรก 449 ปีก่อนคศ.',d:'กฎหมายลายลักษณ์อักษรฉบับแรกของโรมัน จารึกบนแผ่นทองสัมฤทธิ์ 12 แผ่น → ต้นแบบ Written Law ในระบบ Civil Law',star:2,exam:true},
+  {q:'Corpus Juris Civilis คืออะไร?',a:'ประมวลกฎหมายโรมันฉบับสมบูรณ์',d:'รวบรวมโดยจัสติเนียน ค.ศ.529-534 ● ประกอบด้วย: Code/Digest/Institutes/Novels ● ต้นแบบ Civil Law ทั้งโลก',star:2,exam:false},
+  {q:'กฎหมายฮัมมูราบี (Code of Hammurabi) คืออะไร?',a:'บาบิโลน 282 บท "ตาต่อตา"',d:'ราว 1,754 ปีก่อนคศ. 282 บทบัญญัติ หลัก "ตาต่อตา ฟันต่อฟัน"(Lex Talionis) แบ่ง 3 ชนชั้น: Awellu(ปกครอง)/Muskinu(เสรีชน)/Ardu(ทาส)',star:2,exam:true},
+];
+
+// ════════════════════════════════════════════
+// Quick Cards (Brain-Optimized)
+// ════════════════════════════════════════════
+const quickSections = [
+  {divider:'🧠 คำย่อช่วยจำ (Mnemonic)'},
+  {s:'ปร คุ ยอ',t:'คุณค่ากฎหมายโรมัน 3 ประการ',b:'ปร=ประวัติศาสตร์(1,300ปี) คุ=คุณค่าในตัวเอง(คัมภีร์แห่งสติปัญญา) ยอ=การยอมรับของชาติต่างๆ(กฎหมายกลางยุโรป)',type:'mnem'},
+  {s:'บุน-11-29-3ดวง',t:'กฎหมายตราสามดวง',b:'บุน=นายบุญศรี(เหตุ) 11=คณะชำระ 29=ลักษณะ 3ดวง=ราชสีห์+คชสีห์+บัวแก้ว / ปี 2347 ยกเลิก 2481',type:'mnem'},
+  {s:'9-11-13',t:'กฎมณเฑียรบาล ร.6',b:'9=จัดลำดับ(ชาย+อาวุโส) 11=ห้ามสตรีสืบ 13=รัฐสภาเลือกเมื่อสายสิ้น / พ.ศ.2467',type:'mnem'},
+  {s:'ฉัน โทส ภย โมห',t:'หลักอินทภาษ อคติ 4',b:'ฉันทาคติ=รัก/โลภ โทสคติ=โกรธ ภยาคติ=กลัว โมหคติ=หลง/เขลา → ผู้พิพากษาต้องปราศจากทั้ง 4',type:'mnem'},
+  {s:'แ-ข-ศ-ตี-กำ',t:'Civil vs Common 5 มิติ',b:'แ=แหล่งที่มา ข=ข้อกฎหมาย(ลายลักษณ์อักษร?) ศ=ศาล/ลูกขุน ตี=การตีความ(Precedent?) กำ=กำเนิด(โรมัน/อังกฤษ)',type:'mnem'},
+
+  {divider:'🔗 Visual Flow (สายโซ่เหตุการณ์)'},
+  {s:'Flow 1',t:'ตราสามดวง Timeline',b:'นายบุญศรีฟ้องหย่า → กฎหมายขัดแย้ง → ร.1 ตั้ง 11 คนชำระ → 29 ลักษณะ 1,600+ บท → ตรา 3 ดวง(ราชสีห์+คชสีห์+บัวแก้ว) → 3 ฉบับ → ยกเลิก 2481',type:'flow'},
+  {s:'Flow 2',t:'กฎมณเฑียรบาล สืบสันตติวงศ์',b:'ม.9 โอรส(อาวุโส) → นัดดา → อนุชา → ราชวงศ์ฝ่ายชาย / ม.11 ห้ามสตรี / ม.13 สายสิ้น→รัฐสภาเลือก',type:'flow'},
+  {s:'Flow 3',t:'The King Can Do No Wrong',b:'Divine Right(เทวสิทธิ์) → Hobbes → ชาร์ลส์1(ประหาร) → Petition of Right → ครอมเวลล์(สาธารณรัฐ) → ชาร์ลส์2(ประนีประนอม) → กษัตริย์เหนือกฎหมาย → ม.6 รธน.2560',type:'flow'},
+  {s:'Flow 4',t:'กฎหมายโรมัน Timeline',b:'753 ก่อนคศ.(12 โต๊ะ) → ยุคจักรวรรดิ(Jurist รุ่งเรือง) → ค.ศ.529-534(Corpus Juris Civilis จัสติเนียน) → ค.ศ.1100+(ฟื้นฟูที่ Bologna) → แพร่ยุโรป → Civil Law ทั่วโลก',type:'flow'},
+
+  {divider:'⚡ ตารางเปรียบเทียบ (Contrast Pairs)'},
+  {s:'Civil vs Common',t:'แหล่งกฎหมาย',b:'Civil: ลายลักษณ์อักษร(Written Law/Code) ✓ / Common: จารีตประเพณี+คำพิพากษา(Judge-made Law) ✗ลายลักษณ์อักษร',type:'contrast'},
+  {s:'Civil vs Common',t:'ระบบศาล',b:'Civil: ผู้พิพากษาอาชีพตัดสินทั้งหมด / Common: ลูกขุน 12 คน(Jury)ตัดสินข้อเท็จจริง+ผู้พิพากษาตัดสินข้อกฎหมาย',type:'contrast'},
+  {s:'ตราสามดวง vs กฎมณเฑียรบาล',t:'ขอบเขต',b:'ตราสามดวง=กฎหมายทั่วไปปกครองประชาชน(2347-2481) / กฎมณเฑียรบาล=กฎหมายพิเศษเฉพาะสถาบัน(2467-ปัจจุบัน)',type:'contrast'},
+  {s:'พระธรรมศาสตร์ vs อินทภาษ',t:'บทบาทในตราสามดวง',b:'พระธรรมศาสตร์=กฎหมายสูงสุด(เทียบรธน.)หลักสารบัญญัติ / อินทภาษ=หลักจริยธรรมผู้พิพากษา(อคติ4ประการ)',type:'contrast'},
+  {s:'16 หลังคาเรือน vs 3 เส้น 15 วา',t:'กฎหมายชุมชน',b:'16 หลังคาเรือน=ล้านนา 16สาเหตุวิวาท(มังราย) / 3 เส้น 15 วา=ตราสามดวง ความรับผิดร่วมหมู่บ้าน',type:'contrast'},
+
+  {divider:'📦 Chunking ตามข้อสอบ'},
+  {s:'หัวข้อ 1',t:'กฎหมายตราสามดวง (ร.1)',b:'เหตุ(นายบุญศรี) → ชำระ(11คน) → ผล(29ลักษณะ 1,600+บท) → ตรา3ดวง → พระธรรมศาสตร์(กฎหมายสูงสุด) → อินทภาษ(อคติ4) → 16 หลังคาเรือน(มังราย)',type:'chunk'},
+  {s:'หัวข้อ 2',t:'กฎมณเฑียรบาล ร.6 (พ.ศ.2467)',b:'ม.9(ลำดับ:โอรส→นัดดา→อนุชา→ราชวงศ์ชาย) → ม.11(ห้ามสตรี) → ม.13(สายสิ้น→รัฐสภาเลือก) → ยังมีผลปัจจุบัน',type:'chunk'},
+  {s:'หัวข้อ 3',t:'Civil Law vs Common Law',b:'ที่มา(โรมัน/อังกฤษ) → แหล่ง(ลายลักษณ์อักษร/จารีต) → ศาล(ผู้พิพากษา/ลูกขุน12คน) → ตีความ(ตัวบท/Precedent) → Equity(ศาลChancery→รวม1875)',type:'chunk'},
+  {s:'หัวข้อ 4',t:'คุณค่ากฎหมายโรมัน 3 ประการ',b:'①ประวัติศาสตร์(1,300+ปี 753ก่อนคศ.→ค.ศ.565) → ②คุณค่าในตัวเอง(นิติศาสตร์แท้ Written Reason) → ③การยอมรับ(กฎหมายกลางยุโรป→Civil Lawทั่วโลก)',type:'chunk'},
+
+  {divider:'⏱️ สูตรจำ 30 วินาที'},
+  {s:'📜 ตราสามดวง',t:'สูตรตอบข้อสอบ',b:'เหตุ(นายบุญศรี) → ร.1(คณะ11คน) → ผล(29ลักษณะ 3ดวง) → พระธรรมศาสตร์(เทียบรธน. คดีไร่แดง) → อินทภาษ(อคติ4:ฉัน-โทส-ภย-โมห) → ยกเลิก2481',type:'formula'},
+  {s:'👑 กฎมณเฑียรบาล',t:'สูตรตอบข้อสอบ',b:'ร.6 พ.ศ.2467 → ม.9(ลำดับฝ่ายชาย+อาวุโส) → ม.11(ห้ามสตรี) → ม.13(สายสิ้น=รัฐสภาเลือก) → ใช้ควบคู่รธน.หมวดพระมหากษัตริย์',type:'formula'},
+  {s:'⚖️ Civil vs Common',t:'สูตรตอบข้อสอบ',b:'Civil: โรมัน→ลายลักษณ์อักษร→ผู้พิพากษาอาชีพ→ตัวบท→ไทย ฝรั่งเศส เยอรมัน / Common: อังกฤษ→จารีต→ลูกขุน12→Precedent→อเมริกา ออสเตรเลีย',type:'formula'},
+  {s:'🏛️ คุณค่าโรมัน',t:'สูตรตอบข้อสอบ',b:'①ประวัติศาสตร์1,300ปี(753ก่อนคศ.→ค.ศ.565) → ②คุณค่าในตัวเอง"คัมภีร์แห่งสติปัญญา" → ③การยอมรับชาติต่างๆ=กฎหมายกลางยุโรป → รากฐานCivil Law',type:'formula'},
+  {s:'🎭 King Can Do No Wrong',t:'สูตรตอบข้อสอบ',b:'เทวสิทธิ์(Divine Right)→Hobbes→ชาร์ลส์1ประหาร→ครอมเวลล์→ชาร์ลส์2ประนีประนอม→กษัตริย์เหนือกฎหมาย ผู้เสนอรับผิด→ม.6 รธน.2560(เดนมาร์ก เบลเยียม นอร์เวย์)',type:'formula'},
+  {s:'📝 โครงสร้างตอบ',t:'ทุกข้อต้องมี 4 ส่วน',b:'1.หลักกฎหมาย(อ้างอิงที่มา) → 2.อธิบาย(เนื้อหาสำคัญ) → 3.ตัวอย่าง/เปรียบเทียบ → 4.สรุป(ตอบคำถาม)',type:'formula'},
+];
+
+// ════════════════════════════════════════════
+// COMPONENTS
+// ════════════════════════════════════════════
+
+function SummaryTab() {
+  return summaryData.map(s=>(
+    <Card key={s.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14,marginBottom:16,boxShadow:'0 1px 6px rgba(61,50,41,0.04)'}}
+      title={<Flex align="center" gap={8} wrap="wrap">
+        <Text strong style={{color:C.amberDark,fontSize:15}}>{s.title}</Text>
+        {s.tags && s.tags.map(([l,c],i)=><Tag key={i} color={c} style={{fontSize:11}}>{l}</Tag>)}
+      </Flex>}
+      headStyle={{borderBottom:`1px solid ${C.border}`,background:C.surface}}
+    >{s.content()}</Card>
+  ));
+}
+
+function Stars({n}){return <span style={{color:'#C4A35A',fontSize:14,letterSpacing:2}}>{'⭐'.repeat(n)}</span>;}
+
+function FlashcardTab() {
+  const [mode,setMode]=useState('all');
+  const getFiltered=m=>{
+    if(m==='exam') return flashcards.filter(c=>c.exam);
+    if(m==='star3') return flashcards.filter(c=>c.star===3);
+    return flashcards;
+  };
+  const [cards,setCards]=useState(()=>[...flashcards].sort(()=>Math.random()-0.5));
+  const [idx,setIdx]=useState(0);
+  const [flipped,setFlipped]=useState(false);
+  const [correct,setCorrect]=useState(0);
+  const [wrong,setWrong]=useState(0);
+  const [showCheck,setShowCheck]=useState(false);
+  const card=cards[idx]||cards[0];
+  const flip=()=>{setFlipped(f=>!f);setShowCheck(true);};
+  const next=()=>{if(idx<cards.length-1){setIdx(i=>i+1);setFlipped(false);setShowCheck(false);}};
+  const prev=()=>{if(idx>0){setIdx(i=>i-1);setFlipped(false);setShowCheck(false);}};
+  const markOk=()=>{setCorrect(c=>c+1);setShowCheck(false);setTimeout(next,200);};
+  const markNo=()=>{setWrong(c=>c+1);setShowCheck(false);setTimeout(next,200);};
+  const doShuffle=(m)=>{const f=getFiltered(m||mode);setCards([...f].sort(()=>Math.random()-0.5));setIdx(0);setFlipped(false);setShowCheck(false);};
+  const reset=()=>{setCorrect(0);setWrong(0);doShuffle();};
+  const changeMode=(m)=>{setMode(m);setCorrect(0);setWrong(0);doShuffle(m);};
+
+  const examCount=flashcards.filter(c=>c.exam).length;
+  const star3Count=flashcards.filter(c=>c.star===3).length;
+
+  return (
+    <div>
+      <Flex gap={8} style={{marginBottom:16}} wrap="wrap">
+        <Button type={mode==='all'?'primary':'default'} onClick={()=>changeMode('all')}>ทั้งหมด ({flashcards.length})</Button>
+        <Button type={mode==='exam'?'primary':'default'} onClick={()=>changeMode('exam')} style={mode==='exam'?{background:'#8B6F47',borderColor:'#8B6F47'}:{}}>📝 เน้นสอบ ({examCount})</Button>
+        <Button type={mode==='star3'?'primary':'default'} onClick={()=>changeMode('star3')} style={mode==='star3'?{background:'#8B6F47',borderColor:'#8B6F47'}:{}}>⭐⭐⭐ สำคัญมาก ({star3Count})</Button>
+      </Flex>
+
+      <Flex gap={16} justify="center" style={{marginBottom:16}}>
+        <Card size="small" style={{background:C.greenBg,border:`1px solid ${C.border}`,borderRadius:12,minWidth:100,textAlign:'center'}}>
+          <Statistic title={<Text style={{color:C.green,fontSize:12}}>✓ ถูก</Text>} value={correct} valueStyle={{color:C.green,fontSize:24}} />
+        </Card>
+        <Card size="small" style={{background:C.redBg,border:`1px solid ${C.border}`,borderRadius:12,minWidth:100,textAlign:'center'}}>
+          <Statistic title={<Text style={{color:C.red,fontSize:12}}>✗ ผิด</Text>} value={wrong} valueStyle={{color:C.red,fontSize:24}} />
+        </Card>
+      </Flex>
+      <Flex gap={12} align="center" style={{marginBottom:16}} wrap="wrap">
+        <Button onClick={()=>doShuffle()}>🔀 สุ่มใหม่</Button>
+        <Button onClick={reset}>↻ รีเซ็ต</Button>
+        <Text style={{color:C.text3,marginLeft:'auto'}}>ข้อ <strong style={{color:C.amberDark}}>{idx+1}</strong> / {cards.length}</Text>
+      </Flex>
+
+      <div className="fc-perspective" style={{marginBottom:20}}>
+        <div className={`fc-card ${flipped?'flipped':''}`} onClick={flip}>
+          <div className="fc-face" style={{background:`linear-gradient(145deg,${C.surface3},${C.surface})`,border:`1px solid ${C.border}`,boxShadow:'0 2px 12px rgba(61,50,41,0.06)'}}>
+            <Flex gap={8} align="center" style={{marginBottom:12}}>
+              <Stars n={card.star||1} />
+              {card.exam && <Tag color="volcano" style={{fontSize:11,fontWeight:700,margin:0}}>📝 เน้นสอบ</Tag>}
+            </Flex>
+            <Text style={{color:C.gold,fontSize:11,fontWeight:700,letterSpacing:1.5,textTransform:'uppercase',marginBottom:14}}>โจทย์</Text>
+            <Text style={{color:C.text,fontSize:16,lineHeight:1.9,maxWidth:620}}>{card.q}</Text>
+            <Text style={{color:C.text3,fontSize:12,marginTop:20}}>👆 คลิกเพื่อเฉลย</Text>
+          </div>
+          <div className="fc-face fc-back" style={{background:`linear-gradient(145deg,#F0EBE2,#EDE8DF)`,border:`1px solid ${C.goldDark}`,boxShadow:'0 2px 12px rgba(61,50,41,0.08)'}}>
+            <Flex gap={8} align="center" style={{marginBottom:8}}>
+              <Stars n={card.star||1} />
+              {card.exam && <Tag color="volcano" style={{fontSize:11,fontWeight:700,margin:0}}>📝 เน้นสอบ</Tag>}
+            </Flex>
+            <Tag color="gold" style={{fontSize:15,fontWeight:700,padding:'4px 16px',marginBottom:12}}>{card.a}</Tag>
+            <Text style={{color:C.text2,fontSize:14,lineHeight:1.9,maxWidth:620}}>{card.d}</Text>
+            <Text style={{color:C.text3,fontSize:12,marginTop:16}}>👆 คลิกเพื่อกลับด้านหน้า</Text>
+          </div>
+        </div>
+      </div>
+
+      {showCheck && flipped && (
+        <Flex gap={12} justify="center" style={{marginBottom:16}}>
+          <Button type="primary" style={{background:C.green,borderColor:C.green,minWidth:120}} onClick={markOk}>✓ จำได้</Button>
+          <Button danger style={{minWidth:120}} onClick={markNo}>✗ ยังไม่แม่น</Button>
+        </Flex>
+      )}
+
+      <Flex gap={12} justify="center">
+        <Button onClick={prev} disabled={idx===0}>← ก่อนหน้า</Button>
+        <Button onClick={next} disabled={idx===cards.length-1}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+}
+
+function QuickTab() {
+  const typeColors = {
+    mnem: {bg:C.purpleBg,border:'#D5CFE0',accent:C.purple},
+    flow: {bg:C.cyanBg,border:'#C8DEDE',accent:C.cyan},
+    contrast: {bg:C.redBg,border:'#E8D4D0',accent:C.red},
+    chunk: {bg:C.blueBg,border:'#BFDBFE',accent:C.blue},
+    formula: {bg:'#FFF8EB',border:'#E8D5A8',accent:'#8B6F47'},
+  };
+
+  return (
+    <div>
+      <Alert showIcon message={<span>🧠 <strong>Brain-Optimized</strong> — Mnemonic + Visual Flow + Contrast Pairs + Chunking + 30-Second Formula</span>} style={{marginBottom:16}} />
+      {quickSections.map((item,i)=>{
+        if(item.divider) return <Divider key={i} orientation="left" style={{color:C.amberDark,borderColor:C.borderDark,fontSize:14,fontWeight:600}}>{item.divider}</Divider>;
+        const tc = typeColors[item.type] || {bg:C.surface3,border:C.border,accent:C.gold};
+        return (
+          <Card key={i} className="qc" size="small" style={{background:tc.bg,border:`1px solid ${tc.border}`,borderRadius:12,marginBottom:10,borderLeft:`4px solid ${tc.accent}`}}>
+            <Flex gap={12} align="start">
+              <Tag color="gold" style={{fontWeight:700,fontSize:13,flexShrink:0}}>{item.s}</Tag>
+              <div style={{flex:1}}>
+                <Text strong style={{color:C.text,fontSize:14}}>{item.t}</Text>
+                <br/>
+                <Text style={{color:C.text2,fontSize:13,lineHeight:1.9}}>{item.b}</Text>
+              </div>
+            </Flex>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token: {
+        colorPrimary: C.gold,
+        colorBgBase: C.bg,
+        colorBgContainer: C.white,
+        fontFamily: "'Noto Sans Thai', sans-serif",
+        borderRadius: 12,
+        colorBorder: C.border,
+        colorText: C.text,
+        colorTextSecondary: C.text2,
+        fontSize: 14,
+        lineHeight: 1.8,
+      }
+    }}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:900,margin:'0 auto',padding:'32px 16px'}}>
+          <div style={{textAlign:'center',marginBottom:28}}>
+            <Title level={2} style={{color:C.amberDark,marginBottom:4,letterSpacing:1}}>LAW1106 ประวัติศาสตร์กฎหมายไทยและระบบกฎหมายหลัก</Title>
+            <Text style={{color:C.text3,fontSize:13}}>🎯 ตราสามดวง • กฎมณเฑียรบาล ร.6 (ม.9,11,13) • Civil Law vs Common Law • คุณค่ากฎหมายโรมัน 3 ประการ</Text>
+            <br/><Tag color="volcano" style={{marginTop:8}}>📝 พฤ. เช้า</Tag>
+          </div>
+
+          <Tabs
+            defaultActiveKey="summary"
+            centered
+            type="card"
+            items={[
+              {key:'summary',label:'📖 สรุปเนื้อหา',children:<SummaryTab />},
+              {key:'flashcard',label:'🃏 Flashcard',children:<FlashcardTab />},
+              {key:'quick',label:'⚡ การ์ดจำด่วน',children:<QuickTab />},
+            ]}
+          />
+
+          <div style={{textAlign:'center',marginTop:24,paddingTop:16,borderTop:`1px solid ${C.border}`}}>
+            <Text style={{color:C.text3,fontSize:11}}>LAW1106 Review — Ramkhamhaeng University — Sepia Theme for 4h+ reading</Text>
+          </div>
+        </Content>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
