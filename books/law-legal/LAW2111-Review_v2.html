@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW2111 ตัวแทน-นายหน้า — สรุป + Flashcard + การ์ดจำด่วน</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Noto Sans Thai',sans-serif;
+    background:#F5F0E8;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+    line-height:1.8;
+  }
+  #root { min-height:100vh; }
+  .fc-perspective { perspective:1200px; }
+  .fc-card { width:100%; min-height:320px; position:relative; transform-style:preserve-3d; transition:transform 0.5s ease; cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:36px 32px; text-align:center; }
+  .fc-back { transform:rotateY(180deg); }
+  .qc:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(139,115,85,0.1) !important; }
+  .qc { transition: all 0.25s ease; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:3px; }
+  ::-webkit-scrollbar-thumb:hover { background:#A89478; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  .ant-table-cell { line-height:1.9 !important; }
+  .ant-card { transition: box-shadow 0.2s ease; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const {
+  ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+  Row, Col, Divider, Alert, Statistic, Flex
+} = antd;
+const { Content } = Layout;
+const { Title, Text, Paragraph } = Typography;
+
+// ─── Eye-Comfort Sepia Palette (4h+ reading) ───
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  amber: '#B5986A', amberDark: '#7A6548',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+
+// ════════════════════════════════════════════
+// DATA — สรุปเนื้อหา ม.797-849
+// ════════════════════════════════════════════
+
+const summaryData = [
+  {
+    key:'structure',
+    title:'🔑 โครงสร้างการตอบข้อสอบ LAW2111',
+    content:()=>(
+      <div>
+        <Alert type="warning" showIcon message="ข้อสอบอัตนัย 3 ข้อ ข้อละ 25 คะแนน — ต้องยกมาตรา+หลักกฎหมาย+วินิจฉัย+สรุป" style={{marginBottom:16}} />
+        <Row gutter={[12,12]}>
+          {[
+            {n:'1',t:'🔥 ตัวแทน — แบบ+อำนาจ+ผลต่อบุคคลภายนอก',d:'ม.798,801,805,807,812,820,823 แบบ,ทั่วไป,ห้ามทำกับตัวเอง,หน้าที่,ชดใช้,โดยชอบ,นอกขอบ',icon:'📋'},
+            {n:'2',t:'🔥 ตัวแทนค้าต่าง',d:'ม.833,834,835,838,839,842 นิยาม,สิทธิหน้าที่,ขายต่ำ,ซื้อขายเอง,ล้มละลาย,ระงับ',icon:'💼'},
+            {n:'3',t:'🔥 นายหน้า',d:'ม.845,846 ชี้ช่อง/จัดการ→บำเหน็จ, ไม่เปิดเผยชื่อ→รับผิดส่วนตัว',icon:'🏷️'}
+          ].map(s=>(
+            <Col xs={24} sm={12} key={s.n}>
+              <Card size="small" style={{background:C.surface3,border:`1px solid ${C.border}`,borderRadius:14}}>
+                <Flex gap={12} align="start">
+                  <div style={{width:36,height:36,borderRadius:'50%',background:`linear-gradient(135deg,${C.gold},${C.amber})`,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,color:C.white,flexShrink:0,boxShadow:'0 2px 8px rgba(168,144,108,0.3)'}}>{s.n}</div>
+                  <div>
+                    <Text strong style={{color:C.text,fontSize:15}}>{s.icon} {s.t}</Text>
+                    <br/><Text style={{color:C.text3,fontSize:13}}>{s.d}</Text>
+                  </div>
+                </Flex>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'general',
+    title:'📋 เกร็งข้อ 1: ตัวแทน — ม.798,801,805,807,812,820,823',
+    tags:[['เกร็งข้อ 1','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message={<span><strong>ม.797</strong> สัญญาตัวแทน = สัญญาซึ่งบุคคลคนหนึ่ง (ตัวแทน) มีอำนาจทำการแทนบุคคลอีกคนหนึ่ง (ตัวการ) และตกลงจะทำการนั้น</span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>ม.798 แบบของสัญญาตัวแทน ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.green}}>หลัก:</strong> สัญญาตัวแทน <Tag color="success">ไม่ต้องทำเป็นหนังสือ</Tag> (ตั้งด้วยวาจาก็ได้){'\n'}
+            <strong style={{color:C.green}}>ข้อยกเว้น:</strong> ถ้ากิจการที่มอบหมาย เป็นกิจการที่ <strong>กฎหมายบังคับให้ทำเป็นหนังสือ</strong> → การตั้งตัวแทนก็ต้อง<Tag color="error">มีหลักฐานเป็นหนังสือ</Tag>{'\n'}
+            <strong style={{color:C.green}}>⚡ จำ:</strong> "แบบ" ≠ "หลักฐาน" → ม.798 ใช้คำว่า "มีหลักฐานเป็นหนังสือ" = ฟ้องร้องบังคับคดี{'\n'}
+            <strong style={{color:C.green}}>ฎ.1176/2510:</strong> ตั้งตัวแทนขายที่ดิน → ต้องมีหลักฐานเป็นหนังสือ (เพราะซื้อขายที่ดินต้องทำเป็นหนังสือ)
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.purple}}>ม.799 บุคคลที่เป็นตัวแทนได้</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.purple}}>ผู้เยาว์ก็เป็นตัวแทนได้</strong> → เพราะตัวแทนทำนิติกรรมในนามตัวการ ผลผูกพันตัวการ ไม่ใช่ตัวแทน{'\n'}
+            แต่ตัวการอาจฟ้องให้ผู้เยาว์(ตัวแทน)รับผิดไม่ได้เต็มที่ เพราะ ม.153 ผู้เยาว์ทำนิติกรรมโดยไม่ได้รับความยินยอม
+          </Text>
+        </Card>
+
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.cyan}}>ม.800 ตัวแทนเฉพาะการ ⭐⭐⭐</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตั้งตัวแทนเพื่อกิจการอันใดโดยเฉพาะ → มีอำนาจเฉพาะในกิจการนั้น{'\n'}
+                เช่น มอบอำนาจให้ขายที่ดิน → ทำได้เฉพาะขาย ไม่มีอำนาจจำนอง
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.blue}}>ม.801 ตัวแทนทั่วไป</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตั้งตัวแทนทั่วไป → ทำได้เฉพาะ<strong>กิจการจัดการงานตามปกติ</strong>{'\n'}
+                ⚠️ ไม่รวมถึง: ขาย จำนอง ให้เช่า 3 ปีขึ้นไป ยื่นฟ้องคดี ประนีประนอม ให้โดยเสน่หา
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+
+        <div style={{marginTop:12}}/>
+        <Title level={5} style={{color:C.red}}>ม.802 เหตุฉุกเฉิน ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.red}}>หลัก:</strong> ตัวแทนทำนอกขอบอำนาจ → ไม่ผูกพันตัวการ{'\n'}
+            <strong style={{color:C.red}}>ข้อยกเว้น ม.802:</strong> ถ้ามี<Tag color="error">เหตุฉุกเฉิน</Tag> ที่ตัวแทนไม่สามารถขอคำสั่งตัวการได้ทัน → ตัวแทนมีอำนาจทำการอันสมควร เพื่อรักษาประโยชน์ตัวการ{'\n'}
+            <strong style={{color:C.red}}>ข้อสอบ ซ.2/67 ข้อ 1:</strong> นายเอง → นายโชค ตัวแทนบริหารโรงงาน เกิดเพลิงไหม้ ติดต่อตัวการไม่ได้ → เช่าเครื่องจักรแทน = เหตุฉุกเฉิน ม.802
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.amberDark}}>ม.803 บำเหน็จตัวแทน</Title>
+        <Card size="small" style={{background:C.surface3,border:`1px solid ${C.border}`,borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong>หลัก:</strong> ตัวแทน<strong>ไม่มีสิทธิได้รับบำเหน็จ</strong> เว้นแต่จะมีข้อตกลง หรือ ตามธรรมเนียม หรือ ตามพฤติการณ์แห่งกิจการที่ทำ{'\n'}
+            <strong>ม.803 ว.2:</strong> ถ้าตัวแทนทำ<strong>นอกขอบอำนาจ</strong> หรือ ฝ่าฝืนคำสั่ง → <Tag color="error">ไม่มีสิทธิได้บำเหน็จ</Tag>
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.cyan}}>ม.804-806 ตัวแทนหลายคน + ข้อจำกัด</Title>
+        <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.cyan}}>ม.804:</strong> ถ้าตัวการตั้งตัวแทนหลายคนในกิจการเดียวกัน → ต้อง<strong>ทำร่วมกัน</strong> เว้นแต่จะให้อำนาจไว้โดยเฉพาะ{'\n'}
+            <strong style={{color:C.cyan}}>ม.805:</strong> ตัวแทน <Tag color="error">ห้ามทำนิติกรรมกับตัวเอง</Tag> ในฐานะตัวแทน เว้นแต่ตัวการยินยอม (ฎ.1980/2505){'\n'}
+            <strong style={{color:C.cyan}}>ม.806:</strong> ตัวการอาจ<strong>จำกัดอำนาจ</strong>ตัวแทน → ใช้ยันบุคคลภายนอกได้ เว้นแต่บุคคลภายนอกสุจริตไม่ทราบ
+          </Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'agent-duties',
+    title:'🤝 หมวด 2-3: หน้าที่ตัวแทน ↔ ตัวการ — ม.807-819',
+    tags:[['ออกบ่อย','gold']],
+    content:()=>(
+      <div>
+        <Title level={5} style={{color:C.red}}>หน้าที่ตัวแทนต่อตัวการ (ม.807-812)</Title>
+        <Table dataSource={[
+          {k:'ม.807',e:'ทำตามคำสั่ง',d:'ต้องทำตามคำสั่งของตัวการ ถ้าไม่มีคำสั่งต้องทำตามทางที่ปกติเขาทำกัน',t:'gold'},
+          {k:'ม.808',e:'ห้ามตัวแทนช่วง',d:'ห้ามมอบหมายให้คนอื่นทำแทน เว้นแต่ จะมอบได้ตาม ม.808',t:'red'},
+          {k:'ม.810',e:'ส่งมอบคืนทรัพย์สิน',d:'ทรัพย์สินที่ได้รับมาเนื่องจากเป็นตัวแทน ต้องส่งมอบให้ตัวการ',t:'green'},
+          {k:'ม.811',e:'ส่งเงิน+ดอกเบี้ย',d:'เงินที่ตัวแทนรับไว้แทนตัวการ ถ้าเอาไปใช้เอง ต้องคิดดอกเบี้ย 7.5% นับแต่วันที่เอาไปใช้',t:'purple'},
+          {k:'ม.812',e:'รับผิดชดใช้',d:'ตัวแทนทำความเสียหายแก่ตัวการ → ต้องชดใช้ค่าสินไหมทดแทน',t:'red'},
+        ]} columns={[
+          {title:'มาตรา',dataIndex:'k',width:70,render:(v,r)=><Tag color={r.t} style={{fontWeight:600}}>{v}</Tag>},
+          {title:'หน้าที่',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'รายละเอียด',dataIndex:'d',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.green}}>หน้าที่ตัวการต่อตัวแทน (ม.813-819)</Title>
+        <Table dataSource={[
+          {k:'ม.815',e:'ชดใช้ค่าใช้จ่าย',d:'ตัวการต้องชดใช้เงินที่ตัวแทนจ่ายไปตามสมควร พร้อมดอกเบี้ย',t:'green'},
+          {k:'ม.816',e:'ชำระหนี้แทน',d:'ถ้าตัวแทนก่อหนี้ไว้แทนตัวการตามสมควร ตัวการต้องชำระหนี้แทน',t:'green'},
+          {k:'ม.817',e:'ชดใช้ความเสียหาย',d:'ตัวแทนทำการไปโดยไม่มีความผิด แต่ได้รับความเสียหาย → ตัวการต้องชดใช้',t:'blue'},
+          {k:'ม.818',e:'สิทธิยึดหน่วง',d:'ตัวแทนมีสิทธิยึดหน่วงทรัพย์ของตัวการที่อยู่ในมือ จนกว่าจะได้รับชำระหนี้',t:'purple'},
+          {k:'ม.819',e:'จ่ายบำเหน็จ',d:'ตัวการต้องจ่ายบำเหน็จตามที่ตกลง (โยงกับ ม.803)',t:'gold'},
+        ]} columns={[
+          {title:'มาตรา',dataIndex:'k',width:70,render:(v,r)=><Tag color={r.t} style={{fontWeight:600}}>{v}</Tag>},
+          {title:'หน้าที่',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'รายละเอียด',dataIndex:'d',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Alert type="error" showIcon message={<span><strong>ข้อห้าม 3 ประการ:</strong> ม.805 ห้ามทำนิติกรรมกับตัวเอง / ม.808 ห้ามตัวแทนช่วง(หลัก) / ม.825 ห้ามเปิดเผยความลับตัวการ</span>} style={{marginBottom:0}} />
+      </div>
+    )
+  },
+  {
+    key:'third-party',
+    title:'⚖️ หมวด 4: ความรับผิดต่อบุคคลภายนอก — ม.820-825',
+    tags:[['ออกทุกครั้ง','volcano']],
+    content:()=>(
+      <div>
+        <Title level={5} style={{color:C.green}}>ม.820 ตัวแทนกระทำโดยชอบ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.green}}>หลัก:</strong> ตัวแทนทำนิติกรรม<strong>ภายในขอบอำนาจ</strong> → <Tag color="success">ผูกพันตัวการ</Tag> โดยตรง{'\n'}
+            <strong style={{color:C.green}}>ผล:</strong> ตัวการเป็นคู่สัญญากับบุคคลภายนอก ตัวแทนไม่ต้องรับผิดส่วนตัว{'\n'}
+            <strong style={{color:C.green}}>ฎ.106/2488:</strong> ตัวแทนทำสัญญาภายในขอบอำนาจ → ผูกพันตัวการ
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.red}}>ม.823 ตัวแทนกระทำนอกขอบอำนาจ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.red}}>หลัก:</strong> ตัวแทนทำ<strong>นอกขอบอำนาจ</strong> → <Tag color="error">ไม่ผูกพันตัวการ</Tag>{'\n'}
+            <strong style={{color:C.red}}>ผล:</strong> ตัวแทนต้อง<strong>รับผิดเป็นการส่วนตัว</strong>ต่อบุคคลภายนอก{'\n'}
+            <strong style={{color:C.red}}>ข้อยกเว้น:</strong> บุคคลภายนอก<strong>รู้</strong>ว่าตัวแทนทำนอกขอบอำนาจ → ตัวแทนไม่ต้องรับผิด
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.purple}}>ม.821 ตัวแทนเชิด ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.purple}}>หลัก:</strong> บุคคลใดเชิดบุคคลอีกคนหนึ่งออกแสดงเป็นตัวแทนของตน หรือ <strong>รู้แล้วยอมให้เขาแสดงตนเป็นตัวแทน</strong>{'\n'}
+            → ผูกพันตัวการ(ผู้เชิด)ต่อบุคคลภายนอกผู้สุจริต{'\n'}
+            <strong style={{color:C.purple}}>ฎ.5751/2544:</strong> ให้ใช้ชื่อเปิดบัญชี = เชิดเป็นตัวแทน{'\n'}
+            <strong style={{color:C.purple}}>ฎ.6543/2561:</strong> รู้แล้วยอมให้แสดงตนเป็นตัวแทน → ต้องรับผิด
+          </Text>
+        </Card>
+
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.blue}}>ม.822 สัตยาบัน ⭐⭐</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตัวแทนทำนอกขอบอำนาจ แต่ตัวการให้<strong>สัตยาบัน</strong>{'\n'}
+                → ผูกพันตัวการ (มีผลย้อนหลัง){'\n'}
+                สัตยาบัน = ยืนยัน/รับรองการกระทำภายหลัง
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.cyan}}>ม.824 ตัวแทนไม่เปิดเผยชื่อตัวการ</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตัวแทนทำนิติกรรมโดยไม่เปิดเผยชื่อตัวการ{'\n'}
+                → ตัวแทน<strong>รับผิดเป็นส่วนตัว</strong>ต่อบุคคลภายนอก{'\n'}
+                เว้นแต่ บุคคลภายนอก<strong>รู้</strong>ว่ามีตัวการอยู่
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'termination',
+    title:'🔚 หมวด 5: ความระงับสิ้นไป — ม.826-832',
+    tags:[['ออกบ่อย','gold']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message="สัญญาตัวแทนระงับสิ้นไปได้ 4 เหตุ ตาม ม.826" style={{marginBottom:16}} />
+        <Table dataSource={[
+          {k:'(1)',e:'ตัวการ/ตัวแทนตาย',d:'ม.826(1) ตายฝ่ายใดฝ่ายหนึ่ง → สัญญาระงับ (เพราะเป็นสัญญาเฉพาะตัว)',t:'red'},
+          {k:'(2)',e:'ตัวการ/ตัวแทนล้มละลาย',d:'ม.826(2) ล้มละลาย → ระงับ',t:'red'},
+          {k:'(3)',e:'ตัวการ/ตัวแทนเป็นผู้ไร้ฯ/เสมือนไร้ฯ',d:'ม.826(3) ศาลสั่งเป็นผู้ไร้ความสามารถหรือเสมือนไร้ความสามารถ → ระงับ',t:'red'},
+          {k:'(4)',e:'ถอนตัวแทน / ตัวแทนบอกเลิก',d:'ม.826(4) + ม.827: ตัวการถอนตัวแทนได้ทุกเมื่อ / ตัวแทนบอกเลิกได้ทุกเมื่อ',t:'gold'},
+        ]} columns={[
+          {title:'เหตุ',dataIndex:'k',width:55,render:(v,r)=><Tag color={r.t} style={{fontWeight:700}}>{v}</Tag>},
+          {title:'สาเหตุ',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'รายละเอียด',dataIndex:'d',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.red}}>ม.828 ตัวแทนตายแต่ต้องทำต่อ</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตัวแทนตาย → ทายาทต้อง<strong>บอกกล่าว</strong>ตัวการโดยไม่ชักช้า{'\n'}
+                + ต้องทำการอันสมควรเพื่อ<strong>ป้องกันความเสียหาย</strong>
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.green}}>ม.831-832 ความระงับไม่กระทบบุคคลภายนอก</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                การระงับของสัญญาตัวแทน → <strong>ใช้ยันบุคคลภายนอกผู้สุจริตไม่ได้</strong>{'\n'}
+                ม.832: ถ้าตัวแทนไม่รู้ว่าสัญญาระงับ → การกระทำของตัวแทนยังผูกพันตัวการ
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'commission-agent',
+    title:'💼 เกร็งข้อ 2: ตัวแทนค้าต่าง — ม.833,834,835,838,839,842',
+    tags:[['เกร็งข้อ 2','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="error" showIcon message="⚠️ เกร็งข้อสอบ ข้อ 2 — ม.833,834,835,838,839,842 ตัวแทนค้าต่าง" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>ม.833 นิยามตัวแทนค้าต่าง ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2.2}}>
+            <strong style={{color:C.green}}>ม.833:</strong> ตัวแทนค้าต่าง = ตัวแทนที่ทำการ<strong>ซื้อ/ขายทรัพย์สิน</strong> หรือ รับจัดทำ<strong>กิจการค้าขาย</strong> โดยทำการ <Tag color="success">ในนามของตนเอง</Tag>{'\n'}
+            <strong style={{color:C.green}}>จุดต่าง:</strong> ตัวแทนค้าต่าง → ทำในนาม<strong>ตนเอง</strong> → ผูกพันตัวแทนค้าต่างกับบุคคลภายนอก{'\n'}
+            ตัวแทนธรรมดา → ทำในนาม<strong>ตัวการ</strong> → ผูกพันตัวการกับบุคคลภายนอก
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.purple}}>ม.834 สิทธิและหน้าที่ตัวแทนค้าต่าง ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2.2}}>
+            <strong style={{color:C.purple}}>ม.834:</strong> ตัวแทนค้าต่าง มี<strong>สิทธิและหน้าที่</strong>ต่อคู่สัญญาอีกฝ่ายหนึ่ง <Tag color="purple">ในนามตนเอง</Tag>{'\n'}
+            <strong style={{color:C.purple}}>หลัก:</strong> ตัวแทนค้าต่าง<strong>ได้สิทธิ</strong>และ<strong>ต้องรับหน้าที่</strong>เฉพาะตัวตามสัญญาที่ทำกับบุคคลภายนอก{'\n'}
+            <strong style={{color:C.purple}}>ผล:</strong> บุคคลภายนอกฟ้องตัวแทนค้าต่างได้โดยตรง / ตัวแทนค้าต่างฟ้องบุคคลภายนอกได้โดยตรง{'\n'}
+            <strong style={{color:C.purple}}>⚡ ตัวการกับบุคคลภายนอก:</strong> ไม่มีนิติสัมพันธ์ต่อกันโดยตรง (เว้นแต่กฎหมายบัญญัติเป็นอย่างอื่น)
+          </Text>
+        </Card>
+
+        <Table dataSource={[
+          {k:'ม.835',e:'ขายต่ำกว่าราคา ⭐⭐⭐',d:'ตัวแทนค้าต่างขายทรัพย์ต่ำกว่าราคาที่ตัวการกำหนด → ต้องชดใช้ส่วนที่ขาด ให้ตัวการ เว้นแต่ พิสูจน์ได้ว่าถ้าไม่ขายในราคานั้นจะเสียหายมากกว่า + ไม่สามารถถามตัวการได้ทัน',t:'red'},
+          {k:'ม.838',e:'ซื้อ/ขายเอง ⭐⭐⭐',d:'ถ้าทรัพย์สินที่สั่งให้ซื้อ/ขาย มีราคาตลาด → ตัวแทนค้าต่างอาจซื้อเอาทรัพย์ไว้เอง หรือเอาทรัพย์ตนเองมาส่งมอบได้ / ราคา = ราคาตลาดขณะทำสัญญา / ยังมีสิทธิได้บำเหน็จ',t:'gold'},
+          {k:'ม.839',e:'ล้มละลาย ⭐⭐⭐',d:'ถ้าบุคคลภายนอก(คู่สัญญา)ไม่ชำระหนี้ → ตัวแทนค้าต่างต้องรับผิดชอบเอง เว้นแต่ มีข้อตกลงยกเว้นไว้ หรือ เป็นทางปฏิบัติในท้องถิ่นที่ตัวแทนค้าต่างไม่ต้องรับผิด',t:'red'},
+          {k:'ม.842',e:'ระงับ — ตัวการถอนก่อนทำเสร็จ ⭐⭐⭐',d:'ตัวการถอนตัวแทนค้าต่างก่อนกิจการเสร็จ → ตัวแทนค้าต่างมีสิทธิเรียกบำเหน็จตามส่วนของกิจการที่ทำไปแล้ว + เรียกค่าเสียหาย (ถ้ามี)',t:'purple'},
+        ]} columns={[
+          {title:'มาตรา',dataIndex:'k',width:70,render:(v,r)=><Tag color={r.t} style={{fontWeight:600}}>{v}</Tag>},
+          {title:'หลัก',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'รายละเอียด',dataIndex:'d',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.blue}}>ม.840 สิทธิยึดหน่วง</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตัวแทนค้าต่างมีสิทธิ<strong>ยึดหน่วง</strong>ทรัพย์สินของตัวการที่อยู่ในครอบครอง
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.cyan}}>ม.841 บุริมสิทธิ</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ตัวแทนค้าต่างมี<strong>บุริมสิทธิ</strong>เหนือทรัพย์สินของตัวการ เพื่อเอาบำเหน็จ+ค่าใช้จ่าย
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'broker',
+    title:'🏷️ เกร็งข้อ 3: นายหน้า — ม.845,846',
+    tags:[['เกร็งข้อ 3','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message={<span><strong>ม.845</strong> นายหน้า = บุคคลผู้ชี้ช่องให้ได้เข้าทำสัญญา หรือ จัดการให้ได้ทำสัญญากัน</span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>ม.845 สิทธิได้บำเหน็จนายหน้า ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2.2}}>
+            <strong style={{color:C.green}}>เงื่อนไข 2 ประการ:</strong>{'\n'}
+            <strong>1. ชี้ช่อง</strong> = แนะนำให้รู้จักกัน / <strong>จัดการ</strong> = เจรจาจนสำเร็จ{'\n'}
+            <strong>2. สัญญาได้ทำกันสำเร็จ</strong> เนื่องจากการชี้ช่อง/จัดการของนายหน้า{'\n'}
+            → ได้รับ <Tag color="success">บำเหน็จ</Tag> ตามที่ตกลง{'\n'}
+            <strong style={{color:C.green}}>ม.845 ว.2:</strong> ถ้าสัญญามี<strong>เงื่อนไข</strong> → สิทธิเรียกบำเหน็จเกิดเมื่อเงื่อนไขสำเร็จ
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.red}}>ม.846 นายหน้าเปิดเผยชื่อ ⭐⭐⭐</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2.2}}>
+            <strong style={{color:C.red}}>หลัก:</strong> นายหน้าเป็น<strong>ตัวแทนของฝ่ายที่ตั้ง</strong>{'\n'}
+            <strong style={{color:C.red}}>ม.846 ว.1:</strong> ถ้านายหน้าไม่เปิดเผยชื่อตัวการ → <Tag color="error">นายหน้ารับผิดเป็นส่วนตัว</Tag>{'\n'}
+            <strong style={{color:C.red}}>ม.846 ว.2:</strong> ถ้านายหน้า<strong>ไม่เปิดเผยชื่อ</strong>ของผู้ที่ตนเป็นนายหน้าให้ → รับผิดเป็นส่วนตัว{'\n'}
+            <strong style={{color:C.red}}>ข้อสอบ 1/68 ข้อ 3:</strong> นายกะทิ → นายหน้าไม่เปิดเผยชื่อนางสาวพิม → รับผิดเป็นส่วนตัว
+          </Text>
+        </Card>
+
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.purple}}>ม.847 ค่าใช้จ่ายนายหน้า</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                นายหน้า<strong>ไม่มีสิทธิเรียกค่าใช้จ่าย</strong>{'\n'}
+                เว้นแต่จะได้ตกลงกันไว้
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.cyan}}>ม.848-849 ข้อห้ามนายหน้า</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                <strong>ม.848:</strong> นายหน้าทำผิดหน้าที่ → <Tag color="error">หมดสิทธิบำเหน็จ</Tag> + ชดใช้ค่าเสียหาย{'\n'}
+                <strong>ม.849:</strong> นายหน้ารับทั้งสองฝ่าย → มีสิทธิเรียกบำเหน็จจากทั้ง 2 ฝ่าย คนละครึ่ง
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'exam-pattern',
+    title:'📊 สถิติข้อสอบ — มาตราที่ออกบ่อย',
+    tags:[['สำคัญมาก','volcano']],
+    content:()=>(
+      <div>
+        <Alert type="error" showIcon message="🔥 เกร็งมาตราข้อสอบ: ข้อ 1 → ม.798,801,805,807,812,820,823 | ข้อ 2 → ม.833,834,835,838,839,842 | ข้อ 3 → ม.845,846" style={{marginBottom:16}} />
+        <Table dataSource={[
+          {k:'ม.798',n:'🔥 แบบ/หลักฐานตัวแทน',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.801',n:'🔥 ตัวแทนทั่วไป',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.805',n:'🔥 ห้ามทำนิติกรรมกับตัวเอง',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.807',n:'🔥 ทำตามคำสั่ง',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.812',n:'🔥 ชดใช้ค่าเสียหาย',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.820',n:'🔥 ตัวแทนโดยชอบ→ผูกพันตัวการ',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.823',n:'🔥 นอกขอบอำนาจ→รับผิดส่วนตัว',freq:'เกร็งข้อ 1',star:3,tag:'volcano'},
+          {k:'ม.833',n:'🔥 นิยามตัวแทนค้าต่าง',freq:'เกร็งข้อ 2',star:3,tag:'gold'},
+          {k:'ม.834',n:'🔥 สิทธิหน้าที่ค้าต่าง',freq:'เกร็งข้อ 2',star:3,tag:'gold'},
+          {k:'ม.835',n:'🔥 ขายต่ำกว่าราคา',freq:'เกร็งข้อ 2',star:3,tag:'gold'},
+          {k:'ม.838',n:'🔥 ซื้อ/ขายเอง (ราคาตลาด)',freq:'เกร็งข้อ 2',star:3,tag:'gold'},
+          {k:'ม.839',n:'🔥 บุคคลภายนอกไม่ชำระ→ค้าต่างรับผิด',freq:'เกร็งข้อ 2',star:3,tag:'gold'},
+          {k:'ม.842',n:'🔥 ถอนก่อนเสร็จ→บำเหน็จตามส่วน',freq:'เกร็งข้อ 2',star:3,tag:'gold'},
+          {k:'ม.845',n:'🔥 นายหน้า→บำเหน็จ',freq:'เกร็งข้อ 3',star:3,tag:'purple'},
+          {k:'ม.846',n:'🔥 ไม่เปิดเผยชื่อ→รับผิดส่วนตัว',freq:'เกร็งข้อ 3',star:3,tag:'purple'},
+        ]} columns={[
+          {title:'มาตรา',dataIndex:'k',width:80,render:v=><Tag color="gold" style={{fontWeight:600}}>{v}</Tag>},
+          {title:'หัวข้อ',dataIndex:'n',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'เกร็ง',dataIndex:'freq',render:(v,r)=><Tag color={r.tag} style={{fontSize:11}}>{v}</Tag>},
+          {title:'ดาว',dataIndex:'star',render:v=><span style={{color:'#C4A35A'}}>{'⭐'.repeat(v)}</span>}
+        ]} pagination={false} size="small" rowKey="k" />
+      </div>
+    )
+  },
+  {
+    key:'lecturers',
+    title:'👨‍🏫 อาจารย์ออกข้อสอบ + แนวทาง',
+    tags:[['เกร็งสำคัญ','gold']],
+    content:()=>(
+      <div>
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,marginBottom:12}}>
+              <Text strong style={{color:C.cyan}}>ผศ.ดร.ชนภร สุมนะเศรษฐกุล</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ออกข้อ 1 (1/66, 1/68){'\n'}
+                เน้น: ม.797,798,800,820,823 ตัวแทนเฉพาะการ{'\n'}
+                ชอบถาม "นิติกรรมมีผลผูกพันตัวการหรือไม่"
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:12}}>
+              <Text strong style={{color:C.purple}}>ผศ.ดร.ปรีดา โชติมานนท์</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ออกข้อ 2 (1/66, 1/68, ซ.2/67){'\n'}
+                เน้น: ม.845,846 นายหน้า + ม.810,811 หน้าที่ตัวแทน{'\n'}
+                ชอบถาม "นายหน้าได้บำเหน็จหรือไม่"
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,marginBottom:12}}>
+              <Text strong style={{color:C.green}}>อ.โชติชวัล โชติกเสถียร</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ออกข้อ 1 (ซ.2/67){'\n'}
+                เน้น: ม.802 เหตุฉุกเฉิน + ม.805 ห้ามทำกับตัวเอง{'\n'}
+                ชอบถาม "ตัวแทนกระทำได้โดยชอบหรือไม่"
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,marginBottom:12}}>
+              <Text strong style={{color:C.blue}}>อ.นันทพล พุทธพงษ์ / อ.กมเลศน์ กอสกุล</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ออกข้อ 3{'\n'}
+                เน้น: ม.821 ตัวแทนเชิด + ม.845-849 นายหน้า{'\n'}
+                ชอบถาม "เรียกค่าบำเหน็จได้หรือไม่"
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+];
+
+// ═══ Flashcard data ═══
+const flashcards = [
+  // ══ จากข้อสอบจริง ══
+  {q:'[ข้อสอบ 1/66 ข้อ 1] นางสาวขนมหวาน ออกแบบเครื่องประดับแบรนด์ "หวานหวาน" มอบหมายให้นายบันเงินเป็นตัวแทนขาย ร้านกาแฟ "เป็นหนึ่ง" ตกลงซื้อ 5 รายการ ราคา 50,000 บาท แต่จริงเขียนราคา 47,500 บาท ทุกร้านที่ทำ การกระทำของนายบันเงินผูกพันนางสาวขนมหวานหรือไม่?',a:'ม.797 + ม.820 + ม.823',d:'นายบันเงิน=ตัวแทน(ม.797) ทำภายในขอบอำนาจ→ผูกพันตัวการ(ม.820) แต่ถ้าลดราคาโดยไม่ได้รับอนุญาต→นอกขอบอำนาจ(ม.823)→ตัวแทนรับผิดส่วนตัวในส่วนต่าง',star:3,exam:true},
+
+  {q:'[ข้อสอบ 1/66 ข้อ 2] นายกันยา(นักเขียน "จ้าวป่า") มอบนิยายดังให้นายดุลาฝากขายหนังสือ 500 เล่ม เล่มละ 250 บาท นายดุลาตกลงลดราคาให้ลูกค้าเหลือเล่มละ 50 บาท นายกันยาเรียกให้นายดุลาชำระค่าหนังสือทั้งหมดได้หรือไม่?',a:'ม.845 + ม.846',d:'นายดุลา=นายหน้า/ตัวแทนค้าต่าง ขายต่ำกว่าราคากำหนด → ม.835 ต้องชดใช้ส่วนต่าง + ม.803 ว.2 ทำนอกขอบอำนาจไม่มีสิทธิบำเหน็จ',star:3,exam:true},
+
+  {q:'[ข้อสอบ 1/66 ข้อ 3] บริษัท ซัดไสคอนสตรัคชั่น มอบอำนาจให้ ดร.แมกไกว์ ซื้อที่ดินไม่เกิน 20 ล้านบาท มอบหมายปากเปล่า+หนังสือ นางสาวโรสเห็นโฆษณาที่ดิน → ดร.แมกไกว์ทำสัญญาจะซื้อจะขายที่ดิน 18 ล้าน นางสาวโรสได้รับบำเหน็จนายหน้าหรือไม่?',a:'ม.798 + ม.821 + ม.845',d:'ม.798 ซื้อที่ดินต้องมีหลักฐานเป็นหนังสือ → ดร.แมกไกว์มีหนังสือมอบอำนาจ → ม.820 ผูกพันบริษัท / นางสาวโรส=นายหน้า(ม.845) ชี้ช่องจนสำเร็จ → ได้บำเหน็จ',star:3,exam:true},
+
+  {q:'[ข้อสอบ 1/68 ข้อ 1] นางสาวเขียวหวาน เช่าที่ดิน 10 ไร่ ระยะ 3 ปี มอบหมายด้วยวาจาให้นายสัมจัดหาที่เช่า นายสัมจัดไปเจอที่ดินดี ทำสัญญาเช่า แต่เอาไปทำร้านกาแฟ สัญญาเช่าผูกพันเขียวหวานหรือไม่?',a:'ม.797 + ม.798 + ม.800 + ม.820',d:'ม.798 สัญญาเช่า 3 ปี ต้องทำเป็นหนังสือ → ตั้งตัวแทนต้องมีหลักฐานเป็นหนังสือ แต่มอบด้วยวาจา → อาจฟ้องบังคับไม่ได้ / ม.800 ตัวแทนเฉพาะการ(หาที่เช่า) → เอาไปทำร้านกาแฟ=นอกขอบอำนาจ ม.823',star:3,exam:true},
+
+  {q:'[ข้อสอบ 1/68 ข้อ 2] นายบี เจ้าของร้านขายโทรศัพท์ นายเอ ฝาก iPhone 15 Pro Max ขายราคา 30,000 บาท นายซีมาขอซื้อ 25,000 ขายไป นายเอเรียกให้นายบีชำระราคาเต็ม 30,000 ได้หรือไม่?',a:'ม.797 + ม.810 + ม.803',d:'นายบี=ตัวแทนขาย ขายต่ำกว่าราคากำหนด → ม.810 ต้องส่งเงินคืนตัวการ + ม.812 ชดใช้ส่วนต่าง 5,000 / นายเอเรียกราคาเต็ม 30,000 ได้',star:3,exam:true},
+
+  {q:'[ข้อสอบ 1/68 ข้อ 3] นายกะทิ เช่าซื้อรถ จัดการหาผู้เช่าซื้อ ต่อมานางสาวพิมซื้อ แต่นายกะทิไม่เปิดเผยชื่อนางสาวพิม ค่าเช่าซื้องวดที่ 2 ค้าง → นายกะทิต้องรับผิดหรือไม่?',a:'ม.845 + ม.846',d:'นายกะทิ=นายหน้า(ม.845) ไม่เปิดเผยชื่อผู้ซื้อ(นางสาวพิม) → ม.846 นายหน้ารับผิดเป็นส่วนตัว',star:3,exam:true},
+
+  {q:'[ข้อสอบ ซ.2/67 ข้อ 1] นายเอง มอบอำนาจเป็นหนังสือให้นายโชค เป็นตัวแทนบริหารโรงงานเครื่องจักร เกิดเพลิงไหม้ ติดต่อนายเองไม่ได้ นายโชคเช่าเครื่องจักร 1 เครื่อง + เบิกเงิน 50,000 จากบัญชีตัวเอง ฝ่ายบัญชีปฏิเสธ นายโชคยกข้อต่อสู้ได้หรือไม่?',a:'ม.797 + ม.802 + ม.805 + ม.820',d:'ม.802 เหตุฉุกเฉิน(เพลิงไหม้+ติดต่อไม่ได้) → ตัวแทนมีอำนาจทำการสมควร / แต่เบิกเงินเข้าบัญชีตัวเอง → ม.805 ห้ามทำนิติกรรมกับตัวเอง? ต้องดูว่าเป็นเรื่องนอกขอบอำนาจหรือไม่',star:3,exam:true},
+
+  {q:'[ข้อสอบ ซ.2/67 ข้อ 2] นายปกป้อง มอบหมายนายป้องกัน ช่วยเก็บค่าเช่า มอบหมายปากเปล่า+หนังสือ นายปกป้องตาย สัญญาตัวแทนระงับหรือไม่? ระหว่างเก็บค่าเช่าภายหลัง นายป้องกันมีสิทธิอะไร?',a:'ม.826 + ม.828 + ม.832',d:'ม.826(1) ตัวการตาย → สัญญาระงับ / แต่ ม.828 ต้องบอกกล่าวโดยไม่ชักช้า + ทำการสมควรป้องกันเสียหาย / ม.832 ถ้าตัวแทนไม่รู้ว่าตัวการตาย → การกระทำยังผูกพัน',star:3,exam:true},
+
+  {q:'[ข้อสอบ ซ.2/67 ข้อ 3] นายวุ่นเส้น โพสต์ขายที่ดิน 100 ล้าน บน Facebook นางสาวมาลี เห็นโฆษณา ติดต่อนายวุ่นเส้น ชี้ช่องจนขายได้ นายวุ่นเส้นต้องจ่ายค่าบำเหน็จนายหน้าหรือไม่?',a:'ม.845 + ม.846',d:'นางสาวมาลี=นายหน้า(ม.845) ชี้ช่อง+จัดการจนสัญญาสำเร็จ → ได้รับบำเหน็จ / ม.846 ถ้าไม่เปิดเผยชื่อ → ต้องรับผิดเป็นส่วนตัว / ม.849 ถ้ารับทั้งสองฝ่าย → เรียกได้คนละครึ่ง',star:3,exam:true},
+
+  // ══ เกร็งข้อสอบ — มาตราที่เกร็ง ══
+  {q:'[เกร็ง ข้อ 1] ม.798+801+805+807+812+820+823 → ตัวแทนทั่วไป ทำนอกขอบอำนาจ ม.801 ขายทรัพย์ของตัวการ ทำได้หรือไม่? ม.805 ตัวแทนซื้อทรัพย์ตัวการไว้เอง ทำได้หรือไม่?',a:'ม.801+805+820+823',d:'ม.801 ตัวแทนทั่วไปทำได้เฉพาะจัดการปกติ ห้ามขาย → ถ้าขาย=นอกขอบอำนาจ ม.823 ไม่ผูกพันตัวการ / ม.805 ห้ามทำนิติกรรมกับตัวเอง → ถ้าซื้อไว้เอง=ผิด ม.805 เว้นแต่ตัวการยินยอม / ม.807 ต้องทำตามคำสั่ง / ม.812 ทำเสียหาย→ชดใช้',star:3,exam:true},
+  {q:'[เกร็ง ข้อ 1] ม.798 ตั้งตัวแทนให้ขายที่ดิน มอบด้วยวาจา → มีผลอย่างไร?',a:'ม.798 → ต้องมีหลักฐานเป็นหนังสือ',d:'ขายที่ดิน=กิจการที่กฎหมายบังคับให้ทำเป็นหนังสือ(ม.456) → ตั้งตัวแทนต้องมีหลักฐานเป็นหนังสือ(ม.798) → มอบด้วยวาจา=ไม่มีหลักฐาน→ฟ้องบังคับไม่ได้',star:3,exam:true},
+  {q:'[เกร็ง ข้อ 1] ม.820 vs ม.823 → ตัวแทนทำภายในขอบอำนาจ ผลต่างจากนอกขอบอำนาจอย่างไร?',a:'ม.820 ผูกพัน / ม.823 ไม่ผูกพัน',d:'ม.820 ภายในขอบอำนาจ → ผูกพันตัวการโดยตรง ตัวแทนไม่ต้องรับผิดส่วนตัว / ม.823 นอกขอบอำนาจ → ไม่ผูกพันตัวการ ตัวแทนรับผิดเป็นส่วนตัว เว้นแต่บุคคลภายนอกรู้ / ม.822 สัตยาบัน→ผูกพันย้อนหลัง',star:3,exam:true},
+
+  {q:'[เกร็ง ข้อ 2] ม.833+834 → ตัวแทนค้าต่างขายทรัพย์ของตัวการ ใครเป็นคู่สัญญากับบุคคลภายนอก?',a:'ม.833+834 → ตัวแทนค้าต่าง',d:'ม.833 ตัวแทนค้าต่างทำในนามตนเอง / ม.834 ตัวแทนค้าต่างมีสิทธิและหน้าที่ต่อคู่สัญญาในนามตนเอง → ตัวแทนค้าต่างเป็นคู่สัญญา ไม่ใช่ตัวการ / ตัวการกับบุคคลภายนอกไม่มีนิติสัมพันธ์โดยตรง',star:3,exam:true},
+  {q:'[เกร็ง ข้อ 2] ม.835 → ตัวแทนค้าต่างขายต่ำกว่าราคาที่ตัวการกำหนด ต้องรับผิดหรือไม่?',a:'ม.835 → ชดใช้ส่วนที่ขาด',d:'หลัก: ต้องชดใช้ส่วนที่ขาดให้ตัวการ / ข้อยกเว้น: พิสูจน์ได้ว่า(1)ถ้าไม่ขายในราคานั้นจะเสียหายมากกว่า + (2)ไม่สามารถถามตัวการได้ทัน → ไม่ต้องชดใช้',star:3,exam:true},
+  {q:'[เกร็ง ข้อ 2] ม.838 → ตัวแทนค้าต่างซื้อเอาทรัพย์ไว้เอง/เอาทรัพย์ตนเองมาส่ง ทำได้ไหม?',a:'ม.838 → ได้ ถ้ามีราคาตลาด',d:'ถ้าทรัพย์สินมีราคาตลาด → ตัวแทนค้าต่างซื้อเอาไว้เอง/เอาทรัพย์ตนเองมาส่งมอบได้ / ราคา=ราคาตลาดขณะทำสัญญา / ยังมีสิทธิได้บำเหน็จ',star:3,exam:true},
+  {q:'[เกร็ง ข้อ 2] ม.839 → บุคคลภายนอกไม่ชำระหนี้ ตัวแทนค้าต่างต้องรับผิดหรือไม่?',a:'ม.839 → ต้องรับผิด (หลัก)',d:'หลัก: ตัวแทนค้าต่างต้องรับผิดชอบเอง / ข้อยกเว้น: มีข้อตกลงยกเว้น หรือ เป็นทางปฏิบัติในท้องถิ่นที่ไม่ต้องรับผิด → เป็นจุดต่างสำคัญจากตัวแทนธรรมดา',star:3,exam:true},
+  {q:'[เกร็ง ข้อ 2] ม.842 → ตัวการถอนตัวแทนค้าต่างก่อนกิจการเสร็จ ค้าต่างมีสิทธิอะไร?',a:'ม.842 → บำเหน็จตามส่วน+ค่าเสียหาย',d:'ตัวแทนค้าต่างมีสิทธิ: (1) เรียกบำเหน็จตามส่วนของกิจการที่ทำไปแล้ว (2) เรียกค่าเสียหาย(ถ้ามี) → คุ้มครองตัวแทนค้าต่างมากกว่าตัวแทนธรรมดา',star:3,exam:true},
+
+  {q:'[เกร็ง ข้อ 3] ม.845+846 → นายหน้าชี้ช่องจนทำสัญญาสำเร็จ แต่ไม่เปิดเผยชื่อ ผลเป็นอย่างไร?',a:'ม.845 บำเหน็จ + ม.846 รับผิดส่วนตัว',d:'ม.845 ชี้ช่อง/จัดการจนสัญญาสำเร็จ → มีสิทธิได้บำเหน็จ / แต่ ม.846 ไม่เปิดเผยชื่อผู้ตั้ง → นายหน้ารับผิดเป็นส่วนตัวต่อคู่สัญญาอีกฝ่าย',star:3,exam:true},
+
+  // ══ หลักกฎหมายทั่วไป ══
+  {q:'สัญญาตัวแทน คือสัญญาอะไร? (นิยาม)',a:'มาตรา 797',d:'สัญญาซึ่งบุคคลคนหนึ่ง(ตัวแทน) มีอำนาจทำการแทนบุคคลอีกคนหนึ่ง(ตัวการ) และตกลงจะทำการนั้น',star:2,exam:false},
+  {q:'สัญญาตัวแทนต้องทำเป็นหนังสือหรือไม่?',a:'ม.798 — ไม่ต้อง (หลัก)',d:'หลัก: ตั้งด้วยวาจาก็ได้ / ข้อยกเว้น: ถ้ากิจการที่มอบหมายต้องทำเป็นหนังสือ → ตั้งตัวแทนก็ต้องมีหลักฐานเป็นหนังสือ',star:3,exam:false},
+  {q:'ผู้เยาว์เป็นตัวแทนได้หรือไม่?',a:'ม.799 — ได้',d:'ผู้เยาว์เป็นตัวแทนได้ เพราะตัวแทนทำนิติกรรมในนามตัวการ ผลผูกพันตัวการ',star:2,exam:false},
+  {q:'ตัวแทนเฉพาะการ vs ตัวแทนทั่วไป ต่างกันอย่างไร?',a:'ม.800 vs ม.801',d:'เฉพาะการ(ม.800): มีอำนาจเฉพาะกิจการที่มอบหมาย / ทั่วไป(ม.801): ทำได้เฉพาะกิจการจัดการงานตามปกติ (ห้ามขาย จำนอง ให้เช่า3ปี+ ฟ้องคดี ประนีประนอม ให้โดยเสน่หา)',star:3,exam:false},
+  {q:'เหตุฉุกเฉิน ตัวแทนทำนอกขอบอำนาจได้ไหม?',a:'ม.802 — ได้',d:'ถ้ามีเหตุฉุกเฉินที่ไม่สามารถขอคำสั่งตัวการได้ทัน → ตัวแทนมีอำนาจทำการอันสมควรเพื่อรักษาประโยชน์ตัวการ',star:3,exam:false},
+  {q:'ตัวแทนมีสิทธิได้บำเหน็จหรือไม่?',a:'ม.803 — ไม่มี (หลัก)',d:'หลัก: ไม่มีสิทธิ เว้นแต่ มีข้อตกลง/ตามธรรมเนียม/ตามพฤติการณ์ / ว.2: ทำนอกขอบอำนาจ→ไม่มีสิทธิ',star:2,exam:false},
+  {q:'ตัวแทนหลายคน ทำอย่างไร?',a:'ม.804 — ทำร่วมกัน',d:'ตั้งตัวแทนหลายคนในกิจการเดียวกัน → ต้องทำร่วมกัน เว้นแต่จะให้อำนาจไว้โดยเฉพาะ',star:1,exam:false},
+  {q:'ตัวแทนทำนิติกรรมกับตัวเองในฐานะตัวแทนได้ไหม?',a:'ม.805 — ห้าม',d:'ห้ามเด็ดขาด เว้นแต่ตัวการยินยอม (ฎ.1980/2505)',star:3,exam:false},
+  {q:'ตัวแทนต้องทำตามคำสั่งตัวการหรือไม่?',a:'ม.807 — ต้อง',d:'ต้องทำตามคำสั่ง ถ้าไม่มีคำสั่ง → ทำตามทางที่ปกติเขาทำกัน',star:2,exam:false},
+  {q:'ตัวแทนช่วง คืออะไร? ทำได้ไหม?',a:'ม.808 — ห้าม (หลัก)',d:'หลัก: ห้ามมอบหมายให้คนอื่นทำแทน(ตัวแทนช่วง) / ข้อยกเว้น: ตัวการยินยอม, จำเป็นเพื่อรักษาประโยชน์ตัวการ',star:2,exam:false},
+  {q:'ตัวแทนได้เงินแทนตัวการ เอาไปใช้เอง → ดอกเบี้ยเท่าไหร่?',a:'ม.811 — 7.5%',d:'ต้องส่งเงินคืนตัวการ + ดอกเบี้ย 7.5% นับแต่วันที่เอาไปใช้',star:2,exam:false},
+  {q:'ตัวแทนทำภายในขอบอำนาจ → ผลเป็นอย่างไร?',a:'ม.820 — ผูกพันตัวการ',d:'ตัวการเป็นคู่สัญญากับบุคคลภายนอกโดยตรง ตัวแทนไม่ต้องรับผิดส่วนตัว',star:3,exam:false},
+  {q:'ตัวแทนเชิด คืออะไร?',a:'ม.821',d:'บุคคลเชิดบุคคลอีกคนออกแสดงเป็นตัวแทน หรือ รู้แล้วยอมให้เขาแสดงตนเป็นตัวแทน → ผูกพันผู้เชิดต่อบุคคลภายนอกผู้สุจริต',star:3,exam:false},
+  {q:'สัตยาบัน คืออะไร? ผลเป็นอย่างไร?',a:'ม.822 — ยืนยันภายหลัง',d:'ตัวแทนทำนอกขอบอำนาจ แต่ตัวการให้สัตยาบัน → ผูกพันตัวการ (มีผลย้อนหลัง)',star:2,exam:false},
+  {q:'ตัวแทนทำนอกขอบอำนาจ → ผลเป็นอย่างไร?',a:'ม.823 — รับผิดส่วนตัว',d:'ไม่ผูกพันตัวการ / ตัวแทนรับผิดเป็นส่วนตัวต่อบุคคลภายนอก (เว้นแต่บุคคลภายนอกรู้)',star:3,exam:false},
+  {q:'ตัวแทนไม่เปิดเผยชื่อตัวการ → ผลเป็นอย่างไร?',a:'ม.824 — รับผิดส่วนตัว',d:'ตัวแทนรับผิดเป็นส่วนตัวต่อบุคคลภายนอก เว้นแต่บุคคลภายนอกรู้ว่ามีตัวการ',star:2,exam:false},
+  {q:'สัญญาตัวแทนระงับสิ้นไปเมื่อใด?',a:'ม.826 — 4 เหตุ',d:'(1)ตาย (2)ล้มละลาย (3)ไร้ความสามารถ (4)ถอน/บอกเลิก',star:2,exam:false},
+  {q:'ตัวแทนค้าต่าง คืออะไร?',a:'ม.833',d:'ตัวแทนที่ซื้อ/ขายทรัพย์สิน หรือรับจัดทำกิจการค้าขาย โดยทำการในนามตนเอง',star:2,exam:false},
+  {q:'นายหน้า คืออะไร? ได้บำเหน็จเมื่อไหร่?',a:'ม.845',d:'ผู้ชี้ช่องให้ได้เข้าทำสัญญา หรือจัดการให้ได้ทำสัญญากัน → ได้บำเหน็จเมื่อสัญญาสำเร็จเนื่องจากการชี้ช่อง/จัดการ',star:3,exam:false},
+  {q:'นายหน้าไม่เปิดเผยชื่อผู้ตั้ง → ผลเป็นอย่างไร?',a:'ม.846 — รับผิดส่วนตัว',d:'นายหน้ารับผิดเป็นส่วนตัวต่อคู่สัญญาอีกฝ่าย',star:3,exam:false},
+  {q:'นายหน้ามีสิทธิเรียกค่าใช้จ่ายหรือไม่?',a:'ม.847 — ไม่มี (หลัก)',d:'หลัก: ไม่มีสิทธิเรียกค่าใช้จ่าย เว้นแต่ได้ตกลงกันไว้',star:2,exam:false},
+  {q:'นายหน้าทำผิดหน้าที่ → ผลเป็นอย่างไร?',a:'ม.848 — หมดสิทธิบำเหน็จ',d:'หมดสิทธิเรียกบำเหน็จ + ต้องชดใช้ค่าเสียหาย',star:2,exam:false},
+  {q:'นายหน้ารับทั้งสองฝ่าย → บำเหน็จเป็นอย่างไร?',a:'ม.849 — คนละครึ่ง',d:'มีสิทธิเรียกบำเหน็จจากทั้ง 2 ฝ่าย คนละครึ่ง',star:2,exam:false},
+];
+
+// ═══ Quick Cards (Brain-Optimized) ═══
+const quickSections = [
+  {divider:'🧠 คำย่อช่วยจำ (Mnemonic)'},
+  {s:'ตทอ',t:'โครงสร้าง LAW2111',b:'ต=ตัวแทน(ม.797-832) ท=ตัวแทนค้าต่าง(ม.833-844) อ=นายหน้า(ม.845-849)',type:'mnem'},
+  {s:'ฉพท',t:'ม.800-802 อำนาจตัวแทน 3 แบบ',b:'ฉ=เฉพาะการ(ม.800) พ=ปกติ/ทั่วไป(ม.801) ท=ฉุกเฉิน(ม.802)',type:'mnem'},
+  {s:'คดช',t:'ม.810-812 หน้าที่ตัวแทน 3 อย่าง',b:'ค=คืนทรัพย์(ม.810) ด=ดอกเบี้ย7.5%(ม.811) ช=ชดใช้เสียหาย(ม.812)',type:'mnem'},
+  {s:'ตลไถ',t:'ม.826 เหตุระงับ 4 ข้อ',b:'ต=ตาย ล=ล้มละลาย ไ=ไร้ความสามารถ ถ=ถอน/บอกเลิก',type:'mnem'},
+  {s:'ชจน',t:'ม.820-824 ผลต่อบุคคลภายนอก',b:'ช=โดยชอบ→ผูกพันตัวการ(820) จ=เชิด→ผูกพัน(821) น=นอกขอบอำนาจ→รับผิดส่วนตัว(823)',type:'mnem'},
+  {s:'845=ชจส',t:'ม.845 นายหน้า',b:'ช=ชี้ช่อง จ=จัดการ ส=สัญญาสำเร็จ → ได้บำเหน็จ',type:'mnem'},
+
+  {divider:'🔗 Visual Flow (สายโซ่เหตุการณ์)'},
+  {s:'Flow 1',t:'ตัวแทนโดยชอบ',b:'ตั้งตัวแทน(797) → มอบอำนาจ(798แบบ/หลักฐาน) → ทำภายในขอบอำนาจ → ม.820 ผูกพันตัวการ → ตัวการเป็นคู่สัญญา',type:'flow'},
+  {s:'Flow 2',t:'ตัวแทนนอกขอบอำนาจ',b:'ตั้งตัวแทน(797) → ทำนอกขอบอำนาจ → ม.823 ไม่ผูกพันตัวการ → ตัวแทนรับผิดส่วนตัว → เว้นแต่ ม.822 สัตยาบัน → ผูกพันย้อนหลัง',type:'flow'},
+  {s:'Flow 3',t:'ตัวแทนเชิด',b:'ผู้เชิด(ตัวการ) → เชิดให้แสดงเป็นตัวแทน/รู้แล้วยอม(821) → บุคคลภายนอกสุจริต → ผูกพันผู้เชิด → ผู้เชิดต้องรับผิด',type:'flow'},
+  {s:'Flow 4',t:'เหตุฉุกเฉิน ม.802',b:'ตัวแทนเจอเหตุฉุกเฉิน → ติดต่อตัวการไม่ได้ → ม.802 มีอำนาจทำการสมควร → รักษาประโยชน์ตัวการ → ผูกพันตัวการ',type:'flow'},
+  {s:'Flow 5',t:'นายหน้า → บำเหน็จ',b:'รับเป็นนายหน้า(845) → ชี้ช่อง/จัดการ → สัญญาสำเร็จ? → ได้บำเหน็จ / เปิดเผยชื่อ?(846) → ไม่เปิดเผย→รับผิดส่วนตัว / ทำผิดหน้าที่?(848)→หมดสิทธิ',type:'flow'},
+  {s:'Flow 6',t:'ตัวแทนค้าต่าง',b:'ตั้งตัวแทนค้าต่าง(833) → ทำในนามตนเอง → ผูกพันตัวแทนค้าต่างกับบุคคลภายนอก → ขายต่ำกว่าราคา?(835)→ชดใช้ส่วนต่าง / ขายเชื่อ?(836)→รับผิดในราคา',type:'flow'},
+
+  {divider:'⚡ ตารางเปรียบเทียบ (Contrast Pairs)'},
+  {s:'ม.820 vs ม.823',t:'ภายใน vs นอกขอบอำนาจ',b:'820 ภายในขอบ → ผูกพันตัวการ ✓ / 823 นอกขอบ → ไม่ผูกพัน ✗ ตัวแทนรับผิดส่วนตัว',type:'contrast'},
+  {s:'ม.800 vs ม.801',t:'เฉพาะการ vs ทั่วไป',b:'800 เฉพาะการ = อำนาจเฉพาะกิจที่มอบ / 801 ทั่วไป = เฉพาะงานจัดการปกติ (ห้ามขาย จำนอง ให้เช่า3ปี+)',type:'contrast'},
+  {s:'ตัวแทน vs ตัวแทนค้าต่าง',t:'ทำในนามใคร?',b:'ตัวแทนธรรมดา → ทำในนามตัวการ(797) → ผูกพันตัวการ / ตัวแทนค้าต่าง → ทำในนามตนเอง(833) → ผูกพันค้าต่าง(834)',type:'contrast'},
+  {s:'ม.834 vs ม.820',t:'ใครเป็นคู่สัญญา?',b:'ม.834 ค้าต่าง=คู่สัญญาเอง(ทำในนามตนเอง) / ม.820 ตัวแทนธรรมดา=ตัวการเป็นคู่สัญญา(ทำในนามตัวการ)',type:'contrast'},
+  {s:'ม.835 vs ม.838',t:'ขายต่ำ vs ซื้อขายเอง',b:'835 ขายต่ำกว่าราคา→ชดใช้ส่วนต่าง(เว้นแต่จำเป็น) / 838 ซื้อเอาไว้เอง→ได้ถ้ามีราคาตลาด+ยังได้บำเหน็จ',type:'contrast'},
+  {s:'ม.839',t:'ค้าต่างรับผิดเอง vs ตัวแทนธรรมดา',b:'ม.839 บุคคลภายนอกไม่ชำระ→ค้าต่างต้องรับผิดเอง / ตัวแทนธรรมดา→ตัวการรับผิด(เพราะตัวการเป็นคู่สัญญา)',type:'contrast'},
+  {s:'ม.845 vs ม.846',t:'นายหน้าเปิดเผย vs ไม่เปิดเผย',b:'845 ชี้ช่อง+สำเร็จ → บำเหน็จ / 846 ไม่เปิดเผยชื่อ → รับผิดส่วนตัว',type:'contrast'},
+
+  {divider:'📦 Chunking เกร็งข้อสอบ'},
+  {s:'🔥 ข้อ 1',t:'ม.798,801,805,807,812,820,823',b:'ม.798(แบบ/หลักฐาน) → ม.801(ทั่วไป=จัดการปกติ) → ม.805(ห้ามทำกับตัวเอง) → ม.807(ทำตามคำสั่ง) → ม.812(ชดใช้เสียหาย) → ม.820(โดยชอบ=ผูกพัน) → ม.823(นอกขอบ=ส่วนตัว)',type:'chunk'},
+  {s:'🔥 ข้อ 2',t:'ม.833,834,835,838,839,842',b:'ม.833(นิยาม=ทำในนามตนเอง) → ม.834(สิทธิหน้าที่ต่อคู่สัญญา) → ม.835(ขายต่ำ=ชดใช้ส่วนต่าง) → ม.838(ซื้อขายเอง=ได้ถ้ามีราคาตลาด) → ม.839(บุคคลภายนอกไม่ชำระ=ค้าต่างรับผิด) → ม.842(ถอนก่อนเสร็จ=บำเหน็จตามส่วน)',type:'chunk'},
+  {s:'🔥 ข้อ 3',t:'ม.845,846',b:'ม.845(ชี้ช่อง/จัดการ → สัญญาสำเร็จ → บำเหน็จ / ว.2 สัญญามีเงื่อนไข→สิทธิเกิดเมื่อเงื่อนไขสำเร็จ) → ม.846(ไม่เปิดเผยชื่อ → รับผิดเป็นส่วนตัว)',type:'chunk'},
+
+  {divider:'⚡ Quick Reference — มาตราสำคัญ'},
+  {s:'ม.797',t:'นิยามตัวแทน',b:'สัญญาซึ่งตัวแทนมีอำนาจทำการแทนตัวการ และตกลงจะทำการนั้น'},
+  {s:'ม.798',t:'แบบสัญญาตัวแทน',b:'หลัก: ไม่ต้องทำเป็นหนังสือ / ข้อยกเว้น: กิจการต้องทำเป็นหนังสือ→ตั้งตัวแทนต้องมีหลักฐานเป็นหนังสือ'},
+  {s:'ม.799',t:'ผู้เยาว์เป็นตัวแทนได้',b:'เพราะทำในนามตัวการ ผลผูกพันตัวการ'},
+  {s:'ม.800',t:'ตัวแทนเฉพาะการ',b:'มีอำนาจเฉพาะในกิจการที่มอบหมาย'},
+  {s:'ม.801',t:'ตัวแทนทั่วไป',b:'ทำได้เฉพาะจัดการงานปกติ (ห้ามขาย จำนอง เช่า3ปี+ ฟ้อง ประนีประนอม ให้เสน่หา)'},
+  {s:'ม.802',t:'เหตุฉุกเฉิน',b:'ติดต่อตัวการไม่ได้ → ตัวแทนมีอำนาจทำการสมควรเพื่อรักษาประโยชน์'},
+  {s:'ม.803',t:'บำเหน็จตัวแทน',b:'ไม่มีสิทธิ เว้นแต่ตกลง/ธรรมเนียม/พฤติการณ์ / นอกขอบอำนาจ→ไม่มีสิทธิ'},
+  {s:'ม.805',t:'ห้ามทำนิติกรรมกับตัวเอง',b:'ห้ามเด็ดขาด เว้นแต่ตัวการยินยอม'},
+  {s:'ม.808',t:'ห้ามตัวแทนช่วง',b:'หลัก: ห้ามมอบให้คนอื่นทำแทน / ข้อยกเว้น: ตัวการยินยอม, จำเป็น'},
+  {s:'ม.810',t:'คืนทรัพย์สิน',b:'ทรัพย์ที่ได้รับเนื่องจากเป็นตัวแทน ต้องส่งมอบให้ตัวการ'},
+  {s:'ม.811',t:'ดอกเบี้ย 7.5%',b:'เงินที่รับแทนตัวการ เอาไปใช้เอง → ดอกเบี้ย 7.5% นับแต่วันที่ใช้'},
+  {s:'ม.820',t:'ตัวแทนโดยชอบ',b:'ทำภายในขอบอำนาจ → ผูกพันตัวการโดยตรง'},
+  {s:'ม.821',t:'ตัวแทนเชิด',b:'เชิด/รู้ยอม → ผูกพันผู้เชิดต่อบุคคลภายนอกสุจริต'},
+  {s:'ม.822',t:'สัตยาบัน',b:'ตัวการรับรองภายหลัง → ผูกพัน(ย้อนหลัง)'},
+  {s:'ม.823',t:'นอกขอบอำนาจ',b:'ไม่ผูกพันตัวการ → ตัวแทนรับผิดส่วนตัว'},
+  {s:'ม.824',t:'ไม่เปิดเผยชื่อตัวการ',b:'ตัวแทนรับผิดส่วนตัว เว้นแต่บุคคลภายนอกรู้'},
+  {s:'ม.826',t:'ระงับสิ้นไป 4 เหตุ',b:'(1)ตาย (2)ล้มละลาย (3)ไร้ความสามารถ (4)ถอน/บอกเลิก'},
+  {s:'ม.833',t:'🔥 นิยามค้าต่าง',b:'ตัวแทนที่ซื้อขาย/จัดทำกิจการค้าขาย ในนามตนเอง'},
+  {s:'ม.834',t:'🔥 สิทธิหน้าที่ค้าต่าง',b:'มีสิทธิ+หน้าที่ต่อคู่สัญญาในนามตนเอง / ตัวการไม่มีนิติสัมพันธ์กับบุคคลภายนอก'},
+  {s:'ม.835',t:'🔥 ขายต่ำกว่าราคา',b:'ต้องชดใช้ส่วนที่ขาด เว้นแต่พิสูจน์ว่าจำเป็น+ถามตัวการไม่ทัน'},
+  {s:'ม.838',t:'🔥 ซื้อ/ขายเอง',b:'ทรัพย์มีราคาตลาด → ซื้อเอาไว้เอง/เอาทรัพย์ตนมาส่งได้ ราคา=ราคาตลาด ยังได้บำเหน็จ'},
+  {s:'ม.839',t:'🔥 บุคคลภายนอกไม่ชำระ',b:'ค้าต่างต้องรับผิดเอง เว้นแต่ตกลงยกเว้น/ทางปฏิบัติท้องถิ่น'},
+  {s:'ม.842',t:'🔥 ถอนก่อนเสร็จ',b:'ค้าต่างมีสิทธิ: บำเหน็จตามส่วน + ค่าเสียหาย(ถ้ามี)'},
+  {s:'ม.845',t:'🔥 นายหน้า',b:'ชี้ช่อง/จัดการให้ทำสัญญา → สัญญาสำเร็จ → ได้บำเหน็จ'},
+  {s:'ม.846',t:'นายหน้าไม่เปิดเผยชื่อ',b:'ไม่เปิดเผยชื่อผู้ตั้ง → รับผิดเป็นส่วนตัว'},
+  {s:'ม.847',t:'ค่าใช้จ่ายนายหน้า',b:'ไม่มีสิทธิเรียกค่าใช้จ่าย เว้นแต่ตกลง'},
+  {s:'ม.848',t:'ทำผิดหน้าที่',b:'หมดสิทธิบำเหน็จ + ชดใช้ค่าเสียหาย'},
+  {s:'ม.849',t:'รับทั้งสองฝ่าย',b:'บำเหน็จจากทั้ง 2 ฝ่าย คนละครึ่ง'},
+
+  {divider:'🎯 เกร็งข้อสอบ — สูตรตอบ 3 ข้อ'},
+  {s:'🔥 ข้อ 1',t:'ม.798,801,805,807,812,820,823',b:'798(แบบ/หลักฐาน) → 801(ทั่วไป=จัดการปกติเท่านั้น) → 805(ห้ามทำนิติกรรมกับตัวเอง) → 807(ทำตามคำสั่ง) → 812(ทำเสียหาย=ชดใช้) → 820(ภายในขอบ=ผูกพันตัวการ) → 823(นอกขอบ=รับผิดส่วนตัว)',type:'formula'},
+  {s:'🔥 ข้อ 2',t:'ม.833,834,835,838,839,842',b:'833(นิยาม=ทำในนามตนเอง) → 834(สิทธิหน้าที่ในนามตนเอง ตัวการไม่มีนิติสัมพันธ์กับบุคคลภายนอก) → 835(ขายต่ำ=ชดใช้ส่วนต่าง เว้นแต่จำเป็น) → 838(ซื้อขายเอง=ได้ถ้ามีราคาตลาด ยังได้บำเหน็จ) → 839(บุคคลภายนอกไม่ชำระ=ค้าต่างรับผิดเอง) → 842(ถอนก่อนเสร็จ=บำเหน็จตามส่วน+ค่าเสียหาย)',type:'formula'},
+  {s:'🔥 ข้อ 3',t:'ม.845,846',b:'845(ชี้ช่อง/จัดการ → สัญญาสำเร็จ → บำเหน็จ / ว.2 เงื่อนไข→สิทธิเกิดเมื่อสำเร็จ) → 846(ว.1 ไม่เปิดเผยชื่อตัวการ→รับผิดส่วนตัว / ว.2 ไม่เปิดเผยชื่อผู้ตั้ง→รับผิดส่วนตัว)',type:'formula'},
+
+  {divider:'⏱️ สูตรจำ 30 วินาที'},
+  {s:'📋 ข้อ 1',t:'ตัวแทน 7 มาตรา',b:'798(แบบ) → 801(ทั่วไป=ห้ามขาย จำนอง เช่า3ปี+) → 805(ห้ามทำกับตัวเอง) → 807(ทำตามคำสั่ง) → 812(ชดใช้) → 820(โดยชอบ=ผูกพัน) → 823(นอกขอบ=ส่วนตัว)',type:'formula'},
+  {s:'💼 ข้อ 2',t:'ค้าต่าง 6 มาตรา',b:'833(นิยาม=นามตนเอง) → 834(สิทธิหน้าที่=นามตนเอง) → 835(ขายต่ำ=ชดใช้) → 838(ซื้อเอง=ราคาตลาด) → 839(ภายนอกไม่ชำระ=ค้าต่างรับผิด) → 842(ถอน=ตามส่วน)',type:'formula'},
+  {s:'🏷️ ข้อ 3',t:'นายหน้า 2 มาตรา',b:'845(ชี้ช่อง+จัดการ+สำเร็จ = บำเหน็จ) → 846(ไม่เปิดเผยชื่อ = รับผิดส่วนตัว)',type:'formula'},
+  {s:'📝 โครงสร้างตอบ',t:'ทุกข้อต้องมี 4 ส่วน',b:'1.หลักกฎหมาย(ยกมาตรา) → 2.วินิจฉัย(ปรับข้อเท็จจริงเข้ากับกฎหมาย) → 3.สรุป(ตอบคำถาม) → 4.เหตุผล(เพราะ...)',type:'formula'},
+];
+
+// ════════════════════════════════════════════
+// COMPONENTS
+// ════════════════════════════════════════════
+
+function SummaryTab() {
+  return summaryData.map(s=>(
+    <Card key={s.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14,marginBottom:16,boxShadow:'0 1px 6px rgba(61,50,41,0.04)'}}
+      title={<Flex align="center" gap={8} wrap="wrap">
+        <Text strong style={{color:C.amberDark,fontSize:15}}>{s.title}</Text>
+        {s.tags && s.tags.map(([l,c],i)=><Tag key={i} color={c} style={{fontSize:11}}>{l}</Tag>)}
+      </Flex>}
+      headStyle={{borderBottom:`1px solid ${C.border}`,background:C.surface}}
+    >{s.content()}</Card>
+  ));
+}
+
+function Stars({n}){return <span style={{color:'#C4A35A',fontSize:14,letterSpacing:2}}>{'⭐'.repeat(n)}</span>;}
+
+function FlashcardTab() {
+  const [mode,setMode]=useState('all');
+  const getFiltered=m=>{
+    if(m==='exam') return flashcards.filter(c=>c.exam);
+    if(m==='star3') return flashcards.filter(c=>c.star===3);
+    return flashcards;
+  };
+  const [cards,setCards]=useState(()=>[...flashcards].sort(()=>Math.random()-0.5));
+  const [idx,setIdx]=useState(0);
+  const [flipped,setFlipped]=useState(false);
+  const [correct,setCorrect]=useState(0);
+  const [wrong,setWrong]=useState(0);
+  const [showCheck,setShowCheck]=useState(false);
+  const card=cards[idx]||cards[0];
+  const flip=()=>{setFlipped(f=>!f);setShowCheck(true);};
+  const next=()=>{if(idx<cards.length-1){setIdx(i=>i+1);setFlipped(false);setShowCheck(false);}};
+  const prev=()=>{if(idx>0){setIdx(i=>i-1);setFlipped(false);setShowCheck(false);}};
+  const markOk=()=>{setCorrect(c=>c+1);setShowCheck(false);setTimeout(next,200);};
+  const markNo=()=>{setWrong(c=>c+1);setShowCheck(false);setTimeout(next,200);};
+  const doShuffle=(m)=>{const f=getFiltered(m||mode);setCards([...f].sort(()=>Math.random()-0.5));setIdx(0);setFlipped(false);setShowCheck(false);};
+  const reset=()=>{setCorrect(0);setWrong(0);doShuffle();};
+  const changeMode=(m)=>{setMode(m);setCorrect(0);setWrong(0);doShuffle(m);};
+
+  const examCount=flashcards.filter(c=>c.exam).length;
+  const star3Count=flashcards.filter(c=>c.star===3).length;
+
+  return (
+    <div>
+      <Flex gap={8} style={{marginBottom:16}} wrap="wrap">
+        <Button type={mode==='all'?'primary':'default'} onClick={()=>changeMode('all')}>ทั้งหมด ({flashcards.length})</Button>
+        <Button type={mode==='exam'?'primary':'default'} onClick={()=>changeMode('exam')} style={mode==='exam'?{background:'#8B6F47',borderColor:'#8B6F47'}:{}}>📝 เกร็งข้อสอบ ({examCount})</Button>
+        <Button type={mode==='star3'?'primary':'default'} onClick={()=>changeMode('star3')} style={mode==='star3'?{background:'#8B6F47',borderColor:'#8B6F47'}:{}}>⭐⭐⭐ ออกชัวร์ ({star3Count})</Button>
+      </Flex>
+
+      <Flex gap={16} justify="center" style={{marginBottom:16}}>
+        <Card size="small" style={{background:C.greenBg,border:`1px solid ${C.border}`,borderRadius:12,minWidth:100,textAlign:'center'}}>
+          <Statistic title={<Text style={{color:C.green,fontSize:12}}>✓ ถูก</Text>} value={correct} valueStyle={{color:C.green,fontSize:24}} />
+        </Card>
+        <Card size="small" style={{background:C.redBg,border:`1px solid ${C.border}`,borderRadius:12,minWidth:100,textAlign:'center'}}>
+          <Statistic title={<Text style={{color:C.red,fontSize:12}}>✗ ผิด</Text>} value={wrong} valueStyle={{color:C.red,fontSize:24}} />
+        </Card>
+      </Flex>
+      <Flex gap={12} align="center" style={{marginBottom:16}} wrap="wrap">
+        <Button onClick={()=>doShuffle()}>🔀 สุ่มใหม่</Button>
+        <Button onClick={reset}>↻ รีเซ็ต</Button>
+        <Text style={{color:C.text3,marginLeft:'auto'}}>ข้อ <strong style={{color:C.amberDark}}>{idx+1}</strong> / {cards.length}</Text>
+      </Flex>
+
+      <div className="fc-perspective" style={{marginBottom:20}}>
+        <div className={`fc-card ${flipped?'flipped':''}`} onClick={flip}>
+          <div className="fc-face" style={{background:`linear-gradient(145deg,${C.surface3},${C.surface})`,border:`1px solid ${C.border}`,boxShadow:'0 2px 12px rgba(61,50,41,0.06)'}}>
+            <Flex gap={8} align="center" style={{marginBottom:12}}>
+              <Stars n={card.star||1} />
+              {card.exam && <Tag color="volcano" style={{fontSize:11,fontWeight:700,margin:0}}>📝 เกร็งข้อสอบ</Tag>}
+            </Flex>
+            <Text style={{color:C.gold,fontSize:11,fontWeight:700,letterSpacing:1.5,textTransform:'uppercase',marginBottom:14}}>โจทย์ — เดามาตรา</Text>
+            <Text style={{color:C.text,fontSize:16,lineHeight:1.9,maxWidth:620}}>{card.q}</Text>
+            <Text style={{color:C.text3,fontSize:12,marginTop:20}}>👆 คลิกเพื่อเฉลย</Text>
+          </div>
+          <div className="fc-face fc-back" style={{background:`linear-gradient(145deg,#F0EBE2,#EDE8DF)`,border:`1px solid ${C.goldDark}`,boxShadow:'0 2px 12px rgba(61,50,41,0.08)'}}>
+            <Flex gap={8} align="center" style={{marginBottom:8}}>
+              <Stars n={card.star||1} />
+              {card.exam && <Tag color="volcano" style={{fontSize:11,fontWeight:700,margin:0}}>📝 เกร็งข้อสอบ</Tag>}
+            </Flex>
+            <Tag color="gold" style={{fontSize:15,fontWeight:700,padding:'4px 16px',marginBottom:12}}>{card.a}</Tag>
+            <Text style={{color:C.text2,fontSize:14,lineHeight:1.9,maxWidth:620}}>{card.d}</Text>
+            <Text style={{color:C.text3,fontSize:12,marginTop:16}}>👆 คลิกเพื่อกลับด้านหน้า</Text>
+          </div>
+        </div>
+      </div>
+
+      {showCheck && flipped && (
+        <Flex gap={12} justify="center" style={{marginBottom:16}}>
+          <Button type="primary" style={{background:C.green,borderColor:C.green,minWidth:120}} onClick={markOk}>✓ จำได้</Button>
+          <Button danger style={{minWidth:120}} onClick={markNo}>✗ ยังไม่แม่น</Button>
+        </Flex>
+      )}
+
+      <Flex gap={12} justify="center">
+        <Button onClick={prev} disabled={idx===0}>← ก่อนหน้า</Button>
+        <Button onClick={next} disabled={idx===cards.length-1}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+}
+
+function Mnem({children}){return <Tag color="gold" style={{fontWeight:700,fontSize:16,padding:'2px 10px',letterSpacing:3}}>{children}</Tag>;}
+function Flow({steps}){return <Flex wrap="wrap" gap={4} align="center">{steps.map((s,i)=><React.Fragment key={i}>{i>0&&<Text style={{color:C.gold,fontWeight:700}}>→</Text>}<Tag style={{background:C.surface3,border:`1px solid ${C.border}`,color:C.text,fontSize:12}}>{s}</Tag></React.Fragment>)}</Flex>;}
+
+function QuickTab() {
+  const typeColors = {
+    mnem: {bg:C.purpleBg,border:'#D5CFE0',accent:C.purple},
+    flow: {bg:C.cyanBg,border:'#C8DEDE',accent:C.cyan},
+    contrast: {bg:C.redBg,border:'#E8D4D0',accent:C.red},
+    chunk: {bg:C.blueBg,border:'#BFDBFE',accent:C.blue},
+    formula: {bg:'#FFF8EB',border:'#E8D5A8',accent:'#8B6F47'},
+  };
+
+  return (
+    <div>
+      <Alert showIcon message={<span>🧠 <strong>Brain-Optimized</strong> — เทคนิคจำแบบ Mnemonic + Visual Flow + Contrast Pairs + Chunking + 30-Second Formula</span>} style={{marginBottom:16}} />
+      {quickSections.map((item,i)=>{
+        if(item.divider) return <Divider key={i} orientation="left" style={{color:C.amberDark,borderColor:C.borderDark,fontSize:14,fontWeight:600}}>{item.divider}</Divider>;
+        const tc = typeColors[item.type] || {bg:C.surface3,border:C.border,accent:C.gold};
+        return (
+          <Card key={i} className="qc" size="small" style={{background:tc.bg,border:`1px solid ${tc.border}`,borderRadius:12,marginBottom:10,borderLeft:`4px solid ${tc.accent}`}}>
+            <Flex gap={12} align="start">
+              <Tag color="gold" style={{fontWeight:700,fontSize:13,flexShrink:0}}>{item.s}</Tag>
+              <div style={{flex:1}}>
+                <Text strong style={{color:C.text,fontSize:14}}>{item.t}</Text>
+                <br/>
+                <Text style={{color:C.text2,fontSize:13,lineHeight:1.9}}>{item.b}</Text>
+              </div>
+            </Flex>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token: {
+        colorPrimary: C.gold,
+        colorBgBase: C.bg,
+        colorBgContainer: C.white,
+        fontFamily: "'Noto Sans Thai', sans-serif",
+        borderRadius: 12,
+        colorBorder: C.border,
+        colorText: C.text,
+        colorTextSecondary: C.text2,
+        fontSize: 14,
+        lineHeight: 1.8,
+      }
+    }}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:900,margin:'0 auto',padding:'32px 16px'}}>
+          <div style={{textAlign:'center',marginBottom:28}}>
+            <Title level={2} style={{color:C.amberDark,marginBottom:4,letterSpacing:1}}>LAW2111 ตัวแทน-นายหน้า</Title>
+            <Text style={{color:C.text3,fontSize:13}}>กฎหมายแพ่งและพาณิชย์ว่าด้วยตัวแทน นายหน้า — ม.797-849</Text>
+          </div>
+
+          <Tabs
+            defaultActiveKey="summary"
+            centered
+            type="card"
+            items={[
+              {key:'summary',label:'📖 สรุปเนื้อหา',children:<SummaryTab />},
+              {key:'flashcard',label:'🃏 Flashcard',children:<FlashcardTab />},
+              {key:'quick',label:'⚡ การ์ดจำด่วน',children:<QuickTab />},
+            ]}
+            style={{
+              '--ant-tabs-card-bg': C.surface,
+            }}
+          />
+
+          <div style={{textAlign:'center',marginTop:24,paddingTop:16,borderTop:`1px solid ${C.border}`}}>
+            <Text style={{color:C.text3,fontSize:11}}>LAW2111 Review — Ramkhamhaeng University — Sepia Theme for 4h+ reading</Text>
+          </div>
+        </Content>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
