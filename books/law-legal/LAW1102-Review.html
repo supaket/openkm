@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW1102 หลักกฎหมายเอกชน — สรุป + Flashcard + การ์ดจำด่วน</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Noto Sans Thai',sans-serif;
+    background:#F5F0E8;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+    line-height:1.8;
+  }
+  #root { min-height:100vh; }
+  .fc-perspective { perspective:1200px; }
+  .fc-card { width:100%; min-height:320px; position:relative; transform-style:preserve-3d; transition:transform 0.5s ease; cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:36px 32px; text-align:center; }
+  .fc-back { transform:rotateY(180deg); }
+  .qc:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(139,115,85,0.1) !important; }
+  .qc { transition: all 0.25s ease; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:3px; }
+  ::-webkit-scrollbar-thumb:hover { background:#A89478; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  .ant-table-cell { line-height:1.9 !important; }
+  .ant-card { transition: box-shadow 0.2s ease; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const {
+  ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+  Row, Col, Divider, Alert, Statistic, Flex
+} = antd;
+const { Content } = Layout;
+const { Title, Text, Paragraph } = Typography;
+
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  amber: '#B5986A', amberDark: '#7A6548',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+
+// ════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════
+
+const summaryData = [
+  {
+    key:'structure',
+    title:'🔑 โครงสร้างข้อสอบ LAW1102',
+    content:()=>(
+      <div>
+        <Alert type="warning" showIcon message="ข้อสอบอัตนัย 3 ข้อ (แบ่งตาม 3 ส่วนของขอบเขตการสอบ) — เขียนตอบตามแนวคำตอบ ต้องยกหลักกฎหมาย → วินิจฉัย → สรุป" style={{marginBottom:16}} />
+        <Row gutter={[12,12]}>
+          {[
+            {n:'1',t:'ความรู้ทั่วไปเกี่ยวกับกฎหมายเอกชน',d:'คุณลักษณะ 5 ประการ / เนื้อความ vs แบบพิธี / ที่มา / บังคับใช้ / ตีความ ม.4 ว.1 / อุดช่องว่าง ม.4 ว.2',icon:'📋'},
+            {n:'2',t:'สภาพบุคคล การตาย การสาบสูญ',d:'ม.15 ม.17 การตายธรรมชาติ / ม.61 สาบสูญ กรณีธรรมดา 5 ปี กรณีพิเศษ 2 ปี / การนับระยะเวลา ม.193',icon:'⚖️'},
+            {n:'3',t:'ความสามารถในการทำนิติกรรม',d:'ผู้เยาว์ ม.19,21-25 / คนเสมือนไร้ความสามารถ ม.34 / คนไร้ความสามารถ ม.29 / คนวิกลจริต ม.30',icon:'📝'},
+          ].map(s=>(
+            <Col xs={24} sm={8} key={s.n}>
+              <Card size="small" style={{background:C.surface3,border:`1px solid ${C.border}`,borderRadius:14}}>
+                <Flex gap={12} align="start">
+                  <div style={{width:36,height:36,borderRadius:'50%',background:`linear-gradient(135deg,${C.gold},${C.amber})`,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,color:C.white,flexShrink:0,boxShadow:'0 2px 8px rgba(168,144,108,0.3)'}}>{s.n}</div>
+                  <div>
+                    <Text strong style={{color:C.text,fontSize:15}}>{s.icon} {s.t}</Text>
+                    <br/><Text style={{color:C.text3,fontSize:12}}>{s.d}</Text>
+                  </div>
+                </Flex>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+        <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,marginTop:16}}>
+          <Text strong style={{color:C.cyan}}>📊 สถิติข้อสอบ (จากข้อสอบปี 2566-2567)</Text><br/>
+          <Table dataSource={[
+            {k:'1',y:'2567 คาบ1',q1:'คุณลักษณะ 5 ประการ + เนื้อความ vs แบบพิธี',q2:'ม.61 สาบสูญ (คนงานอุโมงค์)',q3:'-'},
+            {k:'2',y:'2566 ภาค1',q1:'กฎหมายเอกชนที่สำคัญของไทย',q2:'ม.61 สาบสูญ (เหมืองหยก)',q3:'ความสามารถ ม.21,29,30,34'},
+          ]} columns={[
+            {title:'ปี',dataIndex:'y',width:100,render:v=><Tag color="gold">{v}</Tag>},
+            {title:'ข้อ 1 (ส่วนที่1)',dataIndex:'q1',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+            {title:'ข้อ 2 (ส่วนที่2)',dataIndex:'q2',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+            {title:'ข้อ 3 (ส่วนที่3)',dataIndex:'q3',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+          ]} pagination={false} size="small" rowKey="k" />
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'part1-law',
+    title:'📋 ส่วนที่ 1: ความหมายและคุณลักษณะของกฎหมาย',
+    tags:[['ออกทุกครั้ง','volcano'],['ส่วนที่1','blue']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message={<span><strong>กฎหมาย</strong> คือ กฎเกณฑ์ คำสั่ง หรือข้อบังคับที่ถูกตั้งขึ้นโดยรัฐหรือผู้มีอำนาจสูงสุดเพื่อใช้เป็นเครื่องมือสำหรับดำเนินการให้บรรลุเป้าหมายอย่างหนึ่งอย่างใดของสังคม และมีสภาพบังคับเป็นเครื่องมือในการทำให้บุคคลในสังคมต้องปฏิบัติตาม</span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>⭐⭐⭐ คุณลักษณะ 5 ประการของกฎหมายตามเนื้อความ</Title>
+        <Table dataSource={[
+          {k:'1',e:'ต้องมาจากรัฐาธิปัตย์',d:'ออกโดยผู้มีอำนาจสูงสุดในรัฐ เช่น รัฐสภา ครม.'},
+          {k:'2',e:'เป็นคำสั่ง/ข้อบังคับทั่วไป',d:'ใช้บังคับโดยทั่วไป ไม่เจาะจงบุคคลใดบุคคลหนึ่ง'},
+          {k:'3',e:'ใช้ได้ตลอดไปจนกว่ายกเลิก',d:'เมื่อมีการประกาศใช้แล้วแม้กฎหมายนั้นจะไม่ได้ใช้มานาน ก็ถือว่ายังมีผลบังคับอยู่'},
+          {k:'4',e:'ประชาชนจำต้องปฏิบัติ',d:'บุคคลไม่สามารถอ้างว่าไม่รู้กฎหมายได้'},
+          {k:'5',e:'มีสภาพบังคับ',d:'ทั้งทางอาญา (ประหาร จำคุก กักขัง ปรับ ริบทรัพย์สิน) และทางแพ่ง (ชดใช้ค่าเสียหาย บังคับให้ทำ)'},
+        ]} columns={[
+          {title:'#',dataIndex:'k',width:45,render:v=><Tag color="gold" style={{fontWeight:700}}>{v}</Tag>},
+          {title:'ลักษณะ',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'คำอธิบาย',dataIndex:'d',render:v=><Text style={{color:C.text2}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.red}}>⭐⭐⭐ กฎหมายตามเนื้อความ vs กฎหมายตามแบบพิธี</Title>
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.green}}>กฎหมายตามเนื้อความ</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                • มีคุณลักษณะครบ 5 ประการ{'\n'}
+                • กำหนดความประพฤติของมนุษย์{'\n'}
+                • มีสภาพบังคับ (โทษอาญา/แพ่ง){'\n'}
+                • เช่น ป.แพ่งฯ, ป.อาญา
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.red}}>กฎหมายตามแบบพิธี</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                • ไม่ครบ 5 ประการ{'\n'}
+                • ผ่านกระบวนการบัญญัติปกติ{'\n'}
+                • ไม่กำหนดความประพฤติมนุษย์{'\n'}
+                • เช่น พ.ร.บ.งบประมาณ, พ.ร.ฎ.ยุบสภา
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'part1-source',
+    title:'📚 ส่วนที่ 1: ที่มาของกฎหมาย + ระบบกฎหมาย',
+    tags:[['ส่วนที่1','blue']],
+    content:()=>(
+      <div>
+        <Title level={5} style={{color:C.amberDark}}>บ่อเกิดของกฎหมาย</Title>
+        <Row gutter={[12,12]} style={{marginBottom:16}}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.blue}}>1. กฎหมายลายลักษณ์อักษร</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                <strong>ฝ่ายนิติบัญญัติ:</strong> พ.ร.บ.ประกอบรธน., พ.ร.บ.{'\n'}
+                <strong>ฝ่ายบริหาร:</strong> พ.ร.ก., พ.ร.ฎ., กฎกระทรวง{'\n'}
+                <strong>ท้องถิ่น:</strong> ข้อบัญญัติ อบจ./อบต./เทศบาล/กทม./พัทยา
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.purple}}>2. กฎหมายที่ไม่ได้บัญญัติขึ้น</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                <strong>จารีตประเพณี:</strong> ใช้บังคับเพราะราษฎรมีเจตจำนงให้ใช้{'\n'}
+                <strong>หลักกฎหมายทั่วไป:</strong> Pacta Sunt Servanda (สัญญาต้องเป็นสัญญา), Nemo dat rule (ผู้รับโอนไม่มีสิทธิดีกว่าผู้โอน)
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+
+        <Title level={5} style={{color:C.amberDark}}>ระบบกฎหมายในโลก</Title>
+        <Table dataSource={[
+          {k:'1',sys:'Civil Law (ซีวิลลอว์)',f:'ลายลักษณ์อักษร / ประมวลกฎหมาย',c:'ฝรั่งเศส เยอรมัน ไทย ญี่ปุ่น'},
+          {k:'2',sys:'Common Law (คอมมอนลอว์)',f:'จารีตประเพณี / คำพิพากษาศาล',c:'อังกฤษ สหรัฐฯ ออสเตรเลีย'},
+          {k:'3',sys:'Socialist Law',f:'ทุกอย่างเป็นของสังคม',c:'รัสเซีย จีน เกาหลีเหนือ'},
+          {k:'4',sys:'ศาสนาและประเพณีนิยม',f:'คำสอนศาสนาเป็นพื้นฐาน',c:'ประเทศมุสลิม'},
+        ]} columns={[
+          {title:'ระบบ',dataIndex:'sys',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'ลักษณะ',dataIndex:'f',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+          {title:'ประเทศ',dataIndex:'c',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>การแบ่งประเภทกฎหมายตามความสัมพันธ์คู่กรณี</Title>
+        <Table dataSource={[
+          {k:'1',t:'กฎหมายเอกชน',p:'เอกชน ↔ เอกชน (เท่าเทียม)',ex:'ป.แพ่งและพาณิชย์'},
+          {k:'2',t:'กฎหมายมหาชน',p:'รัฐ ↔ เอกชน (ไม่เท่าเทียม)',ex:'รธน. ปกครอง อาญา ภาษี'},
+          {k:'3',t:'กฎหมายระหว่างประเทศ',p:'รัฐ ↔ รัฐ / องค์กรนานาชาติ',ex:'สนธิสัญญา จารีตประเพณีนานาชาติ'},
+        ]} columns={[
+          {title:'ประเภท',dataIndex:'t',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'คู่กรณี',dataIndex:'p',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+          {title:'ตัวอย่าง',dataIndex:'ex',render:v=><Tag color="gold">{v}</Tag>}
+        ]} pagination={false} size="small" rowKey="k" />
+      </div>
+    )
+  },
+  {
+    key:'part1-interpret',
+    title:'⚖️ ส่วนที่ 1: การตีความ (ม.4 ว.1) + การอุดช่องว่าง (ม.4 ว.2)',
+    tags:[['ออกทุกครั้ง','volcano'],['ส่วนที่1','blue']],
+    content:()=>(
+      <div>
+        <Alert type="error" showIcon message={<span><strong>ม.4 วรรคแรก (การตีความ):</strong> "กฎหมายนั้นต้องใช้ในบรรดากรณีซึ่งต้องด้วยบทบัญญัติใดๆ แห่งกฎหมาย ตามตัวอักษรหรือตามคุณมุ่งหมายของบทบัญญัตินั้นๆ"</span>} style={{marginBottom:16}} />
+
+        <Row gutter={[12,12]} style={{marginBottom:16}}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.greenBg,border:'1px solid #BBF7D0',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.green}}>การตีความกฎหมายแพ่ง</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                1. ตีความตามตัวอักษร{'\n'}
+                2. ตีความตามเจตนารมณ์ (Spirit){'\n'}
+                → ตีความได้กว้าง เพื่อความเป็นธรรม
+              </Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,height:'100%'}}>
+              <Text strong style={{color:C.red}}>การตีความกฎหมายอาญา</Text><br/>
+              <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+                ต้องตีความโดยเคร่งครัด{'\n'}
+                ห้ามย้อนหลังลงโทษ{'\n'}
+                กรณีสงสัย → ตีความเป็นผลดีแก่ผู้ต้องหา{'\n'}
+                <strong>รธน. ม.29:</strong> "บุคคลไม่ต้องรับโทษอาญา เว้นแต่ได้กระทำการอันกฎหมายที่ใช้อยู่ในเวลาที่กระทำนั้น บัญญัติเป็นความผิด"
+              </Text>
+            </Card>
+          </Col>
+        </Row>
+
+        <Alert type="warning" showIcon message={<span><strong>ม.4 วรรคสอง (อุดช่องว่าง):</strong> "เมื่อไม่มีบทกฎหมายที่จะยกมาปรับคดีได้ ให้วินิจฉัยคดีนั้น ตาม จารีตประเพณีแห่งท้องถิ่น → เทียบบทกฎหมายที่ใกล้เคียงอย่างยิ่ง → หลักกฎหมายทั่วไป"</span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>วิธีอุดช่องว่าง 3 ขั้นตอน (ตามลำดับ)</Title>
+        <Table dataSource={[
+          {k:'1',step:'จารีตประเพณีแห่งท้องถิ่น',cond:'ใช้บังคับมานาน + สมควร + มีกำหนดแน่นอน + ไม่ขัดกับ ก.ม.'},
+          {k:'2',step:'เทียบบทกฎหมายที่ใกล้เคียงอย่างยิ่ง',cond:'เมื่อไม่มีจารีตฯ ดูบทกฎหมายที่คล้ายคลึงแล้วนำมาเทียบ'},
+          {k:'3',step:'หลักกฎหมายทั่วไป',cond:'เช่น Pacta Sunt Servanda, Nemo dat rule'},
+        ]} columns={[
+          {title:'ลำดับ',dataIndex:'k',width:60,render:v=><Tag color="gold" style={{fontWeight:700}}>{v}</Tag>},
+          {title:'วิธีการ',dataIndex:'step',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'เงื่อนไข/ตัวอย่าง',dataIndex:'cond',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12}}>
+          <Text strong style={{color:C.red}}>⚠️ แพ่ง vs อาญา เมื่อมีช่องว่าง</Text><br/>
+          <Text style={{color:C.text2,fontSize:13,lineHeight:2}}>
+            <strong>คดีแพ่ง:</strong> ศาลต้องอุดช่องว่างตาม ม.4 ว.2 (ปฏิเสธไม่พิจารณาไม่ได้){'\n'}
+            <strong>คดีอาญา:</strong> ไม่มีกฎหมาย = ไม่มีความผิด = ไม่มีโทษ → ศาลยกฟ้อง
+          </Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'part2-person',
+    title:'👤 ส่วนที่ 2: สภาพบุคคล + การตายธรรมชาติ (ม.15, 17)',
+    tags:[['ส่วนที่2','green']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message={<span><strong>ม.15:</strong> "สภาพบุคคลย่อมเริ่มแต่เมื่อ<strong>คลอดแล้วอยู่รอดเป็นทารก</strong>และสิ้นสุดลงเมื่อ<strong>ตาย</strong> ทารกในครรภ์มารดาก็สามารถมีสิทธิต่างๆ ได้ หากว่าภายหลังคลอดแล้วอยู่รอดเป็นทารก"</span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>การนับอายุ (ม.16)</Title>
+        <Table dataSource={[
+          {k:'1',g:'รู้ วัน เดือน ปีเกิด',m:'นับแต่วันเกิด'},
+          {k:'2',g:'ไม่รู้วัน แต่รู้เดือนและปี',m:'นับวันที่ 1 แห่งเดือนนั้น'},
+          {k:'3',g:'ไม่รู้วันและเดือน แต่รู้ปี',m:'นับวันต้นปีปฏิทิน'},
+          {k:'4',g:'ไม่รู้ทั้ง วัน เดือน ปี',m:'คาดเดาจากแพทย์'},
+        ]} columns={[
+          {title:'กรณี',dataIndex:'g',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'วิธีนับ',dataIndex:'m',render:v=><Text style={{color:C.text2}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.red}}>⭐⭐ ม.17 การตายพร้อมกัน</Title>
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.red}}>หลัก:</strong> ถ้าบุคคลหลายคนตายในเหตุภัยันตรายร่วมกัน และไม่สามารถกำหนดได้ว่าใครตายก่อนหลัง → <strong>ให้ถือว่าตายพร้อมกัน</strong>{'\n'}
+            <strong style={{color:C.red}}>ตัวอย่าง:</strong> นายเอ+นายบี นั่งรถบัสคันเดียวกัน รถพลิกคว่ำ ทุกคนตาย → ตายตามธรรมชาติ ม.15 และถือว่าตายพร้อมกัน ม.17
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.amberDark}}>การนับระยะเวลาตามกฎหมาย (ม.193/1, 193/3, 193/5)</Title>
+        <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong style={{color:C.blue}}>ม.193/3 การเริ่มต้น:</strong> ไม่ให้นับวันแรกรวมเข้าด้วย → วันแรก = วันรุ่งขึ้น{'\n'}
+            <strong style={{color:C.blue}}>ม.193/5 การสิ้นสุด:</strong> นับวัน = สิ้นสุดตามวันที่นับจนครบ / นับเดือน,ปี = สิ้นสุดในวันก่อนหน้าวันที่เริ่มระยะเวลา{'\n'}
+            <strong style={{color:C.blue}}>ม.193/8:</strong> ถ้าวันสุดท้ายของระยะเวลาเป็นวันหยุด → ให้นับวันทำการถัดไปเป็นวันสุดท้าย
+          </Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'part2-disappear',
+    title:'🔍 ส่วนที่ 2: การสาบสูญ (ม.61) — ออกข้อสอบทุกครั้ง!',
+    tags:[['ออกทุกครั้ง','volcano'],['ส่วนที่2','green']],
+    content:()=>(
+      <div>
+        <Alert type="error" showIcon message={<span><strong>ม.61:</strong> บุคคลได้ไปจากภูมิลำเนาหรือถิ่นที่อยู่ ไม่มีใครรู้แน่ว่ายังมีชีวิตอยู่หรือไม่ตลอด <strong>5 ปี</strong> (ธรรมดา) / <strong>2 ปี</strong> (พิเศษ) → ผู้มีส่วนได้เสียหรือพนง.อัยการร้องขอ → ศาลสั่งเป็นคนสาบสูญ</span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>⭐⭐⭐ หลักเกณฑ์ 5 ข้อ</Title>
+        <Table dataSource={[
+          {k:'1',e:'หายไปจากภูมิลำเนา/ถิ่นที่อยู่'},
+          {k:'2',e:'ไม่มีใครรู้ว่าเป็นตายร้ายดีอย่างไร (ไม่เจอศพ ไม่มีข่าว)'},
+          {k:'3',e:'ครบกำหนด 5 ปี (ธรรมดา) หรือ 2 ปี (พิเศษ)'},
+          {k:'4',e:'ผู้มีส่วนได้เสียหรือพนง.อัยการยื่นคำร้องต่อศาล'},
+          {k:'5',e:'ศาลมีคำสั่งให้เป็นคนสาบสูญ → ถือว่าตายโดยผลของกฎหมาย'},
+        ]} columns={[
+          {title:'#',dataIndex:'k',width:45,render:v=><Tag color="gold" style={{fontWeight:700}}>{v}</Tag>},
+          {title:'หลักเกณฑ์',dataIndex:'e',render:v=><Text style={{color:C.text2}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>ผู้มีส่วนได้เสีย (ม.48, 61)</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            1. ทายาท (ผู้มีสิทธิรับมรดก) 2. สามี/ภรรยา (จดทะเบียนสมรส) 3. ผู้สืบสันดาน 4. บิดา มารดา{'\n'}
+            หรือ พนักงานอัยการ
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.red}}>⭐⭐⭐ กรณีธรรมดา 5 ปี (ม.61 วรรคแรก) vs กรณีพิเศษ 2 ปี (ม.61 วรรคสอง)</Title>
+        <Table dataSource={[
+          {k:'ธรรมดา',dur:'5 ปี',start:'นับแต่วันที่ทราบข่าวครั้งสุดท้าย',ex:'หายตัวไปจากบ้าน/โรงพยาบาล'},
+          {k:'พิเศษ(1)',dur:'2 ปี',start:'นับแต่วันที่การรบ/สงครามสิ้นสุด',ex:'หายไปในสมรภูมิ'},
+          {k:'พิเศษ(2)',dur:'2 ปี',start:'นับแต่วันที่ยานพาหนะอับปาง/ถูกทำลาย/สูญหาย',ex:'เครื่องบินตก เรือจม'},
+          {k:'พิเศษ(3)',dur:'2 ปี',start:'นับแต่วันที่เหตุอันตรายแก่ชีวิตผ่านพ้นไป',ex:'ตึกถล่ม แผ่นดินไหว เหมืองถล่ม'},
+        ]} columns={[
+          {title:'กรณี',dataIndex:'k',width:90,render:v=><Tag color={v==='ธรรมดา'?'blue':'volcano'} style={{fontWeight:700}}>{v}</Tag>},
+          {title:'ระยะเวลา',dataIndex:'dur',render:v=><Text strong style={{color:C.red}}>{v}</Text>},
+          {title:'เริ่มนับเมื่อ',dataIndex:'start',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+          {title:'ตัวอย่าง',dataIndex:'ex',render:v=><Text style={{color:C.text3,fontSize:12}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Card size="small" style={{background:C.cyanBg,border:'1px solid #C8DEDE',borderRadius:12,marginBottom:16}}>
+          <Text strong style={{color:C.cyan}}>📐 สูตรคำนวณวันครบกำหนดสาบสูญ</Text><br/>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong>1.</strong> หาวันที่หายไป/เหตุเกิด (วัน X){'\n'}
+            <strong>2.</strong> นับวันแรก = วัน X+1 (ตาม ม.193/3 ไม่นับวันแรก){'\n'}
+            <strong>3.</strong> ครบกำหนด = วัน X + 5 ปี (ธรรมดา) หรือ วัน X + 2 ปี (พิเศษ){'\n'}
+            <strong>4.</strong> เริ่มใช้สิทธิทางศาล = วันครบกำหนด + 1 วัน
+          </Text>
+        </Card>
+
+        <Title level={5} style={{color:C.cyan}}>ตัวอย่างการคำนวณ (จากข้อสอบจริง)</Title>
+        <Card size="small" style={{background:C.surface3,border:`1px solid ${C.border}`,borderRadius:12}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong>กรณีธรรมดา:</strong> นายอาบหายจากรพ. 20 มี.ค. 2567{'\n'}
+            → ครบ 5 ปี = 20 มี.ค. 2572{'\n'}
+            → เริ่มใช้สิทธิทางศาล = <strong>21 มี.ค. 2572</strong>{'\n'}{'\n'}
+            <strong>กรณีพิเศษ(3):</strong> อุโมงค์ถล่ม สิ้นสุด 10 มี.ค. 2567{'\n'}
+            → ครบ 2 ปี = 10 มี.ค. 2569{'\n'}
+            → เริ่มใช้สิทธิทางศาล = <strong>11 มี.ค. 2569</strong>
+          </Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'part3-minor',
+    title:'👶 ส่วนที่ 3: ผู้เยาว์ (ม.19, 21-25)',
+    tags:[['ออกบ่อย','volcano'],['ส่วนที่3','purple']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message={<span><strong>ผู้เยาว์</strong> = อายุไม่ครบ 20 ปีบริบูรณ์ + ยังไม่บรรลุนิติภาวะ — <strong>ม.21:</strong> ผู้เยาว์จะทำนิติกรรมใดๆ ต้องได้รับความยินยอมจากผู้แทนโดยชอบธรรม มิฉะนั้น = <strong>โมฆียะ</strong></span>} style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.green}}>⭐⭐⭐ นิติกรรมที่ผู้เยาว์ทำได้โดยลำพัง (ม.22-25) = สมบูรณ์</Title>
+        <Table dataSource={[
+          {k:'ม.22',e:'ได้มาซึ่งสิทธิ/หลุดพ้นจากหน้าที่ โดยไม่มีเงื่อนไข',ex:'รับให้โดยเสน่หา / รับมรดก / รับการปลดหนี้'},
+          {k:'ม.23',e:'ทำสิ่งที่ต้องทำเองเฉพาะตัว',ex:'จดทะเบียนรับรองบุตร'},
+          {k:'ม.24',e:'สมแก่ฐานานุรูป + จำเป็นดำรงชีพ',ex:'ซื้ออาหาร เสื้อผ้า ตามฐานะ'},
+          {k:'ม.25',e:'ทำพินัยกรรม (อายุ ≥ 15 ปี)',ex:'ทำพินัยกรรมมอบทรัพย์สิน'},
+        ]} columns={[
+          {title:'มาตรา',dataIndex:'k',width:70,render:v=><Tag color="green" style={{fontWeight:700}}>{v}</Tag>},
+          {title:'หลักเกณฑ์',dataIndex:'e',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'ตัวอย่าง',dataIndex:'ex',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>การบรรลุนิติภาวะ 2 กรณี</Title>
+        <Row gutter={[12,12]}>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.blueBg,border:'1px solid #BFDBFE',borderRadius:12}}>
+              <Text strong style={{color:C.blue}}>1. โดยอายุ (ม.19)</Text><br/>
+              <Text style={{color:C.text2,fontSize:13}}>อายุครบ 20 ปีบริบูรณ์</Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12}}>
+              <Text strong style={{color:C.purple}}>2. โดยการสมรส (ม.20 + 1448)</Text><br/>
+              <Text style={{color:C.text2,fontSize:13}}>ชาย+หญิง อายุ ≥ 17 ปี + ยินยอมจากผู้แทน → บรรลุนิติภาวะ</Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'part3-incapable',
+    title:'🧠 ส่วนที่ 3: คนไร้ / คนเสมือนไร้ / คนวิกลจริต (ม.29, 30, 34)',
+    tags:[['ออกบ่อย','volcano'],['ส่วนที่3','purple']],
+    content:()=>(
+      <div>
+        <Title level={5} style={{color:C.red}}>⭐⭐⭐ ตารางเปรียบเทียบผู้หย่อนความสามารถ (ต้องจำให้ได้!)</Title>
+        <Table dataSource={[
+          {k:'1',t:'ผู้เยาว์',g:'ผู้แทนโดยชอบธรรม',r:'ต้องได้รับยินยอม (เว้น ม.22-25) / ไม่ยินยอม = โมฆียะ',m:'ม.19,21-25'},
+          {k:'2',t:'คนไร้ความสามารถ',g:'ผู้อนุบาล',r:'ทำเอง = โมฆียะ เสมอ (แม้ผู้อนุบาลยินยอม!) ต้องให้ผู้อนุบาลทำแทน',m:'ม.28,29'},
+          {k:'3',t:'คนเสมือนไร้ฯ',g:'ผู้พิทักษ์',r:'ทำได้สมบูรณ์ เว้นแต่ 7 กรณีตาม ม.34 → ต้องยินยอมจากผู้พิทักษ์',m:'ม.32,34'},
+          {k:'4',t:'คนวิกลจริต',g:'ไม่มี (ยังไม่มีคำสั่งศาล)',r:'สมบูรณ์ เว้นแต่ ทำขณะวิกลจริต + อีกฝ่ายรู้ = โมฆียะ',m:'ม.30'},
+        ]} columns={[
+          {title:'ประเภท',dataIndex:'t',render:v=><Text strong style={{color:C.text}}>{v}</Text>},
+          {title:'ผู้ดูแล',dataIndex:'g',render:v=><Tag color="gold">{v}</Tag>},
+          {title:'ผลนิติกรรม',dataIndex:'r',render:v=><Text style={{color:C.text2,fontSize:13}}>{v}</Text>},
+          {title:'มาตรา',dataIndex:'m',width:80,render:v=><Tag color="blue">{v}</Tag>}
+        ]} pagination={false} size="small" rowKey="k" style={{marginBottom:16}} />
+
+        <Title level={5} style={{color:C.amberDark}}>ม.34 — 7 กรณีที่คนเสมือนไร้ฯ ต้องขอยินยอมผู้พิทักษ์</Title>
+        <Card size="small" style={{background:C.purpleBg,border:'1px solid #D5CFE0',borderRadius:12,marginBottom:16}}>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            (1) ลงทุน (2) รับคืนทุน (3) กู้ยืมเงิน/ให้กู้/ยืมสังหาริมทรัพย์อันมีค่า{'\n'}
+            (4) รับประกัน (5) เช่า/ให้เช่า (สังหาริมทรัพย์ >6เดือน / อสังหาริมทรัพย์ >3ปี){'\n'}
+            (6) ให้โดยเสน่หา (7) รับให้ที่มีเงื่อนไข/ค่าภาระ{'\n'}
+            → ไม่ยินยอม = <strong style={{color:C.red}}>โมฆียะ</strong>
+          </Text>
+        </Card>
+
+        <Card size="small" style={{background:C.redBg,border:'1px solid #FECACA',borderRadius:12}}>
+          <Text strong style={{color:C.red}}>⚠️ ข้อควรระวัง ม.29 vs ม.30</Text><br/>
+          <Text style={{color:C.text2,lineHeight:2}}>
+            <strong>ม.29 คนไร้ความสามารถ:</strong> = วิกลจริต + ศาลสั่งแล้ว → ทำนิติกรรมเอง = โมฆียะ เสมอ ไม่ว่าขณะนั้นจะมีสติสัมปชัญญะหรือไม่{'\n'}
+            <strong>ม.30 คนวิกลจริต:</strong> = วิกลจริต + ศาลยังไม่สั่ง → ทำนิติกรรม = สมบูรณ์ เว้นแต่ ทำ "ขณะ" วิกลจริต + อีกฝ่ายรู้ = โมฆียะ
+          </Text>
+        </Card>
+      </div>
+    )
+  },
+];
+
+// ═══ Flashcard data ═══
+const flashcards = [
+  {q:'กฎหมายตามเนื้อความต้องมีคุณลักษณะกี่ประการ อะไรบ้าง?',a:'5 ประการ',d:'1.มาจากรัฐาธิปัตย์ 2.เป็นคำสั่ง/ข้อบังคับทั่วไป 3.ใช้ตลอดไปจนกว่ายกเลิก 4.ประชาชนจำต้องปฏิบัติ 5.มีสภาพบังคับ',star:3,exam:true},
+  {q:'กฎหมายตามแบบพิธีแตกต่างจากกฎหมายตามเนื้อความอย่างไร?',a:'ไม่ครบ 5 ประการ',d:'กฎหมายตามแบบพิธีผ่านกระบวนการบัญญัติปกติ แต่ไม่ครบองค์ 5 ข้อ ไม่มีบทบัญญัติกำหนดความประพฤติมนุษย์ เช่น พ.ร.บ.งบประมาณ พ.ร.ฎ.ยุบสภา',star:3,exam:true},
+  {q:'ประเทศไทยใช้ระบบกฎหมายใด?',a:'Civil Law (ซีวิลลอว์)',d:'ระบบกฎหมายลายลักษณ์อักษร/ประมวลกฎหมาย จุดกำเนิดที่อาณาจักรโรมัน ใช้ร่วมกับฝรั่งเศส เยอรมัน อิตาลี สเปน สวิตเซอร์แลนด์ ญี่ปุ่น',star:2,exam:false},
+  {q:'ม.4 วรรคแรก กำหนดหลักเกณฑ์อะไร?',a:'การตีความกฎหมาย',d:'กฎหมายนั้นต้องใช้ในบรรดากรณีซึ่งต้องด้วยบทบัญญัติใดๆ แห่งกฎหมาย ตามตัวอักษรหรือตามคุณมุ่งหมายของบทบัญญัตินั้นๆ',star:3,exam:true},
+  {q:'ม.4 วรรคสอง กำหนดวิธีอุดช่องว่างกฎหมายกี่ขั้นตอน ตามลำดับ?',a:'3 ขั้น: จารีตฯ → เทียบบท → หลักทั่วไป',d:'1.จารีตประเพณีแห่งท้องถิ่น 2.เทียบบทกฎหมายที่ใกล้เคียงอย่างยิ่ง 3.หลักกฎหมายทั่วไป (เช่น Pacta Sunt Servanda, Nemo dat rule)',star:3,exam:true},
+  {q:'Pacta Sunt Servanda หมายความว่าอย่างไร?',a:'หลักสัญญาต้องเป็นสัญญา',d:'Agreements must be kept - ความสมัครใจของบุคคลข้ามผูกนิติสัมพันธ์ สัญญาตั้งอยู่บนพื้นฐานหลักการปฏิบัติโดยสุจริต',star:2,exam:false},
+  {q:'Nemo dat rule หมายความว่าอย่างไร?',a:'ผู้รับโอนไม่มีสิทธิดีกว่าผู้โอน',d:'บุคคลย่อมไม่อาจให้ในสิ่งที่ตนไม่มี - ใช้เป็นหลักในการตัดสินคดีความในกระบวนการยุติธรรม',star:2,exam:false},
+  {q:'สภาพบุคคลเริ่มต้นเมื่อใด? (ม.15)',a:'คลอดแล้วอยู่รอดเป็นทารก',d:'ม.15: สภาพบุคคลย่อมเริ่มแต่เมื่อคลอดแล้วอยู่รอดเป็นทารกและสิ้นสุดลงเมื่อตาย ทารกในครรภ์มีสิทธิได้หากภายหลังคลอดแล้วอยู่รอด',star:2,exam:false},
+  {q:'ม.17 ถ้าบุคคลหลายคนตายในเหตุภัยันตรายร่วมกัน จะถือว่าอย่างไร?',a:'ให้ถือว่าตายพร้อมกัน',d:'ถ้าไม่สามารถกำหนดได้ว่าใครตายก่อนหลัง ม.17 กำหนดให้ถือว่าตายพร้อมกัน ต้องมีหลักฐานยืนยันว่ามีการตายจริง',star:3,exam:true},
+  {q:'[ข้อสอบ 2567 ข้อ 2] นายอาบหายจากโรงพยาบาล กรณีนี้เป็นการสาบสูญกรณีอะไร?',a:'กรณีธรรมดา 5 ปี (ม.61 วรรคแรก)',d:'นายอาบหายตัวไปจากโรงพยาบาลด้วยตัวเอง ไม่ใช่เหตุอันตรายแก่ชีวิต จึงเป็นกรณีธรรมดา ต้องรอครบ 5 ปี',star:3,exam:true},
+  {q:'ม.61 วรรคสอง กรณีพิเศษ 3 อนุ มีอะไรบ้าง?',a:'(1)สงคราม (2)ยานพาหนะอับปาง (3)เหตุอันตรายอื่น',d:'(1)หายไปในการรบ/สงคราม-นับจากวันสิ้นสุดสงคราม (2)ยานพาหนะอับปาง/ถูกทำลาย/สูญหาย-นับจากวันอับปาง (3)เหตุอันตรายแก่ชีวิตอื่น-นับจากวันเหตุผ่านพ้น ทั้ง 3 อนุ = 2 ปี',star:3,exam:true},
+  {q:'[ข้อสอบ 2567 ข้อ 2] นายยิ่งหายในเหตุอุโมงค์ถล่ม เป็นกรณีอะไร? ม.61 วรรคสองอนุใด?',a:'กรณีพิเศษ ม.61 ว.2(3) 2 ปี',d:'อุโมงค์ถล่มเป็นเหตุอันตรายแก่ชีวิตตาม ม.61 วรรคสอง(3) นับ 2 ปีจากวันที่เหตุผ่านพ้น (วันที่เปิดทางออกอุโมงค์ได้)',star:3,exam:true},
+  {q:'ม.193/3 การนับระยะเวลา นับอย่างไร?',a:'ไม่นับวันแรก → เริ่มนับวันรุ่งขึ้น',d:'ม.193/3: กำหนดระยะเวลาเป็นวัน สัปดาห์ เดือน หรือปี มิให้นับวันแรกแห่งระยะเวลานั้นรวมเข้าด้วยกัน เว้นแต่จะเริ่มการในวันนั้นเองตั้งแต่เวลาเริ่มต้นทำการ',star:3,exam:true},
+  {q:'เบลล่าหายไปจากถิ่นที่อยู่ 1 ก.ค. 2560 (กรณีธรรมดา) ครบกำหนดสาบสูญเมื่อใด?',a:'1 ก.ค. 2565 / ใช้สิทธิทางศาล 2 ก.ค. 2565',d:'หายไปตั้งแต่ 1 ก.ค. 2560 นับวันแรก=2 ก.ค. 2560 ครบ 5 ปี = 1 ก.ค. 2565 เริ่มใช้สิทธิทางศาล = 2 ก.ค. 2565',star:3,exam:true},
+  {q:'ผู้เยาว์คือใคร? บรรลุนิติภาวะอย่างไร?',a:'อายุ <20 ปี / บรรลุโดยอายุ 20 หรือสมรส 17+',d:'ม.19: อายุครบ 20 ปีบริบูรณ์ / ม.20+1448: ชาย+หญิง 17 ปีบริบูรณ์ จดทะเบียนสมรสโดยยินยอมจากผู้แทนหรือศาลอนุญาต',star:2,exam:false},
+  {q:'[ข้อสอบ 2566 ข้อ 3(1)] เอ อายุ 15 ปี ตอบรับข้อเสนอของนายดำให้ทุนการศึกษา แต่ต้องเปลี่ยนศาสนา ผลเป็นอย่างไร?',a:'ต้องได้รับยินยอมจากผู้แทนโดยชอบธรรม ตาม ม.21',d:'ไม่ใช่นิติกรรมเฉพาะตัว ไม่ใช่ได้มาซึ่งสิทธิแต่เพียงฝ่ายเดียว (มีเงื่อนไขเปลี่ยนศาสนา) หากเอออยากได้ทุน ต้องได้รับความยินยอมจากผู้แทนโดยชอบธรรม',star:3,exam:true},
+  {q:'ม.22 นิติกรรมที่ผู้เยาว์ทำได้โดยลำพัง = สมบูรณ์ คืออะไร?',a:'ได้สิทธิ/หลุดพ้นหน้าที่ โดยไม่มีเงื่อนไข',d:'รับให้โดยเสน่หา(ไม่มีเงื่อนไข) รับมรดก รับการปลดหนี้ เป็นคุณประโยชน์แก่ผู้เยาว์แต่เพียงฝ่ายเดียว',star:3,exam:true},
+  {q:'[ข้อสอบ 2566 ข้อ 3(2)] คนเสมือนไร้ฯ ให้เพื่อนยืมเงิน 10,000 โดยไม่ยินยอมจากผู้พิทักษ์ ผลเป็นอย่างไร?',a:'โมฆียะ ตาม ม.34',d:'การให้ยืมเงินเป็นนิติกรรมตาม ม.34(3) กู้ยืม/ให้กู้ยืมเงิน ต้องได้รับความยินยอมจากผู้พิทักษ์ เมื่อไม่ได้รับ = โมฆียะ',star:3,exam:true},
+  {q:'คนไร้ความสามารถทำนิติกรรม แม้ผู้อนุบาลยินยอม ผลเป็นอย่างไร?',a:'โมฆียะ เสมอ ตาม ม.29',d:'ม.29: การใดๆ อันบุคคลซึ่งศาลสั่งให้เป็นคนไร้ความสามารถได้กระทำลง การนั้นเป็นโมฆียะ ต้องให้ผู้อนุบาลทำแทน',star:3,exam:true},
+  {q:'[ข้อสอบ 2566 ข้อ 3(3)] คนไร้ความสามารถซื้อรถยนต์ ผู้อนุบาลอนุญาต ผลเป็นอย่างไร?',a:'โมฆียะ ตาม ม.29',d:'ถึงแม้ผู้อนุบาลยินยอม การทำนิติกรรมของคนไร้ความสามารถก็ตกเป็นโมฆียะ เสมอ ต้องให้ผู้อนุบาลเป็นผู้ทำแทน',star:3,exam:true},
+  {q:'คนวิกลจริต (ม.30) ทำนิติกรรม ผลเป็นอย่างไร?',a:'สมบูรณ์ เว้นแต่ ทำขณะวิกลจริต + อีกฝ่ายรู้ = โมฆียะ',d:'ม.30: ทำนิติกรรม = สมบูรณ์ แต่ถ้าทำในขณะจริตวิกล + คู่กรณีอีกฝ่ายรู้ = โมฆียะ (ต้องครบ 2 เงื่อนไข)',star:3,exam:true},
+  {q:'[ข้อสอบ 2566 ข้อ 3(4)] คนวิกลจริตซื้อจักรยานยนต์ ในขณะจริตวิกล + นายสีรู้ ผลเป็นอย่างไร?',a:'โมฆียะ ตาม ม.30',d:'ดี ทำนิติกรรมในขณะจริตวิกล และนายสี (คู่กรณี) รู้ว่าดี เป็นคนวิกลจริต ครบ 2 เงื่อนไข = โมฆียะ',star:3,exam:true},
+  {q:'ผู้เยาว์ / คนไร้ฯ / คนเสมือนไร้ฯ ใครมี "ผู้อนุบาล" / "ผู้พิทักษ์" / "ผู้แทนโดยชอบธรรม"?',a:'ผู้เยาว์=ผู้แทนฯ / ไร้ฯ=ผู้อนุบาล / เสมือนไร้ฯ=ผู้พิทักษ์',d:'จำง่าย: เยาว์→แทน(แม่พ่อ) / ไร้→อนุบาล(ดูแลเต็มที่) / เสมือนไร้→พิทักษ์(ดูแลบางส่วน)',star:3,exam:true},
+  {q:'ม.34 มี 7 กรณีที่คนเสมือนไร้ฯ ต้องขอยินยอม ได้แก่อะไร?',a:'ลงทุน/รับคืนทุน/กู้ยืม/ค้ำประกัน/เช่า/ให้/รับให้มีเงื่อนไข',d:'(1)ลงทุน (2)รับคืนทุน (3)กู้ยืม/ให้กู้/ยืมสังหาริมทรัพย์อันมีค่า (4)รับประกัน (5)เช่า/ให้เช่า(>6เดือน/>3ปี) (6)ให้โดยเสน่หา (7)รับให้ที่มีเงื่อนไข/ค่าภาระ',star:3,exam:true},
+  {q:'[ข้อสอบ 2566 ข้อ 1] กฎหมายเอกชนที่สำคัญของไทยได้แก่อะไร?',a:'กฎหมายแพ่ง + กฎหมายพาณิชย์',d:'กฎหมายแพ่ง=ความสัมพันธ์เอกชนต่อเอกชน ตั้งแต่เกิดจนตาย (นิติกรรม สัญญา ละเมิด ครอบครัว มรดก) / กฎหมายพาณิชย์=เกี่ยวกับการค้าขาย ไทยรวมไว้ใน ป.แพ่งและพาณิชย์',star:2,exam:true},
+  {q:'คดีอาญาเมื่อมีช่องว่างกฎหมาย ศาลต้องทำอย่างไร?',a:'ยกฟ้อง (ไม่มี กม. = ไม่มีความผิด = ไม่มีโทษ)',d:'ต่างจากคดีแพ่งที่ต้องอุดช่องว่าง คดีอาญาศาลต้องยกฟ้องตามหลัก "ไม่มีกฎหมาย ไม่มีความผิด ย่อมไม่มีโทษ" (nullum crimen sine lege)',star:2,exam:false},
+  {q:'ผู้มีส่วนได้เสียที่ร้องขอให้เป็นคนสาบสูญมีใครบ้าง?',a:'ทายาท / สามี-ภรรยา / ผู้สืบสันดาน / บิดา-มารดา / พนง.อัยการ',d:'ตาม ม.48, 61: 1.ทายาทผู้มีสิทธิรับมรดก 2.สามี/ภรรยาที่จดทะเบียนสมรส 3.ผู้สืบสันดาน 4.บิดามารดา หรือ พนักงานอัยการ',star:3,exam:true},
+];
+
+// ═══ Quick-Reference Sections ═══
+const quickSections = [
+  {divider:'🎯 เกร็งข้อสอบ LAW1102'},
+  {s:'ข้อ1',t:'ความรู้ทั่วไปเกี่ยวกับกฎหมายเอกชน',b:'คุณลักษณะ 5 ประการ → เนื้อความ vs แบบพิธี → ม.4 ว.1 ตีความ → ม.4 ว.2 อุดช่องว่าง (จารีต→เทียบบท→หลักทั่วไป)',type:'formula'},
+  {s:'ข้อ2',t:'สภาพบุคคล + สาบสูญ ม.61 (ออกทุกครั้ง!)',b:'ม.15 สภาพบุคคล → ม.17 ตายพร้อมกัน → ม.61 ธรรมดา 5 ปี / พิเศษ 2 ปี (3 อนุ) → คำนวณวันครบ → ผู้มีส่วนได้เสีย',type:'formula'},
+  {s:'ข้อ3',t:'ความสามารถทำนิติกรรม',b:'ผู้เยาว์ ม.21(+ยกเว้น ม.22-25) → คนไร้ฯ ม.29 (โมฆียะเสมอ) → คนเสมือนไร้ฯ ม.34 (7 กรณี) → วิกลจริต ม.30 (ขณะวิกล+รู้)',type:'formula'},
+
+  {divider:'📋 ส่วนที่ 1 — ความรู้ทั่วไป'},
+  {s:'5⭐',t:'คุณลักษณะ 5 ประการ',b:'รัฐาธิปัตย์ → คำสั่ง/ข้อบังคับทั่วไป → ใช้ตลอดไป → ประชาชนต้องปฏิบัติ → มีสภาพบังคับ',type:'mnem'},
+  {s:'VS',t:'เนื้อความ vs แบบพิธี',b:'เนื้อความ = ครบ 5 ประการ (เช่น ป.แพ่งฯ ป.อาญา) | แบบพิธี = ไม่ครบ 5 (เช่น พ.ร.บ.งบประมาณ)',type:'contrast'},
+  {s:'ม.4/1',t:'การตีความ (วรรคแรก)',b:'ตามตัวอักษร + ตามเจตนารมณ์ → แพ่ง=กว้าง | อาญา=เคร่งครัด (สงสัย→เป็นผลดีแก่ผู้ต้องหา)',type:'contrast'},
+  {s:'ม.4/2',t:'อุดช่องว่าง (วรรคสอง)',b:'จารีตประเพณีท้องถิ่น → เทียบบทกฎหมายใกล้เคียงอย่างยิ่ง → หลักกฎหมายทั่วไป',type:'flow'},
+  {s:'PSS',t:'Pacta Sunt Servanda',b:'หลักสัญญาต้องเป็นสัญญา — agreements must be kept',type:'mnem'},
+  {s:'ND',t:'Nemo dat rule',b:'ผู้รับโอนไม่มีสิทธิดีกว่าผู้โอน — บุคคลย่อมไม่อาจให้ในสิ่งที่ตนไม่มี',type:'mnem'},
+
+  {divider:'⚖️ ส่วนที่ 2 — สภาพบุคคล/สาบสูญ'},
+  {s:'ม.15',t:'สภาพบุคคล',b:'เริ่ม = คลอดแล้วอยู่รอดเป็นทารก | สิ้นสุด = ตาย',type:'chunk'},
+  {s:'ม.17',t:'ตายพร้อมกัน',b:'ภัยันตรายร่วมกัน + ไม่รู้ใครก่อนหลัง → ถือว่าตายพร้อมกัน',type:'chunk'},
+  {s:'193/3',t:'การนับระยะเวลา',b:'ไม่นับวันแรก! → นับวันแรก = วันรุ่งขึ้น',type:'mnem'},
+  {s:'ม.61/1',t:'สาบสูญกรณีธรรมดา',b:'หายไป + ไม่มีข่าว + 5 ปี → นับจากวันทราบข่าวครั้งสุดท้าย',type:'chunk'},
+  {s:'ม.61/2',t:'สาบสูญกรณีพิเศษ',b:'(1)สงคราม→นับจากสิ้นสุดสงคราม (2)ยานพาหนะอับปาง→นับจากอับปาง (3)เหตุอันตราย→นับจากผ่านพ้น | ทั้งหมด = 2 ปี',type:'flow'},
+  {s:'WHO',t:'ผู้มีส่วนได้เสีย',b:'ทายาท / สามี-ภรรยา(จดทะเบียน) / ผู้สืบสันดาน / บิดามารดา / หรือ พนง.อัยการ',type:'chunk'},
+
+  {divider:'📝 ส่วนที่ 3 — ความสามารถ'},
+  {s:'ม.21',t:'หลัก: ผู้เยาว์ทำนิติกรรม',b:'ต้องได้รับความยินยอมจากผู้แทนโดยชอบธรรม → ไม่ยินยอม = โมฆียะ',type:'chunk'},
+  {s:'ม.22-25',t:'ข้อยกเว้น: ผู้เยาว์ทำเองได้ = สมบูรณ์',b:'22=ได้สิทธิ/หลุดพ้นหน้าที่ | 23=เฉพาะตัว | 24=ดำรงชีพตามฐานะ | 25=พินัยกรรม(≥15ปี)',type:'flow'},
+  {s:'จำ!',t:'ผู้ดูแล 3 ประเภท',b:'ผู้เยาว์ = ผู้แทนโดยชอบธรรม | คนไร้ฯ = ผู้อนุบาล | คนเสมือนไร้ฯ = ผู้พิทักษ์',type:'mnem'},
+  {s:'ม.29',t:'คนไร้ความสามารถ',b:'ทำนิติกรรมเอง = โมฆียะ เสมอ! แม้ผู้อนุบาลยินยอม → ต้องให้ผู้อนุบาลทำแทน',type:'contrast'},
+  {s:'ม.34',t:'คนเสมือนไร้ฯ 7 กรณี',b:'ลงทุน | รับคืนทุน | กู้ยืม | ค้ำประกัน | เช่า(สังหา>6ด./อสังหา>3ปี) | ให้โดยเสน่หา | รับให้มีเงื่อนไข → ต้องยินยอมจากผู้พิทักษ์',type:'chunk'},
+  {s:'ม.30',t:'คนวิกลจริต',b:'สมบูรณ์ เว้นแต่ (1)ทำขณะวิกลจริต + (2)อีกฝ่ายรู้ → ครบ 2 เงื่อนไข = โมฆียะ',type:'contrast'},
+  {s:'บรรลุ',t:'บรรลุนิติภาวะ',b:'อายุ 20 ปีบริบูรณ์ (ม.19) หรือ สมรส ≥17 ปี (ม.20+1448)',type:'chunk'},
+
+  {divider:'⏱️ สูตรเขียนตอบข้อสอบ'},
+  {s:'📝',t:'โครงสร้างเขียนตอบ',b:'1.ยกหลักกฎหมาย (อ้างมาตรา) → 2.วินิจฉัย (ปรับข้อเท็จจริง) → 3.สรุป (ตอบคำถามชัดเจน)',type:'formula'},
+  {s:'🔢',t:'สูตรคำนวณสาบสูญ',b:'หาวัน X (หาย/เหตุเกิด) → นับวันแรก X+1 → ครบกำหนด X+5ปี(ธรรมดา)/X+2ปี(พิเศษ) → ใช้สิทธิ = ครบกำหนด+1วัน',type:'formula'},
+];
+
+// ════════════════════════════════════════════
+// COMPONENTS
+// ════════════════════════════════════════════
+
+function SummaryTab() {
+  return summaryData.map(s=>(
+    <Card key={s.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14,marginBottom:16,boxShadow:'0 1px 6px rgba(61,50,41,0.04)'}}
+      title={<Flex align="center" gap={8} wrap="wrap">
+        <Text strong style={{color:C.amberDark,fontSize:15}}>{s.title}</Text>
+        {s.tags && s.tags.map(([l,c],i)=><Tag key={i} color={c} style={{fontSize:11}}>{l}</Tag>)}
+      </Flex>}
+      headStyle={{borderBottom:`1px solid ${C.border}`,background:C.surface}}
+    >{s.content()}</Card>
+  ));
+}
+
+function Stars({n}){return <span style={{color:'#C4A35A',fontSize:14,letterSpacing:2}}>{'⭐'.repeat(n)}</span>;}
+
+function FlashcardTab() {
+  const [mode,setMode]=useState('all');
+  const getFiltered=m=>{
+    if(m==='exam') return flashcards.filter(c=>c.exam);
+    if(m==='star3') return flashcards.filter(c=>c.star===3);
+    return flashcards;
+  };
+  const [cards,setCards]=useState(()=>[...flashcards].sort(()=>Math.random()-0.5));
+  const [idx,setIdx]=useState(0);
+  const [flipped,setFlipped]=useState(false);
+  const [correct,setCorrect]=useState(0);
+  const [wrong,setWrong]=useState(0);
+  const [showCheck,setShowCheck]=useState(false);
+  const card=cards[idx]||cards[0];
+  const flip=()=>{setFlipped(f=>!f);setShowCheck(true);};
+  const next=()=>{if(idx<cards.length-1){setIdx(i=>i+1);setFlipped(false);setShowCheck(false);}};
+  const prev=()=>{if(idx>0){setIdx(i=>i-1);setFlipped(false);setShowCheck(false);}};
+  const markOk=()=>{setCorrect(c=>c+1);setShowCheck(false);setTimeout(next,200);};
+  const markNo=()=>{setWrong(c=>c+1);setShowCheck(false);setTimeout(next,200);};
+  const doShuffle=(m)=>{const f=getFiltered(m||mode);setCards([...f].sort(()=>Math.random()-0.5));setIdx(0);setFlipped(false);setShowCheck(false);};
+  const reset=()=>{setCorrect(0);setWrong(0);doShuffle();};
+  const changeMode=(m)=>{setMode(m);setCorrect(0);setWrong(0);doShuffle(m);};
+
+  const examCount=flashcards.filter(c=>c.exam).length;
+  const star3Count=flashcards.filter(c=>c.star===3).length;
+
+  return (
+    <div>
+      <Flex gap={8} style={{marginBottom:16}} wrap="wrap">
+        <Button type={mode==='all'?'primary':'default'} onClick={()=>changeMode('all')}>ทั้งหมด ({flashcards.length})</Button>
+        <Button type={mode==='exam'?'primary':'default'} onClick={()=>changeMode('exam')} style={mode==='exam'?{background:'#8B6F47',borderColor:'#8B6F47'}:{}}>📝 เกร็งข้อสอบ ({examCount})</Button>
+        <Button type={mode==='star3'?'primary':'default'} onClick={()=>changeMode('star3')} style={mode==='star3'?{background:'#8B6F47',borderColor:'#8B6F47'}:{}}>⭐⭐⭐ ออกชัวร์ ({star3Count})</Button>
+      </Flex>
+
+      <Flex gap={16} justify="center" style={{marginBottom:16}}>
+        <Card size="small" style={{background:C.greenBg,border:`1px solid ${C.border}`,borderRadius:12,minWidth:100,textAlign:'center'}}>
+          <Statistic title={<Text style={{color:C.green,fontSize:12}}>✓ ถูก</Text>} value={correct} valueStyle={{color:C.green,fontSize:24}} />
+        </Card>
+        <Card size="small" style={{background:C.redBg,border:`1px solid ${C.border}`,borderRadius:12,minWidth:100,textAlign:'center'}}>
+          <Statistic title={<Text style={{color:C.red,fontSize:12}}>✗ ผิด</Text>} value={wrong} valueStyle={{color:C.red,fontSize:24}} />
+        </Card>
+      </Flex>
+      <Flex gap={12} align="center" style={{marginBottom:16}} wrap="wrap">
+        <Button onClick={()=>doShuffle()}>🔀 สุ่มใหม่</Button>
+        <Button onClick={reset}>↻ รีเซ็ต</Button>
+        <Text style={{color:C.text3,marginLeft:'auto'}}>ข้อ <strong style={{color:C.amberDark}}>{idx+1}</strong> / {cards.length}</Text>
+      </Flex>
+
+      <div className="fc-perspective" style={{marginBottom:20}}>
+        <div className={`fc-card ${flipped?'flipped':''}`} onClick={flip}>
+          <div className="fc-face" style={{background:`linear-gradient(145deg,${C.surface3},${C.surface})`,border:`1px solid ${C.border}`,boxShadow:'0 2px 12px rgba(61,50,41,0.06)'}}>
+            <Flex gap={8} align="center" style={{marginBottom:12}}>
+              <Stars n={card.star||1} />
+              {card.exam && <Tag color="volcano" style={{fontSize:11,fontWeight:700,margin:0}}>📝 เกร็งข้อสอบ</Tag>}
+            </Flex>
+            <Text style={{color:C.gold,fontSize:11,fontWeight:700,letterSpacing:1.5,textTransform:'uppercase',marginBottom:14}}>โจทย์ — เดามาตรา</Text>
+            <Text style={{color:C.text,fontSize:16,lineHeight:1.9,maxWidth:620}}>{card.q}</Text>
+            <Text style={{color:C.text3,fontSize:12,marginTop:20}}>👆 คลิกเพื่อเฉลย</Text>
+          </div>
+          <div className="fc-face fc-back" style={{background:`linear-gradient(145deg,#F0EBE2,#EDE8DF)`,border:`1px solid ${C.goldDark}`,boxShadow:'0 2px 12px rgba(61,50,41,0.08)'}}>
+            <Flex gap={8} align="center" style={{marginBottom:8}}>
+              <Stars n={card.star||1} />
+              {card.exam && <Tag color="volcano" style={{fontSize:11,fontWeight:700,margin:0}}>📝 เกร็งข้อสอบ</Tag>}
+            </Flex>
+            <Tag color="gold" style={{fontSize:15,fontWeight:700,padding:'4px 16px',marginBottom:12}}>{card.a}</Tag>
+            <Text style={{color:C.text2,fontSize:14,lineHeight:1.9,maxWidth:620}}>{card.d}</Text>
+            <Text style={{color:C.text3,fontSize:12,marginTop:16}}>👆 คลิกเพื่อกลับด้านหน้า</Text>
+          </div>
+        </div>
+      </div>
+
+      {showCheck && flipped && (
+        <Flex gap={12} justify="center" style={{marginBottom:16}}>
+          <Button type="primary" style={{background:C.green,borderColor:C.green,minWidth:120}} onClick={markOk}>✓ จำได้</Button>
+          <Button danger style={{minWidth:120}} onClick={markNo}>✗ ยังไม่แม่น</Button>
+        </Flex>
+      )}
+
+      <Flex gap={12} justify="center">
+        <Button onClick={prev} disabled={idx===0}>← ก่อนหน้า</Button>
+        <Button onClick={next} disabled={idx===cards.length-1}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+}
+
+function Mnem({children}){return <Tag color="gold" style={{fontWeight:700,fontSize:16,padding:'2px 10px',letterSpacing:3}}>{children}</Tag>;}
+function Flow({steps}){return <Flex wrap="wrap" gap={4} align="center">{steps.map((s,i)=><React.Fragment key={i}>{i>0&&<Text style={{color:C.gold,fontWeight:700}}>→</Text>}<Tag style={{background:C.surface3,border:`1px solid ${C.border}`,color:C.text,fontSize:12}}>{s}</Tag></React.Fragment>)}</Flex>;}
+
+function QuickTab() {
+  const typeColors = {
+    mnem: {bg:C.purpleBg,border:'#D5CFE0',accent:C.purple},
+    flow: {bg:C.cyanBg,border:'#C8DEDE',accent:C.cyan},
+    contrast: {bg:C.redBg,border:'#E8D4D0',accent:C.red},
+    chunk: {bg:C.blueBg,border:'#BFDBFE',accent:C.blue},
+    formula: {bg:'#FFF8EB',border:'#E8D5A8',accent:'#8B6F47'},
+  };
+
+  return (
+    <div>
+      <Alert showIcon message={<span>🧠 <strong>Brain-Optimized</strong> — เทคนิคจำแบบ Mnemonic + Visual Flow + Contrast Pairs + Chunking + 30-Second Formula</span>} style={{marginBottom:16}} />
+      {quickSections.map((item,i)=>{
+        if(item.divider) return <Divider key={i} orientation="left" style={{color:C.amberDark,borderColor:C.borderDark,fontSize:14,fontWeight:600}}>{item.divider}</Divider>;
+        const tc = typeColors[item.type] || {bg:C.surface3,border:C.border,accent:C.gold};
+        return (
+          <Card key={i} className="qc" size="small" style={{background:tc.bg,border:`1px solid ${tc.border}`,borderRadius:12,marginBottom:10,borderLeft:`4px solid ${tc.accent}`}}>
+            <Flex gap={12} align="start">
+              <Tag color="gold" style={{fontWeight:700,fontSize:13,flexShrink:0}}>{item.s}</Tag>
+              <div style={{flex:1}}>
+                <Text strong style={{color:C.text,fontSize:14}}>{item.t}</Text>
+                <br/>
+                <Text style={{color:C.text2,fontSize:13,lineHeight:1.9}}>{item.b}</Text>
+              </div>
+            </Flex>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token: {
+        colorPrimary: C.gold,
+        colorBgBase: C.bg,
+        colorBgContainer: C.white,
+        fontFamily: "'Noto Sans Thai', sans-serif",
+        borderRadius: 12,
+        colorBorder: C.border,
+        colorText: C.text,
+        colorTextSecondary: C.text2,
+        fontSize: 14,
+        lineHeight: 1.8,
+      }
+    }}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:900,margin:'0 auto',padding:'32px 16px'}}>
+          <div style={{textAlign:'center',marginBottom:28}}>
+            <Title level={2} style={{color:C.amberDark,marginBottom:4,letterSpacing:1}}>LAW1102 หลักกฎหมายเอกชน</Title>
+            <Text style={{color:C.text3,fontSize:13}}>สรุปเนื้อหา + Flashcard + การ์ดจำด่วน — มหาวิทยาลัยรามคำแหง — ครอบคลุมทั้ง 3 ส่วนตามขอบเขตสอบ</Text>
+          </div>
+
+          <Tabs
+            defaultActiveKey="summary"
+            centered
+            type="card"
+            items={[
+              {key:'summary',label:'📖 สรุปเนื้อหา',children:<SummaryTab />},
+              {key:'flashcard',label:'🃏 Flashcard ('+flashcards.length+')',children:<FlashcardTab />},
+              {key:'quick',label:'⚡ การ์ดจำด่วน',children:<QuickTab />},
+            ]}
+          />
+
+          <div style={{textAlign:'center',marginTop:24,paddingTop:16,borderTop:`1px solid ${C.border}`}}>
+            <Text style={{color:C.text3,fontSize:11}}>LAW1102 หลักกฎหมายเอกชน Review — ม.รามคำแหง — Sepia Theme for 4h+ reading</Text>
+          </div>
+        </Content>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
