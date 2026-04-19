@@ -1,13 +1,15 @@
 // Service Worker for บทสวดมนต์ PWA
 // Version: Update this to force cache refresh
-const CACHE_VERSION = 'v1.5.0';
+const CACHE_VERSION = 'v1.6.0';
 const CACHE_NAME = `chanting-cache-${CACHE_VERSION}`;
 
-// Files to cache
+// Files to cache — use relative paths so it works on subpath hosting (GitHub Pages)
 const urlsToCache = [
-  '/',
-  '/index.html',
-  'https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Sarabun:wght@300;400;500&display=swap'
+  './',
+  './index.html',
+  './manifest.json',
+  './assets/buddha-hero.png',
+  'https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap'
 ];
 
 // Install event - cache essential files
