@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW2102 กฎหมายแพ่งและพาณิชย์ว่าด้วยหนี้</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+  body { background:#F5F0E8; font-family:'Noto Sans Thai',sans-serif; line-height:1.8; margin:0; }
+  .fc-perspective { perspective:1200px; }
+  .fc-card { width:100%; height:240px; position:relative; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; text-align:center; }
+  .fc-front { background:#EDE8DF; border:2px solid #DDD3C1; }
+  .fc-back { transform:rotateY(180deg); background:#E8F0E8; border:2px solid #A8C4A8; }
+  .qc { transition:transform 0.2s, box-shadow 0.2s; }
+  .qc:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.12); }
+  ::-webkit-scrollbar { width:8px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:4px; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  .ant-table-cell { line-height:1.9 !important; }
+  .ant-tabs-tab { font-family:'Noto Sans Thai',sans-serif !important; }
+  .scope-box { background:#FFF8E7; border:2px solid #B5986A; border-radius:10px; padding:12px 16px; margin-bottom:16px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex } = antd;
+const { Title, Text } = Typography;
+const { Content } = Layout;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  amber:'#B5986A', amberDark:'#7A6548',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62',
+  white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+
+// ==================== SUMMARY DATA ====================
+const summaryData = [
+  {
+    key:'scope',
+    title:'🎯 ขอบเขตข้อสอบ LAW2102 (อัปเดตล่าสุด)',
+    tags:[['ขอบเขตจริง','volcano'],['4 หัวข้อ','gold']],
+    content:()=>(
+      <div>
+        <div className="scope-box">
+          <Text strong style={{color:C.amberDark,fontSize:14}}>📌 ขอบเขตข้อสอบ 4 หัวข้อ (ตามประกาศ)</Text>
+          <Table size="small" pagination={false} style={{marginTop:8}} dataSource={[
+            {key:1,no:'หัวข้อ 1',topic:'การผิดนัดของเจ้าหนี้ ลูกหนี้',maatra:'ม.203 204 205 207 208 209 216 217 224 225',freq:'⭐⭐⭐'},
+            {key:2,no:'หัวข้อ 2',topic:'การชำระหนี้กลายเป็นพ้นวิสัย + การรับช่วงสิทธิ',maatra:'ม.218 219 226 227 228 229',freq:'⭐⭐⭐'},
+            {key:3,no:'หัวข้อ 3',topic:'ควบคุมกองทรัพย์สินลูกหนี้ (ใช้สิทธิเรียกร้อง + ฉ้อฉล)',maatra:'ม.233 234 235 + ม.237',freq:'⭐⭐⭐'},
+            {key:4,no:'หัวข้อ 4',topic:'ลูกหนี้ร่วม + หักกลบลบหนี้',maatra:'ม.291 297 301 340 341',freq:'⭐⭐⭐'},
+          ]} columns={[
+            {title:'',dataIndex:'no',key:'no',width:80},
+            {title:'หัวข้อ',dataIndex:'topic',key:'topic'},
+            {title:'มาตราที่ออก',dataIndex:'maatra',key:'maatra'},
+            {title:'ความสำคัญ',dataIndex:'freq',key:'freq',width:90},
+          ]}/>
+        </div>
+        <Alert type="error" showIcon message={<span><Text strong>สูตรตอบข้อสอบ:</Text> <Tag color="red">หลักกฎหมาย (ยกมาตรา)</Tag> → <Tag color="orange">วินิจฉัย (ข้อเท็จจริง)</Tag> → <Tag color="green">สรุป</Tag></span>} style={{marginBottom:8}}/>
+        <Alert type="warning" showIcon message="ข้อสอบ 4 ข้อ ข้อละ 25 คะแนน = 100 คะแนน รูปแบบอัตนัย ทุกข้อต้องยกมาตราและวินิจฉัย"/>
+      </div>
+    )
+  },
+  // ===================== หัวข้อ 1 =====================
+  {
+    key:'pisnad-overview',
+    title:'🔴 หัวข้อ 1: การผิดนัดของเจ้าหนี้ & ลูกหนี้ (ม.203-225)',
+    tags:[['ออกทุกปี','volcano'],['ม.203-225','red']],
+    content:()=>(
+      <div>
+        <Alert type="info" showIcon message={<span><Text strong>หลักวินิจฉัย 5 ขั้น:</Text> (1)มีหนี้? → (2)มีกำหนดเวลา? → (3)ต้องเตือน? → (4)เตือนแล้วหรือไม่? → (5)มีเหตุยกเว้น?</span>} style={{marginBottom:10}}/>
+        <Row gutter={[12,12]}>
+          <Col span={24}>
+            <Card size="small" style={{background:'#FFF8E7',borderColor:C.amber,borderLeft:`4px solid ${C.amber}`}}>
+              <Text strong style={{color:C.amberDark}}>ม.203 — ไม่มีกำหนดเวลา</Text>
+              <br/>
+              <Text>เจ้าหนี้เรียกได้โดยพลัน / ลูกหนี้ชำระได้โดยพลัน{'\n'}→ ต้องเตือนก่อน ลูกหนี้จึงตกเป็นผิดนัด</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.redBg,borderColor:C.red}}>
+              <Text strong style={{color:C.red}}>ม.204 วรรค 1 — มีกำหนด "ต้องเตือน"</Text>
+              <br/>
+              <Text>หนี้ถึงกำหนดแล้ว เจ้าหนี้ต้องเตือนให้ชำระก่อน หากลูกหนี้ยังไม่ชำระ → ผิดนัด</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.redBg,borderColor:C.red}}>
+              <Text strong style={{color:C.red}}>ม.204 วรรค 2 — "ไม่ต้องเตือน"</Text>
+              <br/>
+              <Text>หนี้มีกำหนดเวลา + ลักษณะชัดแจ้งว่าถึงกำหนดแล้วผิดนัดทันที → ไม่ต้องเตือน{'\n'}<Text strong style={{color:C.red}}>ม.206</Text>: หนี้ละเมิด → ผิดนัดตั้งแต่เวลาทำละเมิด</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.greenBg,borderColor:C.green}}>
+              <Text strong style={{color:C.green}}>ม.205 — เหตุยกเว้น (ไม่ผิดนัด)</Text>
+              <br/>
+              <Text>• เจ้าหนี้ยังไม่พร้อมรับชำระ{'\n'}• ลูกหนี้ไม่สามารถชำระได้โดยไม่ใช่ความผิดของตน{'\n'}→ ลูกหนี้ไม่ตกเป็นผู้ผิดนัด</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.purpleBg,borderColor:C.purple}}>
+              <Text strong style={{color:C.purple}}>ผลผิดนัด (ลูกหนี้)</Text>
+              <br/>
+              <Text>ม.216: บอกเลิกสัญญาได้{'\n'}ม.217: รับผิดแม้พ้นวิสัย (เว้นแต่พิสูจน์ได้ว่าพ้นอยู่ดี){'\n'}ม.224: ดอกเบี้ยผิดนัด 3%/ปี</Text>
+            </Card>
+          </Col>
+        </Row>
+        <Divider style={{margin:'12px 0',borderColor:C.border}}/>
+        <Text strong style={{color:C.blue,fontSize:14}}>เจ้าหนี้ผิดนัด (ม.207-212) & ผล</Text>
+        <Row gutter={[12,12]} style={{marginTop:8}}>
+          <Col xs={24} md={8}>
+            <Card size="small" style={{background:C.blueBg,borderColor:C.blue}}>
+              <Text strong style={{color:C.blue}}>ม.207 ไม่รับชำระ</Text><br/>
+              <Text>ลูกหนี้ขอชำระตามที่ควร แต่เจ้าหนี้ไม่รับ → เจ้าหนี้ผิดนัด</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={8}>
+            <Card size="small" style={{background:C.blueBg,borderColor:C.blue}}>
+              <Text strong style={{color:C.blue}}>ม.208 ไม่ร่วมมือ</Text><br/>
+              <Text>ต้องการความร่วมมือเจ้าหนี้ก่อน เจ้าหนี้ไม่กระทำ → ผิดนัด</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={8}>
+            <Card size="small" style={{background:C.blueBg,borderColor:C.blue}}>
+              <Text strong style={{color:C.blue}}>ม.209 ไม่ชำระตอบแทน</Text><br/>
+              <Text>ต้องชำระพร้อมกัน เจ้าหนี้ไม่ยื่นชำระตอบแทน → ผิดนัด</Text>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card size="small" style={{background:'#FFF8E7',borderColor:C.amber,borderLeft:`4px solid ${C.amber}`}}>
+              <Text strong style={{color:C.amberDark}}>ผลเจ้าหนี้ผิดนัด (ม.225 สำคัญ!)</Text>
+              <Row gutter={8} style={{marginTop:4}}>
+                <Col xs={24} md={12}><Text>ม.224: ดอกเบี้ยผิดนัด 3%/ปี (เมื่อลูกหนี้ผิดนัด)</Text></Col>
+                <Col xs={24} md={12}><Text strong style={{color:C.red}}>ม.225: เมื่อเจ้าหนี้ผิดนัด → ดอกเบี้ยหยุดไหล ลูกหนี้รับผิดแต่เฉพาะความเสียหายที่เกิดแต่ความจงใจหรือประมาทเลินเล่ออย่างร้ายแรงของตน</Text></Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  // ===================== หัวข้อ 2 =====================
+  {
+    key:'pensai-changsit',
+    title:'🔥 หัวข้อ 2: พ้นวิสัย + รับช่วงสิทธิ (ม.218-229)',
+    tags:[['ม.218-229','orange'],['ออกทุกปี','volcano']],
+    content:()=>(
+      <div>
+        <Text strong style={{color:C.text,fontSize:14}}>ก. การชำระหนี้กลายเป็นพ้นวิสัย</Text>
+        <Row gutter={[12,12]} style={{marginTop:8,marginBottom:12}}>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.redBg,borderColor:C.red}}>
+              <Text strong style={{color:C.red}}>ม.218 — พ้นวิสัยเพราะลูกหนี้ผิด</Text><br/>
+              <Text>ถ้าการชำระหนี้กลายเป็นพ้นวิสัยเพราะพฤติการณ์ <strong>อันใดอันหนึ่งซึ่งลูกหนี้ต้องรับผิดชอบ</strong>{'\n'}→ ลูกหนี้ยังต้องรับผิด ชำระค่าสินไหมทดแทนแทน</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.greenBg,borderColor:C.green}}>
+              <Text strong style={{color:C.green}}>ม.219 — พ้นวิสัยไม่ใช่ความผิดลูกหนี้</Text><br/>
+              <Text>ชำระหนี้ไม่ได้เพราะพฤติการณ์ <strong>ที่ลูกหนี้ไม่ต้องรับผิด</strong>{'\n'}→ ลูกหนี้ <strong>หลุดพ้น</strong> ไม่ต้องชำระหนี้</Text>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card size="small" style={{background:C.purpleBg,borderColor:C.purple}}>
+              <Text strong style={{color:C.purple}}>ม.217 — ลูกหนี้ผิดนัดแล้วพ้นวิสัย (เชื่อมกับหัวข้อ 1)</Text><br/>
+              <Text>ถ้าลูกหนี้ <strong>ผิดนัดก่อน</strong> แล้วทรัพย์พ้นวิสัย → ลูกหนี้ <strong>ยังต้องรับผิด</strong>{'\n'}เว้นแต่พิสูจน์ได้ว่า แม้ไม่ผิดนัด ก็จะพ้นวิสัยอยู่ดี</Text>
+            </Card>
+          </Col>
+        </Row>
+        <Divider style={{margin:'10px 0',borderColor:C.border}}/>
+        <Text strong style={{color:C.text,fontSize:14}}>ข. การรับช่วงสิทธิ (ม.226-229)</Text>
+        <Row gutter={[12,12]} style={{marginTop:8}}>
+          <Col span={24}>
+            <Card size="small" style={{background:C.blueBg,borderColor:C.blue}}>
+              <Text strong style={{color:C.blue}}>ม.226 — ผลรับช่วงสิทธิ</Text><br/>
+              <Text>ผู้รับช่วงสิทธิ เข้าสู่ฐานะเจ้าหนี้เดิมทุกประการ มีสิทธิเรียกร้องจากลูกหนี้ได้</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.cyanBg,borderColor:C.cyan}}>
+              <Text strong style={{color:C.cyan}}>ม.227 — ช่วงสิทธิโดยนิติกรรม</Text><br/>
+              <Text>เจ้าหนี้โอนสิทธิให้บุคคลอื่น พร้อมชำระหนี้ → ผู้รับโอนรับช่วงสิทธิ</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.cyanBg,borderColor:C.cyan}}>
+              <Text strong style={{color:C.cyan}}>ม.228 — ช่วงทรัพย์</Text><br/>
+              <Text>ทรัพย์พ้นวิสัย/สูญหาย → เจ้าหนี้มีสิทธิในสิ่งตอบแทนแทนทรัพย์นั้น</Text>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card size="small" style={{background:'#FFF8E7',borderColor:C.amber,borderLeft:`4px solid ${C.amber}`}}>
+              <Text strong style={{color:C.amberDark}}>ม.229 — รับช่วงสิทธิโดยผลของกฎหมาย 5 กรณี (สำคัญมาก!)</Text>
+              <ol style={{paddingLeft:20,marginTop:4}}>
+                <li><strong>(1)</strong> บุคคลผู้มีส่วนได้เสียชำระหนี้แทน → เช่น <Text strong style={{color:C.red}}>ผู้ค้ำประกัน</Text> ชำระแทน → รับช่วงสิทธิ</li>
+                <li><strong>(2)</strong> ชำระหนี้ที่มีจำนอง/จำนำ + ถูกบังคับให้ชำระ</li>
+                <li><strong>(3)</strong> ผู้ซื้อทรัพย์จำนองชำระหนี้แทนเจ้าหนี้จำนอง</li>
+                <li><strong>(4)</strong> ทายาทชำระหนี้กองมรดก</li>
+                <li><strong>(5)</strong> กรณีอื่นตามที่กฎหมายกำหนด</li>
+              </ol>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  // ===================== หัวข้อ 3 =====================
+  {
+    key:'kontrolsit',
+    title:'💼 หัวข้อ 3: ควบคุมกองทรัพย์สินลูกหนี้ (ม.233-237)',
+    tags:[['ม.233-237','purple'],['ออกทุกปี','volcano']],
+    content:()=>(
+      <div>
+        <Text strong style={{color:C.text,fontSize:14}}>ก. การใช้สิทธิเรียกร้องของลูกหนี้ (ม.233-235)</Text>
+        <Row gutter={[12,12]} style={{marginTop:8,marginBottom:12}}>
+          <Col span={24}>
+            <Card size="small" style={{background:'#FFF8E7',borderColor:C.amber,borderLeft:`4px solid ${C.amber}`}}>
+              <Text strong style={{color:C.amberDark}}>ม.233 — หลักเกณฑ์ 3 ประการ</Text>
+              <ol style={{paddingLeft:20,marginTop:4}}>
+                <li>เจ้าหนี้มีสิทธิเรียกร้องต่อลูกหนี้</li>
+                <li>ลูกหนี้มีสิทธิเรียกร้องต่อบุคคลที่สาม</li>
+                <li>ลูกหนี้ <strong>ไม่ใช้สิทธิ</strong> จนเป็นเหตุให้เจ้าหนี้เสียหาย</li>
+              </ol>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.redBg,borderColor:C.red}}>
+              <Text strong style={{color:C.red}}>ม.234 — สิทธิที่ใช้แทนไม่ได้</Text><br/>
+              <Text>สิทธิ<strong>เฉพาะตัว</strong>ของลูกหนี้ เจ้าหนี้ใช้แทนไม่ได้{'\n'}เช่น สิทธิรับมรดก, สิทธิตามกฎหมายครอบครัว</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.greenBg,borderColor:C.green}}>
+              <Text strong style={{color:C.green}}>ม.235 — วิธีการใช้สิทธิ</Text><br/>
+              <Text>เจ้าหนี้ใช้สิทธิในนามลูกหนี้ แต่ฟ้องในนามตนเองได้{'\n'}บุคคลที่สามยกข้อต่อสู้ที่มีต่อลูกหนี้ขึ้นต่อสู้เจ้าหนี้ได้</Text>
+            </Card>
+          </Col>
+        </Row>
+        <Divider style={{margin:'10px 0',borderColor:C.border}}/>
+        <Text strong style={{color:C.text,fontSize:14}}>ข. การเพิกถอนการฉ้อฉล (ม.237)</Text>
+        <Row gutter={[12,12]} style={{marginTop:8}}>
+          <Col span={24}>
+            <Card size="small" style={{background:C.redBg,borderColor:C.red,borderLeft:`4px solid ${C.red}`}}>
+              <Text strong style={{color:C.red}}>ม.237 — หลักเกณฑ์ 4 ประการ</Text>
+              <ol style={{paddingLeft:20,marginTop:4}}>
+                <li>เจ้าหนี้มีสิทธิเรียกร้อง (หนี้มีอยู่ก่อน/ขณะทำนิติกรรม)</li>
+                <li>ลูกหนี้ทำนิติกรรมกับบุคคลที่สาม</li>
+                <li>นิติกรรมทำให้ <strong>เจ้าหนี้เสียเปรียบ</strong></li>
+                <li>ลูกหนี้ <strong>รู้อยู่ว่าเจ้าหนี้จะเสียเปรียบ</strong></li>
+              </ol>
+              <Alert type="warning" showIcon message={<span><Text strong>★ กรณีได้ทรัพย์โดยเสน่หา (ฟรี) → ไม่ต้องพิสูจน์ข้อ 4 เพิกถอนได้เลย!</Text></span>} style={{marginTop:8}}/>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.purpleBg,borderColor:C.purple}}>
+              <Text strong style={{color:C.purple}}>ผลของการเพิกถอน</Text><br/>
+              <Text>นิติกรรมเป็น<strong>โมฆียะ</strong>เฉพาะส่วนที่ทำให้เจ้าหนี้เสียเปรียบ → ทรัพย์กลับมาอยู่ในกองทรัพย์ลูกหนี้</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.greenBg,borderColor:C.green}}>
+              <Text strong style={{color:C.green}}>อายุความ (ม.240)</Text><br/>
+              <Text><strong>1 ปี</strong> นับแต่รู้เหตุฉ้อฉล{'\n'}หรือ <strong>10 ปี</strong> นับแต่ทำนิติกรรม (อย่างใดก่อน)</Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  // ===================== หัวข้อ 4 =====================
+  {
+    key:'luknee-ruam',
+    title:'👥 หัวข้อ 4: ลูกหนี้ร่วม + หักกลบลบหนี้ (ม.291-341)',
+    tags:[['ม.291-341','gold'],['ออกทุกปี','volcano']],
+    content:()=>(
+      <div>
+        <Text strong style={{color:C.text,fontSize:14}}>ก. ลูกหนี้ร่วม (ม.291-302)</Text>
+        <Row gutter={[12,12]} style={{marginTop:8,marginBottom:12}}>
+          <Col span={24}>
+            <Alert type="warning" showIcon message={<span><Text strong>ม.291:</Text> เจ้าหนี้เรียกชำระทั้งหมดจากลูกหนี้ร่วมคนใดคนหนึ่งก็ได้ จนกว่าจะชำระครบ</span>}/>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.redBg,borderColor:C.red}}>
+              <Text strong style={{color:C.red}}>ผลต่อลูกหนี้ร่วมคนอื่น</Text>
+              <ul style={{paddingLeft:18,marginTop:4}}>
+                <li><Text strong>ม.292:</Text> คนหนึ่งชำระครบ → ทุกคนหลุดพ้น</li>
+                <li><Text strong>ม.293:</Text> คนหนึ่งผิดนัด → ไม่กระทบคนอื่น (เฉพาะตัว)</li>
+                <li><Text strong>ม.294:</Text> ผ่อนเวลาคนหนึ่ง → ไม่กระทบคนอื่น</li>
+                <li><Text strong>ม.295:</Text> ข้อต่อสู้เฉพาะตัว → ใช้ยันได้เฉพาะตัว</li>
+              </ul>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.greenBg,borderColor:C.green}}>
+              <Text strong style={{color:C.green}}>ม.297 — หักกลบ/ปลดหนี้ (ลูกหนี้ร่วม)</Text><br/>
+              <Text>ลูกหนี้ร่วมคนหนึ่งหักกลบลบหนี้กับเจ้าหนี้{'\n'}→ ลูกหนี้ร่วมคนอื่น <strong>ได้ประโยชน์</strong> ตามส่วนของผู้หักกลบ</Text>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card size="small" style={{background:'#FFF8E7',borderColor:C.amber,borderLeft:`4px solid ${C.amber}`}}>
+              <Text strong style={{color:C.amberDark}}>ม.301 — สิทธิไล่เบี้ย (สำคัญในข้อสอบ!)</Text><br/>
+              <Text>ลูกหนี้ร่วมที่ชำระหนี้เกินส่วนของตน มีสิทธิ <strong>ไล่เบี้ย</strong> ลูกหนี้คนอื่นได้{'\n'}ตามส่วนเฉลี่ยเท่ากัน (ถ้าไม่มีข้อตกลง) → รับช่วงสิทธิโดย ม.229(1)</Text>
+            </Card>
+          </Col>
+        </Row>
+        <Divider style={{margin:'10px 0',borderColor:C.border}}/>
+        <Text strong style={{color:C.text,fontSize:14}}>ข. หักกลบลบหนี้ (ม.340-341)</Text>
+        <Row gutter={[12,12]} style={{marginTop:8}}>
+          <Col span={24}>
+            <Card size="small" style={{background:C.blueBg,borderColor:C.blue,borderLeft:`4px solid ${C.blue}`}}>
+              <Text strong style={{color:C.blue}}>ม.341 — หลักเกณฑ์การหักกลบลบหนี้ 3 ข้อ</Text>
+              <ol style={{paddingLeft:20,marginTop:4}}>
+                <li>ต่างฝ่ายต่างเป็น <strong>เจ้าหนี้-ลูกหนี้</strong> ซึ่งกันและกัน</li>
+                <li>หนี้มีวัตถุ <strong>ชนิดเดียวกัน</strong> (เช่น ต่างเป็นหนี้เงิน)</li>
+                <li>สิทธิเรียกร้องทั้งสองฝ่าย <strong>ถึงกำหนดแล้ว</strong></li>
+              </ol>
+              <Text style={{color:C.text2}}>→ ฝ่ายใดฝ่ายหนึ่ง แสดงเจตนาหักกลบได้ตามจำนวนที่เท่ากัน</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.purpleBg,borderColor:C.purple}}>
+              <Text strong style={{color:C.purple}}>ม.340 — หักกลบไม่ได้ (กรณียกเว้น)</Text><br/>
+              <Text>• หนี้ที่มีสภาพไม่เปิดช่องหักกลบ{'\n'}• หนี้ที่เกิดจากการกระทำอันไม่ชอบด้วยกฎหมาย{'\n'}• หนี้ที่มีกำหนดเวลาเพื่อประโยชน์แก่เจ้าหนี้</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card size="small" style={{background:C.cyanBg,borderColor:C.cyan}}>
+              <Text strong style={{color:C.cyan}}>ม.297 เชื่อมกับ ม.341</Text><br/>
+              <Text>ลูกหนี้ร่วมคนหนึ่งมีสิทธิหักกลบกับเจ้าหนี้ → ลูกหนี้ร่วมคนอื่นได้ประโยชน์ตามส่วน (เชื่อมกัน)</Text>
+            </Card>
+          </Col>
+        </Row>
+        <Alert type="info" showIcon message="ข้อสอบปี 2566-2567: ลูกหนี้ร่วม 3 คน (เช่น นายรัก/รุ่ง/เรือง) มักถามว่าถ้าคนหนึ่งชำระ/ปลดหนี้/ผิดนัด มีผลต่อคนอื่นอย่างไร และไล่เบี้ยกันได้เท่าไร" style={{marginTop:8}}/>
+      </div>
+    )
+  },
+];
+
+// ==================== FLASHCARDS ====================
+const flashcards = [
+  // หัวข้อ 1
+  {q:'[ข้อสอบ 2567] จันทร์ขายรถให้อังคาร กำหนดส่งวันที่ 1 ม.ค. ถึงกำหนดอังคารไม่มารับ ใครผิดนัด?',a:'อังคาร (เจ้าหนี้) ผิดนัด ม.207',d:'อังคารซื้อรถ = เจ้าหนี้ในหนี้รับมอบรถ เมื่อถึงกำหนดไม่มารับ → เจ้าหนี้ผิดนัด ม.207 ผล: ดอกเบี้ยหยุดไหล (ม.225) และจันทร์ไม่ต้องรับผิดกรณีพ้นวิสัย',star:3,exam:true},
+  {q:'[ข้อสอบ 2566] จันทร์กู้ยืม 500,000 บาท ครบกำหนดตกลงโอนที่ดินชำระแทน เจ้าหนี้ไม่มารับโอน ใครผิดนัด?',a:'เจ้าหนี้ผิดนัด ม.207+208',d:'หนี้ต้องชำระพร้อมกัน (โอนที่ดิน+ปลดหนี้) เจ้าหนี้ต้องมาที่สำนักงานที่ดิน แต่ไม่มา → ม.207 ไม่รับชำระ + ม.208 ไม่ร่วมมือ → เจ้าหนี้ผิดนัด',star:3,exam:true},
+  {q:'หนี้ไม่มีกำหนดเวลา เจ้าหนี้ต้องทำอย่างไรก่อนลูกหนี้จะผิดนัด?',a:'เตือนก่อน ตาม ม.203+204 วรรค 1',d:'ม.203: ไม่มีกำหนด → เรียกได้โดยพลัน แต่ต้องเตือนก่อน ม.204 วรรค 1: หนี้ถึงกำหนดแล้ว ลูกหนี้ยังไม่ชำระหลังถูกเตือน → ผิดนัด',star:3,exam:false},
+  {q:'หนี้มีกำหนดวันชัดแจ้ง ต้องเตือนก่อนหรือไม่? และถ้าเป็นหนี้ละเมิดล่ะ?',a:'ไม่ต้องเตือน ม.204 วรรค2 | ละเมิด: ผิดนัดตั้งแต่ทำละเมิด ม.206',d:'ม.204 วรรค2: มีกำหนดเวลาชัดแจ้งว่าถึงกำหนดแล้วผิดนัดทันที ม.206: หนี้ละเมิด ไม่ต้องเตือน ผิดนัดตั้งแต่เวลาทำละเมิด',star:3,exam:false},
+  {q:'ม.205 กำหนดเหตุใดที่ลูกหนี้ "ไม่ตกเป็นผู้ผิดนัด"?',a:'เจ้าหนี้ยังไม่พร้อมรับ หรือลูกหนี้ไม่สามารถชำระได้โดยไม่ใช่ความผิดตน',d:'ม.205: ตราบใดที่การชำระหนี้ยังไม่สามารถกระทำได้เพราะพฤติการณ์ที่ลูกหนี้ไม่ต้องรับผิด → ลูกหนี้ไม่ตกเป็นผู้ผิดนัด',star:2,exam:false},
+  {q:'ม.225 ผลสำคัญเมื่อเจ้าหนี้ผิดนัดคืออะไร?',a:'ดอกเบี้ยหยุดไหล + ลูกหนี้รับผิดเฉพาะกรณีจงใจ/ประมาทร้ายแรง',d:'ม.225: เมื่อเจ้าหนี้ผิดนัด ลูกหนี้ไม่ต้องเสียดอกเบี้ย และรับผิดแต่เฉพาะความเสียหายที่เกิดจากความจงใจหรือประมาทเลินเล่ออย่างร้ายแรงของตนเท่านั้น',star:3,exam:false},
+  {q:'ลูกหนี้ผิดนัดก่อน แล้วทรัพย์พ้นวิสัย ยังต้องรับผิดไหม? (ม.217)',a:'ยังต้องรับผิด เว้นแต่พิสูจน์ได้ว่าพ้นวิสัยอยู่ดี',d:'ม.217: ถ้าลูกหนี้ผิดนัด และทรัพย์พ้นวิสัยในระหว่างผิดนัด → ลูกหนี้ยังต้องรับผิด เว้นแต่พิสูจน์ได้ว่า แม้ชำระทันเวลา ทรัพย์ก็จะพ้นวิสัยอยู่ดี',star:3,exam:false},
+  // หัวข้อ 2
+  {q:'[ข้อสอบ 2566] ไฟไหม้บ้านที่เช่า ผู้เช่าต้องรับผิดไหม? วิธีวินิจฉัยอย่างไร?',a:'ดูว่าผู้เช่าผิดนัดส่งคืนก่อนไหม (ม.217) หรือไฟไหม้จากเหตุสุดวิสัย (ม.219)',d:'ถ้าผู้เช่าผิดนัดส่งคืนบ้านก่อน แล้วไฟไหม้ → ม.217 ยังต้องรับผิด เว้นแต่พิสูจน์ว่าแม้ไม่ผิดนัดก็จะไหม้อยู่ดี ถ้าไม่ผิดนัด+เหตุสุดวิสัย → ม.219 หลุดพ้น',star:3,exam:true},
+  {q:'ม.218 ต่างจาก ม.219 อย่างไร?',a:'ม.218: ลูกหนี้ผิด → ยังรับผิด | ม.219: ไม่ใช่ความผิดลูกหนี้ → หลุดพ้น',d:'ม.218: พ้นวิสัยเพราะพฤติการณ์ที่ลูกหนี้ต้องรับผิดชอบ → ยังต้องชำระค่าสินไหม ม.219: พ้นวิสัยโดยไม่ใช่ความผิดลูกหนี้ → ลูกหนี้หลุดพ้น',star:3,exam:false},
+  {q:'ม.229(1) รับช่วงสิทธิ ใครได้รับสิทธินี้โดยผลของกฎหมาย?',a:'บุคคลผู้มีส่วนได้เสียชำระหนี้แทน เช่น ผู้ค้ำประกัน',d:'ม.229(1): ผู้ค้ำประกันชำระหนี้แทนลูกหนี้ → รับช่วงสิทธิของเจ้าหนี้ มีสิทธิฟ้องลูกหนี้ได้เท่าที่ตนชำระไป',star:3,exam:false},
+  {q:'ม.228 ช่วงทรัพย์ คืออะไร?',a:'ทรัพย์พ้นวิสัย → เจ้าหนี้มีสิทธิในสิ่งตอบแทนแทนทรัพย์นั้น',d:'ม.228: เมื่อทรัพย์อันเป็นวัตถุแห่งหนี้สูญหายหรือถูกทำลาย เจ้าหนี้มีสิทธิเรียกสิ่งตอบแทนที่ลูกหนี้ได้รับแทนทรัพย์นั้น (เช่น ค่าสินไหมประกันภัย)',star:2,exam:false},
+  // หัวข้อ 3
+  {q:'[ข้อสอบ 2567] นายเพชรยกที่นาให้นายเศรษฐีฟรี ทำให้เจ้าหนี้บังคับคดีไม่ได้ จะทำอย่างไร?',a:'ขอให้ศาลเพิกถอนฉ้อฉล ม.237 วรรค 2 (ได้เสน่หา → ไม่ต้องพิสูจน์ความรู้)',d:'ม.237 วรรค2: นิติกรรมโดยเสน่หา (ยกให้ฟรี) เพิกถอนได้เลย ไม่ต้องพิสูจน์ว่านายเศรษฐีรู้หรือไม่ว่าจะทำให้เจ้าหนี้เสียเปรียบ',star:3,exam:true},
+  {q:'การเพิกถอนฉ้อฉล ม.237 ต้องพิสูจน์อะไรบ้าง?',a:'4 ข้อ: มีหนี้ก่อน + ทำนิติกรรมกับที่3 + เจ้าหนี้เสียเปรียบ + ลูกหนี้รู้',d:'ม.237 วรรค1: ต้องครบ 4 ข้อ แต่ถ้าได้เสน่หา (วรรค2) → ไม่ต้องพิสูจน์ข้อ 4 อายุความ ม.240: 1ปีนับแต่รู้ หรือ 10ปีนับแต่ทำ',star:3,exam:false},
+  {q:'ม.233 เจ้าหนี้ใช้สิทธิเรียกร้องแทนลูกหนี้ได้ ต้องมีเงื่อนไขอะไร?',a:'3 ข้อ: เจ้าหนี้มีสิทธิต่อลูกหนี้ + ลูกหนี้มีสิทธิต่อที่3 + ลูกหนี้ไม่ใช้จนเจ้าหนี้เสียหาย',d:'ม.233: ต้องครบ 3 เงื่อนไข + สิทธิต้องไม่เป็นสิทธิเฉพาะตัว (ม.234) เจ้าหนี้ฟ้องในนามตนเอง แต่ใช้สิทธิในฐานะลูกหนี้',star:2,exam:false},
+  {q:'สิทธิเฉพาะตัว ม.234 ยกตัวอย่างได้อะไรบ้าง?',a:'สิทธิรับมรดก, สิทธิตามกฎหมายครอบครัว, สิทธิรับรองบุตร',d:'ม.234: สิทธิที่ไม่อาจโอนได้และผูกพันเฉพาะตัวลูกหนี้ เจ้าหนี้ไม่มีสิทธิเข้าไปใช้แทน',star:2,exam:false},
+  // หัวข้อ 4
+  {q:'[ข้อสอบ 2566/2567] นายรัก รุ่ง เรืองเป็นลูกหนี้ร่วม 300,000 บาท นายรักชำระครบ ผลต่อนายรุ่ง-เรืองเป็นอย่างไร?',a:'หลุดพ้นทั้งคู่ ม.292 | นายรักไล่เบี้ยได้คนละ 100,000 ม.301+229(1)',d:'ม.291: เจ้าหนี้เรียกจากคนใดก็ได้ ม.292: คนหนึ่งชำระครบ→ทุกคนหลุดพ้น ม.301: นายรักรับช่วงสิทธิ ม.229(1) ไล่เบี้ยนายรุ่ง-เรืองได้คนละ 100,000 บาท',star:3,exam:true},
+  {q:'ลูกหนี้ร่วม เจ้าหนี้ผ่อนเวลาให้คนหนึ่ง มีผลต่อคนอื่นหรือไม่?',a:'ไม่มีผล ม.294 เจ้าหนี้ยังเรียกจากคนอื่นได้ตามกำหนดเดิม',d:'ม.294: การผ่อนเวลาให้ลูกหนี้ร่วมคนหนึ่งไม่กระทบสิทธิเจ้าหนี้ที่จะเรียกจากลูกหนี้ร่วมคนอื่น',star:2,exam:false},
+  {q:'ม.297 ลูกหนี้ร่วมคนหนึ่งหักกลบกับเจ้าหนี้ได้ มีผลต่อคนอื่นอย่างไร?',a:'ลูกหนี้ร่วมคนอื่นได้ประโยชน์ตามส่วนของผู้หักกลบ',d:'ม.297: ถ้าลูกหนี้ร่วมคนหนึ่งมีสิทธิหักกลบกับเจ้าหนี้ → ลูกหนี้ร่วมคนอื่นได้รับประโยชน์นั้นด้วยตามส่วน',star:3,exam:false},
+  {q:'ม.301 สิทธิไล่เบี้ยระหว่างลูกหนี้ร่วม คิดอย่างไร?',a:'ชำระเกินส่วนตน → ไล่เบี้ยส่วนที่เกินจากคนอื่น (เฉลี่ยเท่าๆ กัน)',d:'ม.301: ลูกหนี้ร่วมที่ชำระหนี้ทั้งหมดหรือเกินส่วนของตน มีสิทธิไล่เบี้ยส่วนที่ตนชำระเกินจากลูกหนี้ร่วมคนอื่น โดยรับช่วงสิทธิ ม.229(1)',star:3,exam:false},
+  {q:'หักกลบลบหนี้ ม.341 ต้องมีหลักเกณฑ์อะไร?',a:'3 ข้อ: (1)ต่างเป็นเจ้าหนี้-ลูกหนี้ (2)หนี้ชนิดเดียวกัน (3)ถึงกำหนดทั้งคู่',d:'ม.341: ถ้าบุคคล 2 ฝ่ายต่างฝ่ายต่างมีหนี้ถึงกำหนดชำระ เป็นหนี้ชนิดเดียวกัน → ฝ่ายใดฝ่ายหนึ่งหักกลบได้ตามจำนวนที่เท่ากัน',star:3,exam:false},
+  {q:'ม.340 กำหนดว่าหักกลบไม่ได้ในกรณีใดบ้าง?',a:'(1)สภาพไม่เปิดช่อง (2)เกิดจากการกระทำอันไม่ชอบ (3)กำหนดเวลาเพื่อประโยชน์เจ้าหนี้',d:'ม.340: หนี้ที่หักกลบไม่ได้ เช่น หนี้เลี้ยงดู หนี้ที่เกิดจากละเมิดโดยจงใจ หรือหนี้ที่ระบุเวลาไว้เพื่อประโยชน์แก่เจ้าหนี้โดยเฉพาะ',star:2,exam:false},
+  {q:'ม.291 ต่างจาก ม.292 อย่างไร?',a:'ม.291: เจ้าหนี้เรียกจากใครก็ได้ | ม.292: คนหนึ่งชำระครบ → ทุกคนหลุดพ้น',d:'ม.291 กำหนดสิทธิเจ้าหนี้ (เรือกเรียกจากใครก็ได้) ม.292 กำหนดผล (การชำระโดยคนหนึ่งทำให้ทุกคนหลุดพ้น) ทั้งสองมาตราเชื่อมกัน',star:3,exam:false},
+];
+
+// ==================== QUICK SECTIONS ====================
+const quickSections = [
+  { divider: '🎯 สูตรตอบข้อสอบ + ขอบเขต' },
+  {s:'ขอบเขต',t:'4 หัวข้อข้อสอบ LAW2102',b:'หัวข้อ1: ผิดนัด ม.203 204 205 207 208 209 216 217 224 225\nหัวข้อ2: พ้นวิสัย+ช่วงสิทธิ ม.218 219 226 227 228 229\nหัวข้อ3: ควบคุมทรัพย์ ม.233 234 235 + ม.237\nหัวข้อ4: ลูกหนี้ร่วม+หักกลบ ม.291 297 301 340 341',type:'formula'},
+  {s:'สูตรตอบ',t:'โครงสร้างคำตอบ',b:'1. หลักกฎหมาย: ตาม ม.XXX บัญญัติว่า...\n2. วินิจฉัย: ข้อเท็จจริงปรากฏว่า...\n3. สรุป: ดังนั้น นาย X มีสิทธิ / ต้องรับผิด...', type:'formula'},
+
+  { divider: '🔴 หัวข้อ 1: ผิดนัด ม.203-225' },
+  {s:'ม.203',t:'ไม่มีกำหนดเวลา',b:'เรียกได้โดยพลัน ต้องเตือนก่อน → ถ้าไม่ชำระ = ผิดนัด', type:'chunk'},
+  {s:'ม.204',t:'มีกำหนด — ต้องเตือนหรือไม่?',b:'วรรค1: ต้องเตือนก่อน (หลักทั่วไป)\nวรรค2: ไม่ต้องเตือน (ลักษณะชัดแจ้ง)\nม.206: ละเมิด → ผิดนัดตั้งแต่ทำละเมิด', type:'contrast'},
+  {s:'ม.205',t:'เหตุยกเว้น ไม่ผิดนัด',b:'เจ้าหนี้ไม่พร้อมรับ หรือ ลูกหนี้ชำระไม่ได้โดยไม่ใช่ความผิด → ไม่ผิดนัด', type:'chunk'},
+  {s:'ม.217',t:'ผิดนัดก่อน → พ้นวิสัย',b:'ผิดนัดก่อน แล้วทรัพย์พ้นวิสัย → ยังต้องรับผิด\nยกเว้น: พิสูจน์ได้ว่าพ้นวิสัยอยู่ดีแม้ไม่ผิดนัด', type:'contrast'},
+  {s:'ผลผิดนัด',t:'ผล (ลูกหนี้ผิดนัด)',b:'ม.216: เลิกสัญญา | ม.217: รับผิดแม้พ้นวิสัย | ม.224: ดอกเบี้ย 3%/ปี', type:'formula'},
+  {s:'เจ้าหนี้ผิด',t:'เจ้าหนี้ผิดนัด + ผล',b:'ม.207: ไม่รับชำระ | ม.208: ไม่ร่วมมือ | ม.209: ไม่ชำระตอบแทน\n★ ม.225: ดอกเบี้ยหยุดไหล + รับผิดเฉพาะจงใจ/ประมาทร้ายแรง', type:'flow'},
+  {s:'5ขั้น',t:'หลักวินิจฉัยผิดนัด',b:'1.มีหนี้? 2.มีกำหนด? 3.ต้องเตือน? 4.เตือนแล้ว? 5.มีเหตุยกเว้นม.205?', type:'mnem'},
+
+  { divider: '🔥 หัวข้อ 2: พ้นวิสัย + รับช่วงสิทธิ ม.218-229' },
+  {s:'ม.218',t:'พ้นวิสัย — ลูกหนี้ผิด',b:'พ้นวิสัยเพราะลูกหนี้ → ยังต้องรับผิด ชำระค่าสินไหมแทน', type:'contrast'},
+  {s:'ม.219',t:'พ้นวิสัย — ไม่ใช่ความผิด',b:'พ้นวิสัยโดยไม่ใช่ความผิดลูกหนี้ → ลูกหนี้หลุดพ้น (เหตุสุดวิสัย)', type:'contrast'},
+  {s:'ม.229',t:'รับช่วงสิทธิ 5 กรณี',b:'(1)มีส่วนได้เสียชำระแทน [ผู้ค้ำ ★]\n(2)จำนอง/จำนำ+ถูกบังคับ\n(3)ผู้ซื้อชำระแทนจำนอง\n(4)ทายาทชำระหนี้กองมรดก\n(5)กรณีอื่นตามกฎหมาย', type:'chunk'},
+  {s:'ม.226-228',t:'ผล + ช่วงทรัพย์',b:'ม.226: ผู้รับช่วงสิทธิเข้าสู่ฐานะเจ้าหนี้เดิม\nม.227: ช่วงสิทธิโดยนิติกรรม\nม.228: ช่วงทรัพย์ (ทรัพย์พ้นวิสัย → สิทธิในตอบแทน)', type:'flow'},
+
+  { divider: '💼 หัวข้อ 3: ควบคุมกองทรัพย์ ม.233-237' },
+  {s:'ม.233',t:'ใช้สิทธิแทนลูกหนี้ 3ข้อ',b:'1.เจ้าหนี้มีสิทธิต่อลูกหนี้\n2.ลูกหนี้มีสิทธิต่อที่3\n3.ลูกหนี้ไม่ใช้ → เจ้าหนี้เสียหาย\n★ยกเว้น: สิทธิเฉพาะตัว (ม.234)', type:'mnem'},
+  {s:'ม.237',t:'เพิกถอนฉ้อฉล 4ข้อ',b:'1.มีหนี้ก่อน 2.ทำนิติกรรมกับที่3\n3.เจ้าหนี้เสียเปรียบ 4.ลูกหนี้รู้\n★ ได้เสน่หา → ไม่ต้องพิสูจน์ข้อ 4!', type:'contrast'},
+  {s:'ม.240',t:'อายุความฉ้อฉล',b:'1ปีนับแต่รู้เหตุ หรือ 10ปีนับแต่ทำ (อย่างใดก่อน)', type:'formula'},
+
+  { divider: '👥 หัวข้อ 4: ลูกหนี้ร่วม + หักกลบ ม.291-341' },
+  {s:'ม.291',t:'เรียกจากใครก็ได้',b:'เจ้าหนี้เลือกเรียกจากลูกหนี้ร่วมคนใดก็ได้ทั้งหมด', type:'formula'},
+  {s:'ม.292-295',t:'ผลต่อลูกหนี้ร่วมคนอื่น',b:'ม.292: ชำระครบ → ทุกคนหลุดพ้น\nม.293: ผิดนัด → เฉพาะตัว\nม.294: ผ่อนเวลา → ไม่กระทบคนอื่น\nม.295: ข้อต่อสู้ → เฉพาะตัว', type:'chunk'},
+  {s:'ม.297',t:'หักกลบ → ประโยชน์คนอื่น',b:'ลูกหนี้ร่วมคนหนึ่งหักกลบ → ลูกหนี้ร่วมคนอื่นได้ประโยชน์ตามส่วน', type:'flow'},
+  {s:'ม.301',t:'สิทธิไล่เบี้ย',b:'ชำระเกินส่วน → ไล่เบี้ยจากคนอื่นตามส่วน\n(รับช่วงสิทธิ ม.229(1))', type:'formula'},
+  {s:'ม.341',t:'หักกลบ 3เงื่อนไข',b:'(1)ต่างเป็นเจ้าหนี้-ลูกหนี้ซึ่งกัน\n(2)หนี้ชนิดเดียวกัน\n(3)ถึงกำหนดทั้งคู่', type:'mnem'},
+  {s:'ม.340',t:'หักกลบไม่ได้',b:'หนี้เลี้ยงดู / เกิดจากการกระทำไม่ชอบ / กำหนดเวลาเพื่อประโยชน์เจ้าหนี้', type:'chunk'},
+  {s:'ม.297+341',t:'เชื่อมกัน',b:'ม.297 (ลูกหนี้ร่วม) + ม.341 (หักกลบ)\nลูกหนี้ร่วมคนหนึ่งหักกลบได้ → คนอื่นได้ประโยชน์ตามส่วน', type:'contrast'},
+
+  { divider: '📚 ฎีกาสำคัญ' },
+  {s:'ฎ.2159/2562',t:'โอนเสน่หา → เพิกถอนได้',b:'ลูกหนี้โอนทรัพย์ให้บุตรโดยเสน่หา → ม.237 วรรค2 ไม่ต้องพิสูจน์ความสุจริตบุตร เพิกถอนได้เลย', type:'contrast'},
+  {s:'ฎ.4826/2533',t:'ผู้ค้ำ → รับช่วงสิทธิ',b:'ผู้ค้ำประกันชำระหนี้แทน → รับช่วงสิทธิ ม.229(1) ฟ้องลูกหนี้ได้', type:'chunk'},
+  {s:'ฎ.1599/2527',t:'มีกำหนด แต่ต้องเตือน',b:'หนี้มีกำหนดเวลา แต่ไม่ชัดแจ้งว่าผิดนัดทันที → ต้องเตือนก่อน ม.204 วรรค1', type:'chunk'},
+];
+
+// ==================== COMPONENTS ====================
+function Stars({n}) {
+  return <span style={{color:'#B5986A'}}>{'⭐'.repeat(n)}</span>;
+}
+
+function SummaryTab() {
+  return (
+    <div style={{padding:'8px 0'}}>
+      {summaryData.map(sec=>(
+        <Card key={sec.key} size="small"
+          style={{marginBottom:16,background:C.surface,borderColor:C.border}}
+          title={<span style={{color:C.text,fontWeight:600,fontFamily:'Noto Sans Thai,sans-serif'}}>{sec.title}</span>}
+          extra={<Space wrap>{sec.tags.map(([l,c],i)=><Tag key={i} color={c}>{l}</Tag>)}</Space>}
+        >
+          {sec.content()}
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function FlashcardTab() {
+  const [idx,setIdx]=React.useState(0);
+  const [flipped,setFlipped]=React.useState(false);
+  const [score,setScore]=React.useState({correct:0,wrong:0});
+  const [filter,setFilter]=React.useState('all');
+  const [order,setOrder]=React.useState(flashcards.map((_,i)=>i));
+
+  const filtered=React.useMemo(()=>{
+    if(filter==='all') return flashcards;
+    if(filter==='exam') return flashcards.filter(c=>c.exam);
+    if(filter==='star3') return flashcards.filter(c=>c.star===3);
+    return flashcards;
+  },[filter]);
+
+  const total=filtered.length;
+  const safeIdx=Math.min(idx,total-1);
+  const current=filtered[safeIdx];
+
+  React.useEffect(()=>{setIdx(0);setFlipped(false);},[filter]);
+
+  function shuffle(){setIdx(Math.floor(Math.random()*total));setFlipped(false);}
+  function go(dir){setIdx(i=>(i+dir+total)%total);setFlipped(false);}
+  function mark(correct){setScore(s=>({...s,[correct?'correct':'wrong']:s[correct?'correct':'wrong']+1}));go(1);}
+
+  if(!current) return null;
+
+  return (
+    <div style={{padding:'8px 0'}}>
+      <Flex justify="center" gap={8} wrap="wrap" style={{marginBottom:12}}>
+        <Button type={filter==='all'?'primary':'default'} onClick={()=>setFilter('all')}>ทั้งหมด ({flashcards.length})</Button>
+        <Button onClick={()=>setFilter('exam')} style={{background:filter==='exam'?C.red:undefined,borderColor:filter==='exam'?C.red:undefined,color:filter==='exam'?'#fff':undefined}}>ข้อสอบเก่า ({flashcards.filter(c=>c.exam).length})</Button>
+        <Button onClick={()=>setFilter('star3')} style={{background:filter==='star3'?C.amber:undefined,borderColor:filter==='star3'?C.amber:undefined,color:filter==='star3'?'#fff':undefined}}>⭐⭐⭐ ({flashcards.filter(c=>c.star===3).length})</Button>
+        <Button onClick={shuffle} style={{background:C.cyan,borderColor:C.cyan,color:'#fff'}}>🔀 สุ่ม</Button>
+      </Flex>
+      <div style={{textAlign:'center',marginBottom:8}}>
+        <Text style={{color:C.text3}}>ข้อ {safeIdx+1} / {total} &nbsp;|&nbsp; <Stars n={current.star}/>
+          {current.exam&&<>&nbsp;<Tag color="red" style={{fontSize:11}}>ข้อสอบเก่า</Tag></>}
+        </Text>
+      </div>
+      <div className="fc-perspective" onClick={()=>setFlipped(f=>!f)} style={{maxWidth:700,margin:'0 auto'}}>
+        <div className={`fc-card${flipped?' flipped':''}`}>
+          <div className="fc-face fc-front">
+            <Text style={{fontSize:14,color:C.text,lineHeight:1.7}}>{current.q}</Text>
+          </div>
+          <div className="fc-face fc-back">
+            <div style={{textAlign:'left',width:'100%',overflowY:'auto',maxHeight:200}}>
+              <Text strong style={{color:C.green,display:'block',marginBottom:4,fontSize:14}}>{current.a}</Text>
+              <Text style={{fontSize:12,color:C.text2,lineHeight:1.6}}>{current.d}</Text>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Text style={{display:'block',textAlign:'center',color:C.text3,fontSize:12,marginTop:4}}>แตะการ์ดเพื่อพลิกดูคำตอบ</Text>
+      <Flex justify="center" gap={12} style={{marginTop:12}} wrap="wrap">
+        <Button onClick={()=>go(-1)}>← ก่อนหน้า</Button>
+        <Button style={{background:C.red,borderColor:C.red,color:'#fff'}} onClick={()=>mark(false)}>❌ ยังไม่รู้</Button>
+        <Button style={{background:C.green,borderColor:C.green,color:'#fff'}} onClick={()=>mark(true)}>✅ รู้แล้ว</Button>
+        <Button onClick={()=>go(1)}>ถัดไป →</Button>
+      </Flex>
+      <Flex justify="center" gap={24} style={{marginTop:12}}>
+        <Statistic title="✅ รู้แล้ว" value={score.correct} valueStyle={{color:C.green,fontSize:20}}/>
+        <Statistic title="❌ ยังไม่รู้" value={score.wrong} valueStyle={{color:C.red,fontSize:20}}/>
+      </Flex>
+    </div>
+  );
+}
+
+function QuickTab() {
+  return (
+    <div style={{padding:'8px 0'}}>
+      {quickSections.map((item,i)=>{
+        if(item.divider){
+          return <Divider key={i} style={{borderColor:C.borderDark,color:C.goldDark,fontWeight:700,fontFamily:'Noto Sans Thai,sans-serif'}}>{item.divider}</Divider>;
+        }
+        const typeStyle={
+          mnem:{bg:C.purpleBg,border:C.purple,accent:C.purple},
+          flow:{bg:C.cyanBg,border:C.cyan,accent:C.cyan},
+          contrast:{bg:C.redBg,border:C.red,accent:C.red},
+          chunk:{bg:C.blueBg,border:C.blue,accent:C.blue},
+          formula:{bg:'#FFF8E7',border:C.amber,accent:C.amber},
+        }[item.type]||{bg:C.surface,border:C.border,accent:C.gold};
+        return (
+          <div key={i} className="qc" style={{background:typeStyle.bg,border:`1px solid ${typeStyle.border}`,borderLeft:`4px solid ${typeStyle.accent}`,borderRadius:8,padding:'10px 14px',marginBottom:10}}>
+            <Flex justify="space-between" align="center" style={{marginBottom:4}}>
+              <Tag style={{background:typeStyle.accent,color:'#fff',border:'none',fontSize:11}}>{item.s}</Tag>
+              <Text strong style={{color:C.text,fontSize:13}}>{item.t}</Text>
+            </Flex>
+            <Text style={{color:C.text2,fontSize:13,lineHeight:1.7,whiteSpace:'pre-line'}}>{item.b}</Text>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ConfigProvider theme={{
+      algorithm:theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.gold,colorBgBase:C.bg,colorBgContainer:C.surface,
+        colorBorder:C.border,colorText:C.text,colorTextSecondary:C.text2,
+        fontFamily:"'Noto Sans Thai',sans-serif",borderRadius:8,
+      }
+    }}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:900,margin:'0 auto',padding:'16px 12px 40px'}}>
+          <div style={{textAlign:'center',marginBottom:16,padding:'16px',background:C.surface,borderRadius:12,border:`1px solid ${C.border}`}}>
+            <Title level={3} style={{color:C.goldDark,margin:0,fontFamily:'Noto Sans Thai,sans-serif'}}>⚖️ LAW2102</Title>
+            <Title level={5} style={{color:C.text2,margin:'4px 0 0',fontWeight:400,fontFamily:'Noto Sans Thai,sans-serif'}}>กฎหมายแพ่งและพาณิชย์ว่าด้วยหนี้ — มหาวิทยาลัยรามคำแหง</Title>
+            <div style={{marginTop:8,display:'flex',flexWrap:'wrap',justifyContent:'center',gap:4}}>
+              <Tag color="volcano">4 ข้อ × 25 คะแนน</Tag>
+              <Tag color="red">ม.203-225 ผิดนัด</Tag>
+              <Tag color="orange">ม.218-229 พ้นวิสัย+ช่วงสิทธิ</Tag>
+              <Tag color="purple">ม.233-237 ควบคุมทรัพย์</Tag>
+              <Tag color="gold">ม.291-341 ลูกหนี้ร่วม</Tag>
+            </div>
+          </div>
+          <Tabs centered type="card" size="middle" items={[
+            {key:'summary',label:'📋 สรุปเนื้อหา',children:<SummaryTab/>},
+            {key:'flash',label:'🃏 Flashcard',children:<FlashcardTab/>},
+            {key:'quick',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+          ]}/>
+          <div style={{textAlign:'center',marginTop:20,color:C.text3,fontSize:12}}>
+            LAW2102 · อัปเดตตามขอบเขตข้อสอบ · {flashcards.length} Flashcards
+          </div>
+        </Content>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
