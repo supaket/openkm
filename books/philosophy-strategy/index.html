@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philosophy & Strategy — Directory Index | Enersys Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mahogany: #4a2c2a;
+            --mahogany-light: #6b4423;
+            --gold: #c9a227;
+            --gold-pale: #dfc98e;
+            --cream: #faf6f0;
+            --cream-warm: #f5efe5;
+            --parchment: #f8f3e8;
+            --text: #2c1810;
+            --text-muted: #5d4e37;
+            --shadow-warm: rgba(74, 44, 42, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', serif;
+            background: var(--cream);
+            color: var(--text);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(180deg, var(--mahogany) 0%, var(--mahogany-light) 100%);
+            color: var(--cream);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 6px solid var(--gold);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', 'IBM Plex Sans Thai', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p { color: var(--gold-pale); font-size: 0.95rem; }
+
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 3rem;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .breadcrumb a { color: var(--mahogany-light); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--gold); }
+
+        .course-group {
+            background: var(--parchment);
+            border: 1px solid var(--gold-pale);
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 8px var(--shadow-warm);
+            overflow: hidden;
+        }
+
+        .file-list { list-style: none; }
+
+        .file-list li {
+            border-bottom: 1px solid rgba(201, 162, 39, 0.18);
+        }
+
+        .file-list li:last-child { border-bottom: none; }
+
+        .file-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.7rem 1.25rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: background 0.15s ease;
+        }
+
+        .file-list a:hover { background: rgba(201, 162, 39, 0.08); }
+
+        .file-name { flex: 1; font-size: 0.95rem; }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .badge-latest { background: var(--gold); color: var(--mahogany); }
+        .badge-old { background: var(--cream-warm); color: var(--text-muted); border: 1px solid var(--gold-pale); }
+        .badge-count { background: var(--cream-warm); color: var(--text-muted); border: 1px solid var(--gold-pale); }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--mahogany-light); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🧠 Philosophy &amp; Strategy</h1>
+        <p>สรุปหนังสือปรัชญา กลยุทธ์ และ Mental Models</p>
+    </header>
+
+    <main class="container">
+        <nav class="breadcrumb">
+            <a href="../../book-learning-hub.html">📚 Library Hub</a> / <a href="../../index.html">🙏 หน้าหลัก</a> / books / philosophy-strategy
+        </nav>
+
+        <section class="course-group">
+            <ul class="file-list">
+                <li><a href="antifragile-summary.html"><span class="file-name">🦢 Antifragile — สรุปหนังสือฉบับสมบูรณ์</span></a></li>
+                <li><a href="the-great-mental-models-summary.html"><span class="file-name">🧩 The Great Mental Models Vol 1–4 — สรุปฉบับสมบูรณ์</span></a></li>
+                <li><a href="tools-of-titans-summary.html"><span class="file-name">🛠️ Tools of Titans — เครื่องมือของยอดคน</span></a></li>
+                <li><a href="how-to-be-better-at-almost-everything-summary.html"><span class="file-name">📈 How to Be Better at Almost Everything</span></a></li>
+                <li><a href="laws-of-human-nature-odoo19-simple.html"><span class="file-name">🎭 The Laws of Human Nature สำหรับผู้นำ Odoo</span></a></li>
+                <li><a href="unmasking-the-face-summary.html"><span class="file-name">😶 Unmasking the Face — สรุปหนังสือ</span></a></li>
+                <li><a href="elon-musk-summary.html"><span class="file-name">🚀 Elon Musk — สรุปหนังสือ</span></a></li>
+                <li><a href="source-code-summary.html"><span class="file-name">💻 Source Code: My Beginnings — สรุปหนังสือ</span></a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p><a href="../../book-learning-hub.html">📚 กลับ Library Hub</a></p>
+        <p>Enersys Library — Philosophy & Strategy</p>
+    </footer>
+</body>
+</html>
