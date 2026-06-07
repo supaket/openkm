@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚖️ Law & Legal Studies — Directory Index | Enersys Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mahogany: #4a2c2a;
+            --mahogany-light: #6b4423;
+            --gold: #c9a227;
+            --gold-pale: #dfc98e;
+            --cream: #faf6f0;
+            --cream-warm: #f5efe5;
+            --parchment: #f8f3e8;
+            --text: #2c1810;
+            --text-muted: #5d4e37;
+            --shadow-warm: rgba(74, 44, 42, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', serif;
+            background: var(--cream);
+            color: var(--text);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(180deg, var(--mahogany) 0%, var(--mahogany-light) 100%);
+            color: var(--cream);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 6px solid var(--gold);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', 'IBM Plex Sans Thai', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p { color: var(--gold-pale); font-size: 0.95rem; }
+
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 3rem;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .breadcrumb a { color: var(--mahogany-light); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--gold); }
+
+        .course-group {
+            background: var(--parchment);
+            border: 1px solid var(--gold-pale);
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 8px var(--shadow-warm);
+            overflow: hidden;
+        }
+
+        .course-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1.25rem;
+            background: linear-gradient(90deg, var(--cream-warm), var(--parchment));
+            border-bottom: 1px solid var(--gold-pale);
+        }
+
+        .course-icon { font-size: 1.4rem; }
+
+        .course-header h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--mahogany);
+        }
+
+        .course-header .course-code {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-right: 0.25rem;
+        }
+
+        .file-list { list-style: none; }
+
+        .file-list li {
+            border-bottom: 1px solid rgba(201, 162, 39, 0.18);
+        }
+
+        .file-list li:last-child { border-bottom: none; }
+
+        .file-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.7rem 1.25rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: background 0.15s ease;
+        }
+
+        .file-list a:hover { background: rgba(201, 162, 39, 0.08); }
+
+        .file-name { flex: 1; font-size: 0.95rem; }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .badge-latest { background: var(--gold); color: var(--mahogany); }
+        .badge-old { background: var(--cream-warm); color: var(--text-muted); border: 1px solid var(--gold-pale); }
+        .badge-quiz { background: var(--mahogany-light); color: var(--cream); }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--mahogany-light); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>⚖️ Law &amp; Legal Studies</h1>
+        <p>รวมสรุป ติวสอบ และ Flashcard วิชากฎหมาย — มหาวิทยาลัยรามคำแหง</p>
+    </header>
+
+    <main class="container">
+        <nav class="breadcrumb">
+            <a href="../../book-learning-hub.html">📚 Library Hub</a> / <a href="../../index.html">🙏 หน้าหลัก</a> / books / law-legal
+        </nav>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🏛️</span>
+                <h2><span class="course-code">LAW1101</span> หลักกฎหมายมหาชน</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law1101-study-guide.html"><span class="file-name">📖 สรุปเนื้อหา 10 บท พร้อมแนวข้อสอบ</span></a></li>
+                <li><a href="law1101-study-guide-1.html"><span class="file-name">✅ คู่มือเตรียมสอบฉบับสมบูรณ์ (12 บท + ธงคำตอบ)</span></a></li>
+                <li><a href="law1101-ultimate-v2.html"><span class="file-name">🔥 Ultimate Edition — วิเคราะห์ข้อสอบ + IRAC Method</span></a></li>
+                <li><a href="law1101-review.html"><span class="file-name">⚡ ทบทวนเร็ว — สรุปย่อ + การ์ดจำด่วน</span></a></li>
+                <li><a href="law1101-flashcard.html"><span class="file-name">🎴 Flashcard Quiz สุ่ม 30 ข้อ</span><span class="badge badge-quiz">Quiz</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">👤</span>
+                <h2><span class="course-code">LAW1102</span> หลักกฎหมายเอกชน</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law1102-review.html"><span class="file-name">📖 สรุป + Flashcard + การ์ดจำด่วน</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">📜</span>
+                <h2><span class="course-code">LAW1103</span> นิติกรรมและสัญญา</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law1103-review.html"><span class="file-name">📖 สรุป + Flashcard + การ์ดจำด่วน</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🏺</span>
+                <h2><span class="course-code">LAW1106</span> ประวัติศาสตร์กฎหมายไทยและระบบกฎหมายหลัก</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law1106-review.html"><span class="file-name">📖 สรุป + Flashcard + การ์ดจำด่วน</span><span class="badge badge-latest">ล่าสุด</span></a></li>
+                <li><a href="law1106-review-v1.html"><span class="file-name">📄 ฉบับก่อนหน้า (v1)</span><span class="badge badge-old">เก่า</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">💰</span>
+                <h2><span class="course-code">LAW2102</span> กฎหมายแพ่งและพาณิชย์ว่าด้วยหนี้</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law2102-review-v2.html"><span class="file-name">📖 สรุปเนื้อหาพร้อมแนวข้อสอบ (v2)</span><span class="badge badge-latest">ล่าสุด</span></a></li>
+                <li><a href="law2102-review-v1.html"><span class="file-name">📄 ฉบับก่อนหน้า (v1)</span><span class="badge badge-old">เก่า</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🚨</span>
+                <h2><span class="course-code">LAW2106</span> กฎหมายอาญา ภาค 1</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law2106-study-guide.html"><span class="file-name">📖 สรุป + Flashcard + การ์ดจำด่วน</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🏠</span>
+                <h2><span class="course-code">LAW2108</span> เช่าทรัพย์ เช่าซื้อ</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law2108-study-guide.html"><span class="file-name">📖 ติวสอบ + Flip Cards</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🤝</span>
+                <h2><span class="course-code">LAW2111</span> ตัวแทน-นายหน้า</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law2111-review-v2.html"><span class="file-name">📖 สรุป + Flashcard + การ์ดจำด่วน (v2)</span><span class="badge badge-latest">ล่าสุด</span></a></li>
+                <li><a href="law2111-review.html"><span class="file-name">📄 ฉบับก่อนหน้า</span><span class="badge badge-old">เก่า</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🛡️</span>
+                <h2><span class="course-code">LAW2112</span> กฎหมายประกันภัย</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="law2112-review.html"><span class="file-name">📖 สรุป + Flashcard + การ์ดจำด่วน</span></a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p><a href="../../book-learning-hub.html">📚 กลับ Library Hub</a></p>
+        <p>Enersys Library — Law &amp; Legal Studies</p>
+    </footer>
+</body>
+</html>
