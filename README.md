@@ -75,7 +75,7 @@
 ## 🚀 วิธีใช้งาน
 
 ### เปิดผ่านเว็บ
-เข้าไปที่: **[https://enersys.github.io/Thai-Buddhist-Chanting/](https://enersys.github.io/Thai-Buddhist-Chanting/)**
+เข้าไปที่: **[https://supaket.github.io/openkm/](https://supaket.github.io/openkm/)**
 
 ### ติดตั้งเป็นแอป (PWA)
 

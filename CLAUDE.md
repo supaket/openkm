@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Thai Buddhist Chanting PWA (Progressive Web App) — a mobile-first web application for Thai Buddhist morning and evening prayers. Hosted on GitHub Pages at `enersys.github.io/Thai-Buddhist-Chanting/`.
+Thai Buddhist Chanting PWA (Progressive Web App) — a mobile-first web application for Thai Buddhist morning and evening prayers. Hosted on GitHub Pages at `supaket.github.io/openkm/` (repository: `github.com/supaket/openkm`).
 
 ## Architecture
 
