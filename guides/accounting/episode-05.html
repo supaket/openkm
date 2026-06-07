@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตอนที่ 5 · อ่านงบ &amp; Red Flags — ฉบับอ่านพร้อมตัวช่วย</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ====== TOKENS (ชุดเดียวกับตอน 1–4) ====== */
+:root{
+  --ink:#05080f; --navy:#0a1322; --navy2:#0e1a30; --panel:#12203a; --panel2:#172a4a;
+  --gold:#c9a24b; --gold-bright:#edc977; --red:#d93a34; --red-bright:#ef5b55;
+  --green:#43c478; --blue:#5fa8ff; --paper:#eef2f8; --muted:#8794a9;
+  --line:rgba(201,162,75,.22); --line-soft:rgba(255,255,255,.09); --read:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans Thai',sans-serif;color:var(--paper);line-height:1.78;
+  background:radial-gradient(1100px 600px at 84% -8%, rgba(201,162,75,.10), transparent 60%),
+    radial-gradient(900px 700px at -10% 108%, rgba(217,58,52,.09), transparent 60%),
+    linear-gradient(180deg,var(--navy) 0%, var(--ink) 100%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;
+  background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:50px 50px;-webkit-mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%);mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%)}
+
+#progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:60;background:linear-gradient(90deg,var(--gold),var(--red))}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:12px 22px;backdrop-filter:blur(8px);background:rgba(5,8,15,.55);border-bottom:1px solid var(--line-soft)}
+.topbar .file{font-family:'Barlow Semi Condensed';letter-spacing:.22em;font-size:12px;color:var(--muted)}
+.topbar .file b{color:var(--gold-bright)}
+.topbar a{color:var(--muted);text-decoration:none;font-size:13px;display:inline-flex;gap:7px;align-items:center;transition:.2s}
+.topbar a:hover{color:var(--gold-bright)}
+
+.container{position:relative;z-index:1;max-width:var(--read);margin:0 auto;padding:0 22px 90px}
+.hero{padding:104px 0 26px;text-align:center}
+.eyebrow{font-family:'Barlow Semi Condensed';letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--gold);display:inline-flex;align-items:center;gap:11px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 2s infinite}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(217,58,52,.5)}50%{box-shadow:0 0 0 6px rgba(217,58,52,0)}}
+h1{font-family:'Anuphan';font-weight:700;font-size:clamp(2rem,5.5vw,3rem);line-height:1.1;margin:14px 0 8px}
+.hero .sub{color:var(--gold-bright);font-family:'Anuphan';font-weight:500;font-size:1.12rem}
+.hero .readtime{margin-top:14px;color:var(--muted);font-size:14px;display:inline-flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.hero .readtime span{display:inline-flex;gap:6px;align-items:center}
+
+.tldr{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--gold);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:1.02rem}
+.tldr b{color:var(--gold-bright)}
+
+section{margin:38px 0;opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1)}
+section.in{opacity:1;transform:none}
+h2{font-family:'Anuphan';font-weight:600;font-size:1.5rem;margin:0 0 12px;color:var(--paper);padding-bottom:8px;border-bottom:1px solid var(--line);display:inline-block}
+h2 .no{font-family:'Barlow Semi Condensed';color:var(--gold);font-size:1.1rem;margin-right:8px}
+p{font-size:1.06rem;margin:14px 0;color:#d7dee9}
+strong,b{color:#fff;font-weight:600}
+.gold{color:var(--gold-bright)}.red{color:var(--red-bright)}.green{color:var(--green)}.blue{color:var(--blue)}
+
+.term{border-bottom:1.5px dotted var(--gold);cursor:help;position:relative;color:var(--gold-bright);white-space:nowrap}
+.term .tip{position:absolute;left:50%;bottom:135%;transform:translateX(-50%) translateY(6px);width:max-content;max-width:270px;
+  background:#1b2c4a;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:.86rem;line-height:1.5;color:#dbe2ee;
+  box-shadow:0 14px 36px rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.2s;z-index:30;white-space:normal;text-align:left;font-weight:400}
+.term .tip::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#1b2c4a}
+.term:hover .tip,.term.show .tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+.simple{background:rgba(67,196,120,.07);border:1px solid rgba(67,196,120,.3);border-radius:14px;padding:15px 18px;margin:20px 0;display:flex;gap:13px}
+.simple .ic{color:var(--green);font-size:18px;margin-top:2px;flex-shrink:0}
+.simple .tx{font-size:.98rem;color:#cfe8d8}.simple .tx b{color:#dff5e7}
+
+.widget{background:linear-gradient(160deg,#0f1d35,#0a1424);border:1px solid var(--line-soft);border-radius:18px;padding:20px;margin:26px 0;position:relative;overflow:hidden}
+.widget-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.widget-h .t{font-family:'Anuphan';font-weight:600;font-size:1.05rem}.widget-h .t i{color:var(--gold);margin-right:7px}
+.wbtn{font-family:'IBM Plex Sans Thai';font-size:13px;color:var(--paper);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:.2s;display:inline-flex;gap:6px;align-items:center}
+.wbtn:hover{border-color:var(--gold);color:var(--gold-bright)}
+
+/* ============================================================
+   ★ PROFIT vs CASH — เส้นถ่างออกจากกัน (SVG draw)
+   ============================================================ */
+.chart-legend{display:flex;gap:18px;justify-content:center;margin:6px 0 4px;font-size:.86rem;flex-wrap:wrap}
+.chart-legend span{display:inline-flex;gap:7px;align-items:center;color:#cdd6e6}
+.chart-legend i.k{width:18px;height:3px;border-radius:2px;display:inline-block}
+.k.ni{background:var(--green)}.k.ocf{background:var(--gold)}
+.pvc-svg{width:100%;height:auto;display:block}
+.gridline{stroke:rgba(255,255,255,.07);stroke-width:1}
+.axis{stroke:var(--line-soft);stroke-width:1.5}
+.lineNI,.lineOCF{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:760;stroke-dashoffset:760}
+.lineNI{stroke:var(--green)}.lineOCF{stroke:var(--gold)}
+.pvc.go .lineNI{transition:stroke-dashoffset 1.7s ease .1s;stroke-dashoffset:0}
+.pvc.go .lineOCF{transition:stroke-dashoffset 1.7s ease .1s;stroke-dashoffset:0}
+.gapArea{fill:rgba(217,58,52,.18);opacity:0}
+.pvc.go .gapArea{transition:opacity .8s ease 1.6s;opacity:1}
+.gapLabel{opacity:0}
+.pvc.go .gapLabel{transition:opacity .6s ease 2s;opacity:1}
+.pvc.noanim .lineNI,.pvc.noanim .lineOCF,.pvc.noanim .gapArea,.pvc.noanim .gapLabel{transition:none!important}
+.endlab{font-family:'Barlow Semi Condensed';font-size:12px}
+.xlab{fill:var(--muted);font-size:11px;font-family:'IBM Plex Sans Thai'}
+
+/* ============================================================
+   RED FLAG dashboard (กดเปิดรายละเอียด)
+   ============================================================ */
+.flags{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0}
+@media(max-width:600px){.flags{grid-template-columns:1fr}}
+.flag{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--red);
+  border-radius:12px;padding:13px 15px;cursor:pointer;transition:transform .18s,border-color .25s}
+.flag:hover{transform:translateY(-2px);border-color:var(--gold)}
+.flag .fh{display:flex;align-items:center;gap:11px}
+.flag .fi{width:30px;height:30px;border-radius:8px;background:rgba(217,58,52,.14);border:1px solid rgba(217,58,52,.45);
+  color:var(--red-bright);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;animation:fpulse 2.4s ease-in-out infinite}
+@keyframes fpulse{0%,100%{box-shadow:0 0 0 0 rgba(217,58,52,.4)}50%{box-shadow:0 0 0 7px rgba(217,58,52,0)}}
+.flag .ft{font-size:.95rem;font-weight:600;color:#eaf0f8;line-height:1.35}
+.flag .fmore{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.flag.open .fmore{max-height:200px}
+.flag .fmore .fx{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:.86rem;color:#cdd6e6;line-height:1.5}
+.flag .fmore .fx b{color:var(--gold-bright)}
+
+/* detective cards */
+.det{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media(max-width:600px){.det{grid-template-columns:1fr}}
+.detc{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-radius:14px;padding:16px}
+.detc .dav{width:44px;height:44px;border-radius:12px;background:rgba(95,168,255,.14);border:1px solid rgba(95,168,255,.4);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:10px}
+.detc.j .dav{background:rgba(67,196,120,.14);border-color:rgba(67,196,120,.4);color:var(--green)}
+.detc .dn{font-family:'Anuphan';font-weight:600;font-size:1.05rem}
+.detc .dr{font-size:.82rem;color:var(--muted);margin-top:2px}
+.detc .dd{font-size:.9rem;color:#cdd6e6;margin-top:10px;line-height:1.5}
+
+/* Chanos checks list */
+.checks{display:grid;gap:9px;margin-top:6px}
+.chk{display:flex;align-items:flex-start;gap:12px;background:var(--panel);border:1px solid var(--line-soft);border-radius:11px;padding:12px 14px}
+.chk .ck{width:24px;height:24px;border-radius:7px;background:rgba(67,196,120,.14);border:1px solid rgba(67,196,120,.5);color:var(--green);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
+.chk .ct{font-size:.92rem;line-height:1.45;color:#d7dee9}.chk .ct b{color:#fff}
+
+.insight{background:linear-gradient(160deg,rgba(201,162,75,.10),var(--navy2));border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:26px 0}
+.insight .k{font-family:'Barlow Semi Condensed';letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:var(--gold);margin-bottom:8px}
+.insight p{margin:8px 0;font-size:1.04rem}
+
+.next{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--red);border-radius:14px;padding:16px 20px;margin:30px 0}
+.next .q{font-size:.96rem;color:#e6c7c5}.next .q b{color:var(--red-bright)}
+.next a{flex-shrink:0;font-family:'IBM Plex Sans Thai';font-size:14px;color:var(--ink);background:var(--gold);border-radius:999px;padding:10px 18px;text-decoration:none;font-weight:600;white-space:nowrap;transition:.2s}
+.next a:hover{background:var(--gold-bright)}
+footer{border-top:1px solid var(--line-soft);margin-top:40px;padding-top:22px;color:var(--muted);font-size:.84rem;line-height:1.8}
+footer b{color:var(--paper)}footer .refs{font-size:.74rem;color:#6f7a90;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <span class="file">CASE FILE 2001-ENR · <b>EPISODE 05</b></span>
+  <a href="index.html"><i class="fa-solid fa-list"></i> สารบัญ</a>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <span class="eyebrow"><span class="dot"></span> ตอนที่ 5 · Financial Red Flags</span>
+    <h1>อ่านงบ &amp; Red Flags</h1>
+    <div class="sub">จาก "เขาโกงยังไง" สู่ "เราจับได้ยังไง"</div>
+    <div class="readtime">
+      <span><i class="fa-regular fa-clock"></i> อ่านราว 7 นาที</span>
+      <span><i class="fa-solid fa-hand-pointer"></i> กดธงแดงดูรายละเอียด + แอนิเมชันกราฟ</span>
+    </div>
+  </div>
+
+  <div class="tldr"><b>สรุปก่อนเริ่ม:</b> ต่อให้ซ่อนเก่งแค่ไหน งบก็ทิ้งร่องรอย เครื่องมือหลักคือ <b class="gold">"กำไร ≠ เงินสด"</b> และมีคนนอกอ่านออกจริง ๆ ก่อนพัง — Jim Chanos กับ Bethany McLean</div>
+
+  <!-- ===== 1 · PROFIT vs CASH chart ===== -->
+  <section>
+    <h2><span class="no">01</span>เครื่องมือหลัก: กำไร ≠ เงินสด</h2>
+    <p>บริษัทอาจรายงาน <span class="term">กำไรทางบัญชี<span class="tip">Net Income — กำไรตามหลักคงค้าง (accrual) ที่อาจรับรู้ก่อนเงินสดเข้า</span></span> สูงขึ้นเรื่อย ๆ แต่ <span class="term">เงินสดจากการดำเนินงาน<span class="tip">Operating Cash Flow — เงินสดจริงที่ธุรกิจสร้างได้ ปลอมยากกว่ากำไร</span></span> ไม่ไหลตามมา ถ้าช่องว่างถ่างออกเรื่อย ๆ = ธงแดง</p>
+    <div class="widget">
+      <div class="widget-h"><span class="t"><i class="fa-solid fa-chart-line"></i> เมื่อ "กำไร" กับ "เงินสด" ถ่างออกจากกัน</span>
+        <button class="wbtn" id="pvcBtn"><i class="fa-solid fa-play"></i> เล่นซ้ำ</button></div>
+      <div class="chart-legend"><span><i class="k ni"></i> กำไรทางบัญชี (Net Income)</span><span><i class="k ocf"></i> เงินสดจริง (Operating Cash Flow)</span></div>
+      <div class="pvc" id="pvc">
+        <svg class="pvc-svg" viewBox="0 0 400 210" preserveAspectRatio="xMidYMid meet">
+          <!-- gridlines -->
+          <line class="gridline" x1="30" y1="40" x2="390" y2="40"/>
+          <line class="gridline" x1="30" y1="90" x2="390" y2="90"/>
+          <line class="gridline" x1="30" y1="140" x2="390" y2="140"/>
+          <line class="axis" x1="30" y1="175" x2="390" y2="175"/>
+          <line class="axis" x1="30" y1="20" x2="30" y2="175"/>
+          <!-- gap area ระหว่างสองเส้น -->
+          <polygon class="gapArea" points="40,150 120,120 210,100 300,78 380,50 380,158 300,156 210,154 120,150 40,152"/>
+          <!-- Net Income (rising) -->
+          <polyline class="lineNI" points="40,150 120,120 210,100 300,78 380,50"/>
+          <!-- Operating Cash Flow (flat/declining) -->
+          <polyline class="lineOCF" points="40,152 120,150 210,154 300,156 380,158"/>
+          <!-- labels -->
+          <text class="endlab" x="384" y="46" fill="#43c478" text-anchor="end">กำไร ↑</text>
+          <text class="endlab" x="384" y="170" fill="#c9a24b" text-anchor="end">เงินสด →</text>
+          <text class="gapLabel" x="300" y="120" fill="#ef5b55" font-size="12" font-family="IBM Plex Sans Thai" text-anchor="middle">ช่องว่าง = ธงแดง</text>
+          <text class="xlab" x="40" y="190">ช่วงต้น</text>
+          <text class="xlab" x="360" y="190" text-anchor="end">ก่อนล้ม</text>
+        </svg>
+      </div>
+      <p style="font-size:.84rem;color:var(--muted);text-align:center;margin:4px 0 0">กราฟเชิงแนวคิด (illustrative) — แสดง "รูปแบบ" ของสัญญาณ ไม่ใช่ตัวเลขงบจริงของ Enron</p>
+    </div>
+    <div class="simple"><i class="fa-solid fa-magnifying-glass-dollar ic"></i><div class="tx"><b>ร่องรอยจริงใน Enron:</b> งบกระแสเงินสดต้องหัก "กำไรจากการขายสินทรัพย์" ก้อนใหญ่ออกจากกำไรสุทธิ — แปลว่ากำไรส่วนหนึ่งมาจากการขายของครั้งเดียว ไม่ใช่การดำเนินงานที่ยั่งยืน</div></div>
+  </section>
+
+  <!-- ===== 2 · RED FLAG dashboard ===== -->
+  <section>
+    <h2><span class="no">02</span>Red Flag Dashboard <span class="muted" style="font-size:.9rem;font-weight:400">(กดเพื่อดูว่าทำไมเป็นสัญญาณ)</span></h2>
+    <div class="flags" id="flags">
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-arrow-trend-up"></i></div><div class="ft">กำไรโตเร็วผิดปกติ</div></div><div class="fmore"><div class="fx"><b>ทำไม:</b> โตเกินกว่าที่อุตสาหกรรมจะอธิบายได้ มักมาจากการรับรู้รายได้เชิงรุก</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-water"></i></div><div class="ft">เงินสดไม่สัมพันธ์กับกำไร</div></div><div class="fmore"><div class="fx"><b>ทำไม:</b> กำไรขึ้นแต่เงินสดไม่ตาม = อาจเป็นกำไรบนกระดาษ</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-eye-slash"></i></div><div class="ft">หนี้นอกงบดุล</div></div><div class="fmore"><div class="fx"><b>ใน Enron:</b> หนี้ถูกซ่อนใน SPE (Chewco/Raptors) จึงไม่โผล่ในงบดุล</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-sitemap"></i></div><div class="ft">รายการกับ SPE จำนวนมาก</div></div><div class="fmore"><div class="fx"><b>ทำไม:</b> ธุรกรรมกับนิติบุคคลเฉพาะกิจจำนวนมากเปิดช่องซ่อนหนี้/ขาดทุน</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-puzzle-piece"></i></div><div class="ft">ซับซ้อนเกินอธิบาย ("trust me")</div></div><div class="fmore"><div class="fx"><b>ใน Enron:</b> Wall Street ยอมรับว่า "วิเคราะห์ไม่ได้" — ความทึบคือธงแดงในตัวเอง</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-percent"></i></div><div class="ft">ผลตอบแทน &lt; ต้นทุนทุน</div></div><div class="fmore"><div class="fx"><b>ใน Enron:</b> return on capital ~7% แต่ cost of capital ~9% → ทำลายมูลค่า ไม่ใช่สร้างกำไร</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-user-secret"></i></div><div class="ft">ผู้บริหารได้ประโยชน์ / เป็นปฏิปักษ์ต่อคำถาม</div></div><div class="fmore"><div class="fx"><b>ใน Enron:</b> CFO อยู่ทั้งสองฝั่งของ SPE และ CEO เคยด่านักวิเคราะห์ที่ถามเรื่องงบกลางสาย</div></div></div>
+      <div class="flag"><div class="fh"><div class="fi"><i class="fa-solid fa-door-open"></i></div><div class="ft">CEO ลาออกกะทันหันไร้คำอธิบาย</div></div><div class="fmore"><div class="fx"><b>ใน Enron:</b> Skilling ลาออกหลังเป็น CEO 6 เดือน — "สัญญาณเตือนที่ดังที่สุด"</div></div></div>
+    </div>
+  </section>
+
+  <!-- ===== 3 · นักสืบตัวจริง ===== -->
+  <section>
+    <h2><span class="no">03</span>นักสืบตัวจริง: คนที่อ่านงบออก</h2>
+    <div class="det">
+      <div class="detc j">
+        <div class="dav"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="dn">Jim Chanos</div><div class="dr">นักขายชอร์ต · กองทุน Kynikos</div>
+        <div class="dd">หยิบ 10-K ปี 1999 มาอ่าน แล้วเจอความผิดปกติ เปิดสถานะขายชอร์ตตั้งแต่ พ.ย. 2000 สุดท้ายทำกำไรราว $500M</div>
+      </div>
+      <div class="detc">
+        <div class="dav"><i class="fa-solid fa-pen-fancy"></i></div>
+        <div class="dn">Bethany McLean</div><div class="dr">นักข่าว · นิตยสาร Fortune</div>
+        <div class="dd">มี.ค. 2001 เขียน "Is Enron Overpriced?" ตั้งคำถามตรง ๆ ว่า Enron ทำเงินจากอะไร ทำไมดูจากงบไม่ออก (ตอนนั้น P/E ~55)</div>
+      </div>
+    </div>
+    <p style="margin-bottom:6px">สิ่งที่ Chanos ตรวจ — ล้วนเป็นพื้นฐานที่เราทำตามได้:</p>
+    <div class="checks">
+      <div class="chk"><div class="ck"><i class="fa-solid fa-check"></i></div><div class="ct"><b>เทียบผลตอบแทนกับต้นทุนทุน</b> — 7% vs 9% แล้วถามว่ากำไรมาจากไหน</div></div>
+      <div class="chk"><div class="ck"><i class="fa-solid fa-check"></i></div><div class="ct"><b>จับการบันทึกที่ไม่สมมาตร</b> — ขายได้กำไรเข้ารายได้ แต่ขายขาดทุนไปซ่อนในส่วนที่ยกเลิก</div></div>
+      <div class="chk"><div class="ck"><i class="fa-solid fa-check"></i></div><div class="ct"><b>สงสัยความทึบ</b> — ถ้าอธิบายไม่ได้ว่าทำเงินยังไง อย่าเพิ่งเชื่อ</div></div>
+      <div class="chk"><div class="ck"><i class="fa-solid fa-check"></i></div><div class="ct"><b>ฟังสัญญาณพฤติกรรม</b> — CEO ลาออกกะทันหัน + ผู้บริหารเป็นปฏิปักษ์ต่อคำถาม</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 4 · แก่น + bridge ===== -->
+  <section>
+    <div class="insight">
+      <div class="k"><i class="fa-solid fa-key"></i> Key Insight</div>
+      <p>เครื่องมือที่ใช้จับ Enron ไม่ใช่เวทมนตร์ แต่คือพื้นฐาน — <b class="gold">เทียบกำไรกับเงินสด, ดูผลตอบแทนเทียบต้นทุนทุน, สงสัยสิ่งที่ซับซ้อนเกินอธิบาย, ระวังรายการเกี่ยวโยง</b></p>
+      <p>ที่เจ็บปวดคือ คนนอกอย่าง Chanos และ McLean ยังจับได้ — แล้วคนที่มีหน้าที่ตรวจสอบโดยตรงล่ะ?</p>
+    </div>
+  </section>
+
+  <div class="next">
+    <div class="q"><b>คำถามเชื่อมตอน:</b> ถ้าสัญญาณชัดขนาดที่คนนอกยังเห็น ทำไม<b>ผู้สอบบัญชี</b>ที่เซ็นรับรองงบถึงไม่จับ? → ตอนที่ 6: Arthur Andersen</div>
+    <a href="#" onclick="alert('ทำไฟล์ episode-06.html (Arthur Andersen) ต่อได้เลยครับ');return false;">ตอนต่อไป <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+
+  <footer>
+    <div><b>Enron Case Study — ตอนที่ 5: อ่านงบ &amp; Red Flags</b></div>
+    <div>จัดทำโดย [ชื่อสมาชิก 1] · [ชื่อสมาชิก 2] · [ชื่อสมาชิก 3]</div>
+    <div class="refs">แหล่งอ้างอิง: Jim Chanos / Kynikos (Wiley "Greatest Trades", masterclass notes) · Fortune "Is Enron Overpriced?" (Bethany McLean, 2001) · verifiedinvesting · SEC EDGAR (Enron 10-K cash flow statements) · กราฟเป็นภาพประกอบเชิงแนวคิด ไม่ใช่ตัวเลขงบจริง · ตัวเลขที่ระบุ "ราว/ประมาณ" อาจต่างกันตามแหล่ง</div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const prog=document.getElementById('progress');
+  function onScroll(){const h=document.documentElement;const m=h.scrollHeight-h.clientHeight;prog.style.width=(m>0?h.scrollTop/m*100:0)+'%';}
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.querySelector('#pvc')) playChart();
+      io.unobserve(e.target);
+    }});},{threshold:.2});
+  document.querySelectorAll('section').forEach(s=>io.observe(s));
+
+  /* tooltips */
+  document.querySelectorAll('.term').forEach(t=>t.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.querySelectorAll('.term.show').forEach(o=>{if(o!==t)o.classList.remove('show')});
+    t.classList.toggle('show');
+  }));
+  document.addEventListener('click',()=>document.querySelectorAll('.term.show').forEach(t=>t.classList.remove('show')));
+
+  /* red flag cards: กดเปิด */
+  document.querySelectorAll('#flags .flag').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+
+  /* ★ chart: รีสตาร์ตเล่นซ้ำได้ (ปิด transition → รีเซ็ต → เล่น) */
+  const pvc=document.getElementById('pvc');
+  function playChart(){
+    pvc.classList.add('noanim');
+    pvc.classList.remove('go');
+    void pvc.offsetWidth;
+    pvc.classList.remove('noanim');
+    void pvc.offsetWidth;
+    pvc.classList.add('go');
+  }
+  document.getElementById('pvcBtn').addEventListener('click',playChart);
+})();
+</script>
+</body>
+</html>

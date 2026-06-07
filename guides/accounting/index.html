@@ -69,6 +69,23 @@
             overflow: hidden;
         }
 
+        .course-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1.25rem;
+            background: linear-gradient(90deg, var(--cream-warm), var(--parchment));
+            border-bottom: 1px solid var(--gold-pale);
+        }
+
+        .course-icon { font-size: 1.4rem; }
+
+        .course-header h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--mahogany);
+        }
+
         .file-list { list-style: none; }
 
         .file-list li {
@@ -126,8 +143,29 @@
         </nav>
 
         <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">📖</span>
+                <h2>Enron Case Study Series — ฉบับอ่านพร้อมตัวช่วย (8 ตอน)</h2>
+            </div>
             <ul class="file-list">
-                <li><a href="enron-presentation.html"><span class="file-name">📉 Enron Accounting Scandal — SPEs & The Role of Auditors</span></a></li>
+                <li><a href="episode-01.html"><span class="file-name">1️⃣ ตอนที่ 1 · ธุรกิจของ Enron</span></a></li>
+                <li><a href="episode-02.html"><span class="file-name">2️⃣ ตอนที่ 2 · คนและวัฒนธรรมองค์กร</span></a></li>
+                <li><a href="episode-03.html"><span class="file-name">3️⃣ ตอนที่ 3 · Mark-to-Market</span></a></li>
+                <li><a href="episode-04.html"><span class="file-name">4️⃣ ตอนที่ 4 · Special Purpose Entities</span></a></li>
+                <li><a href="episode-05.html"><span class="file-name">5️⃣ ตอนที่ 5 · อ่านงบ &amp; Red Flags</span></a></li>
+                <li><a href="episode-06.html"><span class="file-name">6️⃣ ตอนที่ 6 · Arthur Andersen</span></a></li>
+                <li><a href="episode-07.html"><span class="file-name">7️⃣ ตอนที่ 7 · การล่มสลาย &amp; ผลกระทบ</span></a></li>
+                <li><a href="episode-08.html"><span class="file-name">8️⃣ ตอนที่ 8 · บทเรียน · SOX · บริบทไทย</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🎬</span>
+                <h2>Presentation</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="enron-presentation.html"><span class="file-name">📉 Enron Accounting Scandal — SPEs &amp; The Role of Auditors</span></a></li>
             </ul>
         </section>
     </main>

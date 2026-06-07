@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตอนที่ 7 · การล่มสลาย &amp; ผลกระทบ — ฉบับอ่านพร้อมตัวช่วย</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ====== TOKENS (ชุดเดียวกับตอน 1–6) ====== */
+:root{
+  --ink:#05080f; --navy:#0a1322; --navy2:#0e1a30; --panel:#12203a; --panel2:#172a4a;
+  --gold:#c9a24b; --gold-bright:#edc977; --red:#d93a34; --red-bright:#ef5b55;
+  --green:#43c478; --blue:#5fa8ff; --paper:#eef2f8; --muted:#8794a9;
+  --line:rgba(201,162,75,.22); --line-soft:rgba(255,255,255,.09); --read:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans Thai',sans-serif;color:var(--paper);line-height:1.78;
+  background:radial-gradient(1100px 600px at 84% -8%, rgba(201,162,75,.10), transparent 60%),
+    radial-gradient(900px 700px at -10% 108%, rgba(217,58,52,.09), transparent 60%),
+    linear-gradient(180deg,var(--navy) 0%, var(--ink) 100%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;
+  background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:50px 50px;-webkit-mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%);mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%)}
+
+#progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:60;background:linear-gradient(90deg,var(--gold),var(--red))}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:12px 22px;backdrop-filter:blur(8px);background:rgba(5,8,15,.55);border-bottom:1px solid var(--line-soft)}
+.topbar .file{font-family:'Barlow Semi Condensed';letter-spacing:.22em;font-size:12px;color:var(--muted)}
+.topbar .file b{color:var(--gold-bright)}
+.topbar a{color:var(--muted);text-decoration:none;font-size:13px;display:inline-flex;gap:7px;align-items:center;transition:.2s}
+.topbar a:hover{color:var(--gold-bright)}
+
+.container{position:relative;z-index:1;max-width:var(--read);margin:0 auto;padding:0 22px 90px}
+.hero{padding:104px 0 26px;text-align:center}
+.eyebrow{font-family:'Barlow Semi Condensed';letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--gold);display:inline-flex;align-items:center;gap:11px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 2s infinite}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(217,58,52,.5)}50%{box-shadow:0 0 0 6px rgba(217,58,52,0)}}
+h1{font-family:'Anuphan';font-weight:700;font-size:clamp(2rem,5.5vw,3rem);line-height:1.1;margin:14px 0 8px}
+.hero .sub{color:var(--gold-bright);font-family:'Anuphan';font-weight:500;font-size:1.12rem}
+.hero .readtime{margin-top:14px;color:var(--muted);font-size:14px;display:inline-flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.hero .readtime span{display:inline-flex;gap:6px;align-items:center}
+
+.tldr{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--gold);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:1.02rem}
+.tldr b{color:var(--gold-bright)}
+
+section{margin:38px 0;opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1)}
+section.in{opacity:1;transform:none}
+h2{font-family:'Anuphan';font-weight:600;font-size:1.5rem;margin:0 0 12px;color:var(--paper);padding-bottom:8px;border-bottom:1px solid var(--line);display:inline-block}
+h2 .no{font-family:'Barlow Semi Condensed';color:var(--gold);font-size:1.1rem;margin-right:8px}
+p{font-size:1.06rem;margin:14px 0;color:#d7dee9}
+strong,b{color:#fff;font-weight:600}
+.gold{color:var(--gold-bright)}.red{color:var(--red-bright)}.green{color:var(--green)}.blue{color:var(--blue)}
+
+.term{border-bottom:1.5px dotted var(--gold);cursor:help;position:relative;color:var(--gold-bright);white-space:nowrap}
+.term .tip{position:absolute;left:50%;bottom:135%;transform:translateX(-50%) translateY(6px);width:max-content;max-width:270px;
+  background:#1b2c4a;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:.86rem;line-height:1.5;color:#dbe2ee;
+  box-shadow:0 14px 36px rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.2s;z-index:30;white-space:normal;text-align:left;font-weight:400}
+.term .tip::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#1b2c4a}
+.term:hover .tip,.term.show .tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+.simple{background:rgba(67,196,120,.07);border:1px solid rgba(67,196,120,.3);border-radius:14px;padding:15px 18px;margin:20px 0;display:flex;gap:13px}
+.simple .ic{color:var(--green);font-size:18px;margin-top:2px;flex-shrink:0}
+.simple .tx{font-size:.98rem;color:#cfe8d8}.simple .tx b{color:#dff5e7}
+/* กล่องโทนสงบ สำหรับเนื้อหาความสูญเสีย */
+.somber{background:rgba(255,255,255,.03);border:1px solid var(--line-soft);border-left:3px solid var(--muted);border-radius:14px;padding:15px 18px;margin:20px 0;font-size:.99rem;color:#cdd6e6}
+.somber b{color:#eaf0f8}
+
+.widget{background:linear-gradient(160deg,#0f1d35,#0a1424);border:1px solid var(--line-soft);border-radius:18px;padding:20px;margin:26px 0;position:relative;overflow:hidden}
+.widget-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.widget-h .t{font-family:'Anuphan';font-weight:600;font-size:1.05rem}.widget-h .t i{color:var(--gold);margin-right:7px}
+.wbtn{font-family:'IBM Plex Sans Thai';font-size:13px;color:var(--paper);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:.2s;display:inline-flex;gap:6px;align-items:center}
+.wbtn:hover{border-color:var(--gold);color:var(--gold-bright)}
+
+/* ============================================================
+   ★ STOCK CRASH chart (เส้นหุ้นดิ่ง)
+   ============================================================ */
+.crash-svg{width:100%;height:auto;display:block}
+.gridline{stroke:rgba(255,255,255,.06);stroke-width:1}
+.axis{stroke:var(--line-soft);stroke-width:1.5}
+.crashline{fill:none;stroke:var(--red-bright);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:620;stroke-dashoffset:620}
+.crash.go .crashline{transition:stroke-dashoffset 2.4s cubic-bezier(.5,0,.5,1) .1s;stroke-dashoffset:0}
+.crashfill{fill:url(#cg);opacity:0}
+.crash.go .crashfill{transition:opacity 1s ease 1.6s;opacity:.5}
+.mk{opacity:0}
+.crash.go .mk{transition:opacity .5s ease}
+.crash.go .mk.m1{transition-delay:.5s}.crash.go .mk.m2{transition-delay:1.1s}
+.crash.go .mk.m3{transition-delay:1.8s}.crash.go .mk.m4{transition-delay:2.3s}
+.mk circle{fill:var(--red);stroke:#fff;stroke-width:1.5}
+.mk text{fill:#e9edf5;font-size:10px;font-family:'IBM Plex Sans Thai'}
+.mk .pr{fill:var(--gold-bright);font-family:'Barlow Semi Condensed';font-size:11px;font-weight:700}
+.crash.noanim .crashline,.crash.noanim .crashfill,.crash.noanim .mk{transition:none!important}
+.xlab{fill:var(--muted);font-size:10px;font-family:'IBM Plex Sans Thai'}
+
+/* ============================================================
+   TIMELINE (เปิดเผยทีละขั้น)
+   ============================================================ */
+.tl{position:relative;margin:6px 0 0;padding-left:26px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line-soft)}
+.tl .ev{position:relative;margin:0 0 14px;opacity:0;transform:translateX(14px);transition:opacity .5s ease,transform .5s ease}
+.tl.in .ev{opacity:1;transform:none}
+.tl.in .ev:nth-child(1){transition-delay:.05s}.tl.in .ev:nth-child(2){transition-delay:.18s}
+.tl.in .ev:nth-child(3){transition-delay:.31s}.tl.in .ev:nth-child(4){transition-delay:.44s}
+.tl.in .ev:nth-child(5){transition-delay:.57s}.tl.in .ev:nth-child(6){transition-delay:.70s}
+.tl.in .ev:nth-child(7){transition-delay:.83s}
+.tl .ev::before{content:"";position:absolute;left:-22px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--red);border:2px solid var(--navy)}
+.tl .ev.last::before{background:#5a5a5a}
+.tl .d{font-family:'Barlow Semi Condensed';font-weight:700;color:var(--gold-bright);font-size:.92rem}
+.tl .x{font-size:.94rem;color:#d7dee9;margin-top:1px;line-height:1.45}
+
+/* human cost stats */
+.cost{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+@media(max-width:560px){.cost{grid-template-columns:1fr 1fr}}
+.cstat{background:rgba(255,255,255,.03);border:1px solid var(--line-soft);border-radius:12px;padding:14px 8px;text-align:center}
+.cstat .n{font-family:'Barlow Semi Condensed';font-weight:700;font-size:1.6rem;color:var(--paper);line-height:1}
+.cstat .l{font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.3}
+
+/* exec fates */
+.fates{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+@media(max-width:560px){.fates{grid-template-columns:1fr}}
+.fate{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-radius:12px;padding:13px 14px}
+.fate .fn{font-family:'Anuphan';font-weight:600;font-size:.98rem}
+.fate .fx{font-size:.84rem;color:#cdd6e6;margin-top:4px;line-height:1.4}
+
+.insight{background:linear-gradient(160deg,rgba(201,162,75,.10),var(--navy2));border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:26px 0}
+.insight .k{font-family:'Barlow Semi Condensed';letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:var(--gold);margin-bottom:8px}
+.insight p{margin:8px 0;font-size:1.04rem}
+
+.next{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--gold);border-radius:14px;padding:16px 20px;margin:30px 0}
+.next .q{font-size:.96rem;color:#e7dcc2}.next .q b{color:var(--gold-bright)}
+.next a{flex-shrink:0;font-family:'IBM Plex Sans Thai';font-size:14px;color:var(--ink);background:var(--gold);border-radius:999px;padding:10px 18px;text-decoration:none;font-weight:600;white-space:nowrap;transition:.2s}
+.next a:hover{background:var(--gold-bright)}
+footer{border-top:1px solid var(--line-soft);margin-top:40px;padding-top:22px;color:var(--muted);font-size:.84rem;line-height:1.8}
+footer b{color:var(--paper)}footer .refs{font-size:.74rem;color:#6f7a90;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <span class="file">CASE FILE 2001-ENR · <b>EPISODE 07</b></span>
+  <a href="index.html"><i class="fa-solid fa-list"></i> สารบัญ</a>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <span class="eyebrow"><span class="dot"></span> ตอนที่ 7 · The Collapse</span>
+    <h1>การล่มสลาย &amp; ผลกระทบ</h1>
+    <div class="sub">16 ปีในการสร้าง · ไม่กี่สัปดาห์ในการพัง</div>
+    <div class="readtime">
+      <span><i class="fa-regular fa-clock"></i> อ่านราว 7 นาที</span>
+      <span><i class="fa-solid fa-hand-pointer"></i> มีกราฟหุ้นดิ่ง + ไทม์ไลน์</span>
+    </div>
+  </div>
+
+  <div class="tldr"><b>สรุปก่อนเริ่ม:</b> เมื่อทุกด่านพังพร้อมกัน หุ้นจาก <b class="gold">$90.75</b> ดิ่งสู่ <b class="red">$0.26</b> ในเวลาไม่กี่เดือน จบที่การล้มละลายครั้งใหญ่ที่สุดในสหรัฐฯ ขณะนั้น — และผู้ที่เจ็บที่สุดคือพนักงานและนักลงทุนรายย่อยที่เชื่อใจ</div>
+
+  <!-- ===== 1 · STOCK CRASH ===== -->
+  <section>
+    <h2><span class="no">01</span>กราฟแห่งการล่มสลาย</h2>
+    <p>สิ่งที่น่าตกใจที่สุดคือ "ความเร็ว" — กดดูการดิ่งของราคาหุ้นครับ</p>
+    <div class="widget">
+      <div class="widget-h"><span class="t"><i class="fa-solid fa-arrow-trend-down"></i> ราคาหุ้น Enron: $90.75 → $0.26</span>
+        <button class="wbtn" id="crashBtn"><i class="fa-solid fa-play"></i> เล่นซ้ำ</button></div>
+      <div class="crash" id="crash">
+        <svg class="crash-svg" viewBox="0 0 400 210" preserveAspectRatio="xMidYMid meet">
+          <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(217,58,52,.35)"/><stop offset="100%" stop-color="rgba(217,58,52,0)"/></linearGradient></defs>
+          <line class="gridline" x1="30" y1="45" x2="392" y2="45"/>
+          <line class="gridline" x1="30" y1="95" x2="392" y2="95"/>
+          <line class="gridline" x1="30" y1="145" x2="392" y2="145"/>
+          <line class="axis" x1="30" y1="20" x2="30" y2="180"/>
+          <line class="axis" x1="30" y1="180" x2="392" y2="180"/>
+          <!-- พื้นที่ใต้เส้น -->
+          <polygon class="crashfill" points="40,42 110,60 190,120 270,160 330,176 380,179 380,180 40,180"/>
+          <!-- เส้นหุ้นดิ่ง -->
+          <polyline class="crashline" points="40,42 110,60 190,120 270,160 330,176 380,179"/>
+          <!-- markers -->
+          <g class="mk m1"><circle cx="40" cy="42" r="4"/><text class="pr" x="46" y="38">$90.75</text><text x="46" y="50">ส.ค. 2000 จุดสูงสุด</text></g>
+          <g class="mk m2"><circle cx="190" cy="120" r="4"/><text x="150" y="113">ส.ค. 2001 Skilling ลาออก</text></g>
+          <g class="mk m3"><circle cx="330" cy="176" r="4"/><text x="246" y="168">28 พ.ย. Dynegy ถอนตัว</text></g>
+          <g class="mk m4"><circle cx="380" cy="179" r="4.5"/><text class="pr" x="376" y="172" text-anchor="end">$0.26</text></g>
+          <text class="xlab" x="40" y="195">กลางปี 2000</text>
+          <text class="xlab" x="384" y="195" text-anchor="end">2 ธ.ค. 2001</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2 · TIMELINE ===== -->
+  <section>
+    <h2><span class="no">02</span>ไทม์ไลน์การล่ม (2001)</h2>
+    <div class="tl" id="tl">
+      <div class="ev"><div class="d">14 ส.ค. 2001</div><div class="x">Skilling ลาออกจาก CEO กะทันหัน หลังรับตำแหน่ง 6 เดือน</div></div>
+      <div class="ev"><div class="d">16 ต.ค. 2001</div><div class="x">รายงานขาดทุน Q3 ราว $618M + ตัดส่วนผู้ถือหุ้น $1.2B → SEC สอบสวน</div></div>
+      <div class="ev"><div class="d">9 พ.ย. 2001</div><div class="x"><span class="term">Dynegy<span class="tip">บริษัทพลังงานคู่แข่ง ตกลงเข้าซื้อ Enron เพื่อกอบกู้ แต่ถอนตัวภายหลัง</span></span> ตกลงเข้าซื้อกิจการ (~$8.4B) อัดเงินสด $1.5B ให้ Enron</div></div>
+      <div class="ev"><div class="d">19 พ.ย. 2001</div><div class="x">ยื่น 10-Q เปิดเผยข้อมูลร้ายแรงใหม่ → ความเชื่อมั่นหายวับ</div></div>
+      <div class="ev"><div class="d">28 พ.ย. 2001</div><div class="x">Dynegy ยกเลิกดีล → หุ้นร่วงต่ำกว่า $1 · เครดิตถูกลดเป็นระดับขยะ</div></div>
+      <div class="ev"><div class="d">30 พ.ย. 2001</div><div class="x">หุ้นเหลือ <b class="red">$0.26</b></div></div>
+      <div class="ev last"><div class="d">2 ธ.ค. 2001</div><div class="x">ยื่นล้มละลาย <span class="term">Chapter 11<span class="tip">การล้มละลายแบบฟื้นฟูกิจการตามกฎหมายสหรัฐฯ</span></span> · สินทรัพย์ ~$63.4B — ใหญ่ที่สุดในสหรัฐฯ ขณะนั้น</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 3 · HUMAN COST ===== -->
+  <section>
+    <h2><span class="no">03</span>ผลกระทบต่อคน — ส่วนที่เจ็บที่สุด</h2>
+    <p>นี่ไม่ใช่แค่ตัวเลข พนักงานจำนวนมากนำเงินเกษียณ (<span class="term">401(k)<span class="tip">บัญชีเงินออมเพื่อเกษียณของพนักงานในสหรัฐฯ ของ Enron ผูกไว้กับหุ้นบริษัทเป็นหลัก</span></span>) ไปลงในหุ้นบริษัทตัวเองด้วยความเชื่อมั่น</p>
+    <div class="somber"><b>ความขมขื่น:</b> ขณะที่ราคาหุ้นดิ่ง Lay ขายหุ้นของตัวเองออกจำนวนมาก พร้อมกับให้กำลังใจพนักงานให้ซื้อเพิ่มและรับรองว่าบริษัทกำลังจะฟื้น — พนักงานเฝ้าดูบัญชีเงินเกษียณของตัวเองถูกล้างจนหมด โดยแทบทำอะไรไม่ได้</div>
+    <div class="cost">
+      <div class="cstat"><div class="n" data-target="2.1" data-prefix="~$" data-suffix="B" data-dec="1">0</div><div class="l">เงินบำนาญที่ถูกล้าง</div></div>
+      <div class="cstat"><div class="n" data-target="63.4" data-prefix="~$" data-suffix="B" data-dec="1">0</div><div class="l">สินทรัพย์ที่ล้มละลาย (ใหญ่สุดขณะนั้น)</div></div>
+      <div class="cstat"><div class="n" data-target="59000" data-suffix="">0</div><div class="l">ผู้ถือหุ้นที่ได้รับผลกระทบ (ราว)</div></div>
+    </div>
+    <p style="font-size:.86rem;color:var(--muted);text-align:center;margin:0">ตัวเลขจ้างงาน/บำนาญที่อ้างถึงต่างกันตามแหล่ง (เช่น เลิกจ้าง ~5,600 ตำแหน่งในช่วงแรก จากพนักงานทั้งหมด ~21,000 คน)</p>
+  </section>
+
+  <!-- ===== 4 · EXEC FATES ===== -->
+  <section>
+    <h2><span class="no">04</span>ชะตากรรมของผู้บริหาร</h2>
+    <div class="fates">
+      <div class="fate"><div class="fn">Jeffrey Skilling</div><div class="fx">ถูกตัดสินว่าผิด โทษ 24 ปี ภายหลังลดเหลือราว 14 ปี</div></div>
+      <div class="fate"><div class="fn">Andrew Fastow</div><div class="fx">รับสารภาพปี 2004 รับโทษราว 6 ปี · เป็นพยานเอาผิดผู้อื่น</div></div>
+      <div class="fate"><div class="fn">Kenneth Lay</div><div class="fx">ถูกตัดสินว่าผิด แต่เสียชีวิต ก.ค. 2006 ก่อนการพิพากษาโทษ</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 5 · แก่น + bridge ===== -->
+  <section>
+    <div class="insight">
+      <div class="k"><i class="fa-solid fa-key"></i> Key Insight</div>
+      <p>Enron ใช้เวลา <b class="gold">16 ปี</b> ในการเติบใหญ่ แต่ใช้เวลาเพียง <b class="red">ไม่กี่สัปดาห์</b> ในการล่มสลาย</p>
+      <p>ผู้ที่เจ็บที่สุดไม่ใช่ผู้บริหารที่ขายหุ้นทิ้งทัน แต่เป็น <b>พนักงานและนักลงทุนรายย่อยที่เชื่อใจ</b> — นี่คือเหตุผลว่าทำไมความโปร่งใสจึงสำคัญ</p>
+    </div>
+  </section>
+
+  <div class="next">
+    <div class="q"><b>ตอนสุดท้าย:</b> โลกเรียนรู้อะไรจาก Enron และออกกฎอะไรเพื่อไม่ให้เกิดซ้ำ? แล้วบทเรียนนี้ใช้กับบริบทไทยอย่างไร? → ตอนที่ 8</div>
+    <a href="#" onclick="alert('ทำไฟล์ episode-08.html (บทเรียน/SOX/ไทย) ต่อได้เลยครับ');return false;">ตอนสุดท้าย <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+
+  <footer>
+    <div><b>Enron Case Study — ตอนที่ 7: การล่มสลาย &amp; ผลกระทบ</b></div>
+    <div>จัดทำโดย [ชื่อสมาชิก 1] · [ชื่อสมาชิก 2] · [ชื่อสมาชิก 3]</div>
+    <div class="refs">แหล่งอ้างอิง: Britannica (Enron scandal — Downfall) · History.com (Dec 2, 2001) · SEC EDGAR (Dynegy 8-K, พ.ย.–ธ.ค. 2001) · กราฟราคาหุ้นเป็นภาพประกอบเชิงแนวคิดจากจุดอ้างอิงจริง · ตัวเลขจ้างงาน/บำนาญที่ระบุ "ราว/ประมาณ" ต่างกันตามแหล่ง</div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const prog=document.getElementById('progress');
+  function onScroll(){const h=document.documentElement;const m=h.scrollHeight-h.clientHeight;prog.style.width=(m>0?h.scrollTop/m*100:0)+'%';}
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.querySelector('#crash')) playCrash();
+      if(e.target.querySelector('#tl')) document.getElementById('tl').classList.add('in');
+      e.target.querySelectorAll('.n[data-target]').forEach(countUp);
+      io.unobserve(e.target);
+    }});},{threshold:.2});
+  document.querySelectorAll('section').forEach(s=>io.observe(s));
+
+  /* tooltips */
+  document.querySelectorAll('.term').forEach(t=>t.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.querySelectorAll('.term.show').forEach(o=>{if(o!==t)o.classList.remove('show')});
+    t.classList.toggle('show');
+  }));
+  document.addEventListener('click',()=>document.querySelectorAll('.term.show').forEach(t=>t.classList.remove('show')));
+
+  /* count-up (รองรับทศนิยม) */
+  function countUp(el){
+    if(el.dataset.done)return;el.dataset.done="1";
+    const t=parseFloat(el.dataset.target),pre=el.dataset.prefix||'',suf=el.dataset.suffix||'',dec=parseInt(el.dataset.dec||'0',10);
+    const dur=1400,start=performance.now();
+    function step(now){const p=Math.min((now-start)/dur,1),e=1-Math.pow(2,-10*p);const v=t*e;
+      el.textContent=pre+(dec>0?v.toFixed(dec):Math.round(v).toLocaleString('en-US'))+suf;
+      if(p<1)requestAnimationFrame(step);else el.textContent=pre+(dec>0?t.toFixed(dec):t.toLocaleString('en-US'))+suf;}
+    requestAnimationFrame(step);
+  }
+
+  /* crash chart: replay แบบ noanim */
+  const crash=document.getElementById('crash');
+  function playCrash(){
+    crash.classList.add('noanim');crash.classList.remove('go');void crash.offsetWidth;
+    crash.classList.remove('noanim');void crash.offsetWidth;crash.classList.add('go');
+  }
+  document.getElementById('crashBtn').addEventListener('click',playCrash);
+})();
+</script>
+</body>
+</html>

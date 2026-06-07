@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตอนที่ 4 · Special Purpose Entities — ฉบับอ่านพร้อมตัวช่วย</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ====== TOKENS (ชุดเดียวกับตอน 1–3) ====== */
+:root{
+  --ink:#05080f; --navy:#0a1322; --navy2:#0e1a30; --panel:#12203a; --panel2:#172a4a;
+  --gold:#c9a24b; --gold-bright:#edc977; --red:#d93a34; --red-bright:#ef5b55;
+  --green:#43c478; --blue:#5fa8ff; --paper:#eef2f8; --muted:#8794a9;
+  --line:rgba(201,162,75,.22); --line-soft:rgba(255,255,255,.09); --read:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans Thai',sans-serif;color:var(--paper);line-height:1.78;
+  background:radial-gradient(1100px 600px at 84% -8%, rgba(201,162,75,.10), transparent 60%),
+    radial-gradient(900px 700px at -10% 108%, rgba(217,58,52,.09), transparent 60%),
+    linear-gradient(180deg,var(--navy) 0%, var(--ink) 100%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;
+  background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:50px 50px;-webkit-mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%);mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%)}
+
+#progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:60;background:linear-gradient(90deg,var(--gold),var(--red))}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:12px 22px;backdrop-filter:blur(8px);background:rgba(5,8,15,.55);border-bottom:1px solid var(--line-soft)}
+.topbar .file{font-family:'Barlow Semi Condensed';letter-spacing:.22em;font-size:12px;color:var(--muted)}
+.topbar .file b{color:var(--gold-bright)}
+.topbar a{color:var(--muted);text-decoration:none;font-size:13px;display:inline-flex;gap:7px;align-items:center;transition:.2s}
+.topbar a:hover{color:var(--gold-bright)}
+
+.container{position:relative;z-index:1;max-width:var(--read);margin:0 auto;padding:0 22px 90px}
+.hero{padding:104px 0 26px;text-align:center}
+.eyebrow{font-family:'Barlow Semi Condensed';letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--gold);display:inline-flex;align-items:center;gap:11px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 2s infinite}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(217,58,52,.5)}50%{box-shadow:0 0 0 6px rgba(217,58,52,0)}}
+h1{font-family:'Anuphan';font-weight:700;font-size:clamp(2rem,5.5vw,3rem);line-height:1.1;margin:14px 0 8px}
+.hero .sub{color:var(--gold-bright);font-family:'Anuphan';font-weight:500;font-size:1.12rem}
+.hero .readtime{margin-top:14px;color:var(--muted);font-size:14px;display:inline-flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.hero .readtime span{display:inline-flex;gap:6px;align-items:center}
+
+.tldr{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--gold);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:1.02rem}
+.tldr b{color:var(--gold-bright)}
+
+section{margin:38px 0;opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1)}
+section.in{opacity:1;transform:none}
+h2{font-family:'Anuphan';font-weight:600;font-size:1.5rem;margin:0 0 12px;color:var(--paper);padding-bottom:8px;border-bottom:1px solid var(--line);display:inline-block}
+h2 .no{font-family:'Barlow Semi Condensed';color:var(--gold);font-size:1.1rem;margin-right:8px}
+p{font-size:1.06rem;margin:14px 0;color:#d7dee9}
+strong,b{color:#fff;font-weight:600}
+.gold{color:var(--gold-bright)}.red{color:var(--red-bright)}.green{color:var(--green)}.blue{color:var(--blue)}
+
+.term{border-bottom:1.5px dotted var(--gold);cursor:help;position:relative;color:var(--gold-bright);white-space:nowrap}
+.term .tip{position:absolute;left:50%;bottom:135%;transform:translateX(-50%) translateY(6px);width:max-content;max-width:270px;
+  background:#1b2c4a;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:.86rem;line-height:1.5;color:#dbe2ee;
+  box-shadow:0 14px 36px rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.2s;z-index:30;white-space:normal;text-align:left;font-weight:400}
+.term .tip::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#1b2c4a}
+.term:hover .tip,.term.show .tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+.simple{background:rgba(67,196,120,.07);border:1px solid rgba(67,196,120,.3);border-radius:14px;padding:15px 18px;margin:20px 0;display:flex;gap:13px}
+.simple .ic{color:var(--green);font-size:18px;margin-top:2px;flex-shrink:0}
+.simple .tx{font-size:.98rem;color:#cfe8d8}.simple .tx b{color:#dff5e7}
+
+.widget{background:linear-gradient(160deg,#0f1d35,#0a1424);border:1px solid var(--line-soft);border-radius:18px;padding:20px;margin:26px 0;position:relative;overflow:hidden}
+.widget-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.widget-h .t{font-family:'Anuphan';font-weight:600;font-size:1.05rem}.widget-h .t i{color:var(--gold);margin-right:7px}
+.wbtn{font-family:'IBM Plex Sans Thai';font-size:13px;color:var(--paper);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:.2s;display:inline-flex;gap:6px;align-items:center}
+.wbtn:hover{border-color:var(--gold);color:var(--gold-bright)}
+
+/* ============================================================
+   ★ DEBT TRANSFER: หนี้ย้ายจากงบ Enron ไป SPE
+   ============================================================ */
+.dt{display:flex;gap:14px;align-items:stretch;min-height:230px}
+.dt-enron{flex:0 0 40%;background:var(--panel);border:1px solid rgba(95,168,255,.4);border-radius:14px;padding:14px;position:relative;z-index:2;display:flex;flex-direction:column}
+.dt-enron .nm{font-family:'Anuphan';font-weight:600;color:#9fcaff;text-align:center}
+.dt-bs{flex:1;display:flex;align-items:flex-end;justify-content:center;gap:14px;margin-top:10px}
+.dt-col{width:54px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:130px}
+.dt-bar{width:100%;border-radius:7px 7px 0 0;transition:height 1.4s cubic-bezier(.16,1,.3,1) .6s}
+.dt-bar.asset{height:78%;background:linear-gradient(180deg,var(--blue),#274d80)}
+.dt-bar.debt{height:92%;background:linear-gradient(180deg,var(--red),#7a1714)}
+.dt.go .dt-bar.debt{height:30%}
+.dt-col .cl{font-size:.74rem;color:var(--muted);margin-top:6px}
+.dt-ok{text-align:center;margin-top:8px;font-size:.84rem;color:var(--green);opacity:0;transition:opacity .5s 1.8s}
+.dt.go .dt-ok{opacity:1}
+.dt-spes{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.spe-box{background:rgba(217,58,52,.08);border:1px solid rgba(217,58,52,.4);border-radius:11px;padding:9px 12px;font-size:.86rem}
+.spe-box b{color:var(--red-bright)}.spe-box span{color:var(--muted);font-size:.78rem;display:block}
+.debt-chunk{position:absolute;z-index:5;background:var(--red);color:#fff;font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:7px;
+  box-shadow:0 8px 22px rgba(217,58,52,.4);opacity:0;left:18%;top:46%}
+.dt.go .debt-chunk{animation:throwDebt 1.6s cubic-bezier(.5,0,.3,1) forwards}
+.dt.go .debt-chunk:nth-child(2){animation-delay:.2s}
+.dt.go .debt-chunk:nth-child(3){animation-delay:.55s}
+.dt.go .debt-chunk:nth-child(4){animation-delay:.9s}
+@keyframes throwDebt{0%{opacity:0;left:18%;top:46%}15%{opacity:1}80%{opacity:1;left:74%;top:46%}100%{opacity:0;left:80%;top:46%}}
+/* ปิด transition/animation ชั่วคราว เพื่อรีเซ็ตสถานะก่อนเล่นซ้ำ */
+.dt.noanim .dt-bar,.dt.noanim .dt-ok,.dt.noanim .debt-chunk{transition:none!important;animation:none!important}
+
+/* ============================================================
+   3% RULE visual
+   ============================================================ */
+.rule3{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.rule3 .barwrap{flex:1;min-width:240px}
+.rule3 .stack{height:30px;border-radius:8px;overflow:hidden;display:flex;border:1px solid var(--line-soft)}
+.rule3 .inside{background:linear-gradient(90deg,#274d80,var(--blue));width:97%;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff}
+.rule3 .outside{background:linear-gradient(90deg,var(--gold),#9a7724);width:3%;min-width:34px;display:flex;align-items:center;justify-content:center;font-size:.74rem;color:#1b1405;font-weight:700}
+.rule3 .verdict{flex:0 0 auto;text-align:center;font-size:.86rem}
+.rule3 .verdict b{color:var(--green)}
+.rule3 small{display:block;color:var(--muted);font-size:.78rem;margin-top:8px}
+
+/* SPE cast cards */
+.cast{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+@media(max-width:560px){.cast{grid-template-columns:1fr}}
+.spe-card{background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--red);border-radius:12px;padding:13px 15px}
+.spe-card .cn{font-family:'Anuphan';font-weight:600;font-size:1rem;color:var(--red-bright)}
+.spe-card .cd{font-size:.88rem;color:#cdd6e6;margin-top:4px;line-height:1.45}
+
+/* ============================================================
+   ★ CIRCULARITY: โดมิโนล้ม (ค้ำด้วยหุ้นตัวเอง)
+   ============================================================ */
+.domino{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;height:150px;margin-top:6px}
+.tile{flex:1;height:120px;border-radius:10px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line-soft);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px 6px;font-size:.8rem;color:#dbe2ee;
+  transform-origin:bottom left;transition:transform .6s cubic-bezier(.6,0,.4,1)}
+.tile i{font-size:18px;margin-bottom:6px;color:var(--red-bright)}
+.domino.go .tile{transform:rotate(74deg);opacity:.55}
+.domino.go .tile:nth-child(1){transition-delay:0s}
+.domino.go .tile:nth-child(2){transition-delay:.35s}
+.domino.go .tile:nth-child(3){transition-delay:.7s}
+.domino.go .tile:nth-child(4){transition-delay:1.05s}
+.domino.noanim .tile{transition:none!important}
+.domino-cap{text-align:center;margin-top:14px;font-size:.92rem;color:#e6c7c5}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+@media(max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:14px 8px;text-align:center}
+.stat .n{font-family:'Barlow Semi Condensed';font-weight:700;font-size:1.7rem;color:var(--red-bright);line-height:1}
+.stat .l{font-size:.8rem;color:var(--muted);margin-top:6px}
+
+.insight{background:linear-gradient(160deg,rgba(201,162,75,.10),var(--navy2));border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:26px 0}
+.insight .k{font-family:'Barlow Semi Condensed';letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:var(--gold);margin-bottom:8px}
+.insight p{margin:8px 0;font-size:1.04rem}
+
+.next{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(160deg,var(--panel),var(--navy2));border:1px solid var(--line-soft);border-left:3px solid var(--red);border-radius:14px;padding:16px 20px;margin:30px 0}
+.next .q{font-size:.96rem;color:#e6c7c5}.next .q b{color:var(--red-bright)}
+.next a{flex-shrink:0;font-family:'IBM Plex Sans Thai';font-size:14px;color:var(--ink);background:var(--gold);border-radius:999px;padding:10px 18px;text-decoration:none;font-weight:600;white-space:nowrap;transition:.2s}
+.next a:hover{background:var(--gold-bright)}
+footer{border-top:1px solid var(--line-soft);margin-top:40px;padding-top:22px;color:var(--muted);font-size:.84rem;line-height:1.8}
+footer b{color:var(--paper)}footer .refs{font-size:.74rem;color:#6f7a90;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <span class="file">CASE FILE 2001-ENR · <b>EPISODE 04</b></span>
+  <a href="index.html"><i class="fa-solid fa-list"></i> สารบัญ</a>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <span class="eyebrow"><span class="dot"></span> ตอนที่ 4 · Special Purpose Entities</span>
+    <h1>ห้องลับหลังงบดุล</h1>
+    <div class="sub">SPE / SPV — ย้ายหนี้และขาดทุนออกจากงบ Enron</div>
+    <div class="readtime">
+      <span><i class="fa-regular fa-clock"></i> อ่านราว 8 นาที</span>
+      <span><i class="fa-solid fa-hand-pointer"></i> มีแอนิเมชันการย้ายหนี้ + โดมิโนล้ม</span>
+    </div>
+  </div>
+
+  <div class="tldr"><b>สรุปก่อนเริ่ม:</b> SPE ใช้ได้ถูกกฎหมาย แต่ Enron ใช้มัน<b class="gold"> ย้ายหนี้/ขาดทุนออกจากงบ</b> อาศัยช่องว่าง "กฎ 3%" — งบดูดีขึ้นจริง แต่ความเสี่ยงไม่ได้หาย แค่ย้ายที่ และเพราะค้ำด้วย "หุ้นตัวเอง" ทั้งระบบจึงผูกเป็นวงจรที่ล้มทับตัวเอง</div>
+
+  <!-- ===== 1 · ทำไมต้องใช้ + กฎ 3% ===== -->
+  <section>
+    <h2><span class="no">01</span>ทำไมต้องใช้ SPE และกฎ 3% คืออะไร</h2>
+    <p>ปลายยุค 1990 Enron โตเร็วและต้องลงทุนหนัก ขณะที่การรักษา <span class="term">อันดับเครดิต<span class="tip">เรตติงความน่าเชื่อถือ (เช่น BBB- ขึ้นไป) จำเป็นต่อธุรกิจเทรด ถ้าหนี้สูงเกินไปเรตติงตก ต้นทุนกู้พุ่ง</span></span> ระดับน่าลงทุนเป็นเรื่องคอขาดบาดตาย ทางออกคือสร้าง <span class="term">SPE<span class="tip">Special Purpose Entity — นิติบุคคลเฉพาะกิจที่ตั้งขึ้นเพื่อวัตถุประสงค์เฉพาะ ใช้ได้ถูกกฎหมายตามปกติ</span></span> ที่กู้เงินได้โดย<span class="term">ไม่ต้องรวมงบ<span class="tip">consolidation = การนำงบบริษัทลูก/หุ้นส่วนมารวมกับบริษัทแม่ ถ้าไม่ต้องรวม หนี้ก็ไม่โผล่ในงบแม่</span></span>ของ Enron</p>
+    <div class="widget">
+      <div class="widget-h"><span class="t"><i class="fa-solid fa-percent"></i> ช่องว่าง "กฎ 3%"</span></div>
+      <div class="rule3">
+        <div class="barwrap">
+          <div class="stack"><div class="inside">เงินจากฝั่ง Enron ~97%</div><div class="outside">3%</div></div>
+          <small>กฎ: ถ้ามีผู้ลงทุน "ภายนอก" ถือ ≥ 3% (และรับความเสี่ยงจริง + คุม SPE) → ไม่ต้องรวมงบ</small>
+        </div>
+        <div class="verdict"><i class="fa-solid fa-circle-check green" style="font-size:22px"></i><br><b>ไม่ต้องรวมงบ</b><br><span class="muted" style="font-size:.76rem">หนี้หายจากงบ Enron</span></div>
+      </div>
+    </div>
+    <div class="simple"><i class="fa-solid fa-triangle-exclamation ic" style="color:var(--red-bright)"></i><div class="tx"><b>กับดัก:</b> Enron ยังใช้ SPE ซ่อน "การเดิมพันที่ผิดพลาด" โดยขายสินทรัพย์เสี่ยงให้พาร์ตเนอร์ แลกกับ IOU ที่ค้ำด้วยหุ้น Enron (รวมกว่า $1B ภายในปี 2002) และตั้งพาร์ตเนอร์ชิปขึ้นกว่า 3,000 แห่ง</div></div>
+  </section>
+
+  <!-- ===== 2 · DEBT TRANSFER ANIMATION ===== -->
+  <section>
+    <h2><span class="no">02</span>การย้ายหนี้ออกจากงบ Enron</h2>
+    <p>กดดูการเคลื่อนของหนี้ — สังเกตว่าแท่ง "หนี้สิน" สีแดงของ Enron หดลง และมี "✓ งบดูสุขภาพดี" ขึ้นมา</p>
+    <div class="widget">
+      <div class="widget-h"><span class="t"><i class="fa-solid fa-money-bill-transfer"></i> หนี้/ขาดทุน → ย้ายไป SPE</span>
+        <button class="wbtn" id="dtBtn"><i class="fa-solid fa-play"></i> เล่นซ้ำ</button></div>
+      <div class="dt" id="dt">
+        <div class="dt-enron">
+          <div class="nm">งบดุล ENRON</div>
+          <div class="dt-bs">
+            <div class="dt-col"><div class="dt-bar asset"></div><div class="cl">สินทรัพย์</div></div>
+            <div class="dt-col"><div class="dt-bar debt"></div><div class="cl">หนี้สิน</div></div>
+          </div>
+          <div class="dt-ok"><i class="fa-solid fa-circle-check"></i> งบดูสุขภาพดี</div>
+        </div>
+        <div class="dt-spes">
+          <div class="spe-box"><b>Chewco / JEDI</b><span>รับโอนหนี้ ~$600M</span></div>
+          <div class="spe-box"><b>LJM1 / LJM2</b><span>บริหารโดย CFO เอง</span></div>
+          <div class="spe-box"><b>Raptors (×4)</b><span>รับขาดทุน ~$1B</span></div>
+        </div>
+        <span class="debt-chunk"><i class="fa-solid fa-sack-dollar"></i> หนี้</span>
+        <span class="debt-chunk"><i class="fa-solid fa-arrow-trend-down"></i> ขาดทุน</span>
+        <span class="debt-chunk"><i class="fa-solid fa-sack-dollar"></i> หนี้</span>
+        <span class="debt-chunk"><i class="fa-solid fa-arrow-trend-down"></i> ขาดทุน</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3 · JEDI/Chewco + cast ===== -->
+  <section>
+    <h2><span class="no">03</span>เรื่องจริง: JEDI → Chewco</h2>
+    <p>ปี 1993 Enron กับกองทุนบำนาญ <b>CalPERS</b> ตั้ง JEDI (CalPERS ลง $250M) ไว้นอกงบดุล พอ ปี 1997 CalPERS อยากถอนตัว Enron จึงสร้าง <b>Chewco</b> (ตั้งชื่อตาม Chewbacca) มาซื้อหุ้นแทน ~$383M เพื่อรักษา JEDI ไว้นอกงบ</p>
+    <div class="simple"><i class="fa-solid fa-skull ic" style="color:var(--red-bright)"></i><div class="tx"><b>จุดพลาด:</b> เงินกู้ Barclays ถูกค้ำด้วยบัญชีสำรอง $6M → Barclays ไม่มีเงินเสี่ยงจริง Chewco จึงขาดเกณฑ์ 3% เหรัญญิก Ben Glisan ถึงกับพูดว่า <b>"เราจบเห่แล้ว (We're toast)"</b> สุดท้าย Chewco/JEDI ต้องถูกนำกลับมารวมในงบ บังคับให้ Enron ปรับปรุงงบย้อนหลัง</div></div>
+    <div class="cast">
+      <div class="spe-card"><div class="cn">JEDI (1993)</div><div class="cd">หุ้นส่วน Enron + CalPERS ($250M) จุดเริ่มของการเก็บไว้นอกงบดุล</div></div>
+      <div class="spe-card"><div class="cn">Chewco (1997)</div><div class="cd">ตั้งมาซื้อหุ้น CalPERS แต่ทุนภายนอก 3% เป็นของปลอม → ต้องรวมงบ</div></div>
+      <div class="spe-card"><div class="cn">LJM1 / LJM2</div><div class="cd">บริหารโดย Fastow (CFO) เอง เป็นแหล่งทุนให้ Raptors</div></div>
+      <div class="spe-card"><div class="cn">Raptors / Talon</div><div class="cd">ใช้ "ป้องกันความเสี่ยง" หลีกเลี่ยงการบันทึกขาดทุน MTM ~$1B</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 4 · CIRCULARITY DOMINO ===== -->
+  <section>
+    <h2><span class="no">04</span>วงจรมรณะ: ค้ำด้วยหุ้นของตัวเอง</h2>
+    <p>จุดที่อันตรายที่สุดคือ Enron ค้ำ Raptors ด้วย <b>หุ้นของตัวเอง</b> ความเสี่ยงจริงไม่เคยหาย มันแค่ถูกพิงไว้กับราคาหุ้น — ดูว่าเกิดอะไรเมื่อหุ้นเริ่มตก</p>
+    <div class="widget">
+      <div class="widget-h"><span class="t"><i class="fa-solid fa-bomb"></i> ปฏิกิริยาลูกโซ่</span>
+        <button class="wbtn" id="dmBtn"><i class="fa-solid fa-play"></i> เล่นซ้ำ</button></div>
+      <div class="domino" id="domino">
+        <div class="tile"><i class="fa-solid fa-arrow-trend-down"></i>หุ้น Enron ตก</div>
+        <div class="tile"><i class="fa-solid fa-house-crack"></i>SPE หลุดเกณฑ์ 3%</div>
+        <div class="tile"><i class="fa-solid fa-money-bill-transfer"></i>หนี้เด้งกลับเข้างบ</div>
+        <div class="tile"><i class="fa-solid fa-building-circle-xmark"></i>Enron ล้ม</div>
+      </div>
+      <div class="domino-cap">เมื่อ Enron ต้องส่งมอบหุ้นมหาศาลตามสัญญาค้ำ กำไรต่อหุ้นยิ่งเจือจาง → ยิ่งฉุดหุ้นลง → บ้านไพ่ถล่มทับตัวเอง</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" data-target="3000" data-suffix="+">0</div><div class="l">พาร์ตเนอร์ชิป/SPE ที่สร้างขึ้น</div></div>
+      <div class="stat"><div class="n" data-target="1" data-prefix="~$" data-suffix="B">0</div><div class="l">ขาดทุนที่ซ่อนผ่าน Raptors</div></div>
+      <div class="stat"><div class="n" data-target="30" data-prefix="~$" data-suffix="M">0</div><div class="l">กำไรส่วนตัวของ CFO จาก SPE</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 5 · แก่น + bridge ===== -->
+  <section>
+    <div class="insight">
+      <div class="k"><i class="fa-solid fa-key"></i> Key Insight</div>
+      <p>SPE ทำให้ "งบดูดีขึ้น" จริง — แต่ <b class="red">ความเสี่ยงไม่ได้หาย มันแค่ย้ายที่</b> และยังเต็มไปด้วย conflict of interest เพราะ CFO อยู่ทั้งสองฝั่งของโต๊ะ</p>
+      <p>ที่ร้ายคือทั้งระบบผูกกับ <b>หุ้น Enron เอง</b> → หุ้นตก = ทุกอย่างพังพร้อมกัน</p>
+    </div>
+  </section>
+
+  <div class="next">
+    <div class="q"><b>คำถามเชื่อมตอน:</b> ถ้าหนี้ถูกซ่อนเก่งขนาดนี้ แล้วนักลงทุนหรือผู้สอบบัญชี<b>จะจับสัญญาณได้จากงบยังไง</b>? → ตอนที่ 5: อ่านงบ &amp; Red Flags</div>
+    <a href="#" onclick="alert('ทำไฟล์ episode-05.html (Red Flags) ต่อได้เลยครับ');return false;">ตอนต่อไป <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+
+  <footer>
+    <div><b>Enron Case Study — ตอนที่ 4: Special Purpose Entities</b></div>
+    <div>จัดทำโดย [ชื่อสมาชิก 1] · [ชื่อสมาชิก 2] · [ชื่อสมาชิก 3]</div>
+    <div class="refs">แหล่งอ้างอิง: SEC (Fastow/Glisan litigation releases) · DOJ · The CPA Journal (2002, 2003) · Powers Report · Wikipedia (Chewco) · enron.net case studies · ตัวเลขที่ระบุ "ราว/ประมาณ" อาจต่างกันตามแหล่ง · แผนภาพเป็นภาพประกอบเชิงแนวคิด ยอด $600M/$1B เป็นค่าโดยประมาณที่อ้างถึงบ่อย</div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const prog=document.getElementById('progress');
+  function onScroll(){const h=document.documentElement;const m=h.scrollHeight-h.clientHeight;prog.style.width=(m>0?h.scrollTop/m*100:0)+'%';}
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.querySelector('#dt')) playDebt();
+      if(e.target.querySelector('#domino')){ playDomino();
+        e.target.querySelectorAll('.n[data-target]').forEach(countUp); }
+      io.unobserve(e.target);
+    }});},{threshold:.2});
+  document.querySelectorAll('section').forEach(s=>io.observe(s));
+
+  /* tooltips */
+  document.querySelectorAll('.term').forEach(t=>t.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.querySelectorAll('.term.show').forEach(o=>{if(o!==t)o.classList.remove('show')});
+    t.classList.toggle('show');
+  }));
+  document.addEventListener('click',()=>document.querySelectorAll('.term.show').forEach(t=>t.classList.remove('show')));
+
+  /* count-up */
+  function countUp(el){
+    if(el.dataset.done)return;el.dataset.done="1";
+    const t=parseFloat(el.dataset.target),pre=el.dataset.prefix||'',suf=el.dataset.suffix||'';
+    const dur=1300,start=performance.now();
+    function step(now){const p=Math.min((now-start)/dur,1),e=1-Math.pow(2,-10*p);
+      el.textContent=pre+Math.round(t*e).toLocaleString('en-US')+suf;
+      if(p<1)requestAnimationFrame(step);else el.textContent=pre+t.toLocaleString('en-US')+suf;}
+    requestAnimationFrame(step);
+  }
+
+  /* helper: รีสตาร์ตวิดเจ็ต transition ให้เล่นซ้ำได้จริง
+     (ปิด transition → รีเซ็ตเป็นสถานะตั้งต้น → เปิด transition → เล่น) */
+  function replay(el){
+    el.classList.add('noanim');     // ปิด transition/animation ชั่วคราว
+    el.classList.remove('go');      // รีเซ็ตกลับสถานะเริ่มต้นทันที (ตั้งตรง/หนี้เต็ม)
+    void el.offsetWidth;            // commit สถานะตั้งต้นแบบไม่มี transition
+    el.classList.remove('noanim');  // เปิด transition กลับ
+    void el.offsetWidth;            // commit ว่าพร้อมเล่น
+    el.classList.add('go');         // เล่นแอนิเมชันจากต้น
+  }
+
+  /* debt transfer */
+  const dt=document.getElementById('dt');
+  function playDebt(){ replay(dt); }
+  document.getElementById('dtBtn').addEventListener('click',playDebt);
+
+  /* domino */
+  const dm=document.getElementById('domino');
+  function playDomino(){ replay(dm); }
+  document.getElementById('dmBtn').addEventListener('click',playDomino);
+})();
+</script>
+</body>
+</html>
