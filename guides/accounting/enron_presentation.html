@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enron Accounting Scandal — SPEs & The Role of Auditors</title>
+
+<!-- ============================================================
+     FONTS
+     - Kanit  : หัวข้อภาษาไทย (geometric, presentation-friendly)
+     - Sarabun: เนื้อหาภาษาไทย (อ่านง่าย เป็นมาตรฐานเอกสารไทย)
+     - Oswald : ตัวเลข + ป้ายภาษาอังกฤษ (สไตล์สารคดี/ข่าว)
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   1) DESIGN TOKENS — แก้สี/ฟอนต์ได้จากตรงนี้จุดเดียว
+   ============================================================ */
+:root{
+  --bg:        #070a14;   /* navy-black หลัก */
+  --bg2:       #0b1120;
+  --surface:   #111a2e;   /* การ์ด/กล่อง */
+  --surface2:  #16233d;
+  --gold:      #d8b364;   /* ทอง = เงิน/ความหรูหรา */
+  --gold-bright:#f1d18a;
+  --red:       #e0433f;   /* แดง = อันตราย/ขาดทุน/scandal */
+  --red-deep:  #9b1c1c;
+  --green:     #4ade80;   /* เขียว = ภาพลวงตาว่ากำไรดี */
+  --text:      #e9edf5;
+  --muted:     #8b97ad;
+  --line:      rgba(216,179,100,.18);
+  --line-soft: rgba(255,255,255,.08);
+  --maxw:      1080px;
+}
+
+/* ============================================================
+   2) RESET & BASE
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Sarabun',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* พื้นหลังบรรยากาศ: ไล่เฉดเรเดียล + เส้นกริดจาง ๆ ให้ดูเป็นสารคดีการเงิน */
+.bg-atmos{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(900px 600px at 78% 12%, rgba(216,179,100,.10), transparent 60%),
+    radial-gradient(800px 700px at 12% 88%, rgba(224,67,63,.10), transparent 60%),
+    linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:54px 54px;
+  mask-image:radial-gradient(circle at 50% 40%,#000 30%,transparent 80%);
+}
+/* grain overlay เบา ๆ ให้มีเท็กซ์เจอร์ */
+.bg-grain{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   3) โครงสร้าง SLIDE
+   ============================================================ */
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:64px 40px 96px;
+  opacity:0;visibility:hidden;
+  transform:translateY(28px) scale(.99);
+  transition:opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1), visibility .55s;
+  overflow-y:auto;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto}
+
+/* การเปิดตัวเนื้อหาแบบ stagger เมื่อ slide active */
+.slide.active .stagger>*{
+  opacity:0;transform:translateY(18px);
+  animation:rise .7s cubic-bezier(.16,1,.3,1) forwards;
+}
+.slide.active .stagger>*:nth-child(1){animation-delay:.08s}
+.slide.active .stagger>*:nth-child(2){animation-delay:.18s}
+.slide.active .stagger>*:nth-child(3){animation-delay:.28s}
+.slide.active .stagger>*:nth-child(4){animation-delay:.38s}
+.slide.active .stagger>*:nth-child(5){animation-delay:.48s}
+.slide.active .stagger>*:nth-child(6){animation-delay:.58s}
+.slide.active .stagger>*:nth-child(7){animation-delay:.68s}
+.slide.active .stagger>*:nth-child(8){animation-delay:.78s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* ============================================================
+   4) TYPOGRAPHY
+   ============================================================ */
+.eyebrow{
+  font-family:'Oswald',sans-serif;font-weight:500;letter-spacing:.32em;
+  text-transform:uppercase;font-size:.8rem;color:var(--gold);
+  display:flex;align-items:center;gap:14px;margin-bottom:18px;
+}
+.eyebrow::before{content:"";width:42px;height:1px;background:var(--gold)}
+h1{font-family:'Kanit',sans-serif;font-weight:700;line-height:1.08;font-size:clamp(2rem,5.2vw,4.4rem)}
+h2{font-family:'Kanit',sans-serif;font-weight:600;line-height:1.15;font-size:clamp(1.6rem,3.6vw,2.7rem);margin-bottom:8px}
+h3{font-family:'Kanit',sans-serif;font-weight:600;font-size:1.18rem;margin-bottom:6px}
+p{font-size:clamp(.98rem,1.25vw,1.12rem);line-height:1.7;color:#d3dae6}
+.lead{font-size:clamp(1.05rem,1.5vw,1.3rem);color:#e9edf5}
+.muted{color:var(--muted)}
+.gold{color:var(--gold-bright)}
+.red{color:var(--red)}
+.green{color:var(--green)}
+.en{font-family:'Oswald',sans-serif;letter-spacing:.02em}
+.section-num{font-family:'Oswald',sans-serif;color:var(--gold);opacity:.5;font-size:.9rem;letter-spacing:.3em}
+
+/* ============================================================
+   5) ป้ายแยกประเภทข้อมูล: ข้อเท็จจริง / ข่าว / การวิเคราะห์
+   ============================================================ */
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'Sarabun';font-size:.74rem;font-weight:600;
+  padding:4px 11px;border-radius:999px;letter-spacing:.02em;
+  border:1px solid transparent;white-space:nowrap;
+}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%}
+.badge.fact{color:#9fd0ff;background:rgba(96,165,250,.10);border-color:rgba(96,165,250,.35)}
+.badge.fact::before{background:#60a5fa}
+.badge.news{color:var(--gold-bright);background:rgba(216,179,100,.10);border-color:rgba(216,179,100,.35)}
+.badge.news::before{background:var(--gold)}
+.badge.analysis{color:#f0a87a;background:rgba(224,67,63,.10);border-color:rgba(224,120,63,.35)}
+.badge.analysis::before{background:#e0783f}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+
+/* ============================================================
+   6) การ์ด / กล่องเนื้อหา
+   ============================================================ */
+.card{
+  background:linear-gradient(160deg,var(--surface),var(--bg2));
+  border:1px solid var(--line-soft);border-radius:16px;padding:22px 24px;
+}
+.card.gold-edge{border-left:3px solid var(--gold)}
+.card.red-edge{border-left:3px solid var(--red)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ============================================================
+   7) COUNTER (count-up)
+   ============================================================ */
+.stat{text-align:center;padding:18px 10px}
+.stat .num{
+  font-family:'Oswald',sans-serif;font-weight:600;
+  font-size:clamp(2.1rem,4.5vw,3.4rem);line-height:1;color:var(--gold-bright);
+  text-shadow:0 0 28px rgba(216,179,100,.25);
+}
+.stat .num.red{color:var(--red);text-shadow:0 0 28px rgba(224,67,63,.3)}
+.stat .lbl{margin-top:10px;font-size:.92rem;color:var(--muted)}
+.stat .sub{font-size:.74rem;color:#5f6b80;margin-top:3px}
+
+/* ============================================================
+   8) TIMELINE (เส้นวิ่งซ้าย→ขวา)
+   ============================================================ */
+.timeline{position:relative;margin-top:26px;padding-left:6px}
+.tl-track{position:absolute;left:0;top:11px;height:2px;width:100%;background:var(--line-soft);border-radius:2px}
+.tl-fill{position:absolute;left:0;top:11px;height:2px;width:0;background:linear-gradient(90deg,var(--gold),var(--red));border-radius:2px}
+.slide.active .tl-fill{animation:grow 2.6s ease forwards .3s}
+@keyframes grow{to{width:100%}}
+.tl-items{display:flex;justify-content:space-between;gap:8px;position:relative}
+.tl-item{flex:1;text-align:center;opacity:0;transform:translateY(14px)}
+.slide.active .tl-item{animation:rise .55s ease forwards}
+.slide.active .tl-item:nth-child(1){animation-delay:.4s}
+.slide.active .tl-item:nth-child(2){animation-delay:.8s}
+.slide.active .tl-item:nth-child(3){animation-delay:1.2s}
+.slide.active .tl-item:nth-child(4){animation-delay:1.6s}
+.slide.active .tl-item:nth-child(5){animation-delay:2.0s}
+.slide.active .tl-item:nth-child(6){animation-delay:2.4s}
+.tl-dot{width:14px;height:14px;border-radius:50%;background:var(--gold);margin:0 auto 12px;box-shadow:0 0 0 4px rgba(216,179,100,.18)}
+.tl-item:last-child .tl-dot{background:var(--red);box-shadow:0 0 0 4px rgba(224,67,63,.2)}
+.tl-year{font-family:'Oswald';font-weight:600;color:var(--gold-bright);font-size:1.05rem}
+.tl-item:last-child .tl-year{color:var(--red)}
+.tl-txt{font-size:.82rem;color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* ============================================================
+   9) SPE DIAGRAM (กล่องหนี้เคลื่อนออกจาก Enron)
+   ============================================================ */
+.spe-stage{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:24px;position:relative;flex-wrap:wrap}
+.entity{
+  flex:1;min-width:240px;background:var(--surface);border:1px solid var(--line-soft);
+  border-radius:14px;padding:18px;position:relative;
+}
+.entity.enron{border-color:rgba(96,165,250,.35)}
+.entity.spe{border-color:var(--red-deep)}
+.entity h3{margin-bottom:10px}
+.bs-row{display:flex;justify-content:space-between;font-size:.86rem;padding:7px 0;border-bottom:1px dashed var(--line-soft)}
+.bs-row:last-child{border-bottom:none}
+.chip{
+  display:inline-block;background:rgba(224,67,63,.16);color:#ffb4b1;
+  border:1px solid var(--red-deep);border-radius:8px;padding:4px 10px;font-size:.82rem;font-weight:600;
+}
+/* กล่องหนี้ที่บินจาก Enron ไป SPE */
+.flying-debt{
+  position:absolute;left:8%;top:50%;z-index:5;
+  background:var(--red);color:#fff;font-weight:700;font-size:.82rem;
+  padding:7px 13px;border-radius:9px;box-shadow:0 10px 30px rgba(224,67,63,.4);
+  opacity:0;
+}
+.slide.active .flying-debt{animation:fly 3s cubic-bezier(.6,0,.2,1) forwards 1s}
+@keyframes fly{
+  0%{opacity:0;left:8%;transform:translateY(-50%) scale(.8)}
+  15%{opacity:1;transform:translateY(-50%) scale(1)}
+  70%{opacity:1;left:62%;transform:translateY(-50%) scale(1)}
+  100%{opacity:0;left:72%;transform:translateY(-50%) scale(.85)}
+}
+.spe-arrow{font-family:'Oswald';color:var(--gold);font-size:1.4rem;align-self:center}
+/* ค่าในงบ Enron ที่ "ดีขึ้น" หลังย้ายหนี้ออก */
+.improve{color:var(--green);font-weight:700;opacity:0}
+.slide.active .improve{animation:popGreen .6s ease forwards 3.6s}
+@keyframes popGreen{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+
+/* ============================================================
+   10) CHART: กำไรทางบัญชี vs เงินสดจริง (แท่งวิ่งขึ้น)
+   ============================================================ */
+.chart{display:flex;align-items:flex-end;gap:26px;height:300px;margin:26px auto 0;max-width:640px;padding:0 10px}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
+.bars{display:flex;gap:10px;align-items:flex-end;height:100%}
+.bar{width:46px;border-radius:8px 8px 0 0;height:0;transition:height 1.4s cubic-bezier(.16,1,.3,1);position:relative}
+.bar.profit{background:linear-gradient(180deg,var(--green),#15803d)}
+.bar.cash{background:linear-gradient(180deg,var(--gold),#a17a2a)}
+.bar .cap{position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-family:'Oswald';font-size:.85rem;color:#cfd6e2;white-space:nowrap;opacity:0;transition:opacity .4s .9s}
+.slide.active .bar .cap{opacity:1}
+.bar-xlabel{margin-top:12px;font-size:.86rem;color:var(--muted);text-align:center}
+.chart-note{text-align:center;margin-top:10px}
+
+/* ============================================================
+   11) RED FLAG DASHBOARD
+   ============================================================ */
+.flags{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+@media(max-width:760px){.flags{grid-template-columns:1fr}}
+.flag{
+  display:flex;align-items:flex-start;gap:13px;background:var(--surface);
+  border:1px solid var(--line-soft);border-left:3px solid var(--red);
+  border-radius:12px;padding:14px 16px;opacity:0;transform:translateX(-22px);
+}
+.slide.active .flag{animation:flagIn .5s cubic-bezier(.16,1,.3,1) forwards}
+.slide.active .flag:nth-child(1){animation-delay:.15s}
+.slide.active .flag:nth-child(2){animation-delay:.30s}
+.slide.active .flag:nth-child(3){animation-delay:.45s}
+.slide.active .flag:nth-child(4){animation-delay:.60s}
+.slide.active .flag:nth-child(5){animation-delay:.75s}
+.slide.active .flag:nth-child(6){animation-delay:.90s}
+.slide.active .flag:nth-child(7){animation-delay:1.05s}
+@keyframes flagIn{to{opacity:1;transform:none}}
+.flag .dot{
+  width:11px;height:11px;border-radius:50%;background:var(--red);margin-top:5px;flex-shrink:0;
+  animation:blink 1.4s infinite;
+}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(224,67,63,.5)}50%{opacity:.4;box-shadow:0 0 0 6px rgba(224,67,63,0)}}
+.flag .ft{font-size:.92rem;line-height:1.5}
+.flag .fn{font-family:'Oswald';color:var(--red);font-size:.8rem;margin-right:6px}
+
+/* ============================================================
+   12) CHECKLIST (วิธีตรวจสอบของผู้สอบบัญชี)
+   ============================================================ */
+.checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+@media(max-width:760px){.checklist{grid-template-columns:1fr}}
+.check{
+  display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+  background:var(--surface);border:1px solid var(--line-soft);border-radius:11px;
+  opacity:0;transform:translateY(12px);
+}
+.slide.active .check{animation:rise .45s ease forwards}
+.slide.active .check:nth-child(1){animation-delay:.1s}
+.slide.active .check:nth-child(2){animation-delay:.18s}
+.slide.active .check:nth-child(3){animation-delay:.26s}
+.slide.active .check:nth-child(4){animation-delay:.34s}
+.slide.active .check:nth-child(5){animation-delay:.42s}
+.slide.active .check:nth-child(6){animation-delay:.50s}
+.slide.active .check:nth-child(7){animation-delay:.58s}
+.slide.active .check:nth-child(8){animation-delay:.66s}
+.slide.active .check:nth-child(9){animation-delay:.74s}
+.slide.active .check:nth-child(10){animation-delay:.82s}
+.check .tick{
+  width:22px;height:22px;border-radius:6px;background:rgba(74,222,128,.14);
+  border:1px solid rgba(74,222,128,.5);color:var(--green);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;
+}
+.check .ct{font-size:.9rem;line-height:1.45}
+
+/* ============================================================
+   13) COVER
+   ============================================================ */
+.cover{text-align:center}
+.cover .kicker{font-family:'Oswald';letter-spacing:.4em;color:var(--gold);text-transform:uppercase;font-size:.85rem;margin-bottom:22px}
+.cover .title-en{font-family:'Oswald';font-weight:700;font-size:clamp(3rem,11vw,8rem);line-height:.92;letter-spacing:.02em;color:var(--text);text-shadow:0 0 60px rgba(216,179,100,.18)}
+.cover .title-en .x{color:var(--red)}
+.cover .subtitle{font-family:'Kanit';font-weight:500;font-size:clamp(1.05rem,2.4vw,1.7rem);margin-top:18px;color:var(--gold-bright)}
+.cover .meta{margin-top:30px;color:var(--muted);font-size:.95rem;line-height:1.9}
+.cover .rule{width:90px;height:2px;background:linear-gradient(90deg,var(--gold),var(--red));margin:26px auto}
+.members{margin-top:8px;font-family:'Sarabun'}
+.members b{color:var(--text)}
+
+/* ============================================================
+   14) CONCLUSION — TRUST แตก/จาง
+   ============================================================ */
+.trust-stage{text-align:center;position:relative;min-height:200px;display:flex;flex-direction:column;justify-content:center}
+.trust-word{font-family:'Oswald';font-weight:700;font-size:clamp(3rem,12vw,8.5rem);letter-spacing:.06em;display:inline-flex;justify-content:center;gap:.02em}
+.trust-word span{display:inline-block;color:var(--gold-bright);text-shadow:0 0 40px rgba(216,179,100,.3)}
+.slide.active .trust-word span{animation:shatter 1.1s cubic-bezier(.6,0,.4,1) forwards}
+.slide.active .trust-word span:nth-child(1){animation-delay:1.4s}
+.slide.active .trust-word span:nth-child(2){animation-delay:1.55s}
+.slide.active .trust-word span:nth-child(3){animation-delay:1.7s}
+.slide.active .trust-word span:nth-child(4){animation-delay:1.85s}
+.slide.active .trust-word span:nth-child(5){animation-delay:2.0s}
+@keyframes shatter{
+  0%{opacity:1;transform:none;filter:none}
+  100%{opacity:.06;transform:translateY(40px) rotate(12deg) scale(.9);filter:blur(3px)}
+}
+.quote-en,.quote-th{opacity:0}
+.slide.active .quote-en{animation:fadeUp 1s ease forwards 2.4s}
+.slide.active .quote-th{animation:fadeUp 1s ease forwards 3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.quote-en{font-family:'Kanit';font-weight:500;font-size:clamp(1.3rem,3vw,2.2rem);line-height:1.4;margin-top:10px;color:var(--text)}
+.quote-th{font-size:clamp(1rem,1.8vw,1.3rem);color:var(--gold-bright);margin-top:18px;line-height:1.6}
+
+/* list ภายในการ์ด */
+ul.clean{list-style:none}
+ul.clean li{position:relative;padding-left:22px;margin:9px 0;font-size:.96rem;line-height:1.55;color:#d3dae6}
+ul.clean li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+ul.clean li.r::before{background:var(--red)}
+
+/* ============================================================
+   15) NAV / PROGRESS / HUD
+   ============================================================ */
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--red));z-index:50;width:0;transition:width .5s ease}
+.hud{position:fixed;bottom:22px;left:0;right:0;z-index:50;display:flex;justify-content:center;align-items:center;gap:18px;pointer-events:none}
+.hud .ctrl{display:flex;gap:10px;align-items:center;pointer-events:auto}
+.btn{
+  font-family:'Kanit';font-weight:500;font-size:.92rem;cursor:pointer;
+  background:var(--surface);color:var(--text);border:1px solid var(--line);
+  padding:9px 18px;border-radius:999px;transition:.2s;display:flex;align-items:center;gap:7px;
+}
+.btn:hover{background:var(--surface2);border-color:var(--gold);color:var(--gold-bright)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.counter-hud{font-family:'Oswald';color:var(--muted);font-size:.9rem;letter-spacing:.12em;pointer-events:auto}
+.counter-hud b{color:var(--gold-bright)}
+.brand{position:fixed;top:18px;left:24px;z-index:50;font-family:'Oswald';letter-spacing:.28em;font-size:.72rem;color:var(--muted);text-transform:uppercase}
+.dots{position:fixed;top:18px;right:24px;z-index:50;display:flex;gap:6px}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);transition:.3s;cursor:pointer}
+.dots i.on{background:var(--gold);transform:scale(1.3)}
+.hint{position:fixed;bottom:60px;left:0;right:0;text-align:center;color:#56607a;font-size:.78rem;z-index:40}
+
+/* references */
+.refs{font-size:.84rem;line-height:1.7;color:#aab4c6}
+.refs li{margin-bottom:7px}
+.refs .src{color:var(--gold-bright)}
+
+/* scrollbar */
+.slide::-webkit-scrollbar{width:7px}
+.slide::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+</style>
+</head>
+<body>
+
+<!-- พื้นหลังบรรยากาศ -->
+<div class="bg-atmos"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+
+<!-- HUD -->
+<div class="progress" id="progress"></div>
+<div class="brand">ENRON · Case Study</div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ============================================================
+       SLIDE 0 — COVER  (แก้ชื่อสมาชิกกลุ่มที่ placeholder ด้านล่าง)
+       ============================================================ -->
+  <section class="slide active cover">
+    <div class="wrap stagger">
+      <div class="kicker">Accounting Scandal · Forensic Accounting · Auditing</div>
+      <div class="title-en">ENR<span class="x">O</span>N</div>
+      <div class="subtitle">การตกแต่งบัญชีผ่าน Special Purpose Entities<br>และบทบาทความล้มเหลวของผู้สอบบัญชี</div>
+      <div class="rule"></div>
+      <div class="meta">
+        งานนำเสนอกลุ่ม · วิชาการบัญชี / การสอบบัญชี · เวลานำเสนอ 10 นาที
+        <div class="members">
+          <!-- ▼▼▼ ใส่ชื่อสมาชิกกลุ่มตรงนี้ ▼▼▼ -->
+          จัดทำโดย: <b>[ชื่อสมาชิก 1]</b> · <b>[ชื่อสมาชิก 2]</b> · <b>[ชื่อสมาชิก 3]</b>
+          <!-- ▲▲▲ ใส่ชื่อสมาชิกกลุ่มตรงนี้ ▲▲▲ -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 1 — วิธีอ่านป้ายข้อมูล (Legend)
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">How to read this deck</div>
+      <h2>การแยกประเภทข้อมูลในงานนี้</h2>
+      <p class="muted" style="margin-bottom:22px">เพื่อความโปร่งใส งานนี้แยกชัดเจนว่าข้อความใดคือ "ข้อเท็จจริง" "ตัวเลขที่รายงานในสื่อ/เอกสาร" และ "การวิเคราะห์/ความเห็นของกลุ่ม"</p>
+      <div class="grid g3">
+        <div class="card gold-edge"><span class="badge fact">ข้อเท็จจริง · FACT</span><p style="margin-top:12px">เหตุการณ์/วันที่/คำตัดสิน ที่ตรวจสอบได้จากแหล่งทางการและสื่อที่น่าเชื่อถือ</p></div>
+        <div class="card gold-edge"><span class="badge news">ข้อมูลข่าว/รายงาน · REPORTED</span><p style="margin-top:12px">ตัวเลขที่อ้างอิงจากข่าว/เอกสาร อาจต่างกันเล็กน้อยตามแหล่ง จึงใส่คำว่า "ประมาณ"</p></div>
+        <div class="card red-edge"><span class="badge analysis">การวิเคราะห์ · ANALYSIS</span><p style="margin-top:12px">ความเห็น/การตีความของกลุ่ม เช่น การวิเคราะห์ความเสี่ยงในไทย และกราฟเชิงแนวคิด</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 2 — EXECUTIVE SUMMARY
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 1 · Executive Summary</div>
+      <h2>บทสรุปผู้บริหาร</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span></div>
+      <div class="grid g2">
+        <div class="card gold-edge">
+          <h3 class="gold">Enron คืออะไร</h3>
+          <p>บริษัทพลังงานและการซื้อขายพลังงานของสหรัฐฯ ตั้งอยู่ที่ฮุสตัน รัฐเท็กซัส เคยถูกยกย่องเป็น "บริษัทที่มีนวัตกรรมที่สุดในอเมริกา" โดยนิตยสาร Fortune ติดต่อกัน 6 ปี และเคยเป็นบริษัทมหาชนใหญ่อันดับ 7 ของสหรัฐฯ</p>
+        </div>
+        <div class="card red-edge">
+          <h3 class="red">เกิดอะไรขึ้น</h3>
+          <p>บริษัทใช้เทคนิคบัญชีเชิงรุก โดยเฉพาะ Mark-to-Market และ Special Purpose Entities (SPEs) เพื่อ "ซ่อนหนี้และขาดทุน" ออกจากงบดุล ทำให้กำไรดูสวยเกินจริง สุดท้ายยื่นล้มละลายเมื่อ 2 ธ.ค. 2001</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>ทำไมจึงเป็นหนึ่งใน scandal ที่ใหญ่ที่สุด</h3>
+        <ul class="clean">
+          <li>เป็นการล้มละลายของบริษัทที่ใหญ่ที่สุดในประวัติศาสตร์สหรัฐฯ <i>ในขณะนั้น</i></li>
+          <li>ทำให้สำนักงานสอบบัญชีระดับโลก Arthur Andersen (1 ใน Big Five) ล่มสลายตามไปด้วย</li>
+          <li class="r">นำไปสู่กฎหมาย <span class="en">Sarbanes-Oxley Act (SOX) 2002</span> ที่เปลี่ยนวงการสอบบัญชีทั้งโลก</li>
+        </ul>
+        <p style="margin-top:12px" class="gold"><b>ประเด็นหลัก:</b> "กำไรดูดี แต่หนี้สินและความเสี่ยงถูกซ่อน" — บทเรียนคือ ผู้สอบบัญชีและนักลงทุนต้องดู "เงินสดจริง" ไม่ใช่แค่ "กำไรทางบัญชี"</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 3 — BACKGROUND + COUNTERS
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 2 · Background of Enron</div>
+      <h2>ภูมิหลังของ Enron</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span><span class="badge news">ตัวเลขรายงาน (ประมาณ)</span></div>
+      <p class="muted">ก่อตั้งปี 1985 จากการควบรวม Houston Natural Gas และ InterNorth ภายใต้ผู้ก่อตั้งและประธาน Kenneth Lay เติบโตจากบริษัทท่อก๊าซสู่ยักษ์ใหญ่ด้านการซื้อขายพลังงาน (energy trading) ผ่านแพลตฟอร์ม Enron Online และขยายสู่ broadband และน้ำ</p>
+      <!-- COUNTERS: ตัวเลขวิ่งขึ้น -->
+      <div class="grid g4" style="margin-top:8px">
+        <div class="stat"><div class="num counter" data-target="1985" data-suffix="" data-plain="1">1985</div><div class="lbl">ปีก่อตั้ง</div><div class="sub">FACT</div></div>
+        <div class="stat"><div class="num counter" data-target="111" data-prefix="$" data-suffix="B">0</div><div class="lbl">รายได้ ปี 2000</div><div class="sub">ประมาณ · REPORTED</div></div>
+        <div class="stat"><div class="num counter" data-target="21000" data-suffix="">0</div><div class="lbl">จำนวนพนักงาน</div><div class="sub">ประมาณ · REPORTED</div></div>
+        <div class="stat"><div class="num counter" data-target="7" data-prefix="#">0</div><div class="lbl">บริษัทใหญ่สุดในสหรัฐฯ</div><div class="sub">FACT</div></div>
+      </div>
+      <p style="margin-top:14px" class="muted">ภาพลักษณ์ก่อนเกิดเรื่อง: ราคาหุ้นพุ่งทะยานตลอดยุค 1990s นักวิเคราะห์ Wall Street ชื่นชอบ และค่า P/E สูงกว่า 70 เท่า สะท้อนความเชื่อมั่นของนักลงทุนอย่างล้นหลาม</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 4 — TIMELINE
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 3 · What Happened?</div>
+      <h2>ลำดับเหตุการณ์สำคัญ</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง · ลำดับเวลา</span></div>
+      <div class="timeline">
+        <div class="tl-track"></div><div class="tl-fill"></div>
+        <div class="tl-items">
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">1985</div><div class="tl-txt">ก่อตั้งจากการควบรวม 2 บริษัทก๊าซ</div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">1990s</div><div class="tl-txt">ใช้ Mark-to-Market · ขยายธุรกิจรวดเร็ว · เริ่มสร้าง SPEs</div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">ส.ค. 2000</div><div class="tl-txt">หุ้นทำจุดสูงสุด $90.75</div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">ส.ค. 2001</div><div class="tl-txt">Skilling ลาออกกะทันหัน</div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">ต.ค. 2001</div><div class="tl-txt">แจ้งขาดทุน Q3 ~$618M · SEC สอบสวน · จะ restate งบ</div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2 ธ.ค. 2001</div><div class="tl-txt">ยื่นล้มละลาย Chapter 11 → Andersen ล่มสลายตามมา</div></div>
+        </div>
+      </div>
+      <p style="margin-top:30px" class="muted">หุ้นร่วงจาก <span class="gold">$90.75</span> (ส.ค. 2000) เหลือ <span class="red">$0.26</span> ภายในวันที่ 30 พ.ย. 2001 — เกือบไร้ค่าภายในเวลาประมาณ 1 ปี</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 5 — MARK-TO-MARKET
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 4.1 · Accounting Techniques</div>
+      <h2>Mark-to-Market Accounting</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span><span class="badge analysis">การวิเคราะห์</span></div>
+      <div class="grid g2">
+        <div class="card gold-edge">
+          <h3 class="gold">คืออะไร</h3>
+          <p>การบันทึกมูลค่าสินทรัพย์/สัญญาตาม "มูลค่ายุติธรรมในตลาดปัจจุบัน" แทนต้นทุนเดิม โดย Enron ได้รับอนุมัติจาก SEC ให้ใช้กับธุรกิจซื้อขายพลังงานตั้งแต่ต้นยุค 1990s</p>
+        </div>
+        <div class="card red-edge">
+          <h3 class="red">ปัญหาที่ตามมา</h3>
+          <p>Enron บันทึก <b>กำไรทั้งหมดของสัญญาระยะยาวล่วงหน้าทันที</b> ตั้งแต่วันเซ็นสัญญา ทั้งที่เงินสดยังไม่เข้า โดยอิงสมมติฐานราคาในอนาคตที่ "มองโลกดีเกินจริง"</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <p><b>ความเสี่ยงเชิงแนวคิด</b> <span class="badge analysis" style="margin-left:6px">การวิเคราะห์</span><br>
+        เมื่อกำไรมาจาก "การประมาณการ" ไม่ใช่เงินสดจริง ผู้บริหารจึงมีแรงจูงใจปรับสมมติฐานให้กำไรดูสูง และเมื่อความจริงไม่เป็นไปตามคาด กำไรเหล่านั้นก็กลายเป็นภาพลวงตา — นี่คือจุดเริ่มของช่องว่างระหว่าง "กำไร" กับ "เงินสด"</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 6 — SPE / SPV DIAGRAM
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 4.2 · Special Purpose Entities</div>
+      <h2>SPE / SPV : การย้ายหนี้ออกจากงบดุล</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span><span class="badge analysis">ภาพประกอบเชิงอธิบาย</span></div>
+      <p class="muted">SPE คือ "นิติบุคคลเฉพาะกิจ" ที่ตั้งขึ้นเพื่อวัตถุประสงค์เฉพาะ — โดยตัวมันเองถูกกฎหมายและใช้ได้ปกติ (เช่น แยกความเสี่ยงโครงการ, securitization) ปัญหาอยู่ที่ Enron ใช้เพื่อ <b>ซ่อนหนี้และขาดทุน</b> โดยอาศัยช่องว่างกฎ "ผู้ลงทุนภายนอกถือหุ้นอย่างน้อย 3%" ก็ไม่ต้องนำมารวมงบ</p>
+
+      <!-- แผนภาพ: หนี้บินจาก Enron ไป SPE -->
+      <div class="spe-stage">
+        <div class="entity enron">
+          <h3 style="color:#9fd0ff">งบดุล Enron (ก่อน)</h3>
+          <div class="bs-row"><span>สินทรัพย์</span><span>สูง</span></div>
+          <div class="bs-row"><span>หนี้สิน <span class="chip">หนี้ก้อนโต</span></span><span class="red">สูงมาก</span></div>
+          <div class="bs-row"><span>ภาพรวมงบ</span><span class="red">ดูแย่</span></div>
+        </div>
+        <div class="spe-arrow">➜</div>
+        <div class="entity spe">
+          <h3 class="red">SPE (เช่น LJM, Chewco, Raptors)</h3>
+          <div class="bs-row"><span>รับโอนหนี้/ขาดทุน/สินทรัพย์เสี่ยง</span><span class="red">↑</span></div>
+          <div class="bs-row"><span>เงินทุนภายนอก</span><span class="muted">~3% (จัดฉาก)</span></div>
+          <div class="bs-row"><span>สถานะ</span><span class="muted">"แยกออกจากงบ Enron"</span></div>
+        </div>
+        <!-- กล่องหนี้ที่บินข้าม -->
+        <div class="flying-debt">หนี้ + ขาดทุน →</div>
+      </div>
+
+      <div class="card gold-edge" style="margin-top:18px">
+        <p><b>ผลลัพธ์:</b> งบดุล Enron "ดูดีขึ้น" → หนี้สินลดลงเหลือ <span class="improve en">ต่ำ ✓</span> &nbsp; กำไร <span class="improve en">ดูสวย ✓</span><br>
+        <span class="muted">ทั้งที่ความเสี่ยงจริงยังอยู่ — เพราะ Enron มักค้ำประกัน SPE เหล่านั้นด้วยหุ้นของตัวเอง</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 7 — RELATED PARTY + REVENUE RECOGNITION
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 4.3 – 4.4 · Conflicts & Revenue</div>
+      <h2>รายการกับบุคคลที่เกี่ยวข้อง & การรับรู้รายได้</h2>
+      <div class="grid g2">
+        <div class="card red-edge">
+          <h3 class="red">4.3 Related Party Transactions</h3>
+          <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span></div>
+          <p>CFO <b>Andrew Fastow</b> เป็นผู้สร้างและบริหาร SPE อย่าง LJM1/LJM2 เอง แล้วทำธุรกรรมกับ Enron — คณะกรรมการถึงกับ "ยกเว้นนโยบายความขัดแย้งทางผลประโยชน์" ให้ มีรายงานว่า Fastow ได้ค่าธรรมเนียมส่วนตัว <b>ประมาณ 30–45 ล้านดอลลาร์</b></p>
+          <p style="margin-top:10px" class="muted"><b>ทำไมเป็นปัญหาใหญ่:</b> คนคุม SPE คือผู้บริหาร Enron เอง → ราคา/เงื่อนไขไม่ได้สะท้อนตลาดจริง และเปิดช่องให้ผู้บริหารได้ประโยชน์บนความเสียหายของผู้ถือหุ้น</p>
+        </div>
+        <div class="card gold-edge">
+          <h3 class="gold">4.4 Revenue Recognition</h3>
+          <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span><span class="badge analysis">การวิเคราะห์</span></div>
+          <p>นอกจาก Mark-to-Market แล้ว Enron ยังใช้วิธี "merchant model" บันทึกมูลค่าซื้อขายเต็มจำนวนเป็นรายได้ (gross) แทนที่จะเป็นเฉพาะส่วนต่าง/ค่านายหน้า ทำให้รายได้พองตัวมหาศาล</p>
+          <p style="margin-top:10px" class="muted"><b>ผลเชิงวิเคราะห์:</b> เมื่อรับรู้รายได้/กำไรเร็วและสูงเกินจริง (aggressive accounting) งบกำไรขาดทุนจะ "สวย" สวนทางกับเงินสดที่ไหลเข้าจริง</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 8 — PROFIT vs CASH CHART
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 5 · Financial Statement Red Flags</div>
+      <h2>กำไรทางบัญชี vs เงินสดจริง</h2>
+      <div class="badge-row"><span class="badge analysis">การวิเคราะห์เชิงแนวคิด (illustrative — ไม่ใช่ตัวเลขจริงของ Enron)</span></div>
+      <p class="muted">แนวคิดที่เรียนในห้อง: บริษัทอาจมี "กำไรทางบัญชี" สูง แต่ "กระแสเงินสดจากการดำเนินงาน" ไม่ตามมา หากช่องว่างนี้ถ่างออกเรื่อย ๆ คือสัญญาณเตือน</p>
+      <!-- กราฟแท่งเชิงแนวคิด: bar height set จาก data-h, animate ผ่าน .active -->
+      <div class="chart" id="cashChart">
+        <div class="bar-group">
+          <div class="bars">
+            <div class="bar profit" data-h="62%"><span class="cap green">กำไร ↑</span></div>
+            <div class="bar cash"   data-h="48%"><span class="cap gold">เงินสด</span></div>
+          </div>
+          <div class="bar-xlabel">ช่วงต้น</div>
+        </div>
+        <div class="bar-group">
+          <div class="bars">
+            <div class="bar profit" data-h="88%"><span class="cap green">กำไร ↑↑</span></div>
+            <div class="bar cash"   data-h="40%"><span class="cap gold">เงินสด</span></div>
+          </div>
+          <div class="bar-xlabel">ช่วงกลาง</div>
+        </div>
+        <div class="bar-group">
+          <div class="bars">
+            <div class="bar profit" data-h="100%"><span class="cap green">กำไรพุ่ง</span></div>
+            <div class="bar cash"   data-h="28%"><span class="cap red">เงินสดหด</span></div>
+          </div>
+          <div class="bar-xlabel">ก่อนล้ม</div>
+        </div>
+      </div>
+      <p class="chart-note muted">เมื่อ <span class="green">กำไร</span> โตสวนทางกับ <span class="gold">เงินสด</span> ที่ลดลง = "กำไรบนกระดาษ" ที่ไม่มีเงินสดรองรับ</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 9 — RED FLAG DASHBOARD
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 5 · Red Flag Dashboard</div>
+      <h2>7 สัญญาณเตือน (Red Flags)</h2>
+      <div class="badge-row"><span class="badge analysis">กรอบวิเคราะห์ของกลุ่ม</span></div>
+      <div class="flags">
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">01</span>กำไรเติบโตเร็วผิดปกติ เกินกว่าอุตสาหกรรมจะอธิบายได้</div></div>
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">02</span>กระแสเงินสดจากการดำเนินงาน ไม่สัมพันธ์กับกำไร</div></div>
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">03</span>หนี้สินไม่ปรากฏชัดในงบดุล (off-balance-sheet)</div></div>
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">04</span>ธุรกรรมกับนิติบุคคลเฉพาะกิจ (SPEs) จำนวนมาก</div></div>
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">05</span>รายการซับซ้อนเกินกว่าจะอธิบายได้ง่าย</div></div>
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">06</span>ผู้บริหารได้รับผลประโยชน์ส่วนตัวจากธุรกรรม</div></div>
+        <div class="flag"><div class="dot"></div><div class="ft"><span class="fn">07</span>ผู้สอบบัญชีขาดความเป็นอิสระ (independence)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 — ROLE OF AUDITORS (Arthur Andersen)
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 6 · Role of Auditors</div>
+      <h2>ความล้มเหลวของ Arthur Andersen</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span><span class="badge analysis">การวิเคราะห์</span></div>
+      <p class="muted">Arthur Andersen เป็นผู้สอบบัญชีของ Enron และเป็น 1 ใน "Big Five" ระดับโลก (พนักงานประมาณ 85,000 คนทั่วโลก รายได้ปี 2001 ประมาณ 9.3 พันล้านดอลลาร์)</p>
+      <div class="grid g2" style="margin-top:6px">
+        <div class="card red-edge">
+          <h3 class="red">ปัญหาเชิงโครงสร้าง</h3>
+          <ul class="clean">
+            <li class="r"><b>Independence:</b> รับทั้งงานสอบบัญชีและที่ปรึกษา (consulting) จาก Enron พร้อมกัน → ผลประโยชน์ทับซ้อน</li>
+            <li class="r"><b>Skepticism ต่ำ:</b> ไม่ตั้งคำถาม/ไม่ challenge สมมติฐานของผู้บริหารอย่างเพียงพอ</li>
+            <li class="r"><b>ค่าธรรมเนียมสูง:</b> รายได้ก้อนใหญ่ทำให้ "เดินจากลูกค้าไม่ลง"</li>
+          </ul>
+        </div>
+        <div class="card red-edge">
+          <h3 class="red">จุดจบ</h3>
+          <ul class="clean">
+            <li class="r"><b>ทำลายเอกสาร:</b> มีการ shred เอกสารที่เกี่ยวกับ Enron จำนวนมากก่อน SEC สอบสวน</li>
+            <li class="r">ถูกตัดสินผิดฐานขัดขวางกระบวนการยุติธรรม (มิ.ย. 2002) → สูญเสียใบอนุญาตและลูกค้า จนปิดกิจการ</li>
+            <li class="r"><b>หมายเหตุสำคัญ:</b> ศาลสูงสุดสหรัฐฯ <b>กลับคำพิพากษาเป็นเอกฉันท์ในปี 2005</b> (เหตุคำสั่งต่อคณะลูกขุนคลุมเครือ) — แต่บริษัทล่มไปก่อนแล้ว</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:14px" class="gold"><b>บทเรียน:</b> เมื่อผู้สอบบัญชีขาดอิสระและไม่ใช้ professional skepticism กลไกตรวจสอบสุดท้ายของตลาดทุนก็พังลง</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 11 — CONSEQUENCES + COUNTERS
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 7 · Consequences</div>
+      <h2>ผลกระทบ</h2>
+      <div class="badge-row"><span class="badge fact">ข้อเท็จจริง</span><span class="badge news">ตัวเลขรายงาน (ประมาณ)</span></div>
+      <div class="grid g4">
+        <div class="stat"><div class="num counter red" data-target="90.75" data-prefix="$" data-dec="2">0</div><div class="lbl">หุ้นจุดสูงสุด (ส.ค.2000)</div><div class="sub">FACT</div></div>
+        <div class="stat"><div class="num counter red" data-target="0.26" data-prefix="$" data-dec="2">0</div><div class="lbl">หุ้น 30 พ.ย. 2001</div><div class="sub">FACT</div></div>
+        <div class="stat"><div class="num counter red" data-target="63.4" data-prefix="$" data-suffix="B" data-dec="1">0</div><div class="lbl">สินทรัพย์ตอนล้มละลาย</div><div class="sub">ประมาณ · ใหญ่สุดในสหรัฐฯขณะนั้น</div></div>
+        <div class="stat"><div class="num counter red" data-target="85000" data-suffix="">0</div><div class="lbl">พนักงาน Andersen ทั่วโลก</div><div class="sub">ประมาณ · ตกงานจากการล่มสลาย</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:8px">
+        <div class="card red-edge">
+          <ul class="clean">
+            <li class="r">Enron ล้มละลาย · พนักงานหลายพันคนตกงานทันที</li>
+            <li class="r">นักลงทุน/ผู้ถือหุ้นประมาณ 59,000 ราย (รวมกองทุนบำนาญ) เสียหาย</li>
+            <li class="r">พนักงานสูญเงินเกษียณ (401k) ที่ลงทุนในหุ้น Enron</li>
+          </ul>
+        </div>
+        <div class="card gold-edge">
+          <ul class="clean">
+            <li>ผู้บริหารถูกดำเนินคดี: Skilling, Fastow ถูกตัดสิน · Lay ถูกตัดสินว่าผิดแต่เสียชีวิตปี 2006 ก่อนพิพากษาโทษ</li>
+            <li>Arthur Andersen ล่มสลาย → Big Five เหลือ Big Four</li>
+            <li class="r">ความเชื่อมั่นตลาดทุนสั่นคลอน → เกิดกฎหมาย <b>Sarbanes-Oxley Act 2002</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 12 — COULD THIS HAPPEN IN THAILAND?
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 8 · Thailand Risk Analysis</div>
+      <h2>เกิดขึ้นในประเทศไทยได้ไหม?</h2>
+      <div class="badge-row"><span class="badge analysis">การวิเคราะห์/ความเห็นของกลุ่ม</span></div>
+      <div class="grid g2">
+        <div class="card red-edge">
+          <h3 class="red">ปัจจัยเสี่ยงที่อาจมี</h3>
+          <ul class="clean">
+            <li class="r">รายการกับบุคคลที่เกี่ยวข้อง (related party) ในกลุ่มบริษัท</li>
+            <li class="r">โครงสร้างกลุ่มบริษัทซับซ้อน มีบริษัทลูก/บริษัทร่วมจำนวนมาก</li>
+            <li class="r">ภาระนอกงบดุล (off-balance-sheet) และการรับรู้รายได้เชิงรุก</li>
+            <li class="r">แรงจูงใจ "แต่งงบให้สวย" เพื่อระดมทุนหรือกู้เงิน</li>
+            <li class="r">การควบคุมภายในอ่อนแอ + ผู้สอบบัญชีขาด skepticism</li>
+          </ul>
+        </div>
+        <div class="card gold-edge">
+          <h3 class="gold">กลไกที่ช่วยลดความเสี่ยง</h3>
+          <ul class="clean">
+            <li>มาตรฐานการบัญชี (TFRS) และมาตรฐานการสอบบัญชี (TSA)</li>
+            <li>การกำกับโดย ก.ล.ต. และตลาดหลักทรัพย์ฯ</li>
+            <li>ข้อกำหนดเปิดเผยรายการเกี่ยวโยงกัน + บทบาทกรรมการอิสระ/audit committee</li>
+            <li>หลักธรรมาภิบาล (Corporate Governance) ที่เข้มขึ้น</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="gold"><b>สรุป (ความเห็น):</b> "เกิดขึ้นได้ หากธรรมาภิบาลอ่อนแอ และผู้สอบบัญชีขาดความเป็นอิสระและ professional skepticism" — แต่ปัจจุบันมีหลายกลไกที่ช่วยลดโอกาสและความรุนแรงลงได้มาก</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 13 — AUDIT PROCEDURE CHECKLIST
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 9 · If We Were the Auditors</div>
+      <h2>ถ้าเราเป็นผู้สอบบัญชี จะตรวจอย่างไร?</h2>
+      <div class="badge-row"><span class="badge analysis">ข้อเสนอเชิงวิธีปฏิบัติของกลุ่ม</span></div>
+      <div class="checklist">
+        <div class="check"><div class="tick">✓</div><div class="ct">วิเคราะห์ความสัมพันธ์ <b>Net Income ↔ Operating Cash Flow</b></div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ตรวจ <b>related party transactions</b> อย่างละเอียด</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ตรวจสอบ <b>SPE/SPV</b> และบริษัทที่เกี่ยวข้องทั้งหมด</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ตรวจการรับรู้รายได้ โดยเฉพาะ <b>สัญญาระยะยาว</b></div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ทดสอบ <b>fair value assumptions</b> และ mark-to-market models</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ตรวจ <b>debt covenants</b> และภาระนอกงบดุล</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ใช้ <b>analytical procedures</b> เทียบกำไร/เงินสด/หนี้/รายได้</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ขอ <b>confirmation</b> จากบุคคลภายนอก (third parties)</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ตรวจ <b>board minutes</b> และการอนุมัติของผู้บริหาร</div></div>
+        <div class="check"><div class="tick">✓</div><div class="ct">ใช้ <b>professional skepticism</b> + challenge สมมติฐานผู้บริหาร</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 14 — LESSONS LEARNED
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">Part 10 · Lessons Learned</div>
+      <h2>บทเรียน</h2>
+      <div class="grid g2">
+        <div class="card gold-edge">
+          <ul class="clean">
+            <li><b>กำไร ≠ เงินสด</b> — ดู cash flow เสมอ</li>
+            <li>งบที่ "ดูดี" อาจซ่อนความเสี่ยงไว้</li>
+            <li>Related parties และ SPEs ต้องตรวจอย่างระมัดระวัง</li>
+          </ul>
+        </div>
+        <div class="card gold-edge">
+          <ul class="clean">
+            <li><b>Auditor independence</b> สำคัญมาก</li>
+            <li>ผู้สอบบัญชีต้องไม่เชื่อผู้บริหารง่ายเกินไป</li>
+            <li><b>Governance & transparency</b> คือหัวใจ</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:16px;text-align:center" class="lead gold">นักลงทุนควรดู <b>Cash Flow</b> ไม่ใช่ดูแค่ <b>Net Income</b></p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 15 — CONCLUSION (TRUST shatter)
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="trust-stage">
+        <div class="eyebrow" style="justify-content:center">Part 11 · Conclusion</div>
+        <div class="trust-word" aria-label="TRUST"><span>T</span><span>R</span><span>U</span><span>S</span><span>T</span></div>
+        <p class="quote-en">"Enron was not just a failure of accounting numbers.<br>It was a failure of ethics, governance, auditing, and trust."</p>
+        <p class="quote-th">"Enron ไม่ใช่แค่ความล้มเหลวของตัวเลขบัญชี<br>แต่เป็นความล้มเหลวของจริยธรรม ธรรมาภิบาล การสอบบัญชี และความไว้วางใจ"</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 16 — REFERENCES
+       ============================================================ -->
+  <section class="slide">
+    <div class="wrap stagger">
+      <div class="eyebrow">References</div>
+      <h2>แหล่งอ้างอิง</h2>
+      <p class="muted" style="margin-bottom:14px">ข้อเท็จจริงและตัวเลขในงานนี้อ้างอิงจากแหล่งต่อไปนี้ (ตัวเลขบางรายการเป็นค่าประมาณและอาจต่างกันเล็กน้อยตามแหล่งที่มา)</p>
+      <ol class="refs">
+        <li><span class="src">History.com</span> — "Enron files for bankruptcy" (รายได้/พนักงาน/ราคาหุ้น/วันล้มละลาย)</li>
+        <li><span class="src">Levin Center for Oversight and Democracy</span> — "Congress and the Enron Scandal" (Raptors, LJM, ผู้ถือหุ้น ~59,000 ราย, สินทรัพย์ ~$65B)</li>
+        <li><span class="src">U.S. SEC Historical Society</span> — "Race to Restore Confidence: Creating the PCAOB" (Andersen ~85,000 พนักงาน, รายได้ $9.3B)</li>
+        <li><span class="src">Supreme Court of the United States</span> — <i>Arthur Andersen LLP v. United States</i>, 544 U.S. 696 (2005) (การกลับคำพิพากษา)</li>
+        <li><span class="src">International Banker</span> — "The Enron Scandal (2001)" (โครงสร้าง SPE / Raptors / LJM)</li>
+        <li><span class="src">U.S. Congress</span> — Sarbanes-Oxley Act of 2002 (PCAOB, auditor independence, CEO/CFO certification)</li>
+        <li><span class="src">Powers Report (2002)</span> — Report of the Special Investigative Committee of the Board of Directors of Enron</li>
+        <li><span class="src">Healy, P. & Palepu, K. (2003)</span> — "The Fall of Enron," <i>Journal of Economic Perspectives</i> (การวิเคราะห์เชิงวิชาการ)</li>
+      </ol>
+      <p class="muted" style="margin-top:20px;font-size:.82rem">หมายเหตุ: กราฟ "กำไร vs เงินสด" เป็นภาพประกอบเชิงแนวคิด (illustrative) เพื่ออธิบายหลักการ ไม่ใช่ตัวเลขงบการเงินจริงของ Enron · ส่วนการวิเคราะห์ความเสี่ยงในไทยและข้อเสนอวิธีตรวจสอบเป็นความเห็นของกลุ่ม</p>
+    </div>
+  </section>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div class="hint" id="hint">ใช้ปุ่ม ← → หรือคลิก Next/Prev เพื่อเปลี่ยนสไลด์</div>
+<div class="hud">
+  <div class="ctrl">
+    <button class="btn" id="prev">← ก่อนหน้า</button>
+    <span class="counter-hud"><b id="cur">1</b> / <span id="total">16</span></span>
+    <button class="btn" id="next">ถัดไป →</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   JAVASCRIPT — ระบบนำเสนอ + แอนิเมชัน
+   ============================================================ */
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let current  = 0;
+
+  // --- สร้างจุด (dots) นำทางด้านบนขวา ---
+  const dotsWrap = document.getElementById('dots');
+  slides.forEach((_,i)=>{
+    const d=document.createElement('i');
+    if(i===0)d.classList.add('on');
+    d.addEventListener('click',()=>show(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  const elPrev=document.getElementById('prev');
+  const elNext=document.getElementById('next');
+  const elCur =document.getElementById('cur');
+  document.getElementById('total').textContent=total;
+
+  // --- ฟังก์ชันแสดงสไลด์ที่ n ---
+  function show(n){
+    if(n<0||n>=total) return;
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('on');
+    current=n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('on');
+
+    // progress bar + counter
+    document.getElementById('progress').style.width=((current)/(total-1))*100+'%';
+    elCur.textContent=current+1;
+    elPrev.disabled=current===0;
+    elNext.disabled=current===total-1;
+
+    // ซ่อน hint หลังเปลี่ยนสไลด์ครั้งแรก
+    if(current>0){const h=document.getElementById('hint'); if(h) h.style.opacity=0;}
+
+    triggerSlideAnimations(slides[current]);
+  }
+
+  // --- เรียกแอนิเมชันเฉพาะของสไลด์ (count-up + chart bars) ---
+  function triggerSlideAnimations(slide){
+    // 1) Count-up counters
+    slide.querySelectorAll('.counter').forEach(el=>{
+      if(el.dataset.plain==='1'){return;} // ตัวเลขปีแสดงคงที่
+      animateCount(el);
+    });
+    // 2) Chart bars: set height (CSS transition จะทำให้วิ่งขึ้น)
+    const chart=slide.querySelector('#cashChart');
+    if(chart){
+      // reset ก่อน เพื่อให้ re-trigger ได้เมื่อกลับมาสไลด์นี้
+      chart.querySelectorAll('.bar').forEach(b=>b.style.height='0px');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        chart.querySelectorAll('.bar').forEach(b=>{b.style.height=b.dataset.h;});
+      }));
+    }
+  }
+
+  // --- ฟังก์ชัน count-up ---
+  function animateCount(el){
+    const target=parseFloat(el.dataset.target);
+    const dec=parseInt(el.dataset.dec||'0',10);
+    const prefix=el.dataset.prefix||'';
+    const suffix=el.dataset.suffix||'';
+    const dur=1300;
+    const start=performance.now();
+    function fmt(v){
+      let s = dec>0 ? v.toFixed(dec) : Math.round(v).toLocaleString('en-US');
+      return prefix+s+suffix;
+    }
+    function step(now){
+      const p=Math.min((now-start)/dur,1);
+      // easeOutExpo
+      const e = p===1?1:1-Math.pow(2,-10*p);
+      el.textContent=fmt(target*e);
+      if(p<1) requestAnimationFrame(step);
+      else el.textContent=fmt(target);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // --- ปุ่มและคีย์บอร์ด ---
+  elPrev.addEventListener('click',()=>show(current-1));
+  elNext.addEventListener('click',()=>show(current+1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();show(current+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(current-1);}
+    if(e.key==='Home')show(0);
+    if(e.key==='End')show(total-1);
+  });
+
+  // --- รองรับการปัด (swipe) บนมือถือ ---
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>60){ dx<0?show(current+1):show(current-1); }
+  },{passive:true});
+
+  // --- เริ่มต้น ---
+  elPrev.disabled=true;
+  triggerSlideAnimations(slides[0]);
+})();
+</script>
+</body>
+</html>
