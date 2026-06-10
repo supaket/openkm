@@ -331,6 +331,52 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
 @media (prefers-reduced-motion:reduce){
   .frow.mv,.ratiobar>span,.chip,.movecap{transition:none!important}
 }
+
+/* ============ HOOK slide ============ */
+.hook .wrap{text-align:center}
+.hook .pre{font-family:'Oswald';letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
+  font-size:clamp(.8rem,1.6vw,1rem);margin-bottom:10px}
+.hook .was{font-family:'Oswald';font-size:clamp(1.3rem,4vw,2.4rem);color:var(--muted);
+  text-decoration:line-through;text-decoration-color:rgba(224,67,63,.6)}
+.hooknum{font-family:'Oswald';font-weight:700;line-height:.92;
+  font-size:clamp(4rem,20vw,12rem);color:var(--red-bright);text-shadow:0 0 60px rgba(224,67,63,.4)}
+.hooksub{font-family:'Kanit';font-weight:600;font-size:clamp(1.2rem,3.4vw,2.3rem);margin-top:8px}
+.hookq{font-size:clamp(1.05rem,2.5vw,1.6rem);color:var(--gold-bright);max-width:34ch;margin:22px auto 0}
+
+/* ============ Q&A APPENDIX ============ */
+.qa{display:flex;flex-direction:column;gap:11px}
+.qaitem{background:var(--surface);border:1px solid var(--line-soft);border-left:4px solid var(--gold);
+  border-radius:12px;padding:13px 18px}
+.qaitem .q{font-family:'Kanit';font-weight:600;font-size:clamp(1rem,2vw,1.28rem);color:var(--gold-bright);margin-bottom:4px}
+.qaitem .a{font-size:clamp(.93rem,1.75vw,1.12rem);color:#d7deec}
+.qaitem .a b{color:#fff}
+
+/* ============ PRESENTER OVERLAY ============ */
+#presenter{position:fixed;left:0;right:0;bottom:0;z-index:40;display:none;
+  background:rgba(8,12,22,.97);border-top:2px solid var(--gold);
+  padding:14px clamp(16px,4vw,40px) 16px}
+body.present #presenter{display:block}
+.pv-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:9px;flex-wrap:wrap}
+.pv-speaker{font-family:'Kanit';font-weight:600;font-size:clamp(1rem,2vw,1.32rem);color:#fff;
+  display:flex;align-items:center;gap:10px}
+.pv-speaker .who{background:rgba(216,179,100,.16);border:1px solid var(--line);border-radius:999px;
+  padding:3px 13px;font-size:.82em;color:var(--gold-bright)}
+.pv-right{display:flex;align-items:center;gap:18px;font-family:'Oswald'}
+.pv-timer{font-size:clamp(1.3rem,2.8vw,2rem);font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.pv-timer.over{color:var(--red-bright)}
+.pv-next{font-size:.86rem;color:var(--muted);max-width:34ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-notes{list-style:none;display:flex;flex-direction:column;gap:5px}
+.pv-notes li{font-size:clamp(.96rem,1.85vw,1.2rem);color:#e6ecf6;padding-left:20px;position:relative;line-height:1.45}
+.pv-notes li::before{content:"▸";position:absolute;left:0;color:var(--gold)}
+.pv-foot{font-size:.76rem;color:var(--muted);margin-top:9px;display:flex;justify-content:space-between;gap:10px}
+
+/* ============ CORE-MODE badge ============ */
+#coreBadge{position:fixed;top:13px;left:50%;transform:translateX(-50%);z-index:26;display:none;
+  font-family:'Oswald';letter-spacing:.1em;text-transform:uppercase;font-size:.72rem;color:#1a1206;
+  background:var(--gold);border-radius:999px;padding:5px 15px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+body.core-mode #coreBadge{display:block}
+body.core-mode .slide:not(.is-core){display:none!important}
+@media print{#presenter,#coreBadge{display:none!important}}
 </style>
 </head>
 <body>
@@ -356,6 +402,17 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
     <span class="name c-red"><span class="sid">2600231302018</span>GONG JIAJIA</span>
     <span class="name c-green"><span class="sid">2600231302032</span>ศุภเกศ วงศ์คำภู</span>
   </div>
+ </div>
+</section>
+
+<!-- ===== HOOK ===== -->
+<section class="slide hook" data-chap="ภาพรวม">
+ <div class="wrap">
+  <div class="reveal pre">21 ตุลาคม 2001 — ธันวาคม 2001</div>
+  <div class="reveal was">เคยสูงถึง $90.75</div>
+  <div class="reveal hooknum">$0.26</div>
+  <div class="reveal hooksub">ราคาหุ้น Enron เหลือเท่านี้ — ภายในเวลาไม่ถึงปี</div>
+  <p class="reveal hookq">บริษัทที่ "ฉลาดที่สุดในห้อง" และผู้สอบบัญชีระดับโลก ปล่อยให้เรื่องนี้เกิดขึ้นได้อย่างไร?</p>
  </div>
 </section>
 
@@ -1114,6 +1171,43 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
  </div>
 </section>
 
+<!-- ===== APPENDIX · Q&A ===== -->
+<section class="slide" data-chap="ภาคผนวก">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ภาคผนวก</span> เตรียมรับคำถาม · Q&amp;A</div>
+  <h2 class="reveal title">คำถามที่อาจถูกถาม &amp; คำตอบ</h2>
+  <div class="rule reveal"></div>
+  <div class="qa">
+   <div class="reveal qaitem"><div class="q">Q1 · "กฎ 3%" ปัจจุบันยังใช้อยู่ไหม?</div><div class="a">ไม่แล้ว — หลัง Enron, FASB ออก <b>FIN 46/46R (Variable Interest Entity, 2003)</b> เปลี่ยนจากเส้นตายตัว 3% มาดู "ใครรับความเสี่ยง/ได้ประโยชน์หลัก" แทน · ฝั่ง IFRS ใช้ <b>IFRS 10</b> (control model)</div></div>
+   <div class="reveal qaitem"><div class="q">Q2 · Mark-to-Market ผิดกฎหมายไหม?</div><div class="a">ตัว fair value ไม่ผิด — ปัจจุบันมี <b>ASC 820 / IFRS 13</b> กำหนด "ลำดับชั้นมูลค่ายุติธรรม" 3 ระดับ · ที่ Enron ผิดคือใช้สมมติฐาน <b>Level 3</b> ที่ไม่มีตลาดอ้างอิง แล้วตั้งให้กำไรสูงเกินจริง</div></div>
+   <div class="reveal qaitem"><div class="q">Q3 · ทำไมผู้สอบบัญชีถึงไม่จับ?</div><div class="a">ขาด <b>ความเป็นอิสระ</b> (ค่าที่ปรึกษา ~$27M > สมเหตุผล) + ขาด <b>professional skepticism (ISA/TSA 200)</b> · SOX จึงห้ามรับงาน non-audit บางอย่าง และตั้ง PCAOB มากำกับ</div></div>
+   <div class="reveal qaitem"><div class="q">Q4 · นักลงทุนดูอะไรได้ก่อนพัง?</div><div class="a"><b>กำไร ≠ เงินสด</b> (operating cash flow), รายการเกี่ยวโยง (related party), <b>ROIC &lt; WACC</b> (7% vs 9%), งบที่ทึบเกินอธิบาย, CEO ลาออกกะทันหัน</div></div>
+   <div class="reveal qaitem"><div class="q">Q5 · เกิดในไทยได้ไหม มีอะไรกันบ้าง?</div><div class="a">มีกลไก: <b>ก.ล.ต. / ตลท. · TFRS</b> (อิง IFRS) · <b>คณะกรรมการตรวจสอบ &amp; กรรมการอิสระ · สภาวิชาชีพบัญชี</b> · ความเสี่ยงที่ต้องระวัง: รายการเกี่ยวโยงและโครงสร้างกลุ่มบริษัทที่ซับซ้อน</div></div>
+   <div class="reveal qaitem"><div class="q">Q6 · ในเมื่อศาลกลับคำพิพากษา Andersen ถือว่าผิดไหม?</div><div class="a">ศาลสูงสุด (2005) กลับคำพิพากษาเรื่อง <b>คำสั่งศาลชั้นต้นเกี่ยวกับเจตนา</b> — แต่บริษัทล่มสลายไปก่อนแล้ว · บทเรียนเรื่องความเป็นอิสระและจริยธรรมยังคงอยู่</div></div>
+  </div>
+ </div>
+</section>
+
+<!-- ===== APPENDIX · STANDARDS MAP ===== -->
+<section class="slide" data-chap="ภาคผนวก">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ภาคผนวก</span> มาตรฐานที่เกี่ยวข้อง</div>
+  <h2 class="reveal title">แต่ละกลไก → โยงกับมาตรฐานจริง</h2>
+  <div class="rule reveal"></div>
+  <div class="reveal fintable">
+   <div class="frow"><span class="lbl">การรวมงบ / SPE (กฎ 3%)</span><span class="val" style="font-size:1rem">EITF 90-15 → <b class="gold">FIN 46/46R (VIE)</b> · IFRS 10</span></div>
+   <div class="frow"><span class="lbl">Mark-to-Market / มูลค่ายุติธรรม</span><span class="val" style="font-size:1rem"><b class="gold">ASC 820 / IFRS 13</b> — fair value hierarchy</span></div>
+   <div class="frow"><span class="lbl">การรับรู้รายได้</span><span class="val" style="font-size:1rem">ASC 606 / IFRS 15</span></div>
+   <div class="frow"><span class="lbl">ความเป็นอิสระ &amp; ความระแวงวิชาชีพ</span><span class="val" style="font-size:1rem"><b class="gold">ISA / TSA 200</b> · IESBA Code · SOX Title II</span></div>
+   <div class="frow"><span class="lbl">การควบคุมภายใน (ICFR)</span><span class="val" style="font-size:1rem"><b class="gold">SOX §404</b> · COSO Framework</span></div>
+   <div class="frow"><span class="lbl">ผู้บริหารรับรองงบ</span><span class="val" style="font-size:1rem">SOX §302</span></div>
+   <div class="frow"><span class="lbl">การดำเนินงานต่อเนื่อง</span><span class="val" style="font-size:1rem">ISA / TSA 570 (going concern)</span></div>
+   <div class="frow total"><span class="lbl">กำกับผู้สอบบัญชี</span><span class="val" style="font-size:1rem"><b class="gold">PCAOB</b> (US) · ก.ล.ต. / สภาวิชาชีพบัญชี (ไทย)</span></div>
+  </div>
+  <p class="reveal note">อ้างอิงมาตรฐานเพื่อการเรียนรู้ — ชื่อย่อ US GAAP (ASC/FIN) และ IFRS/ISA คู่กัน</p>
+ </div>
+</section>
+
 <!-- ===== LAST · REFERENCES ===== -->
 <section class="slide" data-chap="แหล่งอ้างอิง">
  <div class="wrap">
@@ -1195,7 +1289,16 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
 
 </div><!-- /deck -->
 
-<div class="hint" id="hint">ใช้ <span class="k">←</span> <span class="k">→</span> หรือปัดซ้าย-ขวา · กด <span class="k">F</span> เต็มจอ</div>
+<div class="hint" id="hint">ใช้ <span class="k">←</span> <span class="k">→</span> หรือปัดซ้าย-ขวา · <span class="k">F</span> เต็มจอ · <span class="k">N</span> โน้ตผู้พูด · <span class="k">C</span> โหมด Core</div>
+<div id="coreBadge">โหมด Core · เส้นทาง 10 นาที</div>
+<div id="presenter">
+  <div class="pv-top">
+    <div class="pv-speaker"><span class="who" id="pvWho">—</span><span id="pvTitle">—</span></div>
+    <div class="pv-right"><span class="pv-next" id="pvNext"></span><span class="pv-timer" id="pvTimer">00:00</span></div>
+  </div>
+  <ul class="pv-notes" id="pvNotes"></ul>
+  <div class="pv-foot"><span><b class="gold">N</b> ซ่อน/แสดง · <b class="gold">C</b> โหมด Core · <b class="gold">R</b> รีเซ็ตเวลา · <b class="gold">←/→</b> เปลี่ยนสไลด์ · เป้า 10:00 น.</span><span id="pvPace"></span></div>
+</div>
 <div class="controls">
   <button class="nav-btn" id="prev">← ก่อนหน้า</button>
   <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
@@ -1231,6 +1334,8 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
   const elChap=document.getElementById('chapchip'),elHint=document.getElementById('hint');
   document.getElementById('total').textContent=total;
 
+  let coreMode=false;
+  function visList(){ return slides.map((s,i)=>i).filter(i=> !coreMode || slides[i].classList.contains('is-core')); }
   function show(n){
     if(n<0||n>=total) return;
     slides[current].classList.remove('active','in');
@@ -1240,18 +1345,23 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
     s.scrollTop=0;
     // chapter chip
     elChap.textContent=s.dataset.chap || 'Opening';
-    // progress + counter
-    elProg.style.width=(current/(total-1))*100+'%';
-    elCur.textContent=current+1;
-    elPrev.disabled=current===0;
-    elNext.disabled=current===total-1;
+    // progress + counter (relative to visible set)
+    const v=visList(), pos=v.indexOf(current), vt=v.length;
+    elProg.style.width=(vt>1?(Math.max(0,pos)/(vt-1)):1)*100+'%';
+    elCur.textContent=(pos<0?1:pos+1);
+    document.getElementById('total').textContent=vt;
+    elPrev.disabled=pos<=0;
+    elNext.disabled=pos===vt-1;
     if(current>0&&elHint) elHint.style.opacity=0;
     // trigger animations next frame
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       s.classList.add('in');
       runReveals(s); runCounters(s); runBars(s); runTimelines(s); runStock(s);
     }));
+    if(typeof window.__onSlide==='function') window.__onSlide(current);
   }
+  function step(dir){ const v=visList(), p=v.indexOf(current), np=p+dir; if(np>=0&&np<v.length) show(v[np]); }
+  function edge(side){ const v=visList(); if(v.length) show(side<0?v[0]:v[v.length-1]); }
 
   function runReveals(s){
     const els=[...s.querySelectorAll('.reveal')];
@@ -1296,26 +1406,33 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
   }
 
   // controls
-  elPrev.addEventListener('click',()=>show(current-1));
-  elNext.addEventListener('click',()=>show(current+1));
+  elPrev.addEventListener('click',()=>step(-1));
+  elNext.addEventListener('click',()=>step(1));
   document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();show(current+1);}
-    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(current-1);}
-    if(e.key===' '){e.preventDefault();show(current+1);}
-    if(e.key==='Home'){show(0);}
-    if(e.key==='End'){show(total-1);}
+    if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();step(1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();step(-1);}
+    if(e.key===' '){e.preventDefault();step(1);}
+    if(e.key==='Home'){edge(-1);}
+    if(e.key==='End'){edge(1);}
     if(e.key==='f'||e.key==='F'){
       if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
       else document.exitFullscreen?.();
     }
   });
+  // public API for presenter / core-mode helpers
+  window.__deck={
+    setCore(on){ coreMode=on; document.body.classList.toggle('core-mode',on);
+      if(on && !slides[current].classList.contains('is-core')) edge(-1); else show(current); },
+    toggleCore(){ this.setCore(!coreMode); }, isCore(){ return coreMode; },
+    current(){ return current; }, go(i){ show(i); }
+  };
   // swipe
   let tx=0,ty=0;
   document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;ty=e.changedTouches[0].clientY;},{passive:true});
   document.addEventListener('touchend',e=>{
     if(document.body.dataset.ink==='on'||document.body.dataset.tool==='zoom') return;
     const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
-    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)){ dx<0?show(current+1):show(current-1); }
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)){ dx<0?step(1):step(-1); }
   },{passive:true});
 
   // init
@@ -1464,6 +1581,80 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
     if(w) setTimeout(()=>{ if(document.querySelector('.slide.active')===a) play(w); }, 750);
   });
   document.querySelectorAll('.slide').forEach(s=>obs.observe(s,{attributes:true,attributeFilter:['class']}));
+})();
+
+// ===== Presenter notes + 3-speaker script + timer + Core-10min mode =====
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const titleOf=s=>{ const e=s.querySelector('.title'); return e?e.textContent.trim():''; };
+  // map each core slide -> {speaker, seconds, talking points}
+  const N={
+    cover:{s:'นภัสสร',t:10,l:['ทักทาย + แนะนำหัวข้อ Enron และสมาชิกกลุ่ม','บอกกรอบ: กรณีตกแต่งงบการเงิน + บทบาทผู้สอบบัญชี']},
+    hook:{s:'นภัสสร',t:25,l:['ตรึงด้วยตัวเลข: หุ้น $90.75 → $0.26 ในไม่ถึงปี','ทิ้งคำถามค้าง: บริษัทเก่ง + ผู้สอบบัญชีระดับโลก ทำไมปล่อยให้เกิด?']},
+    thesis:{s:'นภัสสร',t:35,l:['ใจความหลัก: ธุรกิจดีจริง การโกงเป็นชั้นที่มาทับทีหลัง','ย้ำ 3 เสา: โมเดลดี / แรงจูงใจผลักให้โกง / ล้มเหลวทั้งระบบ']},
+    agenda:{s:'นภัสสร',t:25,l:['เล่าโครงเรื่อง 8 ข้อต่อ แบบโดมิโน','บอกผู้ฟัง: จะพาไล่ ธุรกิจ → กลโกง → จับได้ → บทเรียน']},
+    gasbank:{s:'นภัสสร',t:40,l:['อธิบาย Gas Bank: Enron เป็นตลาดกลางซื้อขายพลังงาน','เน้น "ถูกกฎหมายและเก่งจริง" แล้วส่งไม้ต่อ GONG']},
+    mtmc:{s:'GONG',t:45,l:['เครื่องมือโกงชิ้นแรก: Mark-to-Market','ดึงกำไรทั้งสัญญา 20 ปี มาบันทึกวันนี้ ทั้งที่เงินสดยังไม่เข้า']},
+    mtmdemo:{s:'GONG',t:50,l:['กดเล่นตาราง ▶ : กำไรบันทึก $10M → $200M แต่เงินสดจริงแค่ $10M','ชี้ "กำไรกระดาษ" $190M = ส่วนต่างที่อันตราย']},
+    spedemo:{s:'GONG',t:55,l:['กดเล่นตาราง ▶ : ย้ายหนี้ $3,000M เข้า SPE','D/E 1.18 → 0.91 งบดูดีขึ้น แต่ย้ำ: หนี้ไม่หาย + ค้ำด้วยหุ้นตัวเอง']},
+    spiral:{s:'GONG',t:35,l:['วงจรมรณะ: หุ้นตก → SPE หลุดเกณฑ์ → หนี้เด้งกลับ → ล้ม','ส่งไม้ต่อ ศุภเกศ: แล้วเราจับสัญญาณได้ยังไง?']},
+    redflags:{s:'ศุภเกศ',t:45,l:['งบทิ้งร่องรอย: กำไร ≠ เงินสด คือธงแดงหลัก','Chanos & McLean — คนนอกยังอ่านออกก่อนพัง']},
+    andersen:{s:'ศุภเกศ',t:45,l:['ผู้เฝ้าประตูหลับใหล: ค่าธรรมเนียม $52M/ปี กัดกร่อนความเป็นอิสระ','1 บริษัท สวม 3 หมวก = conflict of interest']},
+    collapse:{s:'ศุภเกศ',t:35,l:['ความเร็วของการล่ม: $90.75 → $0.26','คนที่เจ็บคือพนักงาน/รายย่อย ไม่ใช่ผู้บริหารที่ขายหุ้นทัน']},
+    lessons:{s:'ศุภเกศ',t:40,l:['4 บทเรียน: กำไร≠เงินสด / อิสระล้ำค่า / โปร่งใส / ความระแวงวิชาชีพ','โยง SOX 2002 ที่แก้ปัญหาทีละจุด']},
+    closing:{s:'ศุภเกศ',t:25,l:['ปิดด้วยประโยคเด็ด: ไม่ใช่แค่ความล้มเหลวของตัวเลข','ขอบคุณ + เปิดให้ถาม (มี Appendix Q&A เตรียมไว้)']}
+  };
+  function keyFor(s,i){
+    if(s.classList.contains('hook')) return 'hook';
+    if(s.querySelector('.quote')) return 'closing';
+    if(i===0) return 'cover';
+    const t=titleOf(s);
+    if(t.includes('ธุรกิจดีจริง')) return 'thesis';
+    if(t.includes('8 ข้อต่อ')) return 'agenda';
+    if(t.includes('Gas Bank')) return 'gasbank';
+    if(t.includes('ดึงกำไรอนาคตมาบันทึกวันนี้')) return 'mtmc';
+    if(t.includes('ดึงกำไร 20 ปี')) return 'mtmdemo';
+    if(t.includes('ย้ายหนี้ เข้า SPE')) return 'spedemo';
+    if(t.includes('ค้ำด้วย')) return 'spiral';
+    if(t.includes('8 สัญญาณเตือน')) return 'redflags';
+    if(t.includes('ความเป็นอิสระที่ถูก')) return 'andersen';
+    if(t.includes('ราคาหุ้น Enron:')) return 'collapse';
+    if(t.includes('4 บทเรียนหลัก')) return 'lessons';
+    return null;
+  }
+  // tag the core path
+  slides.forEach((s,i)=>{ if(keyFor(s,i)) s.classList.add('is-core'); });
+
+  const elWho=document.getElementById('pvWho'), elTitle=document.getElementById('pvTitle'),
+        elNotes=document.getElementById('pvNotes'), elNext=document.getElementById('pvNext'),
+        elPace=document.getElementById('pvPace'), elTimer=document.getElementById('pvTimer');
+  function update(i){
+    const s=slides[i], note=N[keyFor(s,i)];
+    elWho.textContent = note? ('🎙 '+note.s) : 'สไลด์เสริม';
+    elTitle.textContent = titleOf(s) || (s.dataset.chap||'');
+    elNotes.innerHTML = note ? note.l.map(x=>'<li>'+x+'</li>').join('')
+                             : '<li style="color:#97a3ba">— สไลด์สำรอง (ไม่อยู่ในเส้นทาง 10 นาที) ใช้ตอบคำถาม —</li>';
+    const nx=slides[i+1];
+    elNext.textContent = nx ? ('ถัดไป → '+(titleOf(nx)||nx.dataset.chap||'')) : 'จบการนำเสนอ';
+    elPace.textContent = note ? ('เวลาที่แนะนำ ~'+note.t+' วิ') : '';
+  }
+  window.__onSlide=update;
+
+  // timer (starts when presenter notes first shown; R to reset)
+  let timerInt=null, elapsed=0;
+  const fmtT=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  function startTimer(){ if(timerInt) return; timerInt=setInterval(()=>{ elapsed++; elTimer.textContent=fmtT(elapsed); elTimer.classList.toggle('over',elapsed>=600); },1000); }
+  function resetTimer(){ elapsed=0; elTimer.textContent='00:00'; elTimer.classList.remove('over'); }
+
+  document.addEventListener('keydown',e=>{
+    const k=(e.key||'').toLowerCase();
+    if(k==='n'){ document.body.classList.toggle('present');
+      if(document.body.classList.contains('present')){ startTimer(); update((window.__deck&&window.__deck.current())||0); } }
+    else if(k==='c'){ window.__deck&&window.__deck.toggleCore(); }
+    else if(k==='r'){ resetTimer(); }
+  });
+  // initial fill
+  update((window.__deck&&window.__deck.current())||0);
 })();
 </script>
 </body>
