@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ENRON — กรณีศึกษาฉบับสมบูรณ์ (Presentation v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a14; --bg2:#0b1120; --surface:#111a2e; --surface2:#16233d;
+  --gold:#d8b364; --gold-bright:#f1d18a; --red:#e0433f; --red-bright:#ff7a76; --red-deep:#9b1c1c;
+  --green:#4ade80; --blue:#5aa9e6;
+  --text:#eef2fa; --muted:#97a3ba; --line:rgba(216,179,100,.20); --line-soft:rgba(255,255,255,.08);
+  --shadow:0 24px 60px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);
+  overflow:hidden;line-height:1.7;-webkit-font-smoothing:antialiased;
+}
+/* atmospheric background */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1100px 700px at 78% -10%,rgba(216,179,100,.10),transparent 60%),
+    radial-gradient(900px 600px at 10% 110%,rgba(224,67,63,.10),transparent 60%),
+    linear-gradient(180deg,var(--bg),var(--bg2));
+}
+
+/* ============ DECK / SLIDES ============ */
+.deck{position:fixed;inset:0;z-index:1}
+.slide{
+  position:absolute;inset:0;display:none;
+  padding:clamp(20px,4vw,64px) clamp(18px,5vw,90px);
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.wrap{width:100%;max-width:1180px;margin:0 auto}
+
+/* chapter eyebrow */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;font-family:'Oswald',sans-serif;
+  text-transform:uppercase;letter-spacing:.32em;font-size:clamp(.72rem,1.5vw,.95rem);
+  color:var(--gold);margin-bottom:18px;
+}
+.eyebrow::before{content:"";width:46px;height:2px;background:var(--gold)}
+.eyebrow .ch{color:var(--muted);letter-spacing:.18em}
+
+/* titles — BIG */
+h1.title{font-family:'Kanit',sans-serif;font-weight:700;line-height:1.04;
+  font-size:clamp(2.1rem,7vw,5rem);letter-spacing:-.01em}
+h2.title{font-family:'Kanit',sans-serif;font-weight:600;line-height:1.1;
+  font-size:clamp(1.7rem,5vw,3.4rem);letter-spacing:-.005em;margin-bottom:6px}
+.lede{font-size:clamp(1.05rem,2.4vw,1.6rem);color:var(--muted);font-weight:300;
+  max-width:42ch;margin-top:14px}
+.gold{color:var(--gold-bright)}.red{color:var(--red-bright)}.green{color:var(--green)}.blue{color:var(--blue)}
+b,strong{font-weight:600;color:#fff}
+
+/* rule */
+.rule{height:3px;width:120px;border-radius:3px;margin:20px 0 26px;
+  background:linear-gradient(90deg,var(--gold),var(--red))}
+
+/* ============ REVEAL ANIMATION ============ */
+.reveal{opacity:0;transform:translateY(26px);
+  transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.slide.in .reveal.show{opacity:1;transform:none}
+
+/* ============ COMPONENTS ============ */
+.grid{display:grid;gap:clamp(12px,1.6vw,20px)}
+.g2{grid-template-columns:1fr}
+.g3{grid-template-columns:1fr}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+
+.card{background:linear-gradient(180deg,var(--surface),var(--surface2));
+  border:1px solid var(--line-soft);border-radius:16px;padding:clamp(16px,2.2vw,26px);
+  box-shadow:var(--shadow)}
+.card.gold{border-left:4px solid var(--gold)}
+.card.red{border-left:4px solid var(--red)}
+.card.green{border-left:4px solid var(--green)}
+.card.blue{border-left:4px solid var(--blue)}
+.card h3{font-family:'Kanit',sans-serif;font-weight:600;font-size:clamp(1.15rem,2.4vw,1.6rem);
+  margin-bottom:8px;line-height:1.25}
+.card p{font-size:clamp(.98rem,1.9vw,1.18rem);color:#d7deec}
+.card .ico{font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1;margin-bottom:10px;display:block}
+
+/* big stat */
+.stat .num{font-family:'Oswald',sans-serif;font-weight:700;line-height:1;
+  font-size:clamp(2.4rem,8vw,5.2rem)}
+.stat .num.gold{color:var(--gold-bright);text-shadow:0 0 34px rgba(216,179,100,.30)}
+.stat .num.red{color:var(--red-bright);text-shadow:0 0 34px rgba(224,67,63,.32)}
+.stat .lab{font-size:clamp(.95rem,1.9vw,1.2rem);color:var(--muted);margin-top:6px}
+
+/* kicker / key-insight box */
+.insight{background:linear-gradient(135deg,rgba(216,179,100,.14),rgba(224,67,63,.10));
+  border:1px solid var(--line);border-radius:18px;padding:clamp(18px,2.6vw,30px);position:relative}
+.insight .tag{font-family:'Oswald',sans-serif;letter-spacing:.28em;text-transform:uppercase;
+  font-size:.82rem;color:var(--gold);display:inline-block;margin-bottom:12px}
+.insight p{font-size:clamp(1.1rem,2.5vw,1.7rem);line-height:1.45}
+
+/* bullets */
+.points{list-style:none;display:flex;flex-direction:column;gap:14px}
+.points li{display:flex;gap:14px;font-size:clamp(1rem,2vw,1.28rem);align-items:flex-start}
+.points li .bx{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  font-family:'Oswald';font-weight:600;font-size:1rem;background:rgba(216,179,100,.14);
+  color:var(--gold-bright);border:1px solid var(--line);margin-top:3px}
+.points li.r .bx{background:rgba(224,67,63,.14);color:var(--red-bright);border-color:rgba(224,67,63,.3)}
+
+/* pill row */
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{font-family:'Oswald',sans-serif;font-size:clamp(.8rem,1.6vw,1rem);letter-spacing:.04em;
+  padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#cfd7e6}
+
+/* ============ FLOW DIAGRAM (Gas Bank / SPE) ============ */
+.flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;justify-content:center}
+.node{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--line-soft);
+  border-radius:14px;padding:18px 14px;text-align:center}
+.node.mid{border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,179,100,.12)}
+.node .t{font-family:'Kanit';font-weight:600;font-size:clamp(1.05rem,2.2vw,1.4rem)}
+.node .s{font-size:.95rem;color:var(--muted);margin-top:4px}
+.arrow{align-self:center;font-family:'Oswald';font-size:1.8rem;color:var(--gold);
+  animation:pulseX 1.6s ease-in-out infinite}
+@keyframes pulseX{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(6px);opacity:1}}
+
+/* ============ BAR CHART ============ */
+.chart{display:flex;align-items:flex-end;gap:clamp(20px,6vw,70px);height:clamp(160px,26vh,250px);
+  margin-top:2.6em;padding:0 10px;border-bottom:2px solid var(--line)}
+.barwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;max-width:130px;height:0;border-radius:10px 10px 0 0;
+  transition:height 1.2s cubic-bezier(.2,.8,.2,1);position:relative}
+.bar.b-gold{background:linear-gradient(180deg,var(--gold-bright),#a17a2a)}
+.bar.b-red{background:linear-gradient(180deg,var(--red-bright),var(--red-deep))}
+.bar .v{position:absolute;top:-1.9em;left:0;right:0;text-align:center;font-family:'Oswald';
+  font-weight:600;font-size:clamp(.95rem,2vw,1.35rem);color:#fff}
+.barlab{margin-top:12px;font-size:clamp(.9rem,1.8vw,1.1rem);color:var(--muted);text-align:center}
+
+/* ============ TIMELINE ============ */
+.tl{position:relative;padding-left:6px}
+.tl .line{position:absolute;left:18px;top:6px;bottom:6px;width:3px;background:var(--line-soft)}
+.tl .fill{position:absolute;left:18px;top:6px;width:3px;height:0;
+  background:linear-gradient(180deg,var(--gold),var(--red));transition:height 1.6s ease}
+.tl-item{position:relative;padding:0 0 22px 52px}
+.tl-item .dot{position:absolute;left:11px;top:4px;width:17px;height:17px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 0 5px rgba(216,179,100,.16)}
+.tl-item:last-child .dot{background:var(--red);box-shadow:0 0 0 5px rgba(224,67,63,.18)}
+.tl-item .date{font-family:'Oswald';font-weight:600;color:var(--gold-bright);
+  font-size:clamp(1rem,2vw,1.25rem);letter-spacing:.03em}
+.tl-item:last-child .date{color:var(--red-bright)}
+.tl-item .desc{font-size:clamp(.95rem,1.9vw,1.15rem);color:#d7deec;margin-top:2px}
+
+/* ============ STOCK CRASH SVG ============ */
+.stockbox{position:relative;width:100%;height:clamp(220px,40vh,360px)}
+.stock-path{fill:none;stroke:url(#sg);stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:1600;stroke-dashoffset:1600;transition:stroke-dashoffset 2.4s ease}
+.slide.in .stockbox.go .stock-path{stroke-dashoffset:0}
+.stock-area{fill:url(#sa);opacity:0;transition:opacity 1.4s ease .6s}
+.slide.in .stockbox.go .stock-area{opacity:1}
+
+/* member pills (cover) */
+.members{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px}
+.members .lead{color:var(--muted);letter-spacing:.06em}
+.members .name{font-weight:600;font-size:clamp(.98rem,2vw,1.15rem);padding:8px 20px;border-radius:999px;border:1px solid transparent}
+.members .name .sid{font-family:'Oswald';font-weight:600;opacity:.8;margin-right:9px;font-size:.85em;letter-spacing:.05em}
+.members .name.c-gold{color:var(--gold-bright);background:rgba(216,179,100,.12);border-color:rgba(216,179,100,.4)}
+.members .name.c-red{color:var(--red-bright);background:rgba(224,67,63,.12);border-color:rgba(224,67,63,.4)}
+.members .name.c-green{color:var(--green);background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.4)}
+
+/* cover ENRON wordmark */
+.cover .wrap{padding-bottom:64px}
+.wordmark{font-family:'Kanit';font-weight:800;letter-spacing:.04em;line-height:.9;
+  font-size:clamp(3.4rem,13vw,8rem);background:linear-gradient(180deg,#fff,var(--gold-bright) 55%,#a17a2a);
+  -webkit-background-clip:text;background-clip:text;color:transparent;text-align:center}
+.wordmark .x{color:var(--red);-webkit-text-fill-color:var(--red)}
+
+/* agenda chain */
+.chain{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:680px){.chain{grid-template-columns:1fr 1fr}}
+.link{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line-soft);
+  border-radius:12px;padding:13px 16px}
+.link .n{flex:0 0 auto;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+  font-family:'Oswald';font-weight:700;font-size:1.2rem;background:rgba(216,179,100,.14);color:var(--gold-bright)}
+.link .tx{font-size:clamp(.95rem,1.8vw,1.12rem)}
+.link .tx b{display:block;font-family:'Kanit';font-weight:600;color:#fff}
+
+/* quote */
+.quote{font-family:'Kanit';font-weight:300;font-size:clamp(1.3rem,3.6vw,2.5rem);line-height:1.4;text-align:center}
+.quote .src{display:block;font-family:'Sarabun';font-size:clamp(.95rem,1.8vw,1.1rem);color:var(--muted);margin-top:16px}
+
+/* small note */
+.note{font-size:clamp(.82rem,1.5vw,.95rem);color:var(--muted);margin-top:14px}
+
+/* ============ CHROME (nav) ============ */
+.progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:30;
+  background:linear-gradient(90deg,var(--gold),var(--red));transition:width .4s ease;box-shadow:0 0 12px rgba(216,179,100,.5)}
+.topbar{position:fixed;top:14px;left:0;right:0;z-index:25;display:flex;justify-content:space-between;
+  align-items:center;padding:0 clamp(16px,4vw,40px);pointer-events:none}
+.brand{font-family:'Oswald';letter-spacing:.26em;text-transform:uppercase;font-size:.78rem;color:var(--muted)}
+.chapchip{font-family:'Oswald';letter-spacing:.12em;text-transform:uppercase;font-size:.78rem;
+  color:var(--gold);background:rgba(216,179,100,.1);border:1px solid var(--line);padding:5px 14px;border-radius:999px}
+.controls{position:fixed;bottom:16px;left:0;right:0;z-index:25;display:flex;justify-content:center;
+  align-items:center;gap:14px}
+.nav-btn{pointer-events:auto;font-family:'Kanit';font-weight:500;font-size:1rem;color:var(--text);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 22px;
+  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px;min-height:44px}
+.nav-btn:hover:not(:disabled){background:var(--surface2);border-color:var(--gold);transform:translateY(-2px)}
+.nav-btn:disabled{opacity:.35;cursor:default}
+.counter{font-family:'Oswald';font-size:1rem;color:var(--muted);min-width:64px;text-align:center;letter-spacing:.06em}
+.counter b{color:var(--gold-bright)}
+.hint{position:fixed;bottom:70px;left:0;right:0;text-align:center;z-index:20;color:var(--muted);
+  font-size:.9rem;transition:opacity .6s;pointer-events:none}
+.hint .k{font-family:'Oswald';border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin:0 2px}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .reveal{opacity:1!important;transform:none!important;transition:none!important}
+  .bar,.stock-path,.stock-area,.tl .fill{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="topbar">
+  <span class="brand">Case File 2001-ENR</span>
+  <span class="chapchip" id="chapchip">Opening</span>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- ===== 0 · COVER ===== -->
+<section class="slide cover">
+ <div class="wrap" style="text-align:center">
+  <div class="reveal eyebrow" style="justify-content:center">Accounting Scandal · Forensic Accounting · Auditing</div>
+  <div class="reveal wordmark">ENR<span class="x">O</span>N</div>
+  <h2 class="reveal title" style="margin-top:18px">การตกแต่งบัญชีผ่าน Special Purpose Entities<br>และความล้มเหลวของผู้สอบบัญชี</h2>
+  <p class="reveal lede" style="margin:14px auto 0">กรณีศึกษาฉบับสมบูรณ์ · ร้อยเรียงจากซีรีส์ 8 ตอน · ฉบับนำเสนอ v2</p>
+  <div class="reveal members">
+    <span class="lead">จัดทำโดย</span>
+    <span class="name c-gold"><span class="sid">2600231302014</span>นภัสสร ลิมปกานนท์</span>
+    <span class="name c-red"><span class="sid">2600231302018</span>GONG JIAJIA</span>
+    <span class="name c-green"><span class="sid">2600231302032</span>ศุภเกศ วงศ์คำภู</span>
+  </div>
+ </div>
+</section>
+
+<!-- ===== 1 · THESIS ===== -->
+<section class="slide" data-chap="ภาพรวม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">00</span> ภาพรวม · ใจความหลัก</div>
+  <h2 class="reveal title">ธุรกิจ<span class="gold">ดีจริง</span> — การโกงคือชั้นที่<span class="red">มาทับทีหลัง</span></h2>
+  <div class="rule reveal"></div>
+  <div class="grid g3" style="margin-top:10px">
+   <div class="reveal card gold"><span class="ico">⚙️</span><h3>เครื่องยนต์ดี</h3><p>โมเดล "ธนาคารก๊าซ" และการเทรดพลังงานเป็นนวัตกรรมจริง ถูกกฎหมาย และยังใช้กันถึงทุกวันนี้</p></div>
+   <div class="reveal card red"><span class="ico">🎭</span><h3>แรงกดดันให้โกง</h3><p>วัฒนธรรมและแรงจูงใจบีบให้ "แต่งตัวเลข" ง่ายกว่ายอมรับความจริงว่ากำไรไม่ทันคาดหวัง</p></div>
+   <div class="reveal card blue"><span class="ico">🔍</span><h3>ความล้มเหลวเชิงระบบ</h3><p>ไม่ใช่แค่ตัวเลข แต่เป็นความล้มเหลวของจริยธรรม ธรรมาภิบาล การสอบบัญชี และความไว้วางใจ</p></div>
+  </div>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">Key Thesis</span>
+   <p>"ถ้าพวกเขาไม่ปิดบังความจริงที่ว่าจริง ๆ แล้วไม่ได้ทำกำไร พวกเขาก็คงยังอยู่ได้" — ปัญหาไม่ได้อยู่ที่ธุรกิจ แต่อยู่ที่การตกแต่งตัวเลข</p>
+  </div>
+ </div>
+</section>
+
+<!-- ===== 2 · AGENDA / 8-LINK CHAIN ===== -->
+<section class="slide" data-chap="ภาพรวม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">00</span> สารบัญ · ห่วงโซ่ 8 ข้อต่อ</div>
+  <h2 class="reveal title">เรื่องราวที่เชื่อมกันเป็นลูกโซ่</h2>
+  <div class="rule reveal"></div>
+  <div class="chain">
+   <div class="reveal link"><span class="n">1</span><span class="tx"><b>ธุรกิจดีจริง</b>Gas Bank / การเทรด — นวัตกรรมถูกกฎหมาย</span></div>
+   <div class="reveal link"><span class="n">2</span><span class="tx"><b>คน &amp; วัฒนธรรม</b>แรงจูงใจ + rank-and-yank กดดันให้โกง</span></div>
+   <div class="reveal link"><span class="n">3</span><span class="tx"><b>Mark-to-Market</b>ดึงกำไรอนาคตมาบันทึกวันนี้</span></div>
+   <div class="reveal link"><span class="n">4</span><span class="tx"><b>SPE</b>ย้ายหนี้/ขาดทุนออกจากงบ ค้ำด้วยหุ้นตัวเอง</span></div>
+   <div class="reveal link"><span class="n">5</span><span class="tx"><b>Red Flags</b>งบทิ้งร่องรอย คนนอกอ่านออก</span></div>
+   <div class="reveal link"><span class="n">6</span><span class="tx"><b>Arthur Andersen</b>ผู้สอบบัญชีขาดอิสระและความระแวง</span></div>
+   <div class="reveal link"><span class="n">7</span><span class="tx"><b>การล่มสลาย</b>หุ้น $90.75 → $0.26 และความสูญเสียของคน</span></div>
+   <div class="reveal link"><span class="n">8</span><span class="tx"><b>บทเรียน &amp; SOX</b>โลกเรียนรู้อะไร และบริบทไทย</span></div>
+  </div>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 1 — THE BUSINESS
+     ============================================================ -->
+<section class="slide" data-chap="1 · ธุรกิจ">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 1</span> The Business</div>
+  <h1 class="reveal title">ธุรกิจของ <span class="gold">Enron</span></h1>
+  <p class="reveal lede">จาก "บริษัทท่อก๊าซ" น่าเบื่อ สู่ "ธนาคารพลังงาน" ที่เป็นตัวกลางซื้อขาย — แกนธุรกิจนี้เก่งจริงและถูกกฎหมาย</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="1 · ธุรกิจ">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">1.1</span> จุดกำเนิด · Deregulation</div>
+  <h2 class="reveal title">จากบริษัทท่อก๊าซที่โลกหลงลืม</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g2">
+   <ul class="reveal points">
+    <li><span class="bx">85</span><div><b>ปี 1985</b> ควบรวมบริษัทท่อก๊าซธรรมชาติ 2 แห่ง ภายใต้ผู้ก่อตั้ง <b>Kenneth Lay</b> — เป็นกิจการสาธารณูปโภคที่มั่นคงแต่โตช้า ถูกกำกับราคาเข้มงวด</div></li>
+    <li class="r"><span class="bx">90</span><div><b>การเปิดเสรีอุตสาหกรรมก๊าซ (deregulation)</b> รัฐยกเลิกการผูกขาด/ควบคุมราคา Enron เสียสิทธิผูกขาดท่อ — แต่กลับเปิด "ตลาดเสรี" ที่เปิดช่องให้คนกลางที่ฉลาดเข้าไปยืนตรงกลาง</div></li>
+   </ul>
+   <div class="reveal card gold">
+    <span class="ico">💡</span><h3>คำนิยาม: Deregulation</h3>
+    <p>การที่รัฐยกเลิก/ผ่อนคลายการควบคุมตลาด เปิดให้ใครก็ซื้อขายก๊าซกันได้อย่างเสรี — ข่าวที่ดูเหมือนร้าย กลับกลายเป็นโอกาสของ Enron</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="1 · ธุรกิจ">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">1.2</span> หัวใจของทุกอย่าง</div>
+  <h2 class="reveal title">"Gas Bank" — ธนาคารแห่งก๊าซ</h2>
+  <p class="reveal lede" style="max-width:60ch">ปี 1989 ที่ปรึกษา McKinsey ชื่อ <b class="gold">Jeffrey Skilling</b> เสนอให้ Enron ทำตัวเหมือนธนาคาร: ผู้ผลิตคือ "ผู้ฝาก" ผู้ใช้คือ "ผู้กู้" Enron กินส่วนต่างตรงกลาง</p>
+  <div class="reveal flow" style="margin-top:28px">
+   <div class="node"><div class="t">ผู้ผลิตก๊าซ</div><div class="s">"ผู้ฝาก" — รับเงินสดล่วงหน้า</div></div>
+   <div class="arrow">→</div>
+   <div class="node mid"><div class="t gold">ENRON</div><div class="s">ตัวกลาง (ธนาคาร)<br>เก็บ spread + ค่าธรรมเนียม</div></div>
+   <div class="arrow">→</div>
+   <div class="node"><div class="t">ผู้ใช้ก๊าซ</div><div class="s">"ผู้กู้" — การไฟฟ้า/โรงงาน</div></div>
+  </div>
+  <p class="reveal note">อุปสรรคเดียวตอนแรก: ผู้ผลิตไม่อยากผูกสัญญายาว → Enron แก้ด้วยการ <b>จ่ายเงินสดล่วงหน้าแลกสัญญายาว (บางฉบับเกิน 20 ปี)</b> แล้วดีลก็ไหลเข้ามาท่วมท้น</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="1 · ธุรกิจ">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">1.3</span> Asset-light · EnronOnline</div>
+  <h2 class="reveal title">"ขายของน้อยลง เทรดมากขึ้น"</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g2">
+   <div class="reveal card blue"><span class="ico">🪶</span><h3>กลยุทธ์ Asset-light</h3><p>Skilling อยากทำเงินจากธุรกรรมแบบวาณิชธนกิจ ไม่ใช่จากการขุดพลังงานขึ้นจากดิน — เป็นเจ้าของท่อ/โรงไฟฟ้าให้น้อย แต่เป็น "คนกลางทำตลาด" ให้มาก</p></div>
+   <div class="reveal card gold"><span class="ico">🌐</span><h3>EnronOnline (1999)</h3><p>แพลตฟอร์มเทรด B2B แรกที่ซื้อขายโภคภัณฑ์ผ่านเว็บทั่วโลก เคยเป็นเว็บ e-commerce ใหญ่ที่สุดในโลก มีสินค้ากว่า <b>500 รายการ</b> ตั้งแต่เยื่อกระดาษ พลาสติก เหล็ก ถึงเวลาโฆษณาทีวี</p></div>
+  </div>
+  <div class="reveal pills" style="margin-top:22px;justify-content:center">
+   <span class="pill">1985 · บริษัทท่อก๊าซ</span>
+   <span class="pill">1989–91 · Gas Bank เริ่มเทรด</span>
+   <span class="pill">1999 · EnronOnline แพลตฟอร์มเทรดโลก</span>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="1 · ธุรกิจ">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">1.4</span> การขยายตัว · จุดที่เริ่มพลาด</div>
+  <h2 class="reveal title">ทำซ้ำสูตร Gas Bank กับตลาดอื่น — ผลปนกัน</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g3">
+   <div class="reveal card green"><span class="ico">⚡</span><h3>ไฟฟ้า</h3><p>สำเร็จจนเป็นผู้นำตลาด</p></div>
+   <div class="reveal card red"><span class="ico">📡</span><h3>Broadband (2000)</h3><p>ล้มเหลว เพราะใยแก้วล้นตลาด</p></div>
+   <div class="reveal card red"><span class="ico">💧</span><h3>น้ำ — Azurix</h3><p>ซื้อ Wessex (อังกฤษ) $2.4B แต่ล้มภายใน 2 ปี หนี้ถูกซ่อนใน SPE ชื่อ <b>Marlin</b> และ <b>Osprey</b></p></div>
+  </div>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">จำชื่อนี้ไว้</span>
+   <p><b class="red">Marlin, Osprey</b> คือ SPE ตัวแรก ๆ ที่ใช้ซ่อนหนี้ — เป็นตัวอย่างของกลไกที่จะกลายเป็นหัวใจของการโกงในตอนถัด ๆ ไป</p>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="1 · ธุรกิจ">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">1.5</span> เมล็ดพันธุ์ของปัญหา</div>
+  <h2 class="reveal title">ช่องว่างระหว่าง <span class="gold">กำไร</span> กับ <span class="green">เงินสด</span></h2>
+  <p class="reveal lede" style="max-width:62ch">ถ้า Enron รับประกันราคาก๊าซล่วงหน้า 20 ปี แล้วจะรู้ "กำไร" ได้ยังไงในเมื่อราคาอนาคตยังไม่เกิด? คำตอบคือ Enron เลือก <b>บันทึกกำไรทั้งก้อนทันทีตั้งแต่วันเซ็น</b> ขณะที่เงินสดจริงค่อย ๆ ทยอยเข้าทีหลัง</p>
+  <div class="reveal chart" style="max-width:620px;margin-left:auto;margin-right:auto">
+   <div class="barwrap"><div class="bar b-gold" data-h="92%"><span class="v">เด้งเต็มวันเซ็น</span></div><div class="barlab">กำไรทางบัญชี<br>(บันทึกทันที)</div></div>
+   <div class="barwrap"><div class="bar b-red" data-h="22%"><span class="v">ทยอยเข้า 20 ปี</span></div><div class="barlab">เงินสดจริง<br>(ค่อย ๆ ไหล)</div></div>
+  </div>
+  <p class="reveal note" style="text-align:center">ช่องว่างนี้คือจุดเริ่มของทั้งเรื่อง — เจาะเต็ม ๆ ในตอนที่ 3 (Mark-to-Market)</p>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 2 — PEOPLE & CULTURE
+     ============================================================ -->
+<section class="slide" data-chap="2 · คน &amp; วัฒนธรรม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 2</span> People &amp; Culture</div>
+  <h1 class="reveal title">คนและ<span class="red">วัฒนธรรม</span>องค์กร</h1>
+  <p class="reveal lede">ตอนที่ 1 บอกว่า "เครื่องยนต์ดี" — ตอนนี้จะบอกว่า "คนขับถูกกดดันให้เหยียบมิดตลอด และถูกห้ามพูดว่ารถกำลังจะพัง"</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="2 · คน &amp; วัฒนธรรม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">2.1</span> ตัวละครหลักสามคน</div>
+  <h2 class="reveal title">ใครเป็นใคร · และชะตากรรม</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g3">
+   <div class="reveal card gold"><span class="ico">👔</span><h3>Kenneth Lay</h3><p><b>ผู้ก่อตั้ง · ประธาน · (CEO)</b> ลูกชายนักเทศน์ จบ ดร.เศรษฐศาสตร์ เป็นหน้าตาและคอนเนกชันการเมือง<br><span class="red">ชะตากรรม:</span> ถูกตัดสินว่าผิด แต่เสียชีวิตปี 2006 ก่อนพิพากษาโทษ</p></div>
+   <div class="reveal card gold"><span class="ico">🧠</span><h3>Jeffrey Skilling</h3><p><b>CEO · ผู้วางวิสัยทัศน์</b> อดีต McKinsey สถาปนิกโมเดลเทรดและวัฒนธรรม rank-and-yank เชื่อว่าเงินคือสิ่งเดียวที่จูงใจคน<br><span class="red">ชะตากรรม:</span> ผิด 19 กระทง โทษ 24 ปี (ลดเหลือ ~14 ปี)</p></div>
+   <div class="reveal card red"><span class="ico">📐</span><h3>Andrew Fastow</h3><p><b>CFO · สถาปนิกบัญชี</b> สร้าง SPE อย่าง LJM, Chewco, Raptors เคยเป็น CFO ดีเด่นปี 1999<br><span class="red">ชะตากรรม:</span> กำไรส่วนตัวจาก LJM ≥ $45M รับสารภาพ 2004 เป็นพยานเอาผิด Lay &amp; Skilling</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="2 · คน &amp; วัฒนธรรม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">2.2</span> Rank and Yank</div>
+  <h2 class="reveal title">เครื่องจักรแห่งความกลัว</h2>
+  <p class="reveal lede" style="max-width:62ch">Skilling นำระบบ <b>Performance Review Committee (PRC)</b> หรือ "rank-and-yank" จาก GE มาใช้ — จัดอันดับพนักงานเทียบกันเองทุก 6 เดือน ให้เกรด 1 (ดีสุด) ถึง 5 (แย่สุด)</p>
+  <div class="grid g2" style="margin-top:22px">
+   <div class="reveal stat card"><div class="num red">10–15%</div><div class="lab">กลุ่มล่างสุดถูกปลดออก<b>ทุกรอบ</b>การประเมิน</div></div>
+   <div class="reveal card red"><span class="ico">🤐</span><h3>ดินที่เพาะเชื้อทุจริต</h3><p>เมื่อ "แจ้งข่าวร้าย" อาจเท่ากับโดนปลด คนจึงเลือก <b>ปกปิดปัญหา</b> แทนการสื่อสารออกมา</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="2 · คน &amp; วัฒนธรรม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">2.3</span> แรงจูงใจ · ตัวเลขที่เล่าทุกอย่าง</div>
+  <h2 class="reveal title">โบนัสผู้บริหาร vs กำไรทั้งบริษัท (ปี 2000)</h2>
+  <div class="reveal chart" style="max-width:640px;margin-left:auto;margin-right:auto">
+   <div class="barwrap"><div class="bar b-red" data-h="77%"><span class="v">$750M</span></div><div class="barlab">โบนัสเงินสด<br>ผู้บริหาร</div></div>
+   <div class="barwrap"><div class="bar b-gold" data-h="100%"><span class="v">$975M</span></div><div class="barlab">กำไรสุทธิ<br>"ทั้งบริษัท"</div></div>
+  </div>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">≈ 77%</span>
+   <p>โบนัสผู้บริหารกินไปเกือบ <b class="red">77% ของกำไรทั้งบริษัท</b> — ค่าตอบแทนผูกแน่นกับ "ราคาหุ้น" และ "กำไรที่รายงาน"</p>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="2 · คน &amp; วัฒนธรรม">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">2.4</span> วงจรที่หยุดไม่ได้</div>
+  <h2 class="reveal title">เมื่อค่าตอบแทนผูกกับราคาหุ้น</h2>
+  <div class="rule reveal"></div>
+  <div class="reveal flow" style="margin-bottom:18px">
+   <div class="node"><div class="t">ราคาหุ้นขึ้น</div></div><div class="arrow">→</div>
+   <div class="node"><div class="t">โบนัส/options พุ่ง</div></div><div class="arrow">→</div>
+   <div class="node"><div class="t">ต้องรายงานกำไรสูงขึ้นอีก</div></div><div class="arrow">→</div>
+   <div class="node mid"><div class="t red">กดดันให้แต่งตัวเลข ↻</div></div>
+  </div>
+  <div class="grid g2">
+   <div class="reveal card blue"><span class="ico">✉️</span><h3>มีคนเห็นสัญญาณ</h3><p><b>Sherron Watkins</b> เขียนจดหมายเตือน Lay (ส.ค. 2001) ว่าบริษัทอาจ "ล่มสลายในคลื่นของเรื่องอื้อฉาวทางบัญชี" — แต่คำเตือนไม่ได้หยุดอะไรไว้ทัน</p></div>
+   <div class="reveal insight"><span class="tag">Key Insight</span><p>เมื่อกำไร <b>เงินสดจริง</b> ไม่ทันความคาดหวังของ Wall Street การ "แต่งตัวเลข" จึงกลายเป็นทางที่ง่ายกว่าการยอมรับความจริง</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 3 — MARK-TO-MARKET
+     ============================================================ -->
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 3</span> Mark-to-Market</div>
+  <h1 class="reveal title"><span class="gold">Mark-to-Market</span><br>บาปกำเนิดของตัวเลข</h1>
+  <p class="reveal lede">MTM ให้ Enron บันทึกกำไรของทั้งสัญญา 20 ปีลงบัญชีทันทีในวันเซ็น — ทั้งที่เงินสดยังไม่เข้า และตัวเลขขึ้นกับ "สมมติฐาน" ที่ตั้งเองได้</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">3.1</span> เปลี่ยนวิธีบัญชี</div>
+  <h2 class="reveal title">จาก "ต้นทุนเดิม" สู่ "มูลค่ายุติธรรม"</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g2">
+   <div class="reveal card blue"><span class="ico">📒</span><h3>Historical Cost (เดิม)</h3><p>บันทึกสินทรัพย์ตามราคาที่จ่ายจริงในอดีต — ตรงไปตรงมา ตรวจสอบได้</p></div>
+   <div class="reveal card red"><span class="ico">🔮</span><h3>Mark-to-Market (ใหม่)</h3><p>บันทึกตาม "มูลค่ายุติธรรม" ปัจจุบัน ซึ่งคำนวณจากการคาดการณ์กระแสเงินสดอนาคต — จึงขึ้นกับสมมติฐาน</p></div>
+  </div>
+  <div class="reveal insight" style="margin-top:20px">
+   <span class="tag">30 มกราคม 1992</span>
+   <p>SEC แจ้งว่าจะไม่คัดค้านการใช้ MTM — Skilling ดีใจถึงขั้น<b> เปิดแชมเปญฉลอง</b> ทั้งที่ Enron เป็นบริษัทพลังงาน ไม่ใช่บริษัทหลักทรัพย์ และ <b>Arthur Andersen</b> ก็เซ็นรับรองด้วย</p>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">3.2</span> หัวใจของกลไก</div>
+  <h2 class="reveal title">"ดึงกำไรอนาคตมาบันทึกวันนี้"</h2>
+  <p class="reveal lede" style="max-width:60ch">กำไรที่ควรทยอยเกิดตลอด 20 ปี ถูก "ดูดกลับ" มาบันทึกในวันนี้ทั้งหมด ทำให้งบปีนี้ดูสวยมาก ทั้งที่เงินสดจริงยังแทบไม่เข้า</p>
+  <div class="reveal card gold" style="margin-top:22px">
+   <span class="ico">🚗</span>
+   <p style="font-size:clamp(1.05rem,2.3vw,1.5rem)">เปรียบเทียบของ <i>The Smartest Guys in the Room</i>: เหมือน <b>GM บันทึกกำไรทั้งหมดของรถรุ่นใหม่ ตั้งแต่วันที่ออกแบบเสร็จ — ก่อนผลิตและขายสักคัน</b></p>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">3.3</span> ทำไมอันตราย</div>
+  <h2 class="reveal title">ตัวเลขขึ้นกับ "สมมติฐาน"</h2>
+  <p class="reveal lede" style="max-width:62ch">เพราะ MTM อิงการคาดการณ์อนาคต มันจึงเป็นเรื่องของ <b>ดุลพินิจ (subjective)</b> ไม่มีราคาตลาดจริงให้อ้างอิง ต้องใช้สมมติฐานของผู้บริหารเอง จึงปรับให้กำไรสูงได้</p>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">บทสรุปของสารคดี</span>
+   <p>MTM ทำให้ "<b class="gold">กำไรของ Enron เป็นอะไรก็ได้ที่พวกเขาบอกว่ามันเป็น</b>" — Skilling เองยังล้อเล่นว่าเขาทำ "บัญชีมูลค่าอนาคตเชิงสมมติ"</p>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">3.4</span> กรณีศึกษาในตำนาน</div>
+  <h2 class="reveal title">ดีล Blockbuster (ก่อนยุค Netflix)</h2>
+  <div class="grid g2" style="margin-top:6px">
+   <div class="reveal tl">
+    <div class="line"></div><div class="fill" data-fill="100%"></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">ก.ค. 2000</div><div class="desc">Enron Broadband × Blockbuster เซ็นสัญญา 20 ปีขายหนังออนไลน์</div></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">กลางปี 2000</div><div class="desc">ใช้ MTM บันทึกกำไรคาดการณ์ <b>~$110M ทันที</b></div></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">มี.ค. 2001</div><div class="desc">ยกเลิกดีล (ค่ายหนังค้าน)</div></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">สุดท้าย</div><div class="desc">รายได้จริง <b class="red">≈ ศูนย์</b></div></div>
+   </div>
+   <div class="reveal" style="display:flex;flex-direction:column;gap:16px;justify-content:center">
+    <div class="stat card gold"><div class="num gold">$110M</div><div class="lab">กำไรที่ "บันทึก" ไว้แล้ว</div></div>
+    <div class="stat card red"><div class="num red">$0</div><div class="lab">รายได้จริงที่เกิดขึ้น</div></div>
+   </div>
+  </div>
+  <p class="reveal note">หมายเหตุ: บางแหล่งระบุ ~$53M — ไม่ว่าตัวเลขไหน ประเด็นคือบันทึกกำไรร้อยกว่าล้านจากดีลที่สุดท้ายแทบไม่มีรายได้จริง</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">3.5</span> Key Insight · ลู่วิ่งที่ลงไม่ได้</div>
+  <h2 class="reveal title">"ลู่วิ่ง" ที่หยุดไม่ได้</h2>
+  <div class="rule reveal"></div>
+  <div class="reveal insight">
+   <span class="tag">Key Insight</span>
+   <p>เมื่อบันทึกกำไรทั้งก้อนล่วงหน้า บริษัทจะ "ดูโตเร็ว" หุ้นพุ่ง นักวิเคราะห์ปรบมือ — แต่จะรักษาการเติบโตนั้นไว้ ต้อง<b class="red">เซ็นดีลใหญ่ขึ้นเรื่อย ๆ ไม่หยุด</b></p>
+  </div>
+  <p class="reveal lede" style="margin-top:20px;max-width:64ch">และเมื่อดีลพังจริง ขาดทุนไปอยู่ไหน? Enron จะ <b>โอนสินทรัพย์นั้นไปยังนิติบุคคลนอกงบดุล</b> ที่ซึ่งขาดทุนจะไม่ถูกรายงาน → ตอนที่ 4: SPE</p>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 4 — SPECIAL PURPOSE ENTITIES
+     ============================================================ -->
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 4</span> Special Purpose Entities</div>
+  <h1 class="reveal title">ห้องลับ<span class="red">หลังงบดุล</span></h1>
+  <p class="reveal lede">SPE ใช้ได้ถูกกฎหมาย แต่ Enron ใช้มันย้ายหนี้/ขาดทุนออกจากงบ อาศัยช่องว่าง "กฎ 3%" — งบดูดีขึ้นจริง แต่ความเสี่ยงไม่ได้หาย แค่ย้ายที่</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">4.1</span> ทำไมต้องใช้ SPE · กฎ 3%</div>
+  <h2 class="reveal title">เครดิตเรตติงคือเรื่องคอขาดบาดตาย</h2>
+  <p class="reveal lede" style="max-width:64ch">ปลายยุค 1990 Enron โตเร็วต้องลงทุนหนัก แต่ต้องรักษา <b>อันดับเครดิต (BBB- ขึ้นไป)</b> ไว้ให้ได้ ถ้าหนี้สูงเกินเรตติงตก ต้นทุนกู้พุ่ง — ทางออกคือสร้าง SPE ที่กู้เงินได้โดยไม่ต้องรวมงบ</p>
+  <div class="grid g2" style="margin-top:20px">
+   <div class="reveal card blue"><span class="ico">🏷️</span><h3>SPE คืออะไร</h3><p>นิติบุคคลเฉพาะกิจที่ตั้งขึ้นเพื่อวัตถุประสงค์เฉพาะ — ปกติใช้ได้ถูกกฎหมาย</p></div>
+   <div class="reveal card red"><span class="ico">⚖️</span><h3>ช่องว่าง "กฎ 3%"</h3><p>ถ้ามีผู้ลงทุน <b>ภายนอกถือ ≥ 3%</b> (และรับความเสี่ยงจริง + คุม SPE) → <b>ไม่ต้องรวมงบ</b> หนี้ก็หายไปจากงบ Enron</p></div>
+  </div>
+  <p class="reveal note">กับดัก: Enron ตั้งพาร์ตเนอร์ชิปขึ้นกว่า <b>3,000 แห่ง</b> และซ่อนการเดิมพันที่ผิดพลาด โดยขายสินทรัพย์เสี่ยงแลก IOU ที่ค้ำด้วยหุ้น Enron (รวมกว่า $1B ภายในปี 2002)</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">4.2</span> การย้ายหนี้ออกจากงบ</div>
+  <h2 class="reveal title">หนี้/ขาดทุน → ย้ายไป SPE</h2>
+  <div class="rule reveal"></div>
+  <div class="reveal flow">
+   <div class="node red"><div class="t red">งบดุล ENRON</div><div class="s">หนี้สิน/ขาดทุนหดลง → "✓ งบดูสุขภาพดี"</div></div>
+   <div class="arrow">→</div>
+   <div class="node"><div class="t">Chewco / JEDI</div><div class="s">รับโอนหนี้ ~$600M</div></div>
+   <div class="arrow">→</div>
+   <div class="node"><div class="t">Raptors (×4)</div><div class="s">รับขาดทุน ~$1B</div></div>
+  </div>
+  <div class="reveal card gold" style="margin-top:22px"><span class="ico">🧾</span><h3>LJM1 / LJM2</h3><p>หุ้นส่วนที่ <b>บริหารโดย CFO (Fastow) เอง</b> — ตั้งชื่อตามภรรยาและลูก เป็นแหล่งทุนให้ Raptors ใช้ "ป้องกันความเสี่ยง" เพื่อหลีกเลี่ยงการบันทึกขาดทุน MTM</p></div>
+ </div>
+</section>
+
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">4.3</span> เรื่องจริง · JEDI → Chewco</div>
+  <h2 class="reveal title">เมื่อทุนภายนอก 3% เป็น "ของปลอม"</h2>
+  <div class="grid g2">
+   <div class="reveal tl">
+    <div class="line"></div><div class="fill" data-fill="100%"></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">1993 · JEDI</div><div class="desc">Enron + กองทุนบำนาญ CalPERS (ลง $250M) ตั้งไว้นอกงบดุล</div></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">1997 · Chewco</div><div class="desc">CalPERS อยากถอนตัว → Enron สร้าง Chewco (ชื่อตาม Chewbacca) มาซื้อหุ้นแทน ~$383M</div></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">จุดพลาด</div><div class="desc">เงินกู้ Barclays ถูกค้ำด้วยบัญชีสำรอง $6M → Barclays ไม่มีเงินเสี่ยงจริง Chewco จึง<b>ขาดเกณฑ์ 3%</b></div></div>
+    <div class="tl-item"><div class="dot"></div><div class="date">ผลลัพธ์</div><div class="desc">ต้องนำ Chewco/JEDI กลับมารวมงบ → บังคับให้ Enron <b>ปรับปรุงงบย้อนหลัง</b></div></div>
+   </div>
+   <div class="reveal insight" style="align-self:center">
+    <span class="tag">คำพูดในตำนาน</span>
+    <p>เหรัญญิก <b>Ben Glisan</b> ถึงกับพูดว่า<br>"<b class="red">เราจบเห่แล้ว (We're toast)</b>"</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">4.4</span> วงจรมรณะ</div>
+  <h2 class="reveal title">ค้ำด้วย <span class="red">หุ้นของตัวเอง</span></h2>
+  <p class="reveal lede" style="max-width:62ch">จุดอันตรายที่สุด: Enron ค้ำ Raptors ด้วยหุ้นของตัวเอง ความเสี่ยงจริงไม่เคยหาย มันแค่ถูกพิงไว้กับราคาหุ้น</p>
+  <div class="reveal flow" style="margin-top:24px">
+   <div class="node red"><div class="t red">หุ้น Enron ตก</div></div><div class="arrow">→</div>
+   <div class="node"><div class="t">SPE หลุดเกณฑ์ 3%</div></div><div class="arrow">→</div>
+   <div class="node"><div class="t">หนี้เด้งกลับเข้างบ</div></div><div class="arrow">→</div>
+   <div class="node red"><div class="t red">Enron ล้ม</div></div>
+  </div>
+  <p class="reveal note" style="text-align:center">เมื่อต้องส่งมอบหุ้นมหาศาลตามสัญญาค้ำ กำไรต่อหุ้นยิ่งเจือจาง → ยิ่งฉุดหุ้นลง → บ้านไพ่ถล่มทับตัวเอง</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">4.5</span> ตัวเลข &amp; Key Insight</div>
+  <h2 class="reveal title">ความเสี่ยงไม่หาย — แค่ย้ายที่</h2>
+  <div class="grid g3" style="margin-top:6px">
+   <div class="reveal stat card"><div class="num gold counter" data-target="3000" data-suffix="+">0</div><div class="lab">พาร์ตเนอร์ชิป/SPE ที่สร้างขึ้น</div></div>
+   <div class="reveal stat card"><div class="num red counter" data-target="1" data-prefix="~$" data-suffix="B">0</div><div class="lab">ขาดทุนที่ซ่อนผ่าน Raptors</div></div>
+   <div class="reveal stat card"><div class="num gold counter" data-target="45" data-prefix="$" data-suffix="M">0</div><div class="lab">กำไรส่วนตัวของ CFO จาก SPE</div></div>
+  </div>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">Key Insight</span>
+   <p>SPE ทำให้งบ "ดูดีขึ้น" จริง แต่เต็มไปด้วย <b>conflict of interest</b> เพราะ CFO อยู่ทั้งสองฝั่งของโต๊ะ — และทั้งระบบผูกกับหุ้น Enron เอง → <b class="red">หุ้นตก = ทุกอย่างพังพร้อมกัน</b></p>
+  </div>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 5 — RED FLAGS
+     ============================================================ -->
+<section class="slide" data-chap="5 · Red Flags">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 5</span> Financial Red Flags</div>
+  <h1 class="reveal title">อ่านงบ &amp; <span class="red">Red Flags</span></h1>
+  <p class="reveal lede">จาก "เขาโกงยังไง" สู่ "เราจับได้ยังไง" — ต่อให้ซ่อนเก่งแค่ไหน งบก็ทิ้งร่องรอย เครื่องมือหลักคือ "กำไร ≠ เงินสด"</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="5 · Red Flags">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">5.1</span> เครื่องมือหลัก</div>
+  <h2 class="reveal title"><span class="gold">กำไร</span> ≠ <span class="green">เงินสด</span></h2>
+  <div class="grid g2">
+   <ul class="reveal points">
+    <li><span class="bx">📈</span><div><b>กำไรทางบัญชี (Net Income)</b> — กำไรตามหลักคงค้าง (accrual) ที่อาจรับรู้ก่อนเงินสดเข้า → ปลอมง่ายกว่า</div></li>
+    <li class="r"><span class="bx">💵</span><div><b>เงินสดจากการดำเนินงาน (Operating Cash Flow)</b> — เงินสดจริงที่ธุรกิจสร้างได้ → ปลอมยากกว่า</div></li>
+    <li class="r"><span class="bx">🚩</span><div>ถ้าช่องว่างถ่างออกเรื่อย ๆ = <b class="red">ธงแดง</b></div></li>
+   </ul>
+   <div class="reveal card gold" style="align-self:center"><span class="ico">🔎</span><h3>ร่องรอยจริงใน Enron</h3><p>งบกระแสเงินสดต้องหัก "กำไรจากการขายสินทรัพย์" ก้อนใหญ่ออกจากกำไรสุทธิ — แปลว่ากำไรส่วนหนึ่งมาจากการขายของครั้งเดียว ไม่ใช่การดำเนินงานที่ยั่งยืน</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="5 · Red Flags">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">5.2</span> Red Flag Dashboard</div>
+  <h2 class="reveal title">8 สัญญาณเตือนที่เห็นได้จากงบ</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g2">
+   <div class="reveal card red"><h3>① กำไรโตเร็วผิดปกติ</h3><p>โตเกินกว่าที่อุตสาหกรรมจะอธิบายได้ มักมาจากการรับรู้รายได้เชิงรุก</p></div>
+   <div class="reveal card red"><h3>② เงินสดไม่สัมพันธ์กับกำไร</h3><p>กำไรขึ้นแต่เงินสดไม่ตาม = อาจเป็นกำไรบนกระดาษ</p></div>
+   <div class="reveal card red"><h3>③ หนี้นอกงบดุล</h3><p>ใน Enron หนี้ถูกซ่อนใน SPE (Chewco/Raptors) จึงไม่โผล่ในงบดุล</p></div>
+   <div class="reveal card red"><h3>④ รายการกับ SPE จำนวนมาก</h3><p>ธุรกรรมกับนิติบุคคลเฉพาะกิจจำนวนมากเปิดช่องซ่อนหนี้/ขาดทุน</p></div>
+   <div class="reveal card red"><h3>⑤ ซับซ้อนเกินอธิบาย ("trust me")</h3><p>Wall Street ยอมรับว่า "วิเคราะห์ไม่ได้" — ความทึบคือธงแดงในตัวเอง</p></div>
+   <div class="reveal card red"><h3>⑥ ผลตอบแทน &lt; ต้นทุนทุน</h3><p>return on capital ~7% แต่ cost of capital ~9% → ทำลายมูลค่า ไม่ใช่สร้างกำไร</p></div>
+   <div class="reveal card red"><h3>⑦ ผู้บริหารเป็นปฏิปักษ์ต่อคำถาม</h3><p>CFO อยู่ทั้งสองฝั่งของ SPE และ CEO เคยด่านักวิเคราะห์กลางสาย</p></div>
+   <div class="reveal card red"><h3>⑧ CEO ลาออกกะทันหัน</h3><p>Skilling ลาออกหลังเป็น CEO 6 เดือน — "สัญญาณเตือนที่ดังที่สุด"</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="5 · Red Flags">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">5.3</span> นักสืบตัวจริง</div>
+  <h2 class="reveal title">คนที่อ่านงบออก — ก่อนพัง</h2>
+  <div class="grid g2">
+   <div class="reveal card gold"><span class="ico">📉</span><h3>Jim Chanos</h3><p><b>นักขายชอร์ต · กองทุน Kynikos</b> หยิบ 10-K ปี 1999 มาอ่าน เจอความผิดปกติ เปิดสถานะขายชอร์ตตั้งแต่ พ.ย. 2000 สุดท้ายทำกำไรราว <b class="green">$500M</b></p></div>
+   <div class="reveal card gold"><span class="ico">📰</span><h3>Bethany McLean</h3><p><b>นักข่าว · นิตยสาร Fortune</b> มี.ค. 2001 เขียน "Is Enron Overpriced?" ตั้งคำถามตรง ๆ ว่า Enron ทำเงินจากอะไร ทำไมดูจากงบไม่ออก (ตอนนั้น P/E ~55)</p></div>
+  </div>
+  <ul class="reveal points" style="margin-top:20px">
+   <li><span class="bx">✓</span><div>เทียบผลตอบแทนกับต้นทุนทุน — 7% vs 9% แล้วถามว่ากำไรมาจากไหน</div></li>
+   <li><span class="bx">✓</span><div>จับการบันทึกที่ไม่สมมาตร · สงสัยความทึบ · ฟังสัญญาณพฤติกรรม (CEO ลาออกกะทันหัน)</div></li>
+  </ul>
+ </div>
+</section>
+
+<section class="slide" data-chap="5 · Red Flags">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">5.4</span> Key Insight</div>
+  <h2 class="reveal title">พื้นฐาน — ไม่ใช่เวทมนตร์</h2>
+  <div class="rule reveal"></div>
+  <div class="reveal insight">
+   <span class="tag">Key Insight</span>
+   <p>เครื่องมือที่ใช้จับ Enron คือพื้นฐาน — เทียบกำไรกับเงินสด, ดูผลตอบแทนเทียบต้นทุนทุน, สงสัยสิ่งที่ซับซ้อนเกินอธิบาย, ระวังรายการเกี่ยวโยง</p>
+  </div>
+  <p class="reveal lede" style="margin-top:20px;max-width:64ch">ที่เจ็บปวดคือ <b>คนนอกอย่าง Chanos และ McLean ยังจับได้</b> — แล้วคนที่มีหน้าที่ตรวจสอบโดยตรงล่ะ? → ตอนที่ 6</p>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 6 — ARTHUR ANDERSEN
+     ============================================================ -->
+<section class="slide" data-chap="6 · Arthur Andersen">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 6</span> The Auditor</div>
+  <h1 class="reveal title"><span class="gold">Arthur Andersen</span><br>ผู้เฝ้าประตูที่หลับใหล</h1>
+  <p class="reveal lede">เมื่อผู้สอบบัญชีขาดความเป็นอิสระ (พึ่งค่าธรรมเนียมก้อนใหญ่) และขาดความระแวงเชิงวิชาชีพ กลไกตรวจสอบสุดท้ายของตลาดทุนก็พังลง</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="6 · Arthur Andersen">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">6.1</span> ผู้เฝ้าประตูคนสุดท้าย</div>
+  <h2 class="reveal title">หนึ่งใน "Big Five" ของโลก</h2>
+  <div class="grid g3" style="margin-top:6px">
+   <div class="reveal stat card"><div class="num gold counter" data-target="85000" data-suffix="+">0</div><div class="lab">พนักงานใน 84 ประเทศ</div></div>
+   <div class="reveal stat card"><div class="num gold counter" data-target="1913" data-plain="1">1913</div><div class="lab">ก่อตั้ง บนชื่อเสียงเรื่องความซื่อตรง</div></div>
+   <div class="reveal stat card"><div class="num red counter" data-target="16" data-suffix=" ปี">0</div><div class="lab">สอบบัญชีให้ Enron มานาน</div></div>
+  </div>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">บทบาท</span>
+   <p>ผู้สอบบัญชีคือ<b>บุคคลที่สามที่เป็นกลาง</b> ยืนยันแก่นักลงทุนว่าตัวเลขในงบเชื่อถือได้ — แต่ผู้เฝ้าประตูคนนี้หลับใหล (หลัง Andersen ล่ม เหลือ "Big Four")</p>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="6 · Arthur Andersen">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">6.2</span> ปัญหาที่ 1 · ความเป็นอิสระ</div>
+  <h2 class="reveal title">ความเป็นอิสระที่ถูก<span class="gold">เงิน</span>กัดกร่อน</h2>
+  <div class="reveal chart" style="max-width:560px;margin-left:auto;margin-right:auto;height:clamp(150px,22vh,210px)">
+   <div class="barwrap"><div class="bar b-gold" data-h="48%"><span class="v">$25M</span></div><div class="barlab">ค่าสอบบัญชี<br>(audit)</div></div>
+   <div class="barwrap"><div class="bar b-red" data-h="52%"><span class="v">$27M</span></div><div class="barlab">ค่าที่ปรึกษา<br>(non-audit)</div></div>
+   <div class="barwrap"><div class="bar b-red" data-h="100%"><span class="v">$52M</span></div><div class="barlab">รวม/ปี<br>≈ $1M ต่อสัปดาห์</div></div>
+  </div>
+  <div class="reveal card red" style="margin-top:18px"><span class="ico">🎩</span><h3>หนึ่งบริษัท สวม 3 หมวกที่ขัดแย้งกัน</h3><p><b>ผู้สอบบัญชีภายนอก</b> (ตรวจงบให้นักลงทุน) · <b>ตรวจสอบภายใน</b> (ตรวจระบบของ Enron เอง ตั้งแต่ 1993) · <b>ที่ปรึกษา</b> (ขายบริการทำกำไร) — Enron เป็นลูกค้าใหญ่อันดับ 2 · ทีม ~100 คนนั่งในตึก Enron · ผู้บริหาร Enron ~300 คนเคยเป็นพนักงาน Andersen</p></div>
+ </div>
+</section>
+
+<section class="slide" data-chap="6 · Arthur Andersen">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">6.3</span> ปัญหาที่ 2 &amp; 3</div>
+  <h2 class="reveal title">ขาดความระแวง · และทำลายเอกสาร</h2>
+  <div class="grid g2">
+   <div class="reveal card red"><span class="ico">🙉</span><h3>ขาด Professional Skepticism</h3><p>เมื่อมีคนในทักท้วง กลับถูกปิดปาก — <b>Carl Bass</b> ผู้สอบบัญชีที่ตั้งข้อสงสัยเรื่องพาร์ตเนอร์ชิปนอกงบดุล ถูกถอดออกจากบัญชี Enron · Andersen มักลงเอยด้วยการยอมรับคำของทนาย Enron</p></div>
+   <div class="reveal card red"><span class="ico">🗑️</span><h3>การทำลายเอกสาร</h3><p>ภายใน <b>3 วัน</b> เอกสารมหาศาลถูกทำลาย อีเมล/ไฟล์ถูกลบ หยุดก็ต่อเมื่อ SEC ออกหมายเรียก 8 พ.ย. — หัวหน้าทีม <b>David Duncan</b> สั่งทีมให้ "ทำตามนโยบายเก็บรักษาเอกสาร ซึ่งผมรู้ว่าจะส่งผลให้เอกสารถูกทำลาย"</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="6 · Arthur Andersen">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">6.4</span> จุดจบ</div>
+  <h2 class="reveal title">สำนักงานบัญชีแห่งแรกที่ถูกตัดสินคดีอาญาร้ายแรง</h2>
+  <div class="reveal tl" style="margin-top:8px">
+   <div class="line"></div><div class="fill" data-fill="100%"></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">14 มี.ค. 2002</div><div class="desc">ถูกฟ้องฐานขัดขวางกระบวนการยุติธรรม</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">15 มิ.ย. 2002</div><div class="desc">คณะลูกขุนตัดสินว่าผิด (จาก "บันทึกที่ถูกแก้ไข" ฉบับเดียว ไม่ใช่การทำลายเอกสาร)</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">31 ส.ค. 2002</div><div class="desc">ยุติการสอบบัญชีบริษัทมหาชน → พนักงานกว่า 85,000 คนล่มสลาย · Big Five เหลือ Big Four</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">2005</div><div class="desc">ศาลสูงสุดสหรัฐฯ กลับคำพิพากษาอย่างเป็นเอกฉันท์ — แต่บริษัทล่มไปก่อนแล้ว สายเกินกอบกู้</div></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="6 · Arthur Andersen">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">6.5</span> Key Insight</div>
+  <h2 class="reveal title">เส้นเลือดของวิชาชีพ</h2>
+  <div class="rule reveal"></div>
+  <div class="reveal insight">
+   <span class="tag">Key Insight</span>
+   <p>ความเป็นอิสระไม่ได้หายในวันเดียว มันถูก<b class="gold">เงินค่อย ๆ กัดกร่อน</b> จนผู้สอบบัญชีกลายเป็นทั้งผู้ตรวจและผู้ขายบริการให้ลูกค้าคนเดียวกัน</p>
+  </div>
+  <p class="reveal lede" style="margin-top:20px;max-width:64ch"><b>Independence</b> และ <b>professional skepticism</b> คือเส้นเลือดของวิชาชีพ — เสียไปเมื่อไหร่ ทั้งระบบความเชื่อมั่นก็พัง</p>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 7 — THE COLLAPSE
+     ============================================================ -->
+<section class="slide" data-chap="7 · การล่มสลาย">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 7</span> The Collapse</div>
+  <h1 class="reveal title">การ<span class="red">ล่มสลาย</span> &amp; ผลกระทบ</h1>
+  <p class="reveal lede">16 ปีในการสร้าง · ไม่กี่สัปดาห์ในการพัง — เมื่อทุกด่านพังพร้อมกัน หุ้นจาก $90.75 ดิ่งสู่ $0.26</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="7 · การล่มสลาย">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">7.1</span> กราฟแห่งการล่มสลาย</div>
+  <h2 class="reveal title">ราคาหุ้น Enron: <span class="gold">$90.75</span> → <span class="red">$0.26</span></h2>
+  <div class="reveal stockbox" id="stockbox">
+   <svg viewBox="0 0 800 360" preserveAspectRatio="none" width="100%" height="100%">
+    <defs>
+     <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1d18a"/><stop offset="1" stop-color="#e0433f"/>
+     </linearGradient>
+     <linearGradient id="sa" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="rgba(224,67,63,.35)"/><stop offset="1" stop-color="rgba(224,67,63,0)"/>
+     </linearGradient>
+    </defs>
+    <path class="stock-area" d="M20,40 C160,55 230,70 320,120 C410,170 470,250 560,300 C650,340 720,350 780,352 L780,360 L20,360 Z"/>
+    <path class="stock-path" d="M20,40 C160,55 230,70 320,120 C410,170 470,250 560,300 C650,340 720,350 780,352"/>
+   </svg>
+   <div style="position:absolute;top:6px;left:10px" class="pill">ส.ค. 2000 · ~$90</div>
+   <div style="position:absolute;bottom:8px;right:10px" class="pill">30 พ.ย. 2001 · $0.26</div>
+  </div>
+  <p class="reveal note" style="text-align:center">กราฟเชิงแนวคิดจากจุดอ้างอิงจริง — สิ่งที่น่าตกใจที่สุดคือ "ความเร็ว"</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="7 · การล่มสลาย">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">7.2</span> ไทม์ไลน์การล่ม (2001)</div>
+  <h2 class="reveal title">ไม่กี่เดือนสุดท้าย</h2>
+  <div class="reveal tl" style="margin-top:8px">
+   <div class="line"></div><div class="fill" data-fill="100%"></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">14 ส.ค.</div><div class="desc">Skilling ลาออกจาก CEO กะทันหัน หลังรับตำแหน่งเพียง 6 เดือน</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">16 ต.ค.</div><div class="desc">รายงานขาดทุน Q3 ~$618M + ตัดส่วนผู้ถือหุ้น $1.2B → SEC สอบสวน</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">9 พ.ย.</div><div class="desc">Dynegy (คู่แข่ง) ตกลงเข้าซื้อ ~$8.4B อัดเงินสด $1.5B เพื่อกอบกู้</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">19 พ.ย.</div><div class="desc">ยื่น 10-Q เปิดเผยข้อมูลร้ายแรงใหม่ → ความเชื่อมั่นหายวับ</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">28 พ.ย.</div><div class="desc">Dynegy ยกเลิกดีล → หุ้นร่วงต่ำกว่า $1 · เครดิตถูกลดเป็นระดับขยะ</div></div>
+   <div class="tl-item"><div class="dot"></div><div class="date">2 ธ.ค.</div><div class="desc">ยื่นล้มละลาย Chapter 11 · สินทรัพย์ ~$63.4B — ใหญ่ที่สุดในสหรัฐฯ ขณะนั้น</div></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="7 · การล่มสลาย">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">7.3</span> ผลกระทบต่อคน · ส่วนที่เจ็บที่สุด</div>
+  <h2 class="reveal title">นี่ไม่ใช่แค่ตัวเลข</h2>
+  <p class="reveal lede" style="max-width:64ch">พนักงานจำนวนมากนำเงินเกษียณ (<b>401(k)</b>) ไปลงในหุ้นบริษัทตัวเองด้วยความเชื่อมั่น ขณะที่ราคาหุ้นดิ่ง <b>Lay ขายหุ้นของตัวเองออกจำนวนมาก</b> พร้อมให้กำลังใจพนักงานให้ซื้อเพิ่ม</p>
+  <div class="grid g3" style="margin-top:20px">
+   <div class="reveal stat card red"><div class="num red">≈ $0</div><div class="lab">เงินบำนาญที่ถูกล้าง</div></div>
+   <div class="reveal stat card"><div class="num gold counter" data-target="63.4" data-dec="1" data-prefix="$" data-suffix="B">0</div><div class="lab">สินทรัพย์ที่ล้มละลาย (ใหญ่สุดขณะนั้น)</div></div>
+   <div class="reveal stat card"><div class="num gold counter" data-target="21000" data-suffix=" คน">0</div><div class="lab">พนักงานทั้งหมด (เลิกจ้าง ~5,600 ช่วงแรก)</div></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="7 · การล่มสลาย">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">7.4</span> ชะตากรรมผู้บริหาร · Key Insight</div>
+  <h2 class="reveal title">ใครรับผิด</h2>
+  <div class="grid g3">
+   <div class="reveal card gold"><h3>Jeffrey Skilling</h3><p>ถูกตัดสินว่าผิด โทษ 24 ปี ภายหลังลดเหลือราว 14 ปี</p></div>
+   <div class="reveal card gold"><h3>Andrew Fastow</h3><p>รับสารภาพปี 2004 รับโทษราว 6 ปี · เป็นพยานเอาผิดผู้อื่น</p></div>
+   <div class="reveal card gold"><h3>Kenneth Lay</h3><p>ถูกตัดสินว่าผิด แต่เสียชีวิต ก.ค. 2006 ก่อนการพิพากษาโทษ</p></div>
+  </div>
+  <div class="reveal insight" style="margin-top:22px">
+   <span class="tag">Key Insight</span>
+   <p>Enron ใช้เวลา <b>16 ปี</b> ในการเติบใหญ่ แต่ใช้เวลาเพียง <b class="red">ไม่กี่สัปดาห์</b> ในการล่มสลาย — ผู้ที่เจ็บที่สุดคือพนักงานและนักลงทุนรายย่อยที่เชื่อใจ</p>
+  </div>
+ </div>
+</section>
+
+<!-- ============================================================
+     CHAPTER 8 — LESSONS & LEGACY
+     ============================================================ -->
+<section class="slide" data-chap="8 · บทเรียน">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">ตอนที่ 8</span> Lessons &amp; Legacy</div>
+  <h1 class="reveal title">บทเรียน · <span class="gold">SOX</span> · บริบทไทย</h1>
+  <p class="reveal lede">มรดกหลักของ Enron คือกฎหมาย Sarbanes-Oxley (SOX) ปี 2002 และบทเรียนที่เรียบง่าย: กำไร ≠ เงินสด, ความเป็นอิสระล้ำค่า, ความโปร่งใสสำคัญกว่าการเติบโตที่สวยงาม</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="8 · บทเรียน">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">8.1</span> มรดกหลัก · SOX 2002</div>
+  <h2 class="reveal title">Sarbanes-Oxley แก้ปัญหาแบบจุดต่อจุด</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g2">
+   <div class="reveal card blue"><h3>🏛️ ตั้ง PCAOB</h3><p>คณะกรรมการอิสระมากำกับสำนักงานสอบบัญชี เลิกระบบ "กำกับกันเอง" <span class="muted">— แก้: Andersen ที่ไร้คนคุม</span></p></div>
+   <div class="reveal card blue"><h3>⚖️ ความเป็นอิสระ</h3><p>ห้ามรับงานที่ปรึกษาบางอย่างคู่กับงานสอบบัญชี + ต้องอนุมัติล่วงหน้า + หมุนหุ้นส่วนทุก 5 ปี <span class="muted">— แก้: ค่าที่ปรึกษา $27M</span></p></div>
+   <div class="reveal card blue"><h3>✍️ Section 302</h3><p>ผู้บริหารสูงสุดต้องเซ็นรับรองความถูกต้องของงบด้วยตนเอง <span class="muted">— แก้: ผู้บริหารอ้างว่า "ไม่รู้"</span></p></div>
+   <div class="reveal card blue"><h3>🔒 Section 404</h3><p>ฝ่ายบริหารต้องประเมิน ICFR และผู้สอบบัญชีต้องให้ความเห็น <span class="muted">— แก้: การซ่อนหนี้ใน SPE</span></p></div>
+   <div class="reveal card blue"><h3>🗄️ โทษทำลายเอกสาร</h3><p>เพิ่มโทษอาญาสำหรับการทำลาย/แก้ไขเอกสารเพื่อขัดขวางการสอบสวน <span class="muted">— แก้: การ shred ของ Andersen</span></p></div>
+   <div class="reveal card blue"><h3>🛡️ คุ้มครองผู้แจ้งเบาะแส</h3><p>คุ้มครอง whistleblower และกำหนดจรรยาบรรณนักวิเคราะห์ <span class="muted">— แก้: คนทักท้วงถูกปิดปาก</span></p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="8 · บทเรียน">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">8.2</span> บทเรียนใหญ่ที่ใช้ได้ทุกที่</div>
+  <h2 class="reveal title">4 บทเรียนหลัก</h2>
+  <div class="grid g2">
+   <div class="reveal card gold"><span class="ico">💵</span><h3>กำไร ≠ เงินสด</h3><p>งบที่ดูดีอาจซ่อนความเสี่ยง — ดูเงินสดจริงเสมอ</p></div>
+   <div class="reveal card gold"><span class="ico">⚖️</span><h3>ความเป็นอิสระล้ำค่า</h3><p>ผู้สอบบัญชีเสียความเป็นกลางเมื่อใด ความเชื่อมั่นพังเมื่อนั้น</p></div>
+   <div class="reveal card gold"><span class="ico">🔍</span><h3>ธรรมาภิบาล &amp; ความโปร่งใส</h3><p>สำคัญกว่าการเติบโตที่สวยงามบนกระดาษ</p></div>
+   <div class="reveal card gold"><span class="ico">🤔</span><h3>ความระแวงเชิงวิชาชีพ</h3><p>อย่าเชื่อเพียงเพราะตัวเลขดูดี หรือเพราะทุกคนเชื่อ</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="8 · บทเรียน">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">8.3</span> "ถ้าเราเป็นผู้สอบบัญชี"</div>
+  <h2 class="reveal title">Checklist 10 ข้อ</h2>
+  <div class="rule reveal"></div>
+  <div class="grid g2">
+   <ul class="reveal points">
+    <li><span class="bx">1</span><div>เทียบกำไรสุทธิกับกระแสเงินสดจากการดำเนินงาน</div></li>
+    <li><span class="bx">2</span><div>ตรวจรายการกับบุคคล/นิติบุคคลที่เกี่ยวโยง (related party) และ SPE ทั้งหมด</div></li>
+    <li><span class="bx">3</span><div>ทดสอบสมมติฐานมูลค่ายุติธรรม (fair value / MTM) อย่างเข้มงวด</div></li>
+    <li><span class="bx">4</span><div>ดูผลตอบแทนต่อเงินทุนเทียบต้นทุนทุน — ถามว่ากำไรมาจากไหนจริง ๆ</div></li>
+    <li><span class="bx">5</span><div>ระวัง "กำไรครั้งเดียว" (gain on sale) ที่พยุงกำไรปกติ</div></li>
+   </ul>
+   <ul class="reveal points">
+    <li><span class="bx">6</span><div>ขอคำยืนยันจากบุคคลภายนอก (confirmation) อย่าเชื่อคำผู้บริหารอย่างเดียว</div></li>
+    <li><span class="bx">7</span><div>รักษาความเป็นอิสระ — ระวัง conflict จากค่าที่ปรึกษา/ความสัมพันธ์</div></li>
+    <li><span class="bx">8</span><div>ใช้ความระแวงเชิงวิชาชีพ ตั้งคำถามกับสิ่งที่ซับซ้อนเกินอธิบาย</div></li>
+    <li><span class="bx">9</span><div>สังเกตสัญญาณพฤติกรรม — ผู้บริหารปฏิปักษ์, CEO ลาออกกะทันหัน</div></li>
+    <li><span class="bx">10</span><div>อย่าเพิกเฉยต่อผู้แจ้งเบาะแส (whistleblower) ที่ทักท้วง</div></li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<section class="slide" data-chap="8 · บทเรียน">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">8.4</span> บริบทไทย · ข้อวิเคราะห์</div>
+  <h2 class="reveal title">เหตุการณ์แบบนี้เกิดในไทยได้ไหม?</h2>
+  <div class="grid g2">
+   <div class="reveal card red"><span class="ico">⚠️</span><h3>ความเสี่ยง</h3><p>เกิดได้หากธรรมาภิบาลอ่อนแอ — รายการกับบุคคลที่เกี่ยวโยงกัน, โครงสร้างกลุ่มบริษัทที่ซับซ้อน, ภาระนอกงบดุล และแรงจูงใจที่จะแต่งงบเพื่อระดมทุน/กู้เงิน</p></div>
+   <div class="reveal card green"><span class="ico">🛡️</span><h3>กลไกที่ช่วยลดความเสี่ยง</h3><p>การกำกับโดย <b>ก.ล.ต.</b> และ <b>ตลาดหลักทรัพย์ฯ</b> · มาตรฐาน <b>TFRS</b> · บทบาท <b>คณะกรรมการตรวจสอบ</b> และกรรมการอิสระ · การกำกับวิชาชีพโดย <b>สภาวิชาชีพบัญชี</b></p></div>
+  </div>
+  <p class="reveal note">ส่วน "บริบทไทย" เป็นข้อวิเคราะห์/ข้อเสนอของผู้เรียบเรียง</p>
+ </div>
+</section>
+
+<section class="slide" data-chap="8 · บทเรียน">
+ <div class="wrap" style="text-align:center">
+  <div class="reveal eyebrow" style="justify-content:center"><span class="ch">จบซีรีส์</span> The Takeaway</div>
+  <p class="reveal quote">"Enron was not just a failure of accounting numbers.<br>It was a failure of <span class="gold">ethics</span>, <span class="gold">governance</span>, <span class="gold">auditing</span>, and <span class="gold">trust</span>."
+   <span class="src">Enron ไม่ใช่แค่ความล้มเหลวของตัวเลขบัญชี — แต่เป็นความล้มเหลวของจริยธรรม ธรรมาภิบาล การสอบบัญชี และความไว้วางใจ</span>
+  </p>
+  <div class="reveal members" style="margin-top:30px">
+    <span class="lead">จัดทำโดย</span>
+    <span class="name c-gold"><span class="sid">2600231302014</span>นภัสสร ลิมปกานนท์</span>
+    <span class="name c-red"><span class="sid">2600231302018</span>GONG JIAJIA</span>
+    <span class="name c-green"><span class="sid">2600231302032</span>ศุภเกศ วงศ์คำภู</span>
+  </div>
+  <p class="reveal note">ขอบคุณครับ/ค่ะ — <a href="index.html" style="color:var(--gold)">กลับสู่สารบัญ Enron Case Study</a></p>
+ </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hint" id="hint">ใช้ <span class="k">←</span> <span class="k">→</span> หรือปัดซ้าย-ขวา · กด <span class="k">F</span> เต็มจอ</div>
+<div class="controls">
+  <button class="nav-btn" id="prev">← ก่อนหน้า</button>
+  <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+  <button class="nav-btn" id="next">ถัดไป →</button>
+</div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  let current=0;
+  const elPrev=document.getElementById('prev'),elNext=document.getElementById('next');
+  const elCur=document.getElementById('cur'),elProg=document.getElementById('progress');
+  const elChap=document.getElementById('chapchip'),elHint=document.getElementById('hint');
+  document.getElementById('total').textContent=total;
+
+  function show(n){
+    if(n<0||n>=total) return;
+    slides[current].classList.remove('active','in');
+    current=n;
+    const s=slides[current];
+    s.classList.add('active');
+    s.scrollTop=0;
+    // chapter chip
+    elChap.textContent=s.dataset.chap || 'Opening';
+    // progress + counter
+    elProg.style.width=(current/(total-1))*100+'%';
+    elCur.textContent=current+1;
+    elPrev.disabled=current===0;
+    elNext.disabled=current===total-1;
+    if(current>0&&elHint) elHint.style.opacity=0;
+    // trigger animations next frame
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      s.classList.add('in');
+      runReveals(s); runCounters(s); runBars(s); runTimelines(s); runStock(s);
+    }));
+  }
+
+  function runReveals(s){
+    const els=[...s.querySelectorAll('.reveal')];
+    els.forEach(el=>el.classList.remove('show'));
+    els.forEach((el,i)=>setTimeout(()=>el.classList.add('show'),90*i));
+  }
+  function runBars(s){
+    s.querySelectorAll('.bar').forEach(b=>b.style.height='0px');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      s.querySelectorAll('.bar').forEach(b=>{b.style.height=b.dataset.h;});
+    }));
+  }
+  function runTimelines(s){
+    s.querySelectorAll('.tl .fill').forEach(f=>{
+      f.style.height='0px';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.height=f.dataset.fill;}));
+    });
+  }
+  function runStock(s){
+    const box=s.querySelector('.stockbox');
+    if(box){box.classList.remove('go');requestAnimationFrame(()=>requestAnimationFrame(()=>box.classList.add('go')));}
+  }
+  function runCounters(s){
+    s.querySelectorAll('.counter').forEach(el=>{
+      if(el.dataset.plain==='1') return;
+      animateCount(el);
+    });
+  }
+  function animateCount(el){
+    const target=parseFloat(el.dataset.target);
+    const dec=parseInt(el.dataset.dec||'0',10);
+    const prefix=el.dataset.prefix||'',suffix=el.dataset.suffix||'';
+    const dur=1300,start=performance.now();
+    const fmt=v=>prefix+(dec>0?v.toFixed(dec):Math.round(v).toLocaleString('en-US'))+suffix;
+    function step(now){
+      const p=Math.min((now-start)/dur,1);
+      const e=p===1?1:1-Math.pow(2,-10*p);
+      el.textContent=fmt(target*e);
+      if(p<1) requestAnimationFrame(step); else el.textContent=fmt(target);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // controls
+  elPrev.addEventListener('click',()=>show(current-1));
+  elNext.addEventListener('click',()=>show(current+1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();show(current+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(current-1);}
+    if(e.key===' '){e.preventDefault();show(current+1);}
+    if(e.key==='Home'){show(0);}
+    if(e.key==='End'){show(total-1);}
+    if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+  });
+  // swipe
+  let tx=0,ty=0;
+  document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;ty=e.changedTouches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)){ dx<0?show(current+1):show(current-1); }
+  },{passive:true});
+
+  // init
+  elPrev.disabled=true;
+  show(0);
+})();
+</script>
+</body>
+</html>
