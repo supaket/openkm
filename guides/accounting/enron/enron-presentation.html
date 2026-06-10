@@ -307,8 +307,16 @@ p{font-size:clamp(.98rem,1.25vw,1.12rem);line-height:1.7;color:#d3dae6}
 .cover .subtitle{font-family:'Kanit';font-weight:500;font-size:clamp(1.05rem,2.4vw,1.7rem);margin-top:18px;color:var(--gold-bright)}
 .cover .meta{margin-top:30px;color:var(--muted);font-size:.95rem;line-height:1.9}
 .cover .rule{width:90px;height:2px;background:linear-gradient(90deg,var(--gold),var(--red));margin:26px auto}
-.members{margin-top:8px;font-family:'Sarabun'}
-.members b{color:var(--text)}
+.members{margin-top:14px;font-family:'Sarabun';display:flex;flex-direction:column;align-items:center;gap:9px}
+.members .lead{color:var(--muted);font-size:.9rem;letter-spacing:.04em}
+.members .name{
+  display:inline-block;font-weight:700;font-size:1rem;line-height:1.3;
+  padding:6px 16px;border-radius:999px;border:1px solid transparent;
+}
+.members .name .sid{font-family:'Oswald',sans-serif;font-weight:600;opacity:.8;margin-right:8px;font-size:.85em;letter-spacing:.05em}
+.members .name.c-gold{color:var(--gold-bright);background:rgba(216,179,100,.12);border-color:rgba(216,179,100,.4);text-shadow:0 0 18px rgba(216,179,100,.25)}
+.members .name.c-red{color:#ff7a76;background:rgba(224,67,63,.12);border-color:rgba(224,67,63,.4);text-shadow:0 0 18px rgba(224,67,63,.25)}
+.members .name.c-green{color:var(--green);background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.4);text-shadow:0 0 18px rgba(74,222,128,.25)}
 
 /* ============================================================
    14) CONCLUSION — TRUST แตก/จาง
@@ -396,7 +404,10 @@ ul.clean li.r::before{background:var(--red)}
       <div class="meta">
         งานนำเสนอกลุ่ม · วิชาการบัญชี / การสอบบัญชี · เวลานำเสนอ 10 นาที
         <div class="members">
-          จัดทำโดย: <b>2600231302014 นภัสสร ลิมปกานนท์</b> · <b>2600231302018 GONG JIAJIA</b> · <b>2600231302032 ศุภเกศ วงศ์คำภู</b>
+          <span class="lead">จัดทำโดย</span>
+          <span class="name c-gold"><span class="sid">2600231302014</span>นภัสสร ลิมปกานนท์</span>
+          <span class="name c-red"><span class="sid">2600231302018</span>GONG JIAJIA</span>
+          <span class="name c-green"><span class="sid">2600231302032</span>ศุภเกศ วงศ์คำภู</span>
         </div>
       </div>
     </div>
