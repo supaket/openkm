@@ -266,6 +266,71 @@ body[data-tool="zoom"] #zoomLayer{pointer-events:auto;cursor:zoom-in}
   padding:7px 16px;font-size:.85rem;color:var(--gold-bright);display:none;white-space:nowrap}
 body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{display:block}
 @media print{#inkbar,#inkCanvas,#zoomLayer,.ink-hintbar{display:none!important}}
+
+/* ============ FINANCIAL-STATEMENT DEMO TABLES ============ */
+.demo-wrap{margin-top:16px}
+.findemo{display:grid;gap:clamp(12px,1.8vw,20px);grid-template-columns:1fr;align-items:start}
+@media(min-width:860px){.findemo.two{grid-template-columns:1fr 54px 1fr}}
+.findemo .arrowcol{display:flex;align-items:center;justify-content:center;
+  font-family:'Oswald';font-size:2.2rem;color:var(--gold);animation:pulseX 1.6s ease-in-out infinite}
+.fintable{background:linear-gradient(180deg,var(--surface),var(--surface2));
+  border:1px solid var(--line-soft);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.fintable .cap{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid var(--line-soft);
+  font-family:'Kanit';font-weight:600;font-size:clamp(1.02rem,2vw,1.32rem)}
+.badge2{font-family:'Oswald';font-size:.82rem;padding:4px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge2.dte{color:var(--red-bright);border-color:rgba(224,67,63,.45);transition:color .8s,border-color .8s}
+.demo-wrap.go .badge2.dte{color:var(--green);border-color:rgba(74,222,128,.5)}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;
+  border-bottom:1px solid rgba(255,255,255,.05);font-size:clamp(.95rem,1.8vw,1.15rem)}
+.frow:last-child{border-bottom:none}
+.frow .lbl{color:#d7deec}
+.frow .val{font-family:'Oswald';font-weight:600;font-size:clamp(1.02rem,2vw,1.28rem);color:#fff}
+.frow.total{background:rgba(216,179,100,.08)}
+.frow.total .lbl{color:#fff;font-weight:600}
+.fintable.cmp .frow{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px}
+.fintable.cmp .frow .val{text-align:right}
+.fintable.cmp .frow.head{background:rgba(255,255,255,.05);font-family:'Oswald';font-size:.9rem}
+.fintable.cmp .frow.head .lbl,.fintable.cmp .frow.head .val{color:var(--muted)}
+/* moving debt row */
+.frow.mv{max-height:60px;overflow:hidden;
+  transition:max-height .7s ease,opacity .55s ease,transform .7s ease,padding .55s ease}
+.frow.mv .lbl,.frow.mv .val{color:var(--red-bright);font-weight:700}
+.demo-wrap.go .frow.mv.out{max-height:0;opacity:0;transform:translateX(46px);padding-top:0;padding-bottom:0}
+.frow.mv.in{max-height:0;opacity:0;transform:translateX(-34px);padding-top:0;padding-bottom:0}
+.demo-wrap.go .frow.mv.in{max-height:60px;opacity:1;transform:none;padding-top:11px;padding-bottom:11px;
+  transition:max-height .7s ease .55s,opacity .55s ease .55s,transform .7s ease .55s,padding .55s ease .55s}
+.empty-note{color:var(--muted);font-style:italic;transition:opacity .4s}
+.demo-wrap.go .empty-note{opacity:0;max-height:0;padding-top:0;padding-bottom:0}
+/* ratio bar */
+.barwrap2{padding:12px 16px 16px}
+.barwrap2 .cap2{display:flex;justify-content:space-between;font-size:.84rem;color:var(--muted);margin-bottom:7px}
+.ratiobar{height:15px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden}
+.ratiobar > span{display:block;height:100%;width:var(--w);border-radius:8px;
+  background:linear-gradient(90deg,var(--red-bright),var(--red-deep));transition:width 1s ease .3s,background 1s ease .3s}
+.demo-wrap.go .ratiobar > span{width:var(--w2);background:linear-gradient(90deg,var(--green),#1f9d57)}
+/* MTM year chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:2px 0 14px}
+.chip{font-family:'Oswald';font-size:.82rem;padding:6px 10px;border-radius:8px;border:1px solid var(--line-soft);
+  background:rgba(255,255,255,.03);color:var(--muted);
+  transition:transform .6s ease,opacity .55s ease,background .4s,color .4s,border-color .4s}
+.chip.y1{border-color:var(--gold);color:var(--gold-bright);background:rgba(216,179,100,.12)}
+.demo-wrap.go .chip.future{opacity:0;transform:translateY(-16px) scale(.55)}
+.demo-wrap.go .chip.y1{transform:scale(1.16);background:var(--gold);color:#1a1206;border-color:var(--gold)}
+/* play controls + caption */
+.movecap{text-align:center;margin-top:16px;font-size:clamp(.98rem,1.9vw,1.2rem);color:#d7deec;
+  opacity:0;transform:translateY(8px);transition:opacity .5s ease .7s,transform .5s ease .7s}
+.demo-wrap.go .movecap{opacity:1;transform:none}
+.demo-ctl{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.demo-btn{font-family:'Kanit';font-weight:600;font-size:1rem;border-radius:999px;cursor:pointer;
+  padding:11px 24px;border:1px solid var(--gold);background:rgba(216,179,100,.14);color:var(--gold-bright);
+  transition:.18s;min-height:44px}
+.demo-btn:hover{background:var(--gold);color:#1a1206;transform:translateY(-2px)}
+.demo-btn.ghost{border-color:var(--line-soft);background:transparent;color:var(--muted)}
+.demo-btn.ghost:hover{background:rgba(255,255,255,.05);color:var(--text);transform:none}
+@media (prefers-reduced-motion:reduce){
+  .frow.mv,.ratiobar>span,.chip,.movecap{transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -531,6 +596,33 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
  </div>
 </section>
 
+<!-- ===== DEMO · MTM income statement ===== -->
+<section class="slide" data-chap="3 · Mark-to-Market">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">3.3</span> ดูตัวเลข "ถูกดึง" มากับตา</div>
+  <h2 class="reveal title">ตารางงบกำไรขาดทุน: <span class="gold">ดึงกำไร 20 ปี</span> มาไว้ปีนี้</h2>
+  <div class="demo-wrap reveal">
+   <div class="chips">
+    <span class="chip y1">ปีนี้ · $10M</span>
+    <span class="chip future">ปี 2</span><span class="chip future">ปี 3</span><span class="chip future">ปี 4</span>
+    <span class="chip future">ปี 5</span><span class="chip future">ปี 6</span><span class="chip future">ปี 7</span>
+    <span class="chip future">ปี 8</span><span class="chip future">ปี 9</span><span class="chip future">ปี 10</span>
+    <span class="chip future">ปี 11</span><span class="chip future">ปี 12</span><span class="chip future">… ปี 20</span>
+   </div>
+   <div class="fintable cmp">
+    <div class="cap">งบกำไรขาดทุน · ปีแรกของสัญญา <span class="badge2">กำไรรวมทั้งสัญญา $200M</span></div>
+    <div class="frow head"><span class="lbl">รายการ</span><span class="val">วิธีปกติ (accrual)</span><span class="val">วิธี MTM</span></div>
+    <div class="frow"><span class="lbl">กำไรที่ "บันทึก" ปีนี้</span><span class="val">$10M</span><span class="val"><b class="gold" data-cnt data-from="10" data-to="200" data-prefix="$" data-suffix="M">$10M</b></span></div>
+    <div class="frow"><span class="lbl">เงินสด "รับจริง" ปีนี้</span><span class="val">$10M</span><span class="val"><b class="green">$10M</b></span></div>
+    <div class="frow total"><span class="lbl">ช่องว่าง "กำไรกระดาษ"</span><span class="val">$0M</span><span class="val"><b class="red" data-cnt data-from="0" data-to="190" data-prefix="$" data-suffix="M">$0M</b></span></div>
+   </div>
+   <div class="movecap">MTM ดึงกำไรของ <b>ทั้ง 20 ปี</b> มาบันทึกในปีเดียว → งบ "สวย" ขึ้นทันที แต่ <b class="red">เงินสดจริงเข้าแค่ $10M</b> · ส่วนต่าง $190M คือ "กำไรบนกระดาษ"</div>
+   <div class="demo-ctl"><button class="demo-btn" data-demo-play>▶ ดึงกำไรมาปีนี้</button><button class="demo-btn ghost" data-demo-reset>↺ รีเซ็ต</button></div>
+  </div>
+  <p class="reveal note">ตัวเลขเป็นภาพประกอบเชิงแนวคิด ($10M/ปี × 20 ปี) — ไม่ใช่ตัวเลขงบจริงของ Enron</p>
+ </div>
+</section>
+
 <section class="slide" data-chap="3 · Mark-to-Market">
  <div class="wrap">
   <div class="reveal eyebrow"><span class="ch">3.3</span> ทำไมอันตราย</div>
@@ -614,6 +706,38 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
    <div class="node"><div class="t">Raptors (×4)</div><div class="s">รับขาดทุน ~$1B</div></div>
   </div>
   <div class="reveal card gold" style="margin-top:22px"><span class="ico">🧾</span><h3>LJM1 / LJM2</h3><p>หุ้นส่วนที่ <b>บริหารโดย CFO (Fastow) เอง</b> — ตั้งชื่อตามภรรยาและลูก เป็นแหล่งทุนให้ Raptors ใช้ "ป้องกันความเสี่ยง" เพื่อหลีกเลี่ยงการบันทึกขาดทุน MTM</p></div>
+ </div>
+</section>
+
+<!-- ===== DEMO · balance-sheet debt move ===== -->
+<section class="slide" data-chap="4 · SPE">
+ <div class="wrap">
+  <div class="reveal eyebrow"><span class="ch">4.3</span> ดูตัวเลข "ถูกย้าย" กับตา</div>
+  <h2 class="reveal title">ตารางงบดุล: <span class="red">ย้ายหนี้</span> เข้า SPE ให้งบดูสวย</h2>
+  <div class="demo-wrap reveal">
+   <div class="findemo two">
+    <div class="fintable">
+     <div class="cap">งบดุล ENRON <span class="badge2 dte">D/E <b data-cnt data-from="1.18" data-to="0.91" data-dec="2">1.18</b></span></div>
+     <div class="frow"><span class="lbl">สินทรัพย์รวม</span><span class="val">$65,000M</span></div>
+     <div class="frow mv out"><span class="lbl">↳ หนี้ก้อนเสี่ยง (ซ่อนได้)</span><span class="val">$3,000M</span></div>
+     <div class="frow total"><span class="lbl">หนี้สินรวม</span><span class="val"><b data-cnt data-from="13000" data-to="10000" data-prefix="$" data-suffix="M">$13,000M</b></span></div>
+     <div class="frow"><span class="lbl">ส่วนของผู้ถือหุ้น</span><span class="val">$11,000M</span></div>
+     <div class="barwrap2"><div class="cap2"><span>อัตราส่วนหนี้สิน/ทุน (D/E)</span><span>ยิ่งต่ำ = ดูปลอดภัย</span></div>
+      <div class="ratiobar" style="--w:64%;--w2:46%"><span></span></div></div>
+    </div>
+    <div class="arrowcol">→</div>
+    <div class="fintable">
+     <div class="cap">SPE · Chewco / Raptors <span class="badge2">นอกงบดุล</span></div>
+     <div class="frow empty-note"><span class="lbl">— ยังว่าง (ก่อนย้าย) —</span></div>
+     <div class="frow mv in"><span class="lbl">↳ หนี้ที่รับโอนเข้ามา</span><span class="val">$3,000M</span></div>
+     <div class="frow total"><span class="lbl">หนี้ในเงา (นอกงบ)</span><span class="val"><b data-cnt data-from="0" data-to="3000" data-prefix="$" data-suffix="M">$0M</b></span></div>
+     <div class="frow"><span class="lbl">ค้ำด้วย</span><span class="val red">หุ้น Enron เอง</span></div>
+    </div>
+   </div>
+   <div class="movecap">หนี้ $3,000M <b class="red">ไม่ได้หายไป</b> — แค่ย้ายไปไว้ที่ SPE · งบ Enron ดู "สุขภาพดีขึ้น" (D/E <b>1.18 → 0.91</b>) แต่ความเสี่ยงยังอยู่ครบ และยังค้ำด้วยหุ้นตัวเอง</div>
+   <div class="demo-ctl"><button class="demo-btn" data-demo-play>▶ ย้ายหนี้เข้า SPE</button><button class="demo-btn ghost" data-demo-reset>↺ รีเซ็ต</button></div>
+  </div>
+  <p class="reveal note">ตัวเลขเป็นภาพประกอบเชิงแนวคิดเพื่อสาธิตกลไก — ไม่ใช่ตัวเลขงบจริงของ Enron</p>
  </div>
 </section>
 
@@ -1301,6 +1425,43 @@ body[data-ink="on"] .ink-hintbar.draw,body[data-tool="zoom"] .ink-hintbar.zoom{d
   const obs=new MutationObserver(()=>{
     const a=document.querySelector('.slide.active');
     if(a && a!==lastActive){ lastActive=a; clearInk(); resetZoom(); }
+  });
+  document.querySelectorAll('.slide').forEach(s=>obs.observe(s,{attributes:true,attributeFilter:['class']}));
+})();
+
+// ===== Financial-statement demo tables (play / reset / auto-play) =====
+(function(){
+  const wraps=[...document.querySelectorAll('.demo-wrap')];
+  if(!wraps.length) return;
+  const fmt=(el,v)=>{
+    const dec=parseInt(el.dataset.dec||'0',10);
+    return (el.dataset.prefix||'')+(dec>0?v.toFixed(dec):Math.round(v).toLocaleString('en-US'))+(el.dataset.suffix||'');
+  };
+  const setFrom=el=>{ el.textContent=fmt(el,parseFloat(el.dataset.from)); };
+  function animateCount(el){
+    const from=parseFloat(el.dataset.from), to=parseFloat(el.dataset.to), dur=1200, t0=performance.now();
+    (function step(now){
+      const p=Math.min((now-t0)/dur,1), e=p===1?1:1-Math.pow(2,-10*p);
+      el.textContent=fmt(el, from+(to-from)*e);
+      if(p<1) requestAnimationFrame(step); else el.textContent=fmt(el,to);
+    })(performance.now());
+  }
+  function play(w){ if(w.classList.contains('go')) return; w.classList.add('go'); w.querySelectorAll('[data-cnt]').forEach(animateCount); }
+  function reset(w){ w.classList.remove('go'); w.querySelectorAll('[data-cnt]').forEach(setFrom); }
+  wraps.forEach(w=>{
+    w.querySelectorAll('[data-cnt]').forEach(setFrom);
+    const pb=w.querySelector('[data-demo-play]'), rb=w.querySelector('[data-demo-reset]');
+    pb&&pb.addEventListener('click',()=>play(w));
+    rb&&rb.addEventListener('click',()=>reset(w));
+  });
+  // auto play on slide entry, reset on leave
+  let lastActive=document.querySelector('.slide.active');
+  const obs=new MutationObserver(()=>{
+    const a=document.querySelector('.slide.active');
+    if(a===lastActive) return; lastActive=a;
+    wraps.forEach(reset);
+    const w=a&&a.querySelector('.demo-wrap');
+    if(w) setTimeout(()=>{ if(document.querySelector('.slide.active')===a) play(w); }, 750);
   });
   document.querySelectorAll('.slide').forEach(s=>obs.observe(s,{attributes:true,attributeFilter:['class']}));
 })();
