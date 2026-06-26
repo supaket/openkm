@@ -50,7 +50,6 @@ const C = {
   blue:'#5B7A9E', blueBg:'#ECF0F5',
   cyan:'#5B8A8A', cyanBg:'#ECF2F2',
 };
-
 const box = (bg,bd) => ({ background:bg, border:`1px solid ${bd}`, borderRadius:10, padding:'12px 16px', marginBottom:12 });
 
 // ============ SUMMARY DATA ============
@@ -62,10 +61,7 @@ const summaryData = [
       <div>
         <Paragraph>ต้นทุนการผลิตมี 3 องค์ประกอบ ที่ต้องจำให้ขึ้นใจก่อนเข้าเรื่องอื่น:</Paragraph>
         <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'องค์ประกอบ',dataIndex:'a'},
-            {title:'ความหมาย',dataIndex:'b'},
-          ]}
+          columns={[{title:'องค์ประกอบ',dataIndex:'a'},{title:'ความหมาย',dataIndex:'b'}]}
           dataSource={[
             {key:1,a:'วัตถุดิบทางตรง (Direct Materials, DM)',b:'วัตถุดิบที่เป็นเนื้อสินค้าโดยตรง'},
             {key:2,a:'ค่าแรงทางตรง (Direct Labor, DL)',b:'ค่าจ้างคนที่ลงมือผลิตสินค้าโดยตรง'},
@@ -90,11 +86,7 @@ const summaryData = [
     tags:[['ออกสอบ','volcano'],['ตาราง','blue']],
     content: () => (
       <Table size="small" pagination={false} bordered
-        columns={[
-          {title:'ประเด็น',dataIndex:'a',width:130},
-          {title:'ต้นทุนงานสั่งทำ (Job)',dataIndex:'b'},
-          {title:'ต้นทุนช่วง (Process)',dataIndex:'c'},
-        ]}
+        columns={[{title:'ประเด็น',dataIndex:'a',width:130},{title:'ต้นทุนงานสั่งทำ (Job)',dataIndex:'b'},{title:'ต้นทุนช่วง (Process)',dataIndex:'c'}]}
         dataSource={[
           {key:1,a:'ลักษณะการผลิต',b:'ตามคำสั่งซื้อลูกค้าเฉพาะราย',c:'ตามขั้นตอนที่กำหนดไว้ ต่อเนื่อง'},
           {key:2,a:'สินค้า',b:'แต่ละงวดต่างกันตามลูกค้า',c:'เหมือนกันทุกประการ'},
@@ -152,11 +144,7 @@ const summaryData = [
     content: () => (
       <div>
         <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'',dataIndex:'a',width:130},
-            {title:'Actual Costing',dataIndex:'b'},
-            {title:'Normal Costing',dataIndex:'c'},
-          ]}
+          columns={[{title:'',dataIndex:'a',width:130},{title:'Actual Costing',dataIndex:'b'},{title:'Normal Costing',dataIndex:'c'}]}
           dataSource={[
             {key:1,a:'ต้นทุนทางตรง (DM,DL)',b:'อัตราจริง × ปริมาณจริง',c:'อัตราจริง × ปริมาณจริง (เหมือนกัน)'},
             {key:2,a:'ต้นทุนทางอ้อม (OH)',b:'อัตราจริง × ปริมาณจริง',c:'อัตราประมาณการ (budgeted) × ปริมาณจริง'},
@@ -205,7 +193,6 @@ const summaryData = [
         <div dangerouslySetInnerHTML={{__html:`
 <svg viewBox="0 0 820 560" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
   <text x="36" y="34" font-size="18" font-weight="700" fill="#3D3229">① จังหวะใส่ต้นทุนตลอดเส้นทางการผลิต</text>
-
   <line x1="90" y1="190" x2="640" y2="190" stroke="#C4B49A" stroke-width="2"/>
   <polygon points="648,190 636,184 636,196" fill="#C4B49A"/>
   <text x="60" y="212" font-size="13" fill="#5C4F42">เริ่มผลิต</text>
@@ -213,37 +200,29 @@ const summaryData = [
   <text x="600" y="212" font-size="13" fill="#5C4F42">ผลิตเสร็จ</text>
   <text x="612" y="228" font-size="13" fill="#5C4F42">100%</text>
   <text x="300" y="228" font-size="12" fill="#7A6E62">→ ความคืบหน้าการผลิต (conversion) →</text>
-
   <line x1="90" y1="190" x2="90" y2="74" stroke="#5D8A66" stroke-width="3"/>
   <line x1="90" y1="74" x2="640" y2="74" stroke="#5D8A66" stroke-width="3"/>
   <circle cx="90" cy="74" r="5" fill="#5D8A66"/>
   <text x="104" y="66" font-size="13" font-weight="700" fill="#5D8A66">วัตถุดิบ (DM): ใส่ครบ 100% ตั้งแต่ต้นทันที</text>
-
   <line x1="90" y1="190" x2="640" y2="74" stroke="#7B6B8A" stroke-width="3" stroke-dasharray="6 4"/>
   <circle cx="640" cy="74" r="5" fill="#7B6B8A"/>
   <text x="330" y="140" font-size="13" font-weight="700" fill="#7B6B8A">Conversion (DL+OH): ค่อยๆ เพิ่มเรื่อยๆ จนครบ</text>
-
   <line x1="420" y1="74" x2="420" y2="200" stroke="#B85C5C" stroke-width="1.5" stroke-dasharray="3 3"/>
   <text x="392" y="250" font-size="12" fill="#B85C5C">ณ จุดนี้ DM=100% แต่ Conv=60%</text>
-
   <line x1="36" y1="288" x2="784" y2="288" stroke="#DDD3C1" stroke-width="1"/>
   <text x="36" y="320" font-size="18" font-weight="700" fill="#3D3229">② งานเสร็จ vs งานค้าง → แปลงเป็นหน่วยเทียบสำเร็จ (EU)</text>
-
   <rect x="80" y="350" width="110" height="150" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5" rx="6"/>
   <rect x="80" y="350" width="110" height="150" fill="#5B7A9E" opacity="0.85" rx="6"/>
   <text x="135" y="432" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">100%</text>
   <text x="135" y="522" font-size="13" font-weight="700" fill="#3D3229" text-anchor="middle">งานเสร็จ (done)</text>
   <text x="135" y="540" font-size="12" fill="#5C4F42" text-anchor="middle">นับเต็ม = 1 หน่วย</text>
-
   <rect x="250" y="350" width="110" height="150" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5" rx="6"/>
   <rect x="250" y="410" width="110" height="90" fill="#B85C5C" opacity="0.85"/>
   <text x="305" y="392" font-size="12" fill="#B85C5C" text-anchor="middle">ยังไม่ทำ 40%</text>
   <text x="305" y="462" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">60%</text>
   <text x="305" y="522" font-size="13" font-weight="700" fill="#3D3229" text-anchor="middle">งานค้าง (WIP)</text>
   <text x="305" y="540" font-size="12" fill="#5C4F42" text-anchor="middle">เสร็จแค่ 60%</text>
-
   <polygon points="385,425 425,425 425,418 445,432 425,446 425,439 385,439" fill="#A8906C"/>
-
   <rect x="460" y="360" width="324" height="140" fill="#F3ECDC" stroke="#8B7355" stroke-width="1.5" rx="8"/>
   <text x="478" y="388" font-size="14" font-weight="700" fill="#8B7355">หน่วยเทียบสำเร็จ (Equivalent Units)</text>
   <text x="478" y="416" font-size="13" fill="#3D3229">ตัวอย่าง Case 2: งานค้าง 225 หน่วย</text>
@@ -277,65 +256,15 @@ const summaryData = [
     )
   },
   {
-    key:'case1', title:'📘 Case 1 — ไม่มี WIP ต้นงวด & ปลายงวด (ง่ายสุด)',
-    tags:[['ตัวอย่าง','cyan']],
+    key:'case-link', title:'🧭 เคส Process Costing 3 แบบ (ดูแท็บแยก)',
+    tags:[['นำทาง','cyan']],
     content: () => (
       <div>
-        <Paragraph>ทุกหน่วยที่เริ่มผลิตเสร็จหมด → ต้นทุนทั้งหมดตกที่หน่วยสำเร็จ</Paragraph>
-        <Alert type="info" showIcon message="ข้อมูล ม.ค. 2023 — เริ่ม 400 หน่วย เสร็จ 400 หน่วย"
-          description={<span>DM ที่ใส่ = $32,000 | Conversion = $24,000 | รวม = $56,000{'\n'}
-          ต้นทุน DM/หน่วย = 32,000 ÷ 400 = <strong>$80</strong>{'\n'}
-          ต้นทุน Conversion/หน่วย = 24,000 ÷ 400 = <strong>$60</strong>{'\n'}
-          ต้นทุนต่อหน่วยรวม = <strong>$140</strong>{'\n'}
-          <em>conversion cost = DL + OH</em></span>}/>
-      </div>
-    )
-  },
-  {
-    key:'case2', title:'📗 Case 2 — ไม่มี WIP ต้นงวด แต่มี WIP ปลายงวด',
-    tags:[['ตัวอย่าง','cyan'],['EU','gold']],
-    content: () => (
-      <div>
-        <Paragraph>ก.พ. 2023: เริ่ม 400 หน่วย, เสร็จโอนออก 175, ค้างปลายงวด 225 หน่วย (DM 100%, Conversion 60%)</Paragraph>
-        <Table size="small" pagination={false} bordered
-          columns={[{title:'',dataIndex:'a'},{title:'หน่วยจริง',dataIndex:'b'},{title:'EU-DM',dataIndex:'c'},{title:'EU-Conv',dataIndex:'d'}]}
-          dataSource={[
-            {key:1,a:'เสร็จโอนออก',b:'175',c:'175',d:'175'},
-            {key:2,a:'ค้างปลายงวด (225×100%;225×60%)',b:'225',c:'225',d:'135'},
-            {key:3,a:'รวม EU',b:'400',c:'400',d:'310'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="success" showIcon message="คำนวณต้นทุน"
-          description={<span>ต้นทุน: DM=$32,000, Conversion=$18,600 (รวม $50,600){'\n'}
-          DM/หน่วย = 32,000 ÷ 400 = <strong>$80</strong> | Conv/หน่วย = 18,600 ÷ 310 = <strong>$60</strong>{'\n'}
-          เสร็จโอนออก (175) = 175×80 + 175×60 = <strong>$24,500</strong>{'\n'}
-          ค้างปลายงวด = 225×80 + 135×60 = 18,000 + 8,100 = <strong>$26,100</strong>{'\n'}
-          รวม = $50,600 ✓</span>}/>
-      </div>
-    )
-  },
-  {
-    key:'case3', title:'📕 Case 3 — มี WIP ทั้งต้นงวด & ปลายงวด (Weighted-Avg vs FIFO)',
-    tags:[['ยากสุด','volcano'],['ออกสอบ','red']],
-    content: () => (
-      <div>
-        <Paragraph>มี.ค. 2023: WIP ต้นงวด 225 หน่วย (DM100%, Conv60%), เริ่มใหม่ 275, เสร็จโอนออก 400, ค้างปลายงวด 100 (DM100%, Conv50%)</Paragraph>
-        <div style={box(C.purpleBg,C.purple)}>
-          <strong>วิธี Weighted-Average (ถัวเฉลี่ยถ่วงน้ำหนัก)</strong>{'\n'}
-          รวมต้นทุนต้นงวด + ต้นทุนงวดนี้เข้าด้วยกัน (blend) แล้วหาร EU "ที่ทำเสร็จจนถึงปัจจุบัน"{'\n'}
-          EU: DM = 500, Conv = 450{'\n'}
-          ต้นทุน DM = 37,800 ÷ 500 = <strong>$75.60</strong> | Conv = 24,480 ÷ 450 = <strong>$54.40</strong>{'\n'}
-          เสร็จโอนออก (400) = 400×75.60 + 400×54.40 = <strong>$52,000</strong>{'\n'}
-          ค้างปลายงวด (100) = 100×75.60 + 50×54.40 = <strong>$10,280</strong> | รวม $62,280
-        </div>
-        <div style={box(C.blueBg,C.blue)}>
-          <strong>วิธี FIFO (เข้าก่อนออกก่อน)</strong>{'\n'}
-          แยกงานต้นงวดออกจากงานงวดนี้ (ไม่ blend) — นับเฉพาะงานที่ทำ "ในงวดนี้"{'\n'}
-          EU งวดนี้: DM = 275, Conv = 315{'\n'}
-          ต้นทุน DM = 19,800 ÷ 275 = <strong>$72</strong> | Conv = 16,380 ÷ 315 = <strong>$52</strong>{'\n'}
-          ต้นทุนรวมที่ต้องคิด = $62,280 เท่ากัน แต่ปันต่างกัน{'\n'}
-          เสร็จโอนออก = $52,480 | ค้างปลายงวด = $9,800
-        </div>
-        <Alert style={{marginTop:8}} type="warning" showIcon message="จำจุดต่าง" description="Weighted-Avg = blend ต้นทุนต้นงวดเข้ามาด้วย / FIFO = แยกงานต้นงวด ทำให้ EU และต้นทุน/หน่วยต่างกัน แต่ต้นทุนรวมที่ต้องคิด ($62,280) เท่ากันเสมอ"/>
+        <div style={box(C.greenBg,C.green)}><strong>Case 1</strong> — ไม่มี WIP ต้นงวดและปลายงวด (ง่ายสุด) → ดูแท็บ "🟢 Case 1"</div>
+        <div style={box(C.blueBg,C.blue)}><strong>Case 2</strong> — ไม่มี WIP ต้นงวด แต่มี WIP ปลายงวด → ดูแท็บ "🟡 Case 2"</div>
+        <div style={box(C.purpleBg,C.purple)}><strong>Case 3</strong> — มี WIP ทั้งต้นงวดและปลายงวด ทำได้ 2 วิธี (Weighted-Average / FIFO) → ดูแท็บ "📜 Case 3 (WA)" และ "🔵 Case 3 (FIFO)"</div>
+        <Alert type="warning" showIcon message="จำจุดต่าง WA กับ FIFO"
+          description="Weighted-Average = เกลี่ย (blend) ต้นทุนต้นงวดเข้ากับงวดนี้ / FIFO = แยกงานต้นงวดออก นับเฉพาะงานที่ทำในงวดนี้ — ต้นทุนรวมที่ต้องคิดเท่ากันเสมอ ต่างที่การแบ่ง"/>
       </div>
     )
   },
@@ -439,8 +368,488 @@ const formulaData = [
   ]},
 ];
 
+// ============ HOMEWORK SOLUTION DATA (HW2) ============
+const hwData = [
+  { part:'ทฤษฎี — แนวคิดระบบต้นทุน (ข้อ 1–5)' },
+  { n:'1', a:'D',
+    ex:'Cost allocation = วิธีการอย่างเป็นระบบในการเชื่อมต้นทุนทางอ้อมเข้าสู่ cost objects (ข้อ A คือ cost pool, B คือนิยาม indirect cost, C คือ cost object)',
+    ref:'หลักการ: Cost Allocation = ปันส่วนต้นทุนทางอ้อม (แท็บสรุป หัวข้อ "ศัพท์พื้นฐานของระบบต้นทุน")' },
+  { n:'2', a:'C',
+    ex:'Process costing ใช้กับสินค้าที่เหมือนกันทุกชิ้น ผลิตต่อเนื่องจำนวนมาก',
+    ref:'แท็บสรุป: ตารางเทียบ Job vs Process Costing' },
+  { n:'3', a:'B',
+    ex:'Job costing ใช้กับสินค้าเฉพาะ/สั่งทำ ที่แตกต่างกันในแต่ละงาน',
+    ref:'แท็บสรุป: ตารางเทียบ Job vs Process Costing' },
+  { n:'4', a:'A',
+    ex:'โรงกลั่นน้ำมัน (oil refining) ผลิตต่อเนื่องสินค้าเหมือนกัน จึงใช้ Process costing (ส่วนต่อเรือ/ครัวสั่งทำ/เอเจนซีโฆษณา ใช้ Job costing)',
+    ref:'สไลด์: Costing Systems Illustrated (ตัวอย่างแต่ละอุตสาหกรรม)' },
+  { n:'5', a:'C',
+    ex:'Actual costing สืบหาต้นทุนทางตรงด้วย อัตราจริง × ปริมาณจริง (actual rates × actual quantities)',
+    ref:'แท็บสรุป: Actual vs Normal Costing' },
+
+  { part:'Job Costing — การคำนวณ (ข้อ 6–9)' },
+  { n:'6', a:'D ($180.00)',
+    ex:'อัตรา OH = OH งบประมาณ ÷ เกณฑ์ = 5,400,000 ÷ 30,000 ชม.แรงงาน = 180',
+    ref:'สูตร: อัตรา OH = ประมาณการ OH ÷ เกณฑ์ (แท็บสูตร & แทนค่า)' },
+  { n:'7', a:'C ($11,500)',
+    ex:'ชม.แรงงาน = 2,600 ÷ 16 = 162.5 ชม.\nOH = 162.5 × 20 = 3,250\nต้นทุน/หน่วย = 3,400 + 2,600 + 3,250 = 9,250\nกำไร/หน่วย = 9,500 − 9,250 = 250 → × 46 = 11,500',
+    ref:'หลักการ: 7 ขั้นตอน Job Costing (DM+DL+OH) + OH = อัตรา × เกณฑ์' },
+  { n:'8', a:'B (25.93%)',
+    ex:'ใช้อัตราจริง: OH rate = 225,000 ÷ 25,000 = 9 /machine-hour\nOH/หน่วย = 9 × 2 = 18 ; ต้นทุน/หน่วย = 2 + 18 = 20\nProfit margin = (27 − 20) ÷ 27 = 25.93%',
+    ref:'จุดระวัง: โจทย์ถาม actual costing → ใช้ OH จริงและชม.จริง ไม่ใช่ตัวเลขประมาณการ' },
+  { n:'9', a:'B ($116,000)',
+    ex:'นับเฉพาะ Overhead การผลิต = Indirect labor 22,000 + Plant rent 53,000 + Depreciation 41,000 = 116,000\n(DM, DL เป็นต้นทุนทางตรง ; Sales commission + Admin ไม่ใช่ต้นทุนการผลิต)',
+    ref:'หลักการ: องค์ประกอบ Overhead = ต้นทุนผลิตทางอ้อมเท่านั้น' },
+
+  { part:'Process Costing (ข้อ 10–12)' },
+  { n:'10', a:'D ($4,217)',
+    ex:'DM ใส่ตอนต้น → EU(DM)=200×100%=200 ; Conversion 30% → EU(Conv)=200×30%=60\nต้นทุน/หน่วยเทียบ = (150,000÷200) + (208,000÷60) = 750 + 3,466.67 = 4,216.67 ≈ 4,217',
+    ref:'หลักการ: EU = หน่วย × %สำเร็จ และต้องบวกต้นทุน/หน่วยของ DM กับ Conversion (แท็บสรุป Case 2)' },
+  { n:'11', a:'C (760 units)',
+    ex:'เสร็จโอนออก = ต้นงวด + เริ่มใหม่ − ค้างปลายงวด = 200 + 800 − 240 = 760',
+    ref:'สมการการไหลของหน่วย: To account for = Accounted for' },
+  { n:'12', a:'EU: DM = 532, Conversion = 496',
+    ex:'วิธี Weighted-average: EU = หน่วยเสร็จ + (ค้างปลายงวด × %)\nDM = 460 + (120×60%) = 460 + 72 = 532\nConversion = 460 + (120×30%) = 460 + 36 = 496\n(ตรวจหน่วย: ต้นงวด 80 + เริ่ม 500 = 580 = เสร็จ 460 + ค้าง 120)',
+    ref:'หลักการ: Weighted-average EU (แท็บ Case 3 WA) — นับงานเสร็จเต็ม + ค้างตาม %' },
+];
+
 // ============ COMPONENTS ============
 function Stars({n}){ return <span style={{color:C.gold}}>{'⭐'.repeat(n)}</span>; }
+
+function SummaryTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      {summaryData.map(it=>(
+        <Card key={it.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+          title={<span style={{color:C.text,fontWeight:700}}>{it.title}</span>}
+          extra={<Space>{it.tags.map((t,i)=><Tag key={i} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+          {it.content()}
+        </Card>
+      ))}
+    </Space>
+  );
+}
+
+function CaseOneTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🟢 Case 1 — ง่ายที่สุด: ไม่มีงานค้างเลย (ทั้งต้นงวดและปลายงวด)</span>}>
+        <Paragraph>
+          เริ่มจากเคสที่ง่ายที่สุดก่อน เพื่อเข้าใจหลักการพื้นฐานของ Process Costing —
+          เดือน ม.ค. 2023 แผนกประกอบเริ่มงานจากศูนย์ ผลิตจนเสร็จหมดภายในเดือน <strong>ไม่มีของค้างเหลือ</strong>
+          เมื่อไม่มีงานค้าง ก็<strong>ไม่ต้องคิดหน่วยเทียบสำเร็จ (EU) ให้ยุ่งยาก</strong> — หารตรงๆ ได้เลย
+        </Paragraph>
+        <Alert type="info" showIcon message="โจทย์เดือนมกราคม 2023"
+          description={<span>
+            • WIP ต้นงวด (1 ม.ค.) = <strong>0 หน่วย</strong>{'\n'}
+            • เริ่มผลิตระหว่างเดือน = <strong>400 หน่วย</strong>{'\n'}
+            • เสร็จโอนออก = <strong>400 หน่วย</strong>{'\n'}
+            • WIP ปลายงวด (31 ม.ค.) = <strong>0 หน่วย</strong>{'\n'}
+            • ต้นทุน: DM $32,000 + Conversion $24,000 = รวม $56,000{'\n'}
+            <em>(conversion cost = DL + OH)</em>
+          </span>}/>
+      </Card>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🔄 การไหลของหน่วย</span>}>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 180" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <rect x="40" y="60" width="180" height="64" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="130" y="86" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">เริ่มผลิต (ต้นงวด 0)</text>
+  <text x="130" y="108" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
+  <path d="M220 92 L 320 92" fill="none" stroke="#A8906C" stroke-width="2"/>
+  <polygon points="320,92 308,86 308,98" fill="#A8906C"/>
+  <rect x="325" y="60" width="180" height="64" rx="8" fill="#F3ECDC" stroke="#8B7355" stroke-width="2"/>
+  <text x="415" y="86" font-size="13" font-weight="700" fill="#8B7355" text-anchor="middle">ผลิตในเดือน</text>
+  <text x="415" y="108" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">เสร็จทั้งหมด</text>
+  <path d="M505 92 L 600 92" fill="none" stroke="#5B7A9E" stroke-width="2"/>
+  <polygon points="600,92 588,86 588,98" fill="#5B7A9E"/>
+  <rect x="605" y="60" width="180" height="64" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
+  <text x="695" y="86" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จโอนออก (ค้าง 0)</text>
+  <text x="695" y="108" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
+  <text x="415" y="155" font-size="13" fill="#5C4F42" text-anchor="middle">เริ่ม 400 = เสร็จ 400 (ไม่มีของค้าง → ทุกบาทตกที่ของเสร็จ)</text>
+</svg>
+        `}}/>
+      </Card>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🧮 คำนวณต้นทุนต่อหน่วย (หารตรงๆ)</span>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'รายการ',dataIndex:'a'},{title:'ต้นทุน',dataIndex:'b',align:'right'},{title:'÷ หน่วย',dataIndex:'c',align:'center'},{title:'ต่อหน่วย',dataIndex:'d',align:'right'}]}
+          dataSource={[
+            {key:1,a:'วัตถุดิบทางตรง (DM)',b:'$32,000',c:'÷ 400',d:'$80'},
+            {key:2,a:'Conversion cost (DL+OH)',b:'$24,000',c:'÷ 400',d:'$60'},
+            {key:3,a:'รวมต้นทุนต่อหน่วย',b:'$56,000',c:'÷ 400',d:'$140'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="success" showIcon message="กุญแจของ Case 1"
+          description="เพราะไม่มีของค้าง EU จึงเท่ากับหน่วยจริง (400) ทั้ง DM และ Conversion → หารต้นทุนด้วย 400 ตรงๆ ได้เลย ต้นทุนต่อหน่วย = $140 และของเสร็จ 400 หน่วย = 400 × 140 = $56,000 พอดี"/>
+      </Card>
+    </Space>
+  );
+}
+
+function CaseTwoTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🟡 Case 2 — เริ่มมี "ของค้างปลายงวด" (แต่ยังไม่มีของค้างต้นงวด)</span>}>
+        <Paragraph>
+          เพิ่มความยากขึ้นอีกขั้น — เดือน ก.พ. 2023 เริ่มงานจากศูนย์เหมือนเดิม แต่คราวนี้<strong>ทำไม่เสร็จหมด</strong>
+          มีของค้างเหลือปลายงวด จุดนี้เองที่ต้องเริ่มใช้ <strong>หน่วยเทียบสำเร็จ (EU)</strong> เพราะของค้างยังทำไม่ครบ
+          จะนับเป็น 1 หน่วยเต็มไม่ได้
+        </Paragraph>
+        <Alert type="info" showIcon message="โจทย์เดือนกุมภาพันธ์ 2023"
+          description={<span>
+            • WIP ต้นงวด = <strong>0 หน่วย</strong>{'\n'}
+            • เริ่มผลิตระหว่างเดือน = <strong>400 หน่วย</strong>{'\n'}
+            • เสร็จโอนออก = <strong>175 หน่วย</strong>{'\n'}
+            • WIP ปลายงวด = <strong>225 หน่วย</strong> (DM เสร็จ 100%, Conversion เสร็จ 60%){'\n'}
+            • ต้นทุน: DM $32,000 + Conversion $18,600 = รวม $50,600{'\n'}
+            <em>หมายเหตุ: DM ใส่ครบตอนต้น → ของค้างจึงมี DM 100% ส่วน Conversion ทำไปแค่ 60%</em>
+          </span>}/>
+      </Card>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🔄 การไหลของหน่วย</span>}>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 220" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <rect x="40" y="80" width="180" height="64" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="130" y="106" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">เริ่มผลิต (ต้นงวด 0)</text>
+  <text x="130" y="128" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
+  <path d="M220 112 C 270 112, 270 70, 320 70" fill="none" stroke="#5B7A9E" stroke-width="2"/>
+  <polygon points="320,70 308,64 308,76" fill="#5B7A9E"/>
+  <path d="M220 112 C 270 112, 270 160, 320 160" fill="none" stroke="#B85C5C" stroke-width="2"/>
+  <polygon points="320,160 308,154 308,166" fill="#B85C5C"/>
+  <rect x="325" y="40" width="190" height="60" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
+  <text x="420" y="64" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จโอนออก</text>
+  <text x="420" y="86" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">175 หน่วย</text>
+  <rect x="325" y="130" width="190" height="64" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
+  <text x="420" y="154" font-size="13" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด 225 หน่วย</text>
+  <text x="420" y="176" font-size="12" fill="#3D3229" text-anchor="middle">DM 100% · Conversion 60%</text>
+  <text x="600" y="100" font-size="13" fill="#5C4F42">เริ่ม 400</text>
+  <text x="600" y="122" font-size="13" fill="#5C4F42">= เสร็จ 175</text>
+  <text x="600" y="144" font-size="13" fill="#5C4F42">+ ค้าง 225</text>
+</svg>
+        `}}/>
+      </Card>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>① + ② แปลงของค้างเป็นหน่วยเทียบสำเร็จ (EU)</span>}
+        extra={<Tag color="gold">Step 1–2</Tag>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'การไหลของหน่วย',dataIndex:'a'},{title:'หน่วยจริง',dataIndex:'b',align:'center'},{title:'EU — DM',dataIndex:'c',align:'center'},{title:'EU — Conv',dataIndex:'d',align:'center'}]}
+          dataSource={[
+            {key:1,a:'WIP ต้นงวด',b:'0',c:'',d:''},
+            {key:2,a:'เริ่มใหม่ระหว่างงวด',b:'400',c:'',d:''},
+            {key:3,a:'รวมต้องรับผิดชอบ',b:'400',c:'',d:''},
+            {key:4,a:'เสร็จโอนออก',b:'175',c:'175',d:'175'},
+            {key:5,a:'WIP ปลายงวด (225×100%; 225×60%)',b:'225',c:'225',d:'135'},
+            {key:6,a:'รวม EU',b:'400',c:'400',d:'310'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="warning" showIcon message="ทำไม DM=400 แต่ Conversion=310?"
+          description="ของค้าง 225 หน่วย: DM ใส่ครบแล้ว 225×100%=225 → รวม DM = 175+225 = 400 / แต่ Conversion ทำไป 60% เท่านั้น 225×60%=135 → รวม Conv = 175+135 = 310"/>
+      </Card>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>③ + ④ + ⑤ ต้นทุนต่อหน่วย และปันส่วน</span>}
+        extra={<Tag color="gold">Step 3–5</Tag>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'รายการ',dataIndex:'a'},{title:'รวม',dataIndex:'b',align:'right'},{title:'DM',dataIndex:'c',align:'right'},{title:'Conversion',dataIndex:'d',align:'right'}]}
+          dataSource={[
+            {key:1,a:'Step3: ต้นทุนใส่เดือนนี้',b:'$50,600',c:'$32,000',d:'$18,600'},
+            {key:2,a:'Step4: ÷ EU (400 ; 310)',b:'',c:'÷ 400',d:'÷ 310'},
+            {key:3,a:'Step4: ต้นทุนต่อหน่วย',b:'',c:'$80',d:'$60'},
+            {key:4,a:'Step5: เสร็จโอนออก 175 (175×80; 175×60)',b:'$24,500',c:'$14,000',d:'$10,500'},
+            {key:5,a:'Step5: WIP ปลายงวด (225×80; 135×60)',b:'$26,100',c:'$18,000',d:'$8,100'},
+            {key:6,a:'รวมต้นทุนที่ปันแล้ว',b:'$50,600',c:'$32,000',d:'$18,600'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="success" showIcon message="เช็คความถูกต้อง + เชื่อมกับเคสถัดไป"
+          description="เสร็จ $24,500 + ค้าง $26,100 = $50,600 → ลงตัว | สังเกตว่า WIP ปลายงวดของ ก.พ. ($26,100, 225 หน่วย) จะกลายเป็น WIP ต้นงวดของ มี.ค. พอดี → นี่คือจุดเริ่มของ Case 3!"/>
+      </Card>
+    </Space>
+  );
+}
+
+function CaseTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🏢 ฉาก: บริษัท Pacific Electronics — แผนกประกอบ (Assembly) รุ่น SG-40</span>}>
+        <Paragraph>
+          ลองนึกภาพโรงงานประกอบสินค้า SG-40 ที่ผลิต<strong>ต่อเนื่องทุกเดือน</strong> ไม่ได้เริ่มจากศูนย์ทุกครั้ง —
+          พอสิ้นเดือน ก.พ. มีของที่ทำค้างไว้ พอขึ้นเดือน มี.ค. ก็เอามาทำต่อ พร้อมเริ่มของใหม่ และพอสิ้นเดือน มี.ค. ก็มีของค้างอีก
+          นี่คือสถานการณ์ <strong>Case 3: มี WIP ทั้งต้นงวดและปลายงวด</strong> ซึ่งใกล้เคียงโรงงานจริงมากที่สุด
+        </Paragraph>
+        <Alert type="info" showIcon message="โจทย์เดือนมีนาคม 2023"
+          description={<span>
+            • ต้นเดือน (1 มี.ค.) มีงานค้าง <strong>225 หน่วย</strong> (DM เสร็จ 100%, Conversion เสร็จ 60%) มูลค่าติดมา $26,100{'\n'}
+            • เริ่มผลิตใหม่ระหว่างเดือน <strong>275 หน่วย</strong>{'\n'}
+            • เสร็จโอนออกไปแผนกถัดไป <strong>400 หน่วย</strong>{'\n'}
+            • สิ้นเดือน (31 มี.ค.) เหลือค้าง <strong>100 หน่วย</strong> (DM 100%, Conversion 50%){'\n'}
+            • ต้นทุนที่ใส่เพิ่มเดือนนี้: DM $19,800 + Conversion $16,380 = $36,180
+          </span>}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🔄 การไหลของหน่วย (ภาพรวมก่อนคำนวณ)</span>}>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 280" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <rect x="30" y="40" width="170" height="64" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
+  <text x="115" y="66" font-size="13" font-weight="700" fill="#7B6B8A" text-anchor="middle">WIP ต้นงวด</text>
+  <text x="115" y="88" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">225 หน่วย</text>
+  <rect x="30" y="150" width="170" height="64" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="115" y="176" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">เริ่มใหม่เดือนนี้</text>
+  <text x="115" y="198" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">275 หน่วย</text>
+  <path d="M200 72 C 250 72, 250 127, 300 127" fill="none" stroke="#A8906C" stroke-width="2"/>
+  <path d="M200 182 C 250 182, 250 127, 300 127" fill="none" stroke="#A8906C" stroke-width="2"/>
+  <polygon points="300,127 288,121 288,133" fill="#A8906C"/>
+  <rect x="305" y="95" width="190" height="70" rx="8" fill="#F3ECDC" stroke="#8B7355" stroke-width="2"/>
+  <text x="400" y="122" font-size="13" font-weight="700" fill="#8B7355" text-anchor="middle">ต้องรับผิดชอบรวม</text>
+  <text x="400" y="146" font-size="18" font-weight="700" fill="#3D3229" text-anchor="middle">500 หน่วย</text>
+  <path d="M495 118 C 545 118, 545 72, 600 72" fill="none" stroke="#5B7A9E" stroke-width="2"/>
+  <polygon points="600,72 588,66 588,78" fill="#5B7A9E"/>
+  <path d="M495 142 C 545 142, 545 192, 600 192" fill="none" stroke="#B85C5C" stroke-width="2"/>
+  <polygon points="600,192 588,186 588,198" fill="#B85C5C"/>
+  <rect x="605" y="40" width="185" height="64" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
+  <text x="697" y="66" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จ โอนออก</text>
+  <text x="697" y="88" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
+  <rect x="605" y="160" width="185" height="64" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
+  <text x="697" y="186" font-size="13" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด</text>
+  <text x="697" y="208" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">100 หน่วย</text>
+  <text x="400" y="250" font-size="13" fill="#5C4F42" text-anchor="middle">225 + 275 = 500  =  400 + 100   (ซ้าย = ขวา เสมอ)</text>
+</svg>
+        `}}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>⏳ เส้นเวลา: การผลิตต่อเนื่องข้ามเดือน</span>}>
+        <Paragraph>Case 3 ต่างจาก Case 1–2 ตรงที่โรงงานเดินเครื่องต่อเนื่อง ของค้างปลายเดือนหนึ่งกลายเป็นของค้างต้นเดือนถัดไป — Weighted-Average จะ <strong>เกลี่ยเงินก้อนเก่า (ที่ยกมาจาก ก.พ.) รวมกับเงินใหม่ของ มี.ค.</strong></Paragraph>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 300" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <line x1="40" y1="150" x2="790" y2="150" stroke="#C4B49A" stroke-width="2"/>
+  <polygon points="790,150 778,144 778,156" fill="#C4B49A"/>
+  <line x1="290" y1="135" x2="290" y2="165" stroke="#8B7355" stroke-width="2"/>
+  <line x1="560" y1="135" x2="560" y2="165" stroke="#8B7355" stroke-width="2"/>
+  <text x="165" y="178" font-size="13" font-weight="700" fill="#5C4F42" text-anchor="middle">ก.พ. 2023</text>
+  <text x="425" y="178" font-size="14" font-weight="700" fill="#3D3229" text-anchor="middle">มี.ค. 2023 (งวดที่คิด)</text>
+  <text x="675" y="178" font-size="13" font-weight="700" fill="#5C4F42" text-anchor="middle">เม.ย. 2023</text>
+  <rect x="120" y="95" width="150" height="46" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
+  <text x="195" y="113" font-size="11" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด ก.พ.</text>
+  <text x="195" y="131" font-size="12" font-weight="700" fill="#3D3229" text-anchor="middle">225 หน่วย · $26,100</text>
+  <path d="M270 118 C 295 118, 300 70, 330 70" fill="none" stroke="#7B6B8A" stroke-width="2" stroke-dasharray="5 3"/>
+  <polygon points="330,70 318,64 318,76" fill="#7B6B8A"/>
+  <text x="300" y="58" font-size="11" fill="#7B6B8A">ยกมาเป็นต้นงวด</text>
+  <rect x="335" y="50" width="180" height="44" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
+  <text x="425" y="68" font-size="11" font-weight="700" fill="#7B6B8A" text-anchor="middle">WIP ต้นงวด มี.ค. $26,100</text>
+  <text x="425" y="86" font-size="11" fill="#3D3229" text-anchor="middle">+ ใส่เพิ่ม มี.ค. $36,180</text>
+  <rect x="345" y="100" width="160" height="34" rx="6" fill="#F3ECDC" stroke="#8B7355" stroke-width="1.5"/>
+  <text x="425" y="122" font-size="12" font-weight="700" fill="#8B7355" text-anchor="middle">เกลี่ยรวม = $62,280</text>
+  <rect x="600" y="95" width="160" height="46" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
+  <text x="680" y="113" font-size="11" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จโอนออก $52,000</text>
+  <text x="680" y="131" font-size="11" fill="#3D3229" text-anchor="middle">(400 หน่วย)</text>
+  <rect x="600" y="210" width="160" height="46" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
+  <text x="680" y="228" font-size="11" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด มี.ค.</text>
+  <text x="680" y="246" font-size="11" fill="#3D3229" text-anchor="middle">100 หน่วย · $10,280</text>
+  <path d="M505 120 C 550 120, 555 118, 600 118" fill="none" stroke="#5B7A9E" stroke-width="2"/>
+  <polygon points="600,118 588,112 588,124" fill="#5B7A9E"/>
+  <path d="M425 134 C 425 210, 540 233, 600 233" fill="none" stroke="#B85C5C" stroke-width="2" stroke-dasharray="5 3"/>
+  <polygon points="600,233 588,227 588,239" fill="#B85C5C"/>
+  <text x="540" y="270" font-size="11" fill="#B85C5C">→ ยกไปเป็นต้นงวด เม.ย. ต่อไป</text>
+</svg>
+        `}}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>① + ② นับหน่วยจริง และแปลงเป็นหน่วยเทียบสำเร็จ (EU)</span>}
+        extra={<Tag color="gold">Step 1–2</Tag>}>
+        <Paragraph>Weighted-Average นับ EU แบบ "งานทั้งหมดที่ทำเสร็จจนถึงปัจจุบัน" — งานเสร็จ 400 หน่วยนับเต็ม ส่วนงานค้าง 100 หน่วยนับตาม % สำเร็จ</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'การไหลของหน่วย',dataIndex:'a'},{title:'หน่วยจริง',dataIndex:'b',align:'center'},{title:'EU — DM',dataIndex:'c',align:'center'},{title:'EU — Conversion',dataIndex:'d',align:'center'}]}
+          dataSource={[
+            {key:1,a:'WIP ต้นงวด',b:'225',c:'',d:''},
+            {key:2,a:'เริ่มใหม่ระหว่างงวด',b:'275',c:'',d:''},
+            {key:3,a:'รวมต้องรับผิดชอบ',b:'500',c:'',d:''},
+            {key:4,a:'เสร็จโอนออก',b:'400',c:'400',d:'400'},
+            {key:5,a:'WIP ปลายงวด (100×100%; 100×50%)',b:'100',c:'100',d:'50'},
+            {key:6,a:'รวมที่รับผิดชอบแล้ว',b:'500',c:'',d:''},
+            {key:7,a:'EU งานที่ทำเสร็จถึงปัจจุบัน',b:'',c:'500',d:'450'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="warning" showIcon message="ทำไม DM=500 แต่ Conversion=450?"
+          description="งานค้าง 100 หน่วยใส่ DM ครบแล้ว (100×100%=100) แต่ Conversion เพิ่งทำไปครึ่งเดียว (100×50%=50) → EU จึงต่างกัน"/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>③ + ④ + ⑤ รวมต้นทุน หาต้นทุนต่อหน่วย และปันส่วน</span>}
+        extra={<Tag color="gold">Step 3–5</Tag>}>
+        <Paragraph><strong>หัวใจ Weighted-Average:</strong> เอาต้นทุนที่ติดมากับงานค้างต้นงวด <em>รวม (blend)</em> กับต้นทุนที่ใส่เพิ่มเดือนนี้ แล้วค่อยหารด้วย EU</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'รายการ',dataIndex:'a'},{title:'รวม',dataIndex:'b',align:'right'},{title:'DM',dataIndex:'c',align:'right'},{title:'Conversion',dataIndex:'d',align:'right'}]}
+          dataSource={[
+            {key:1,a:'Step3: ต้นทุนติดมากับ WIP ต้นงวด',b:'$26,100',c:'$18,000',d:'$8,100'},
+            {key:2,a:'Step3: ต้นทุนใส่เพิ่มเดือนนี้',b:'$36,180',c:'$19,800',d:'$16,380'},
+            {key:3,a:'Step3: รวมต้นทุนที่ต้องคิด',b:'$62,280',c:'$37,800',d:'$24,480'},
+            {key:4,a:'Step4: ÷ EU (500 ; 450)',b:'',c:'÷ 500',d:'÷ 450'},
+            {key:5,a:'Step4: ต้นทุนต่อหน่วยเทียบ',b:'',c:'$75.60',d:'$54.40'},
+            {key:6,a:'Step5: เสร็จโอนออก 400 หน่วย',b:'$52,000',c:'400×75.60',d:'400×54.40'},
+            {key:7,a:'Step5: WIP ปลายงวด 100 หน่วย',b:'$10,280',c:'100×75.60',d:'50×54.40'},
+            {key:8,a:'Step5: รวมต้นทุนที่ปันแล้ว',b:'$62,280',c:'$37,800',d:'$24,480'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="success" showIcon message="เช็คความถูกต้อง"
+          description="ต้นทุนที่ต้องคิด $62,280 = ต้นทุนที่ปันออกไป $62,280 (เสร็จ 52,000 + ค้าง 10,280) → ลงตัวพอดีเสมอ ถ้าไม่ตรงแปลว่าคำนวณผิด"/>
+      </Card>
+
+      <Card style={{background:C.cyanBg,border:`1px solid ${C.cyan}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>💡 สรุปเป็นเรื่องเดียว</span>}>
+        <Paragraph style={{marginBottom:0}}>
+          เดือน มี.ค. โรงงานมีของค้างเก่าติดเงินมา $26,100 บวกของใหม่ที่ลงเงินเพิ่ม $36,180 รวมมีต้นทุนในมือ $62,280
+          วิธี Weighted-Average ไม่สนใจว่าเงินก้อนไหนเก่าหรือใหม่ — <strong>เกลี่ยรวมกันแล้วเฉลี่ยต่อหน่วย</strong> ได้ DM หน่วยละ $75.60 และ Conversion หน่วยละ $54.40
+          จากนั้นแจกจ่ายให้ของที่เสร็จ (400 หน่วย = $52,000 โอนออกไปขายต่อ) และของที่ยังค้าง (100 หน่วย = $10,280 ยกไปเป็น WIP ต้นงวดของเดือน เม.ย. ต่อไป) — วนแบบนี้ทุกเดือน
+        </Paragraph>
+      </Card>
+
+      <Alert type="info" showIcon message="ถ้าใช้วิธี FIFO แทนล่ะ?"
+        description={<span>FIFO จะ <strong>แยกของเก่าออกจากของใหม่</strong> ไม่เกลี่ยรวม → นับ EU เฉพาะงานที่ทำในเดือนนี้ (DM 275, Conv 315) ได้ต้นทุนต่อหน่วย DM $72, Conv $52 ต้นทุนรวมที่ต้องคิดยังเท่าเดิม $62,280 แต่แบ่งระหว่าง "เสร็จ/ค้าง" ต่างไปเล็กน้อย (เสร็จ $52,480 / ค้าง $9,800) ดูแท็บ "🔵 Case 3 (FIFO)"</span>}/>
+    </Space>
+  );
+}
+
+function CaseFIFOTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🔵 แนวคิด FIFO — "ของเก่าทำให้เสร็จก่อน อย่าเอาเงินมาปนกัน"</span>}>
+        <Paragraph>
+          ใช้โจทย์เดียวกับ Weighted-Average (Pacific Electronics, SG-40, มี.ค. 2023) แต่เปลี่ยนสมมติฐาน:
+          FIFO บอกว่า <strong>งานค้างต้นงวด 225 หน่วยต้องทำให้เสร็จก่อน</strong> แล้วจึงเริ่มงานใหม่ —
+          และ <strong>ไม่เกลี่ย (no blending)</strong> ต้นทุนเก่ากับใหม่เข้าด้วยกันเหมือน WA แต่<strong>แยกชั้นกันชัดเจน</strong>
+        </Paragraph>
+        <Alert type="info" showIcon message="จุดต่างหลักจาก Weighted-Average"
+          description={<span>
+            • WA นับ EU ของ "งานทั้งหมดที่เสร็จถึงปัจจุบัน" → FIFO นับเฉพาะ <strong>"งานที่ทำในงวดนี้เท่านั้น"</strong>{'\n'}
+            • WA blend ต้นทุนต้นงวด + งวดนี้ → FIFO <strong>แยกต้นทุนต้นงวดออกต่างหาก</strong>{'\n'}
+            • ต้นทุนรวมที่ต้องคิดเท่ากัน $62,280 แต่ต้นทุนต่อหน่วยและการแบ่งต่างกัน
+          </span>}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🧱 หน่วยที่เสร็จ 400 แยกเป็น 2 ชั้นแบบ FIFO</span>}>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 300" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <text x="36" y="30" font-size="15" font-weight="700" fill="#3D3229">400 หน่วยที่เสร็จโอนออก = มาจาก 2 แหล่ง (ตามลำดับ FIFO)</text>
+  <rect x="40" y="55" width="350" height="90" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
+  <text x="60" y="82" font-size="14" font-weight="700" fill="#7B6B8A">ชั้นที่ 1: ของค้างต้นงวด 225 หน่วย</text>
+  <text x="60" y="106" font-size="12" fill="#3D3229">ทำต่อให้เสร็จในเดือนนี้ — DM เคยใส่ครบแล้ว (เหลือ 0%)</text>
+  <text x="60" y="126" font-size="12" fill="#3D3229">Conversion เหลืออีก 40% : 225×40% = 90 EU</text>
+  <rect x="40" y="160" width="350" height="80" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
+  <text x="60" y="187" font-size="14" font-weight="700" fill="#5B7A9E">ชั้นที่ 2: เริ่มและเสร็จในเดือนนี้ 175 หน่วย</text>
+  <text x="60" y="211" font-size="12" fill="#3D3229">ทำครบทั้ง DM และ Conversion ในงวดนี้</text>
+  <text x="60" y="230" font-size="12" fill="#3D3229">DM 175 EU, Conversion 175 EU</text>
+  <path d="M390 100 C 430 100, 430 150, 470 150" fill="none" stroke="#A8906C" stroke-width="2"/>
+  <path d="M390 200 C 430 200, 430 150, 470 150" fill="none" stroke="#A8906C" stroke-width="2"/>
+  <polygon points="470,150 458,144 458,156" fill="#A8906C"/>
+  <rect x="475" y="110" width="170" height="80" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="2"/>
+  <text x="560" y="140" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">รวมเสร็จโอนออก</text>
+  <text x="560" y="166" font-size="18" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
+  <rect x="475" y="210" width="170" height="60" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
+  <text x="560" y="234" font-size="12" font-weight="700" fill="#B85C5C" text-anchor="middle">+ WIP ปลายงวด</text>
+  <text x="560" y="256" font-size="15" font-weight="700" fill="#3D3229" text-anchor="middle">100 หน่วย (เริ่มใหม่)</text>
+  <text x="690" y="120" font-size="12" fill="#5C4F42">225 + 175</text>
+  <text x="690" y="138" font-size="12" fill="#5C4F42">= 400 เสร็จ</text>
+  <text x="690" y="232" font-size="12" fill="#5C4F42">275 − 175</text>
+  <text x="690" y="250" font-size="12" fill="#5C4F42">= 100 ค้าง</text>
+</svg>
+        `}}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>⏳ เส้นเวลา: FIFO แยก "งานที่ทำก่อนงวด" ออกจาก "งานที่ทำในงวด"</span>}>
+        <Paragraph>หัวใจของ FIFO คือมิติเวลา — ของค้างต้นงวด 225 หน่วย <strong>ถูกทำไปบางส่วนตั้งแต่เดือน ก.พ. แล้ว</strong> FIFO จะนับ EU เฉพาะ <strong>ส่วนที่ลงมือทำใน มี.ค. เท่านั้น</strong> (ส่วนของ ก.พ. ตัดทิ้ง ไม่นับซ้ำ)</Paragraph>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 320" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <line x1="40" y1="40" x2="40" y2="300" stroke="#C4B49A" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="410" y1="40" x2="410" y2="300" stroke="#8B7355" stroke-width="2"/>
+  <line x1="780" y1="40" x2="780" y2="300" stroke="#C4B49A" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="225" y="32" font-size="13" font-weight="700" fill="#7A6E62" text-anchor="middle">ทำในเดือน ก.พ. (งวดก่อน)</text>
+  <text x="595" y="32" font-size="13" font-weight="700" fill="#3D3229" text-anchor="middle">ทำในเดือน มี.ค. (งวดที่คิด)</text>
+  <text x="36" y="78" font-size="13" font-weight="700" fill="#7B6B8A">ของค้างต้นงวด 225 หน่วย</text>
+  <text x="36" y="118" font-size="12" fill="#5C4F42">DM:</text>
+  <rect x="80" y="104" width="330" height="26" fill="#5D8A66" opacity="0.8"/>
+  <text x="245" y="122" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">ใส่ครบ 100% ตั้งแต่ ก.พ.</text>
+  <text x="500" y="122" font-size="12" font-weight="700" fill="#5D8A66">มี.ค. ทำเพิ่ม 0% : EU = 0</text>
+  <text x="36" y="170" font-size="12" fill="#5C4F42">Conv:</text>
+  <rect x="80" y="156" width="198" height="26" fill="#7B6B8A" opacity="0.8"/>
+  <text x="179" y="174" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">ทำไป 60% (ก.พ.)</text>
+  <rect x="278" y="156" width="132" height="26" fill="#B5986A" opacity="0.9"/>
+  <text x="344" y="174" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">+40% (มี.ค.)</text>
+  <text x="450" y="174" font-size="12" font-weight="700" fill="#8B7355">225×40% = 90 EU (นับ)</text>
+  <line x1="40" y1="205" x2="780" y2="205" stroke="#DDD3C1" stroke-width="1"/>
+  <text x="36" y="235" font-size="13" font-weight="700" fill="#5B7A9E">เริ่มและเสร็จใน มี.ค. 175 หน่วย</text>
+  <rect x="410" y="248" width="300" height="26" fill="#5B7A9E" opacity="0.85"/>
+  <text x="560" y="266" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">ทำครบ 100% ในงวดนี้ : DM 175, Conv 175</text>
+  <text x="36" y="300" font-size="12" fill="#5C4F42">สรุป EU งวดนี้: DM = 0 + 175 + 100(ค้างปลาย) = 275 · Conv = 90 + 175 + 50 = 315</text>
+</svg>
+        `}}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>① + ② EU นับเฉพาะงานที่ทำ "ในงวดนี้"</span>}
+        extra={<Tag color="gold">Step 1–2</Tag>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'การไหลของหน่วย',dataIndex:'a'},{title:'หน่วยจริง',dataIndex:'b',align:'center'},{title:'EU — DM',dataIndex:'c',align:'center'},{title:'EU — Conv',dataIndex:'d',align:'center'}]}
+          dataSource={[
+            {key:1,a:'WIP ต้นงวด',b:'225',c:'',d:''},
+            {key:2,a:'เริ่มใหม่ระหว่างงวด',b:'275',c:'',d:''},
+            {key:3,a:'รวมต้องรับผิดชอบ',b:'500',c:'',d:''},
+            {key:4,a:'ทำต่อจาก WIP ต้นงวด [225×(100%−100%); 225×(100%−60%)]',b:'225',c:'0',d:'90'},
+            {key:5,a:'เริ่มและเสร็จในงวดนี้ (175×100%; 175×100%)',b:'175',c:'175',d:'175'},
+            {key:6,a:'WIP ปลายงวด (100×100%; 100×50%)',b:'100',c:'100',d:'50'},
+            {key:7,a:'รวมรับผิดชอบแล้ว',b:'500',c:'',d:''},
+            {key:8,a:'EU งานที่ทำ "ในงวดนี้"',b:'',c:'275',d:'315'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="warning" showIcon message="สังเกตตัวเลขต่างจาก WA"
+          description="WA ได้ DM 500 / Conv 450 (รวมงานเก่า) — แต่ FIFO ได้ DM 275 / Conv 315 (เฉพาะงานในงวดนี้) เพราะตัด 'ส่วนที่ทำไปแล้วก่อนงวด' ออก (DM ต้นงวดทำครบแล้ว → ชั้น1 ได้ 0)"/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>③ + ④ + ⑤ ต้นทุน ใช้เฉพาะของที่ใส่ "ในงวดนี้"</span>}
+        extra={<Tag color="gold">Step 3–5</Tag>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'รายการ',dataIndex:'a'},{title:'รวม',dataIndex:'b',align:'right'},{title:'DM',dataIndex:'c',align:'right'},{title:'Conversion',dataIndex:'d',align:'right'}]}
+          dataSource={[
+            {key:1,a:'Step3: รวมต้นทุนที่ต้องคิด (เท่า WA)',b:'$62,280',c:'$37,800',d:'$24,480'},
+            {key:2,a:'Step4: ต้นทุนที่ใส่เพิ่มงวดนี้',b:'',c:'$19,800',d:'$16,380'},
+            {key:3,a:'Step4: ÷ EU งวดนี้ (275 ; 315)',b:'',c:'÷ 275',d:'÷ 315'},
+            {key:4,a:'Step4: ต้นทุนต่อหน่วย (งวดนี้)',b:'',c:'$72',d:'$52'},
+            {key:5,a:'Step5: เสร็จ — ต้นทุนติดมากับ WIP ต้นงวด',b:'$26,100',c:'$18,000',d:'$8,100'},
+            {key:6,a:'Step5: เสร็จ — ใส่เพิ่มให้ WIP ต้นงวดเสร็จ (0×72; 90×52)',b:'$4,680',c:'$0',d:'$4,680'},
+            {key:7,a:'รวมจากของค้างต้นงวด',b:'$30,780',c:'',d:''},
+            {key:8,a:'Step5: เริ่มและเสร็จ 175 (175×72; 175×52)',b:'$21,700',c:'$12,600',d:'$9,100'},
+            {key:9,a:'รวมเสร็จโอนออก 400 หน่วย',b:'$52,480',c:'',d:''},
+            {key:10,a:'Step5: WIP ปลายงวด 100 (100×72; 50×52)',b:'$9,800',c:'$7,200',d:'$2,600'},
+            {key:11,a:'รวมต้นทุนที่ปันแล้ว',b:'$62,280',c:'',d:''},
+          ]}/>
+        <Alert style={{marginTop:10}} type="success" showIcon message="เช็คความถูกต้อง"
+          description="เสร็จ $52,480 + ค้าง $9,800 = $62,280 = ต้นทุนที่ต้องคิด → ลงตัว"/>
+      </Card>
+
+      <Card style={{background:C.purpleBg,border:`1px solid ${C.purple}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>⚖️ เทียบผลลัพธ์ WA vs FIFO (โจทย์เดียวกัน)</span>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'',dataIndex:'a'},{title:'Weighted-Average',dataIndex:'b',align:'right'},{title:'FIFO',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'EU — DM',b:'500',c:'275'},
+            {key:2,a:'EU — Conversion',b:'450',c:'315'},
+            {key:3,a:'ต้นทุน/หน่วย — DM',b:'$75.60',c:'$72'},
+            {key:4,a:'ต้นทุน/หน่วย — Conversion',b:'$54.40',c:'$52'},
+            {key:5,a:'เสร็จโอนออก (400)',b:'$52,000',c:'$52,480'},
+            {key:6,a:'WIP ปลายงวด (100)',b:'$10,280',c:'$9,800'},
+            {key:7,a:'รวม',b:'$62,280',c:'$62,280'},
+          ]}/>
+        <Paragraph style={{marginTop:10,marginBottom:0}}>
+          ต้นทุนรวมเท่ากันเสมอ ($62,280) ต่างกันที่ "การแบ่ง" ระหว่างของเสร็จกับของค้าง —
+          FIFO ใช้ต้นทุน<strong>งวดปัจจุบันล้วนๆ</strong> ในการคิดต่อหน่วย จึงสะท้อนราคาปัจจุบันดีกว่า เหมาะเวลาต้นทุนผันผวน
+          ส่วน WA คำนวณง่ายกว่าเพราะเกลี่ยรวมทีเดียว
+        </Paragraph>
+      </Card>
+    </Space>
+  );
+}
 
 function FormulaBlock({it}){
   return (
@@ -467,16 +876,21 @@ function FormulaTab(){
   );
 }
 
-function SummaryTab(){
+function HomeworkTab(){
   return (
-    <Space direction="vertical" style={{width:'100%'}} size={16}>
-      {summaryData.map(it=>(
-        <Card key={it.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-          title={<span style={{color:C.text,fontWeight:700}}>{it.title}</span>}
-          extra={<Space>{it.tags.map((t,i)=><Tag key={i} color={t[1]}>{t[0]}</Tag>)}</Space>}>
-          {it.content()}
-        </Card>
-      ))}
+    <Space direction="vertical" style={{width:'100%'}} size={14}>
+      <Alert type="success" showIcon message="เฉลยการบ้าน HW2 (12 ข้อ)" description="แต่ละข้อมีคำตอบ คำอธิบายวิธีคิด และอ้างอิงหลักการ/สไลด์ที่เกี่ยวข้อง"/>
+      {hwData.map((it,i)=>{
+        if(it.part) return <Divider key={i} orientation="left" style={{color:C.text,fontWeight:700,fontSize:17,borderColor:C.border}}>{it.part}</Divider>;
+        return (
+          <Card key={i} size="small" style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:12}}
+            title={<span style={{color:C.text,fontWeight:700}}>ข้อ {it.n}</span>}
+            extra={<Tag color="green" style={{fontWeight:700}}>ตอบ {it.a}</Tag>}>
+            <div style={{whiteSpace:'pre-line',color:C.text2,marginBottom:8}}>{it.ex}</div>
+            <div style={{background:C.purpleBg,border:`1px solid ${C.purple}`,borderRadius:8,padding:'6px 10px',color:C.purple,fontSize:13}}>📎 อ้างอิง: {it.ref}</div>
+          </Card>
+        );
+      })}
     </Space>
   );
 }
@@ -487,28 +901,22 @@ function FlashcardTab(){
   const [idx,setIdx]=useState(0);
   const [flip,setFlip]=useState(false);
   const [score,setScore]=useState({c:0,w:0});
-
   const pool = useMemo(()=>{
     let f=flashcards.map((c,i)=>({...c,_i:i}));
     if(mode==='exam') f=f.filter(c=>c.exam);
     if(mode==='star3') f=f.filter(c=>c.star===3);
     return f;
   },[mode]);
-
   const list = useMemo(()=>{
     const ids = order.filter(i=>pool.some(p=>p._i===i));
     return ids.length?ids.map(i=>flashcards[i]):pool;
   },[order,pool]);
-
   const card = list[idx] || pool[0];
-
   const reset=(m)=>{ setMode(m); setIdx(0); setFlip(false); setScore({c:0,w:0}); setOrder(flashcards.map((_,i)=>i)); };
   const shuffle=()=>{ const o=[...order]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
   const next=()=>{ setFlip(false); setIdx(i=>Math.min(i+1,list.length-1)); };
   const prev=()=>{ setFlip(false); setIdx(i=>Math.max(i-1,0)); };
-
   if(!card) return <Text>ไม่มีการ์ด</Text>;
-
   return (
     <div>
       <Flex justify="space-between" align="center" wrap="wrap" gap={8} style={{marginBottom:14}}>
@@ -523,7 +931,6 @@ function FlashcardTab(){
           <Tag color="red">ผิด {score.w}</Tag>
         </Space>
       </Flex>
-
       <div className="fc-perspective" style={{marginBottom:14}}>
         <div className={"fc-card"+(flip?" flipped":"")} onClick={()=>setFlip(f=>!f)}>
           <div className="fc-face" style={{background:C.white,border:`2px solid ${C.borderDark}`,padding:24,display:'flex',flexDirection:'column',justifyContent:'center'}}>
@@ -538,7 +945,6 @@ function FlashcardTab(){
           </div>
         </div>
       </div>
-
       <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
         <Button onClick={prev} disabled={idx===0}>← ก่อนหน้า</Button>
         <Space>
@@ -580,512 +986,6 @@ function QuickTab(){
   );
 }
 
-function CaseOneTab(){
-  return (
-    <Space direction="vertical" style={{width:'100%'}} size={16}>
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🟢 Case 1 — ง่ายที่สุด: ไม่มีงานค้างเลย (ทั้งต้นงวดและปลายงวด)</span>}>
-        <Paragraph>
-          เริ่มจากเคสที่ง่ายที่สุดก่อน เพื่อเข้าใจหลักการพื้นฐานของ Process Costing —
-          เดือน ม.ค. 2023 แผนกประกอบเริ่มงานจากศูนย์ ผลิตจนเสร็จหมดภายในเดือน <strong>ไม่มีของค้างเหลือ</strong>
-          เมื่อไม่มีงานค้าง ก็<strong>ไม่ต้องคิดหน่วยเทียบสำเร็จ (EU) ให้ยุ่งยาก</strong> — หารตรงๆ ได้เลย
-        </Paragraph>
-        <Alert type="info" showIcon message="โจทย์เดือนมกราคม 2023"
-          description={<span>
-            • WIP ต้นงวด (1 ม.ค.) = <strong>0 หน่วย</strong>{'\n'}
-            • เริ่มผลิตระหว่างเดือน = <strong>400 หน่วย</strong>{'\n'}
-            • เสร็จโอนออก = <strong>400 หน่วย</strong>{'\n'}
-            • WIP ปลายงวด (31 ม.ค.) = <strong>0 หน่วย</strong>{'\n'}
-            • ต้นทุน: DM $32,000 + Conversion $24,000 = รวม $56,000{'\n'}
-            <em>(conversion cost = DL + OH)</em>
-          </span>}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🔄 การไหลของหน่วย</span>}>
-        <div dangerouslySetInnerHTML={{__html:`
-<svg viewBox="0 0 820 180" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
-  <rect x="40" y="60" width="180" height="64" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
-  <text x="130" y="86" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">เริ่มผลิต (ต้นงวด 0)</text>
-  <text x="130" y="108" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
-
-  <path d="M220 92 L 320 92" fill="none" stroke="#A8906C" stroke-width="2"/>
-  <polygon points="320,92 308,86 308,98" fill="#A8906C"/>
-
-  <rect x="325" y="60" width="180" height="64" rx="8" fill="#F3ECDC" stroke="#8B7355" stroke-width="2"/>
-  <text x="415" y="86" font-size="13" font-weight="700" fill="#8B7355" text-anchor="middle">ผลิตในเดือน</text>
-  <text x="415" y="108" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">เสร็จทั้งหมด</text>
-
-  <path d="M505 92 L 600 92" fill="none" stroke="#5B7A9E" stroke-width="2"/>
-  <polygon points="600,92 588,86 588,98" fill="#5B7A9E"/>
-
-  <rect x="605" y="60" width="180" height="64" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
-  <text x="695" y="86" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จโอนออก (ค้าง 0)</text>
-  <text x="695" y="108" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
-
-  <text x="415" y="155" font-size="13" fill="#5C4F42" text-anchor="middle">เริ่ม 400 = เสร็จ 400 (ไม่มีของค้าง → ทุกบาทตกที่ของเสร็จ)</text>
-</svg>
-        `}}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🧮 คำนวณต้นทุนต่อหน่วย (หารตรงๆ)</span>}>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'รายการ',dataIndex:'a'},
-            {title:'ต้นทุน',dataIndex:'b',align:'right'},
-            {title:'÷ หน่วย',dataIndex:'c',align:'center'},
-            {title:'ต่อหน่วย',dataIndex:'d',align:'right'},
-          ]}
-          dataSource={[
-            {key:1,a:'วัตถุดิบทางตรง (DM)',b:'$32,000',c:'÷ 400',d:'$80'},
-            {key:2,a:'Conversion cost (DL+OH)',b:'$24,000',c:'÷ 400',d:'$60'},
-            {key:3,a:'รวมต้นทุนต่อหน่วย',b:'$56,000',c:'÷ 400',d:'$140'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="success" showIcon message="กุญแจของ Case 1"
-          description="เพราะไม่มีของค้าง EU จึงเท่ากับหน่วยจริง (400) ทั้ง DM และ Conversion → หารต้นทุนด้วย 400 ตรงๆ ได้เลย ต้นทุนต่อหน่วย = $140 และของเสร็จ 400 หน่วย = 400 × 140 = $56,000 พอดี"/>
-      </Card>
-    </Space>
-  );
-}
-
-function CaseTwoTab(){
-  return (
-    <Space direction="vertical" style={{width:'100%'}} size={16}>
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🟡 Case 2 — เริ่มมี "ของค้างปลายงวด" (แต่ยังไม่มีของค้างต้นงวด)</span>}>
-        <Paragraph>
-          เพิ่มความยากขึ้นอีกขั้น — เดือน ก.พ. 2023 เริ่มงานจากศูนย์เหมือนเดิม แต่คราวนี้<strong>ทำไม่เสร็จหมด</strong>
-          มีของค้างเหลือปลายงวด จุดนี้เองที่ต้องเริ่มใช้ <strong>หน่วยเทียบสำเร็จ (EU)</strong> เพราะของค้างยังทำไม่ครบ
-          จะนับเป็น 1 หน่วยเต็มไม่ได้
-        </Paragraph>
-        <Alert type="info" showIcon message="โจทย์เดือนกุมภาพันธ์ 2023"
-          description={<span>
-            • WIP ต้นงวด = <strong>0 หน่วย</strong>{'\n'}
-            • เริ่มผลิตระหว่างเดือน = <strong>400 หน่วย</strong>{'\n'}
-            • เสร็จโอนออก = <strong>175 หน่วย</strong>{'\n'}
-            • WIP ปลายงวด = <strong>225 หน่วย</strong> (DM เสร็จ 100%, Conversion เสร็จ 60%){'\n'}
-            • ต้นทุน: DM $32,000 + Conversion $18,600 = รวม $50,600{'\n'}
-            <em>หมายเหตุ: DM ใส่ครบตอนต้น → ของค้างจึงมี DM 100% ส่วน Conversion ทำไปแค่ 60%</em>
-          </span>}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🔄 การไหลของหน่วย</span>}>
-        <div dangerouslySetInnerHTML={{__html:`
-<svg viewBox="0 0 820 220" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
-  <rect x="40" y="80" width="180" height="64" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
-  <text x="130" y="106" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">เริ่มผลิต (ต้นงวด 0)</text>
-  <text x="130" y="128" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
-
-  <path d="M220 112 C 270 112, 270 70, 320 70" fill="none" stroke="#5B7A9E" stroke-width="2"/>
-  <polygon points="320,70 308,64 308,76" fill="#5B7A9E"/>
-  <path d="M220 112 C 270 112, 270 160, 320 160" fill="none" stroke="#B85C5C" stroke-width="2"/>
-  <polygon points="320,160 308,154 308,166" fill="#B85C5C"/>
-
-  <rect x="325" y="40" width="190" height="60" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
-  <text x="420" y="64" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จโอนออก</text>
-  <text x="420" y="86" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">175 หน่วย</text>
-
-  <rect x="325" y="130" width="190" height="64" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
-  <text x="420" y="154" font-size="13" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด 225 หน่วย</text>
-  <text x="420" y="176" font-size="12" fill="#3D3229" text-anchor="middle">DM 100% · Conversion 60%</text>
-
-  <text x="600" y="100" font-size="13" fill="#5C4F42">เริ่ม 400</text>
-  <text x="600" y="122" font-size="13" fill="#5C4F42">= เสร็จ 175</text>
-  <text x="600" y="144" font-size="13" fill="#5C4F42">+ ค้าง 225</text>
-</svg>
-        `}}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>① + ② แปลงของค้างเป็นหน่วยเทียบสำเร็จ (EU)</span>}
-        extra={<Tag color="gold">Step 1–2</Tag>}>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'การไหลของหน่วย',dataIndex:'a'},
-            {title:'หน่วยจริง',dataIndex:'b',align:'center'},
-            {title:'EU — DM',dataIndex:'c',align:'center'},
-            {title:'EU — Conv',dataIndex:'d',align:'center'},
-          ]}
-          dataSource={[
-            {key:1,a:'WIP ต้นงวด',b:'0',c:'',d:''},
-            {key:2,a:'เริ่มใหม่ระหว่างงวด',b:'400',c:'',d:''},
-            {key:3,a:'รวมต้องรับผิดชอบ',b:'400',c:'',d:''},
-            {key:4,a:'เสร็จโอนออก',b:'175',c:'175',d:'175'},
-            {key:5,a:'WIP ปลายงวด (225×100%; 225×60%)',b:'225',c:'225',d:'135'},
-            {key:6,a:'รวม EU',b:'400',c:'400',d:'310'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="warning" showIcon message="ทำไม DM=400 แต่ Conversion=310?"
-          description="ของค้าง 225 หน่วย: DM ใส่ครบแล้ว 225×100%=225 → รวม DM = 175+225 = 400 / แต่ Conversion ทำไป 60% เท่านั้น 225×60%=135 → รวม Conv = 175+135 = 310"/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>③ + ④ + ⑤ ต้นทุนต่อหน่วย และปันส่วน</span>}
-        extra={<Tag color="gold">Step 3–5</Tag>}>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'รายการ',dataIndex:'a'},
-            {title:'รวม',dataIndex:'b',align:'right'},
-            {title:'DM',dataIndex:'c',align:'right'},
-            {title:'Conversion',dataIndex:'d',align:'right'},
-          ]}
-          dataSource={[
-            {key:1,a:'Step3: ต้นทุนใส่เดือนนี้',b:'$50,600',c:'$32,000',d:'$18,600'},
-            {key:2,a:'Step4: ÷ EU (400 ; 310)',b:'',c:'÷ 400',d:'÷ 310'},
-            {key:3,a:'Step4: ต้นทุนต่อหน่วย',b:'',c:'$80',d:'$60'},
-            {key:4,a:'Step5: เสร็จโอนออก 175 (175×80; 175×60)',b:'$24,500',c:'$14,000',d:'$10,500'},
-            {key:5,a:'Step5: WIP ปลายงวด (225×80; 135×60)',b:'$26,100',c:'$18,000',d:'$8,100'},
-            {key:6,a:'รวมต้นทุนที่ปันแล้ว',b:'$50,600',c:'$32,000',d:'$18,600'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="success" showIcon message="เช็คความถูกต้อง + เชื่อมกับเคสถัดไป"
-          description="เสร็จ $24,500 + ค้าง $26,100 = $50,600 → ลงตัว | สังเกตว่า WIP ปลายงวดของ ก.พ. ($26,100, 225 หน่วย) จะกลายเป็น WIP ต้นงวดของ มี.ค. พอดี → นี่คือจุดเริ่มของ Case 3!"/>
-      </Card>
-    </Space>
-  );
-}
-
-function CaseTab(){
-  const cell={padding:'6px 10px'};
-  return (
-    <Space direction="vertical" style={{width:'100%'}} size={16}>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🏢 ฉาก: บริษัท Pacific Electronics — แผนกประกอบ (Assembly) รุ่น SG-40</span>}>
-        <Paragraph>
-          ลองนึกภาพโรงงานประกอบสินค้า SG-40 ที่ผลิต<strong>ต่อเนื่องทุกเดือน</strong> ไม่ได้เริ่มจากศูนย์ทุกครั้ง —
-          พอสิ้นเดือน ก.พ. มีของที่ทำค้างไว้ พอขึ้นเดือน มี.ค. ก็เอามาทำต่อ พร้อมเริ่มของใหม่ และพอสิ้นเดือน มี.ค. ก็มีของค้างอีก
-          นี่คือสถานการณ์ <strong>Case 3: มี WIP ทั้งต้นงวดและปลายงวด</strong> ซึ่งใกล้เคียงโรงงานจริงมากที่สุด
-        </Paragraph>
-        <Alert type="info" showIcon message="โจทย์เดือนมีนาคม 2023"
-          description={<span>
-            • ต้นเดือน (1 มี.ค.) มีงานค้าง <strong>225 หน่วย</strong> (DM เสร็จ 100%, Conversion เสร็จ 60%) มูลค่าติดมา $26,100{'\n'}
-            • เริ่มผลิตใหม่ระหว่างเดือน <strong>275 หน่วย</strong>{'\n'}
-            • เสร็จโอนออกไปแผนกถัดไป <strong>400 หน่วย</strong>{'\n'}
-            • สิ้นเดือน (31 มี.ค.) เหลือค้าง <strong>100 หน่วย</strong> (DM 100%, Conversion 50%){'\n'}
-            • ต้นทุนที่ใส่เพิ่มเดือนนี้: DM $19,800 + Conversion $16,380 = $36,180
-          </span>}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🔄 การไหลของหน่วย (ภาพรวมก่อนคำนวณ)</span>}>
-        <div dangerouslySetInnerHTML={{__html:`
-<svg viewBox="0 0 820 280" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
-  <rect x="30" y="40" width="170" height="64" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
-  <text x="115" y="66" font-size="13" font-weight="700" fill="#7B6B8A" text-anchor="middle">WIP ต้นงวด</text>
-  <text x="115" y="88" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">225 หน่วย</text>
-
-  <rect x="30" y="150" width="170" height="64" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
-  <text x="115" y="176" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">เริ่มใหม่เดือนนี้</text>
-  <text x="115" y="198" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">275 หน่วย</text>
-
-  <path d="M200 72 C 250 72, 250 127, 300 127" fill="none" stroke="#A8906C" stroke-width="2"/>
-  <path d="M200 182 C 250 182, 250 127, 300 127" fill="none" stroke="#A8906C" stroke-width="2"/>
-  <polygon points="300,127 288,121 288,133" fill="#A8906C"/>
-
-  <rect x="305" y="95" width="190" height="70" rx="8" fill="#F3ECDC" stroke="#8B7355" stroke-width="2"/>
-  <text x="400" y="122" font-size="13" font-weight="700" fill="#8B7355" text-anchor="middle">ต้องรับผิดชอบรวม</text>
-  <text x="400" y="146" font-size="18" font-weight="700" fill="#3D3229" text-anchor="middle">500 หน่วย</text>
-
-  <path d="M495 118 C 545 118, 545 72, 600 72" fill="none" stroke="#5B7A9E" stroke-width="2"/>
-  <polygon points="600,72 588,66 588,78" fill="#5B7A9E"/>
-  <path d="M495 142 C 545 142, 545 192, 600 192" fill="none" stroke="#B85C5C" stroke-width="2"/>
-  <polygon points="600,192 588,186 588,198" fill="#B85C5C"/>
-
-  <rect x="605" y="40" width="185" height="64" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
-  <text x="697" y="66" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จ โอนออก</text>
-  <text x="697" y="88" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
-
-  <rect x="605" y="160" width="185" height="64" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
-  <text x="697" y="186" font-size="13" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด</text>
-  <text x="697" y="208" font-size="16" font-weight="700" fill="#3D3229" text-anchor="middle">100 หน่วย</text>
-
-  <text x="400" y="250" font-size="13" fill="#5C4F42" text-anchor="middle">225 + 275 = 500  =  400 + 100   (ซ้าย = ขวา เสมอ)</text>
-</svg>
-        `}}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>⏳ เส้นเวลา: การผลิตต่อเนื่องข้ามเดือน</span>}>
-        <Paragraph>Case 3 ต่างจาก Case 1–2 ตรงที่โรงงานเดินเครื่องต่อเนื่อง ของค้างปลายเดือนหนึ่งกลายเป็นของค้างต้นเดือนถัดไป — Weighted-Average จะ <strong>เกลี่ยเงินก้อนเก่า (ที่ยกมาจาก ก.พ.) รวมกับเงินใหม่ของ มี.ค.</strong></Paragraph>
-        <div dangerouslySetInnerHTML={{__html:`
-<svg viewBox="0 0 820 300" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
-  <line x1="40" y1="150" x2="790" y2="150" stroke="#C4B49A" stroke-width="2"/>
-  <polygon points="790,150 778,144 778,156" fill="#C4B49A"/>
-  <line x1="290" y1="135" x2="290" y2="165" stroke="#8B7355" stroke-width="2"/>
-  <line x1="560" y1="135" x2="560" y2="165" stroke="#8B7355" stroke-width="2"/>
-  <text x="165" y="178" font-size="13" font-weight="700" fill="#5C4F42" text-anchor="middle">ก.พ. 2023</text>
-  <text x="425" y="178" font-size="14" font-weight="700" fill="#3D3229" text-anchor="middle">มี.ค. 2023 (งวดที่คิด)</text>
-  <text x="675" y="178" font-size="13" font-weight="700" fill="#5C4F42" text-anchor="middle">เม.ย. 2023</text>
-
-  <rect x="120" y="95" width="150" height="46" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
-  <text x="195" y="113" font-size="11" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด ก.พ.</text>
-  <text x="195" y="131" font-size="12" font-weight="700" fill="#3D3229" text-anchor="middle">225 หน่วย · $26,100</text>
-
-  <path d="M270 118 C 295 118, 300 70, 330 70" fill="none" stroke="#7B6B8A" stroke-width="2" stroke-dasharray="5 3"/>
-  <polygon points="330,70 318,64 318,76" fill="#7B6B8A"/>
-  <text x="300" y="58" font-size="11" fill="#7B6B8A">ยกมาเป็นต้นงวด</text>
-
-  <rect x="335" y="50" width="180" height="44" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
-  <text x="425" y="68" font-size="11" font-weight="700" fill="#7B6B8A" text-anchor="middle">WIP ต้นงวด มี.ค. $26,100</text>
-  <text x="425" y="86" font-size="11" fill="#3D3229" text-anchor="middle">+ ใส่เพิ่ม มี.ค. $36,180</text>
-
-  <rect x="345" y="100" width="160" height="34" rx="6" fill="#F3ECDC" stroke="#8B7355" stroke-width="1.5"/>
-  <text x="425" y="122" font-size="12" font-weight="700" fill="#8B7355" text-anchor="middle">เกลี่ยรวม = $62,280</text>
-
-  <rect x="600" y="95" width="160" height="46" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
-  <text x="680" y="113" font-size="11" font-weight="700" fill="#5B7A9E" text-anchor="middle">เสร็จโอนออก $52,000</text>
-  <text x="680" y="131" font-size="11" fill="#3D3229" text-anchor="middle">(400 หน่วย)</text>
-
-  <rect x="600" y="210" width="160" height="46" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
-  <text x="680" y="228" font-size="11" font-weight="700" fill="#B85C5C" text-anchor="middle">WIP ปลายงวด มี.ค.</text>
-  <text x="680" y="246" font-size="11" fill="#3D3229" text-anchor="middle">100 หน่วย · $10,280</text>
-
-  <path d="M505 120 C 550 120, 555 118, 600 118" fill="none" stroke="#5B7A9E" stroke-width="2"/>
-  <polygon points="600,118 588,112 588,124" fill="#5B7A9E"/>
-  <path d="M425 134 C 425 210, 540 233, 600 233" fill="none" stroke="#B85C5C" stroke-width="2" stroke-dasharray="5 3"/>
-  <polygon points="600,233 588,227 588,239" fill="#B85C5C"/>
-  <text x="540" y="270" font-size="11" fill="#B85C5C">→ ยกไปเป็นต้นงวด เม.ย. ต่อไป</text>
-</svg>
-        `}}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>① + ② นับหน่วยจริง และแปลงเป็นหน่วยเทียบสำเร็จ (EU)</span>}
-        extra={<Tag color="gold">Step 1–2</Tag>}>
-        <Paragraph>Weighted-Average นับ EU แบบ "งานทั้งหมดที่ทำเสร็จจนถึงปัจจุบัน" — งานเสร็จ 400 หน่วยนับเต็ม ส่วนงานค้าง 100 หน่วยนับตาม % สำเร็จ</Paragraph>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'การไหลของหน่วย',dataIndex:'a'},
-            {title:'หน่วยจริง',dataIndex:'b',align:'center'},
-            {title:'EU — DM',dataIndex:'c',align:'center'},
-            {title:'EU — Conversion',dataIndex:'d',align:'center'},
-          ]}
-          dataSource={[
-            {key:1,a:'WIP ต้นงวด',b:'225',c:'',d:''},
-            {key:2,a:'เริ่มใหม่ระหว่างงวด',b:'275',c:'',d:''},
-            {key:3,a:'รวมต้องรับผิดชอบ',b:'500',c:'',d:''},
-            {key:4,a:'เสร็จโอนออก',b:'400',c:'400',d:'400'},
-            {key:5,a:'WIP ปลายงวด (100×100%; 100×50%)',b:'100',c:'100',d:'50'},
-            {key:6,a:'รวมที่รับผิดชอบแล้ว',b:'500',c:'',d:''},
-            {key:7,a:'EU งานที่ทำเสร็จถึงปัจจุบัน',b:'',c:'500',d:'450'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="warning" showIcon message="ทำไม DM=500 แต่ Conversion=450?"
-          description="งานค้าง 100 หน่วยใส่ DM ครบแล้ว (100×100%=100) แต่ Conversion เพิ่งทำไปครึ่งเดียว (100×50%=50) → EU จึงต่างกัน"/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>③ + ④ + ⑤ รวมต้นทุน หาต้นทุนต่อหน่วย และปันส่วน</span>}
-        extra={<Tag color="gold">Step 3–5</Tag>}>
-        <Paragraph><strong>หัวใจ Weighted-Average:</strong> เอาต้นทุนที่ติดมากับงานค้างต้นงวด <em>รวม (blend)</em> กับต้นทุนที่ใส่เพิ่มเดือนนี้ แล้วค่อยหารด้วย EU</Paragraph>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'รายการ',dataIndex:'a'},
-            {title:'รวม',dataIndex:'b',align:'right'},
-            {title:'DM',dataIndex:'c',align:'right'},
-            {title:'Conversion',dataIndex:'d',align:'right'},
-          ]}
-          dataSource={[
-            {key:1,a:'Step3: ต้นทุนติดมากับ WIP ต้นงวด',b:'$26,100',c:'$18,000',d:'$8,100'},
-            {key:2,a:'Step3: ต้นทุนใส่เพิ่มเดือนนี้',b:'$36,180',c:'$19,800',d:'$16,380'},
-            {key:3,a:'Step3: รวมต้นทุนที่ต้องคิด',b:'$62,280',c:'$37,800',d:'$24,480'},
-            {key:4,a:'Step4: ÷ EU (500 ; 450)',b:'',c:'÷ 500',d:'÷ 450'},
-            {key:5,a:'Step4: ต้นทุนต่อหน่วยเทียบ',b:'',c:'$75.60',d:'$54.40'},
-            {key:6,a:'Step5: เสร็จโอนออก 400 หน่วย',b:'$52,000',c:'400×75.60',d:'400×54.40'},
-            {key:7,a:'Step5: WIP ปลายงวด 100 หน่วย',b:'$10,280',c:'100×75.60',d:'50×54.40'},
-            {key:8,a:'Step5: รวมต้นทุนที่ปันแล้ว',b:'$62,280',c:'$37,800',d:'$24,480'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="success" showIcon message="เช็คความถูกต้อง"
-          description="ต้นทุนที่ต้องคิด $62,280 = ต้นทุนที่ปันออกไป $62,280 (เสร็จ 52,000 + ค้าง 10,280) → ลงตัวพอดีเสมอ ถ้าไม่ตรงแปลว่าคำนวณผิด"/>
-      </Card>
-
-      <Card style={{background:C.cyanBg,border:`1px solid ${C.cyan}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>💡 สรุปเป็นเรื่องเดียว</span>}>
-        <Paragraph style={{marginBottom:0}}>
-          เดือน มี.ค. โรงงานมีของค้างเก่าติดเงินมา $26,100 บวกของใหม่ที่ลงเงินเพิ่ม $36,180 รวมมีต้นทุนในมือ $62,280
-          วิธี Weighted-Average ไม่สนใจว่าเงินก้อนไหนเก่าหรือใหม่ — <strong>เกลี่ยรวมกันแล้วเฉลี่ยต่อหน่วย</strong> ได้ DM หน่วยละ $75.60 และ Conversion หน่วยละ $54.40
-          จากนั้นแจกจ่ายให้ของที่เสร็จ (400 หน่วย = $52,000 โอนออกไปขายต่อ) และของที่ยังค้าง (100 หน่วย = $10,280 ยกไปเป็น WIP ต้นงวดของเดือน เม.ย. ต่อไป) — วนแบบนี้ทุกเดือน
-        </Paragraph>
-      </Card>
-
-      <Alert type="info" showIcon message="ถ้าใช้วิธี FIFO แทนล่ะ?"
-        description={<span>FIFO จะ <strong>แยกของเก่าออกจากของใหม่</strong> ไม่เกลี่ยรวม → นับ EU เฉพาะงานที่ทำในเดือนนี้ (DM 275, Conv 315) ได้ต้นทุนต่อหน่วย DM $72, Conv $52 ต้นทุนรวมที่ต้องคิดยังเท่าเดิม $62,280 แต่แบ่งระหว่าง "เสร็จ/ค้าง" ต่างไปเล็กน้อย (เสร็จ $52,480 / ค้าง $9,800) ดูรายละเอียดในแท็บสรุป หัวข้อ Case 3</span>}/>
-
-    </Space>
-  );
-}
-
-function CaseFIFOTab(){
-  return (
-    <Space direction="vertical" style={{width:'100%'}} size={16}>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🔵 แนวคิด FIFO — "ของเก่าทำให้เสร็จก่อน อย่าเอาเงินมาปนกัน"</span>}>
-        <Paragraph>
-          ใช้โจทย์เดียวกับ Weighted-Average (Pacific Electronics, SG-40, มี.ค. 2023) แต่เปลี่ยนสมมติฐาน:
-          FIFO บอกว่า <strong>งานค้างต้นงวด 225 หน่วยต้องทำให้เสร็จก่อน</strong> แล้วจึงเริ่มงานใหม่ —
-          และ <strong>ไม่เกลี่ย (no blending)</strong> ต้นทุนเก่ากับใหม่เข้าด้วยกันเหมือน WA แต่<strong>แยกชั้นกันชัดเจน</strong>
-        </Paragraph>
-        <Alert type="info" showIcon message="จุดต่างหลักจาก Weighted-Average"
-          description={<span>
-            • WA นับ EU ของ "งานทั้งหมดที่เสร็จถึงปัจจุบัน" → FIFO นับเฉพาะ <strong>"งานที่ทำในงวดนี้เท่านั้น"</strong>{'\n'}
-            • WA blend ต้นทุนต้นงวด + งวดนี้ → FIFO <strong>แยกต้นทุนต้นงวดออกต่างหาก</strong>{'\n'}
-            • ต้นทุนรวมที่ต้องคิดเท่ากัน $62,280 แต่ต้นทุนต่อหน่วยและการแบ่งต่างกัน
-          </span>}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>🧱 หน่วยที่เสร็จ 400 แยกเป็น 2 ชั้นแบบ FIFO</span>}>
-        <div dangerouslySetInnerHTML={{__html:`
-<svg viewBox="0 0 820 300" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
-  <text x="36" y="30" font-size="15" font-weight="700" fill="#3D3229">400 หน่วยที่เสร็จโอนออก = มาจาก 2 แหล่ง (ตามลำดับ FIFO)</text>
-
-  <rect x="40" y="55" width="350" height="90" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
-  <text x="60" y="82" font-size="14" font-weight="700" fill="#7B6B8A">ชั้นที่ 1: ของค้างต้นงวด 225 หน่วย</text>
-  <text x="60" y="106" font-size="12" fill="#3D3229">ทำต่อให้เสร็จในเดือนนี้ — DM เคยใส่ครบแล้ว (เหลือ 0%)</text>
-  <text x="60" y="126" font-size="12" fill="#3D3229">Conversion เหลืออีก 40% → 225×40% = 90 EU</text>
-
-  <rect x="40" y="160" width="350" height="80" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
-  <text x="60" y="187" font-size="14" font-weight="700" fill="#5B7A9E">ชั้นที่ 2: เริ่มและเสร็จในเดือนนี้ 175 หน่วย</text>
-  <text x="60" y="211" font-size="12" fill="#3D3229">ทำครบทั้ง DM และ Conversion ในงวดนี้</text>
-  <text x="60" y="230" font-size="12" fill="#3D3229">DM 175 EU, Conversion 175 EU</text>
-
-  <path d="M390 100 C 430 100, 430 150, 470 150" fill="none" stroke="#A8906C" stroke-width="2"/>
-  <path d="M390 200 C 430 200, 430 150, 470 150" fill="none" stroke="#A8906C" stroke-width="2"/>
-  <polygon points="470,150 458,144 458,156" fill="#A8906C"/>
-
-  <rect x="475" y="110" width="170" height="80" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="2"/>
-  <text x="560" y="140" font-size="13" font-weight="700" fill="#5D8A66" text-anchor="middle">รวมเสร็จโอนออก</text>
-  <text x="560" y="166" font-size="18" font-weight="700" fill="#3D3229" text-anchor="middle">400 หน่วย</text>
-
-  <rect x="475" y="210" width="170" height="60" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
-  <text x="560" y="234" font-size="12" font-weight="700" fill="#B85C5C" text-anchor="middle">+ WIP ปลายงวด</text>
-  <text x="560" y="256" font-size="15" font-weight="700" fill="#3D3229" text-anchor="middle">100 หน่วย (เริ่มใหม่)</text>
-
-  <text x="690" y="120" font-size="12" fill="#5C4F42">225 + 175</text>
-  <text x="690" y="138" font-size="12" fill="#5C4F42">= 400 เสร็จ</text>
-  <text x="690" y="232" font-size="12" fill="#5C4F42">275 − 175</text>
-  <text x="690" y="250" font-size="12" fill="#5C4F42">= 100 ค้าง</text>
-</svg>
-        `}}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>⏳ เส้นเวลา: FIFO แยก "งานที่ทำก่อนงวด" ออกจาก "งานที่ทำในงวด"</span>}>
-        <Paragraph>หัวใจของ FIFO คือมิติเวลา — ของค้างต้นงวด 225 หน่วย <strong>ถูกทำไปบางส่วนตั้งแต่เดือน ก.พ. แล้ว</strong> FIFO จะนับ EU เฉพาะ <strong>ส่วนที่ลงมือทำใน มี.ค. เท่านั้น</strong> (ส่วนของ ก.พ. ตัดทิ้ง ไม่นับซ้ำ)</Paragraph>
-        <div dangerouslySetInnerHTML={{__html:`
-<svg viewBox="0 0 820 320" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
-  <line x1="40" y1="40" x2="40" y2="300" stroke="#C4B49A" stroke-width="1" stroke-dasharray="3 3"/>
-  <line x1="410" y1="40" x2="410" y2="300" stroke="#8B7355" stroke-width="2"/>
-  <line x1="780" y1="40" x2="780" y2="300" stroke="#C4B49A" stroke-width="1" stroke-dasharray="3 3"/>
-  <text x="225" y="32" font-size="13" font-weight="700" fill="#7A6E62" text-anchor="middle">◀ ทำในเดือน ก.พ. (งวดก่อน)</text>
-  <text x="595" y="32" font-size="13" font-weight="700" fill="#3D3229" text-anchor="middle">ทำในเดือน มี.ค. (งวดที่คิด) ▶</text>
-
-  <text x="36" y="78" font-size="13" font-weight="700" fill="#7B6B8A">ของค้างต้นงวด 225 หน่วย</text>
-
-  <text x="36" y="118" font-size="12" fill="#5C4F42">DM:</text>
-  <rect x="80" y="104" width="330" height="26" fill="#5D8A66" opacity="0.8"/>
-  <text x="245" y="122" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">ใส่ครบ 100% ตั้งแต่ ก.พ.</text>
-  <rect x="410" y="104" width="0" height="26" fill="#5D8A66"/>
-  <text x="500" y="122" font-size="12" font-weight="700" fill="#5D8A66">มี.ค. ทำเพิ่ม 0% → EU = 0</text>
-
-  <text x="36" y="170" font-size="12" fill="#5C4F42">Conv:</text>
-  <rect x="80" y="156" width="198" height="26" fill="#7B6B8A" opacity="0.8"/>
-  <text x="179" y="174" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">ทำไป 60% (ก.พ.)</text>
-  <rect x="278" y="156" width="132" height="26" fill="#B5986A" opacity="0.9"/>
-  <text x="344" y="174" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">+40% (มี.ค.)</text>
-  <text x="450" y="174" font-size="12" font-weight="700" fill="#8B7355">225×40% = 90 EU ✓ นับ</text>
-
-  <line x1="40" y1="205" x2="780" y2="205" stroke="#DDD3C1" stroke-width="1"/>
-
-  <text x="36" y="235" font-size="13" font-weight="700" fill="#5B7A9E">เริ่มและเสร็จใน มี.ค. 175 หน่วย</text>
-  <rect x="410" y="248" width="300" height="26" fill="#5B7A9E" opacity="0.85"/>
-  <text x="560" y="266" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">ทำครบ 100% ในงวดนี้ → DM 175, Conv 175 ✓</text>
-
-  <text x="36" y="300" font-size="12" fill="#5C4F42">สรุป EU งวดนี้: DM = 0 + 175 + 100(ค้างปลาย) = 275 · Conv = 90 + 175 + 50 = 315</text>
-</svg>
-        `}}/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>① + ② EU นับเฉพาะงานที่ทำ "ในงวดนี้"</span>}
-        extra={<Tag color="gold">Step 1–2</Tag>}>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'การไหลของหน่วย',dataIndex:'a'},
-            {title:'หน่วยจริง',dataIndex:'b',align:'center'},
-            {title:'EU — DM',dataIndex:'c',align:'center'},
-            {title:'EU — Conv',dataIndex:'d',align:'center'},
-          ]}
-          dataSource={[
-            {key:1,a:'WIP ต้นงวด',b:'225',c:'',d:''},
-            {key:2,a:'เริ่มใหม่ระหว่างงวด',b:'275',c:'',d:''},
-            {key:3,a:'รวมต้องรับผิดชอบ',b:'500',c:'',d:''},
-            {key:4,a:'ทำต่อจาก WIP ต้นงวด [225×(100%−100%); 225×(100%−60%)]',b:'225',c:'0',d:'90'},
-            {key:5,a:'เริ่มและเสร็จในงวดนี้ (175×100%; 175×100%)',b:'175',c:'175',d:'175'},
-            {key:6,a:'WIP ปลายงวด (100×100%; 100×50%)',b:'100',c:'100',d:'50'},
-            {key:7,a:'รวมรับผิดชอบแล้ว',b:'500',c:'',d:''},
-            {key:8,a:'EU งานที่ทำ "ในงวดนี้"',b:'',c:'275',d:'315'},
-          ]}/>
-        <Alert style={{marginTop:10}} type="warning" showIcon message="สังเกตตัวเลขต่างจาก WA"
-          description="WA ได้ DM 500 / Conv 450 (รวมงานเก่า) — แต่ FIFO ได้ DM 275 / Conv 315 (เฉพาะงานในงวดนี้) เพราะตัด 'ส่วนที่ทำไปแล้วก่อนงวด' ออก (DM ต้นงวดทำครบแล้ว → ชั้น1 ได้ 0)"/>
-      </Card>
-
-      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>③ + ④ + ⑤ ต้นทุน ใช้เฉพาะของที่ใส่ "ในงวดนี้"</span>}
-        extra={<Tag color="gold">Step 3–5</Tag>}>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'รายการ',dataIndex:'a'},
-            {title:'รวม',dataIndex:'b',align:'right'},
-            {title:'DM',dataIndex:'c',align:'right'},
-            {title:'Conversion',dataIndex:'d',align:'right'},
-          ]}
-          dataSource={[
-            {key:1,a:'Step3: รวมต้นทุนที่ต้องคิด (เท่า WA)',b:'$62,280',c:'$37,800',d:'$24,480'},
-            {key:2,a:'Step4: ต้นทุนที่ใส่เพิ่มงวดนี้',b:'',c:'$19,800',d:'$16,380'},
-            {key:3,a:'Step4: ÷ EU งวดนี้ (275 ; 315)',b:'',c:'÷ 275',d:'÷ 315'},
-            {key:4,a:'Step4: ต้นทุนต่อหน่วย (งวดนี้)',b:'',c:'$72',d:'$52'},
-            {key:5,a:'Step5: เสร็จ — ต้นทุนติดมากับ WIP ต้นงวด',b:'$26,100',c:'$18,000',d:'$8,100'},
-            {key:6,a:'Step5: เสร็จ — ใส่เพิ่มให้ WIP ต้นงวดเสร็จ (0×72; 90×52)',b:'$4,680',c:'$0',d:'$4,680'},
-            {key:7,a:'รวมจากของค้างต้นงวด',b:'$30,780',c:'',d:''},
-            {key:8,a:'Step5: เริ่มและเสร็จ 175 (175×72; 175×52)',b:'$21,700',c:'$12,600',d:'$9,100'},
-            {key:9,a:'รวมเสร็จโอนออก 400 หน่วย',b:'$52,480',c:'',d:''},
-            {key:10,a:'Step5: WIP ปลายงวด 100 (100×72; 50×52)',b:'$9,800',c:'$7,200',d:'$2,600'},
-            {key:11,a:'รวมต้นทุนที่ปันแล้ว',b:'$62,280',c:'',d:''},
-          ]}/>
-        <Alert style={{marginTop:10}} type="success" showIcon message="เช็คความถูกต้อง"
-          description="เสร็จ $52,480 + ค้าง $9,800 = $62,280 = ต้นทุนที่ต้องคิด → ลงตัว"/>
-      </Card>
-
-      <Card style={{background:C.purpleBg,border:`1px solid ${C.purple}`,borderRadius:14}}
-        title={<span style={{color:C.text,fontWeight:700}}>⚖️ เทียบผลลัพธ์ WA vs FIFO (โจทย์เดียวกัน)</span>}>
-        <Table size="small" pagination={false} bordered
-          columns={[
-            {title:'',dataIndex:'a'},
-            {title:'Weighted-Average',dataIndex:'b',align:'right'},
-            {title:'FIFO',dataIndex:'c',align:'right'},
-          ]}
-          dataSource={[
-            {key:1,a:'EU — DM',b:'500',c:'275'},
-            {key:2,a:'EU — Conversion',b:'450',c:'315'},
-            {key:3,a:'ต้นทุน/หน่วย — DM',b:'$75.60',c:'$72'},
-            {key:4,a:'ต้นทุน/หน่วย — Conversion',b:'$54.40',c:'$52'},
-            {key:5,a:'เสร็จโอนออก (400)',b:'$52,000',c:'$52,480'},
-            {key:6,a:'WIP ปลายงวด (100)',b:'$10,280',c:'$9,800'},
-            {key:7,a:'รวม',b:'$62,280',c:'$62,280'},
-          ]}/>
-        <Paragraph style={{marginTop:10,marginBottom:0}}>
-          ต้นทุนรวมเท่ากันเสมอ ($62,280) ต่างกันที่ "การแบ่ง" ระหว่างของเสร็จกับของค้าง —
-          FIFO ใช้ต้นทุน<strong>งวดปัจจุบันล้วนๆ</strong> ในการคิดต่อหน่วย จึงสะท้อนราคาปัจจุบันดีกว่า เหมาะเวลาต้นทุนผันผวน
-          ส่วน WA คำนวณง่ายกว่าเพราะเกลี่ยรวมทีเดียว
-        </Paragraph>
-      </Card>
-
-    </Space>
-  );
-}
-
 function App(){
   return (
     <ConfigProvider theme={{
@@ -1106,8 +1006,9 @@ function App(){
             {key:'4',label:'📜 Case 3 (WA)',children:<CaseTab/>},
             {key:'5',label:'🔵 Case 3 (FIFO)',children:<CaseFIFOTab/>},
             {key:'6',label:'📐 สูตร & แทนค่า',children:<FormulaTab/>},
-            {key:'7',label:'🃏 Flashcard',children:<FlashcardTab/>},
-            {key:'8',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+            {key:'7',label:'📝 เฉลยการบ้าน',children:<HomeworkTab/>},
+            {key:'8',label:'🃏 Flashcard',children:<FlashcardTab/>},
+            {key:'9',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
           ]}/>
         </Content>
         <Footer style={{textAlign:'center',background:'transparent',color:C.text3}}>
