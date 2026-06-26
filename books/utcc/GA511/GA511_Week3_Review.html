@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 Week 3 — การบัญชีต้นทุนตามกิจกรรม (ABC) ทบทวน</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai',sans-serif; color:#3D3229; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif; }
+  .fc-perspective { perspective:1200px; }
+  .fc-card { position:relative; width:100%; min-height:300px; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:14px; }
+  .fc-back { transform:rotateY(180deg); }
+  .qc { transition:transform 0.2s, box-shadow 0.2s; }
+  .qc:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(120,100,70,0.18); }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:6px; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  .ant-table-cell { line-height:1.9 !important; }
+  .step-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:#A8906C; color:#fff; font-weight:700; margin-right:8px; flex:none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { Content, Footer } = Layout;
+const { useState, useMemo } = React;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  amber:'#B5986A', amberDark:'#7A6548',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62',
+  white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+const box = (bg,bd) => ({ background:bg, border:`1px solid ${bd}`, borderRadius:10, padding:'12px 16px', marginBottom:12 });
+
+// ============ SUMMARY DATA ============
+const summaryData = [
+  {
+    key:'foundation', title:'🧱 ปูพื้นก่อนเริ่ม: ต้นทุนการผลิตมี 3 ก้อน',
+    tags:[['เริ่มจากศูนย์','green']],
+    content: () => (
+      <div>
+        <Paragraph>ก่อนเข้าใจ ABC ต้องแม่นเรื่องนี้ก่อน — ต้นทุนที่ใช้ผลิตสินค้า 1 ชิ้น แบ่งเป็น 3 ก้อน:</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ก้อนต้นทุน',dataIndex:'a',width:200},{title:'คืออะไร',dataIndex:'b'},{title:'ระบุเข้าสินค้า',dataIndex:'c',width:130}]}
+          dataSource={[
+            {key:1,a:'1. วัตถุดิบทางตรง (DM)',b:'ของที่เป็นเนื้อสินค้า เช่น ผ้าตัดกางเกง',c:'ได้ตรงๆ ✔'},
+            {key:2,a:'2. ค่าแรงทางตรง (DL)',b:'ค่าจ้างคนที่ลงมือผลิตชิ้นนั้น',c:'ได้ตรงๆ ✔'},
+            {key:3,a:'3. ค่าใช้จ่ายการผลิต (OH)',b:'ต้นทุนผลิตทางอ้อม เช่น ค่าไฟ ค่าเช่าโรงงาน ค่าซ่อมเครื่อง',c:'ระบุตรงไม่ได้ ✘'},
+          ]}/>
+        <Alert style={{marginTop:12}} type="warning" showIcon message="หัวใจของปัญหาทั้งหมด"
+          description={<span>DM กับ DL รู้ได้เลยว่าสินค้าชิ้นไหนใช้เท่าไร แต่ <strong>OH ระบุตรงไม่ได้</strong> — ค่าไฟทั้งโรงงานก้อนเดียว แล้วจะรู้ได้ไงว่ากางเกงตัวนี้ "กินไฟ" เท่าไร? จึงต้องมีวิธี <strong>"ปันส่วน (allocate)"</strong> และวิธีปันส่วนนี่แหละที่ทำให้เกิดทั้งระบบเดิมและ ABC</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'analogy', title:'🏠 อุปมาเข้าใจง่าย: ค่าไฟหอพักรวม',
+    tags:[['อุปมา','cyan']],
+    content: () => (
+      <div>
+        <Paragraph>นึกภาพหอพักที่มีมิเตอร์ไฟรวมตัวเดียว ค่าไฟเดือนละ 12,000 บาท มี 4 ห้อง จะแบ่งเงินยังไง?</Paragraph>
+        <div style={box(C.blueBg,C.blue)}>
+          <strong>แบบเดิม (เกณฑ์เดียว):</strong> หารเท่ากัน 12,000 ÷ 4 = ห้องละ 3,000 บาท{'\n'}
+          → ง่าย แต่<strong>ไม่ยุติธรรม</strong> เพราะห้องที่เปิดแอร์ทั้งวันจ่ายเท่าห้องที่แทบไม่อยู่
+        </div>
+        <div style={box(C.greenBg,C.green)}>
+          <strong>แบบ ABC (ตามการใช้จริง):</strong> ดูว่าแต่ละห้องใช้ไฟจาก "กิจกรรม" อะไรบ้าง (แอร์ที่เปิด, เครื่องใช้ไฟฟ้า) แล้วคิดตามนั้น{'\n'}
+          → ยุ่งกว่า แต่<strong>สะท้อนความจริง</strong> ใครใช้มากจ่ายมาก
+        </div>
+        <Alert type="info" showIcon message="เชื่อมกับบทเรียน" description="ค่าไฟ = Overhead | ห้อง = ผลิตภัณฑ์ | 'แอร์/เครื่องใช้ไฟฟ้า' = กิจกรรม (Activity) | 'ชั่วโมงเปิดแอร์' = ตัวผลักดันต้นทุน (Cost Driver)"/>
+      </div>
+    )
+  },
+  {
+    key:'overview', title:'🎯 ABC คืออะไร (นิยามทางการ)',
+    tags:[['ภาพรวม','volcano']],
+    content: () => (
+      <div>
+        <Paragraph><strong>Activity-Based Costing (ABC) = การบัญชีต้นทุนตามกิจกรรม</strong> คือการรวบรวมและจัดสรร<strong>ค่าใช้จ่ายการผลิต (Overhead)</strong> เข้าสู่ผลิตภัณฑ์ โดยผ่าน <strong>"กิจกรรม" ที่เกี่ยวข้องหลายกิจกรรม</strong> และใช้ตัวผลักดันต้นทุน (cost driver) ที่เหมาะกับแต่ละกิจกรรม</Paragraph>
+        <Alert type="success" showIcon message="จำ 3 ข้อนี้พอ"
+          description={<span>1) ABC ยุ่งกับเฉพาะ <strong>Overhead</strong> (DM/DL ยังคิดตรงเหมือนเดิม){'\n'}2) ใช้ <strong>หลายกิจกรรม + หลาย driver</strong> (ไม่ใช่เกณฑ์เดียว){'\n'}3) ปันส่วน <strong>2 ขั้นตอน</strong></span>}/>
+      </div>
+    )
+  },
+  {
+    key:'traditional', title:'🏛️ ระบบเดิม (Traditional) — ทำไมถึงเพี้ยน',
+    tags:[['เปรียบเทียบ','blue'],['สำคัญ','red']],
+    content: () => (
+      <div>
+        <Paragraph>ระบบเดิมปันส่วน OH ด้วย <strong>เกณฑ์เดียว</strong> — สมัยก่อนใช้ชั่วโมงแรงงานทางตรง (DLH) ต่อมาใช้ชั่วโมงเครื่องจักร (MH)</Paragraph>
+        <div style={box(C.goldLight,C.goldDark)}><strong>อัตรา OH = ประมาณการ OH ÷ เกณฑ์เดียว (DLH หรือ MH)</strong></div>
+        <Row gutter={12} style={{marginBottom:12}}>
+          <Col span={12}><Card size="small" style={{background:C.greenBg,border:`1px solid ${C.green}`}} title="✅ ข้อดี">คำนวณง่าย เข้าใจง่าย เก็บข้อมูลถูก</Card></Col>
+          <Col span={12}><Card size="small" style={{background:C.redBg,border:`1px solid ${C.red}`}} title="⚠️ ข้อจำกัด">สินค้าหลากหลาย/ซับซ้อน + OH สูง → ต้นทุนบิดเบือน</Card></Col>
+        </Row>
+        <Alert type="error" showIcon message="ทำไมเพี้ยน? (จุดที่ออกสอบบ่อย)"
+          description="ระบบเดิมสมมติว่า 'ยิ่งผลิตมาก/ใช้แรงงานมาก = ยิ่งกิน OH มาก' แต่ความจริงสินค้าที่ผลิตน้อยแต่ซับซ้อน (ต้องตรวจสอบบ่อย ตั้งเครื่องบ่อย) กลับกิน OH เยอะกว่า → ระบบเดิมเลยคิดต้นทุนสินค้าผลิตมาก 'สูงเกินจริง' และสินค้าซับซ้อน 'ต่ำเกินจริง'"/>
+      </div>
+    )
+  },
+  {
+    key:'terms', title:'🔑 3 ศัพท์หลักที่ต้องแยกให้ออก',
+    tags:[['นิยาม','blue'],['ออกสอบ','volcano']],
+    content: () => (
+      <div>
+        <div style={box(C.greenBg,C.green)}><strong>1. กิจกรรม (Activity)</strong> — เหตุการณ์/งานที่ทำแล้ว "ทำให้เกิดต้นทุน"{'\n'}ตัวอย่าง: การเดินเครื่องจักร, สั่งซื้อวัตถุดิบ, ซ่อมบำรุง, ตรวจสอบคุณภาพ, ค่าประกันโรงงาน</div>
+        <div style={box(C.purpleBg,C.purple)}><strong>2. ตัวผลักดันต้นทุน (Cost Driver)</strong> — สิ่งที่ "วัด" ปริมาณการใช้กิจกรรม และทำให้ต้นทุนเปลี่ยน{'\n'}ตัวอย่าง: จำนวนครั้งสั่งซื้อ (ของกิจกรรมสั่งซื้อ), ตารางฟุต (ของค่าประกันโรงงาน)</div>
+        <div style={box(C.blueBg,C.blue)}><strong>3. ศูนย์/กลุ่มกิจกรรม (Activity Cost Pool)</strong> — ถังที่รวมต้นทุนของกิจกรรมเดียวกันไว้ ก่อนปันเข้าสินค้า</div>
+        <Alert type="info" showIcon message="ความสัมพันธ์" description="กิจกรรม 1 อย่าง → มี 1 cost pool (ถังรวมเงิน) → ปันเข้าสินค้าด้วย cost driver 1 ตัว"/>
+      </div>
+    )
+  },
+  {
+    key:'two-stage', title:'🔁 การปันส่วน 2 ขั้นตอน (หัวใจ ABC)',
+    tags:[['ออกสอบ','volcano'],['ภาพ','green']],
+    content: () => (
+      <div>
+        <Paragraph>ระบบเดิมปัน OH เข้าสินค้า "ทีเดียว" แต่ ABC แทรกชั้น "กิจกรรม" ตรงกลาง ทำให้ปัน 2 ขั้น:</Paragraph>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 380" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <rect x="285" y="18" width="250" height="48" rx="8" fill="#F3ECDC" stroke="#8B7355" stroke-width="2"/>
+  <text x="410" y="48" font-size="15" font-weight="700" fill="#8B7355" text-anchor="middle">ค่าใช้จ่ายการผลิต (Overhead)</text>
+
+  <text x="30" y="105" font-size="13" font-weight="700" fill="#8B7355">ขั้นที่ 1</text>
+  <line x1="320" y1="66" x2="120" y2="112" stroke="#A8906C" stroke-width="1.4"/>
+  <line x1="370" y1="66" x2="330" y2="112" stroke="#A8906C" stroke-width="1.4"/>
+  <line x1="450" y1="66" x2="490" y2="112" stroke="#A8906C" stroke-width="1.4"/>
+  <line x1="500" y1="66" x2="700" y2="112" stroke="#A8906C" stroke-width="1.4"/>
+
+  <rect x="40" y="114" width="160" height="46" rx="6" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="120" y="142" font-size="12" font-weight="700" fill="#5D8A66" text-anchor="middle">เดินเครื่องจักร</text>
+  <rect x="250" y="114" width="160" height="46" rx="6" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="330" y="142" font-size="12" font-weight="700" fill="#5D8A66" text-anchor="middle">สั่งซื้อวัตถุดิบ</text>
+  <rect x="420" y="114" width="160" height="46" rx="6" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="500" y="142" font-size="12" font-weight="700" fill="#5D8A66" text-anchor="middle">ซ่อมบำรุง</text>
+  <rect x="620" y="114" width="160" height="46" rx="6" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="700" y="142" font-size="12" font-weight="700" fill="#5D8A66" text-anchor="middle">ตรวจสอบคุณภาพ</text>
+  <text x="410" y="184" font-size="12" fill="#7A6E62" text-anchor="middle">ศูนย์กิจกรรม (Activity Cost Pools) — แต่ละศูนย์มี Cost Driver ของตัวเอง</text>
+
+  <text x="30" y="250" font-size="13" font-weight="700" fill="#7B6B8A">ขั้นที่ 2</text>
+  <text x="410" y="212" font-size="12" fill="#7A6E62" text-anchor="middle">ปันต่อด้วยตัวผลักดันต้นทุน (เช่น ชม.เครื่องจักร, จำนวนครั้งสั่งซื้อ/ซ่อม/ตรวจ)</text>
+
+  <line x1="120" y1="160" x2="300" y2="262" stroke="#7B6B8A" stroke-width="1.1"/>
+  <line x1="330" y1="160" x2="305" y2="262" stroke="#7B6B8A" stroke-width="1.1"/>
+  <line x1="490" y1="160" x2="555" y2="262" stroke="#7B6B8A" stroke-width="1.1"/>
+  <line x1="700" y1="160" x2="565" y2="262" stroke="#7B6B8A" stroke-width="1.1"/>
+  <line x1="330" y1="160" x2="555" y2="262" stroke="#7B6B8A" stroke-width="1.1"/>
+  <line x1="490" y1="160" x2="305" y2="262" stroke="#7B6B8A" stroke-width="1.1"/>
+
+  <ellipse cx="300" cy="305" rx="95" ry="42" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="2"/>
+  <text x="300" y="311" font-size="13" font-weight="700" fill="#5B7A9E" text-anchor="middle">ผลิตภัณฑ์ชนิดที่ 1</text>
+  <ellipse cx="560" cy="305" rx="95" ry="42" fill="#F5ECEA" stroke="#B85C5C" stroke-width="2"/>
+  <text x="560" y="311" font-size="13" font-weight="700" fill="#B85C5C" text-anchor="middle">ผลิตภัณฑ์ชนิดที่ 2</text>
+</svg>
+        `}}/>
+        <Alert style={{marginTop:10}} type="success" showIcon message="จำง่ายๆ"
+          description="ขั้น 1: OH → ศูนย์กิจกรรม (จับกลุ่มต้นทุนตามกิจกรรม) | ขั้น 2: ศูนย์กิจกรรม → ผลิตภัณฑ์ (ปันด้วย cost driver ของแต่ละกิจกรรม)"/>
+      </div>
+    )
+  },
+  {
+    key:'hierarchy', title:'🪜 ลำดับชั้นกิจกรรม (Cost Hierarchy) 4 ระดับ',
+    tags:[['ออกสอบ','volcano'],['ตาราง','blue']],
+    content: () => (
+      <div>
+        <Paragraph>กิจกรรมไม่เท่ากัน บางอย่างเกิดทุกชิ้น บางอย่างเกิดทีละกลุ่ม ABC จัดเป็น 4 ระดับ (จำลำดับ <strong>หน่วย → กลุ่ม → ผลิตภัณฑ์ → อำนวยการ</strong>):</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ระดับ',dataIndex:'a',width:150},{title:'เกิดเมื่อ',dataIndex:'b'},{title:'ตัวอย่าง + ตัวผลักดัน',dataIndex:'c'}]}
+          dataSource={[
+            {key:1,a:'1. ระดับหน่วย (Unit-level)',b:'ทุกครั้งที่ผลิต 1 หน่วย',c:'ตัด/พิมพ์/เจาะ → ชม.เครื่องจักร · ประกอบ/ทาสี/เย็บ → ชม.แรงงาน'},
+            {key:2,a:'2. ระดับกลุ่ม (Batch-level)',b:'ทุกครั้งที่ผลิต 1 กลุ่ม (หลายหน่วย)',c:'เตรียมเครื่อง → จำนวนครั้ง/เวลาเตรียม · สั่งซื้อ → จำนวนครั้ง · ตรวจสอบ → จำนวนครั้ง'},
+            {key:3,a:'3. ระดับผลิตภัณฑ์ (Product-level)',b:'เมื่อมีผลิตภัณฑ์ใหม่',c:'ออกแบบ → จำนวนครั้ง/เวลา · ทดสอบผลิตภัณฑ์ → จำนวนครั้ง/ชม.'},
+            {key:4,a:'4. ระดับอำนวยการ (Facility-level)',b:'สนับสนุนการผลิตโดยรวม',c:'เงินเดือน ผจก. → จำนวนพนักงาน · ค่าเสื่อม/ประกัน → ตารางฟุต · บำรุงเครื่อง → ชม.เครื่องจักร'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="info" showIcon message="ทริคจำ" description="ไล่จากเล็กไปใหญ่: 1 ชิ้น (หน่วย) → 1 ล็อต (กลุ่ม) → 1 รุ่นสินค้า (ผลิตภัณฑ์) → ทั้งโรงงาน (อำนวยการ)"/>
+      </div>
+    )
+  },
+  {
+    key:'four-step', title:'4️⃣ 4 ขั้นตอนคำนวณ ABC (พร้อมเหตุผลแต่ละขั้น)',
+    tags:[['ออกสอบทุกครั้ง','volcano'],['คำนวณ','gold']],
+    content: () => (
+      <div>
+        <div style={box(C.surface,C.border)}><span className="step-num">1</span><strong>ตั้งศูนย์กิจกรรม + กำหนด driver</strong> — แยก OH ทั้งก้อนว่ามาจากกิจกรรมอะไรบ้าง แต่ละกิจกรรมจับคู่กับตัวผลักดันที่สมเหตุผล</div>
+        <div style={box(C.surface,C.border)}><span className="step-num">2</span><strong>หาอัตราต่อหน่วยของ driver</strong> = ต้นทุนกิจกรรม ÷ ปริมาณ driver รวม (เช่น ค่าซ่อม ÷ จำนวนครั้งซ่อมทั้งหมด)</div>
+        <div style={box(C.surface,C.border)}><span className="step-num">3</span><strong>ปัน OH เข้าสินค้าแต่ละชนิด</strong> = อัตรา × ปริมาณ driver ที่สินค้านั้นใช้ (ทำทุกกิจกรรมแล้วรวม)</div>
+        <div style={box(C.surface,C.border)}><span className="step-num">4</span><strong>หาต้นทุนต่อ 1 หน่วย</strong> = DM + DL + (OH ที่ปันได้ ÷ จำนวนหน่วยที่ผลิต)</div>
+      </div>
+    )
+  },
+  {
+    key:'when', title:'🚦 เมื่อไรควรใช้ ABC',
+    tags:[['ประยุกต์','purple']],
+    content: () => (
+      <div>
+        <Paragraph>ABC คุ้มค่าเมื่อมีสัญญาณเหล่านี้ (ยิ่งหลายข้อยิ่งควรใช้):</Paragraph>
+        <ul style={{marginTop:0}}>
+          <li>OH เป็นสัดส่วนสูงของต้นทุนรวม (ไม่ใช่แค่ DM/DL)</li>
+          <li>สินค้าหลากหลาย ปริมาณการผลิตต่างกันมาก (บางตัวมาก บางตัวน้อย)</li>
+          <li>สินค้าซับซ้อนต่างกัน (บางตัวต้องตั้งเครื่อง/ตรวจสอบบ่อย)</li>
+          <li>การแข่งขันสูง ตั้งราคาผิดแม้เล็กน้อยก็เสียเปรียบ</li>
+        </ul>
+      </div>
+    )
+  },
+  {
+    key:'pros-cons', title:'⚖️ ข้อดี & ข้อจำกัดของ ABC',
+    tags:[['สรุป','purple']],
+    content: () => (
+      <Row gutter={12}>
+        <Col span={12}><Card size="small" style={{background:C.greenBg,border:`1px solid ${C.green}`}} title="✅ ข้อดี">
+          ต้นทุนแม่นยำขึ้น (หลาย driver) · ควบคุมต้นทุนดีขึ้น · ช่วยตัดสินใจ เช่น ตั้งราคา/เลิกผลิตสินค้าขาดทุน
+        </Card></Col>
+        <Col span={12}><Card size="small" style={{background:C.redBg,border:`1px solid ${C.red}`}} title="⚠️ ข้อจำกัด">
+          ค่าเก็บข้อมูลสูง (ต้องแยกตามกิจกรรม) · คำนวณยุ่งยากซับซ้อนกว่าต้นทุนจริง/ปกติ
+        </Card></Col>
+      </Row>
+    )
+  },
+];
+
+// ============ FLASHCARDS ============
+const flashcards = [
+  {q:'ต้นทุนการผลิตมี 3 ก้อนอะไรบ้าง?',a:'DM + DL + OH',d:'วัตถุดิบทางตรง + ค่าแรงทางตรง + ค่าใช้จ่ายการผลิต',star:2,exam:false},
+  {q:'ทำไม OH ต้อง "ปันส่วน" แต่ DM/DL ไม่ต้อง?',a:'เพราะ OH ระบุเข้าสินค้าโดยตรงไม่ได้',d:'DM/DL รู้ชัดว่าสินค้าชิ้นไหนใช้เท่าไร แต่ OH เช่นค่าไฟทั้งโรงงานเป็นก้อนรวม ต้องหาวิธีปันส่วน',star:3,exam:true},
+  {q:'ABC (Activity-Based Costing) คืออะไร?',a:'ปันส่วน OH เข้าสินค้าผ่าน "กิจกรรม" หลายกิจกรรม',d:'ใช้ตัวผลักดันต้นทุนหลายตัวเพื่อให้ต้นทุนแม่นยำขึ้น',star:3,exam:true},
+  {q:'ABC จัดการต้นทุนส่วนใดเป็นหลัก?',a:'ค่าใช้จ่ายการผลิต (Overhead) เท่านั้น',d:'DM และ DL ยังคิดเข้าสินค้าโดยตรงเหมือนเดิม',star:3,exam:true},
+  {q:'ระบบเดิม (Traditional) ปันส่วน OH ด้วยอะไร?',a:'เกณฑ์เดียว เช่น ชม.แรงงาน/เครื่องจักร',d:'ง่ายแต่บิดเบือนเมื่อสินค้าหลากหลาย/ซับซ้อน',star:2,exam:true},
+  {q:'ทำไมระบบเดิมทำให้ต้นทุน "เพี้ยน"?',a:'สินค้าผลิตน้อยแต่ซับซ้อนกลับถูกคิดต่ำเกินจริง',d:'ระบบเดิมปันตามปริมาณ/ชั่วโมง ทำให้สินค้าผลิตมากแบกต้นทุนเกิน ส่วนสินค้าซับซ้อนผลิตน้อยถูกเกินจริง',star:3,exam:true},
+  {q:'กิจกรรม (Activity) หมายถึงอะไร?',a:'เหตุการณ์/งานที่ก่อให้เกิดต้นทุน',d:'เช่น เดินเครื่องจักร สั่งซื้อ ซ่อมบำรุง ตรวจสอบคุณภาพ',star:2,exam:true},
+  {q:'ตัวผลักดันต้นทุน (Cost Driver) คืออะไร?',a:'สิ่งที่วัดปริมาณการใช้กิจกรรม/ทำให้ต้นทุนเปลี่ยน',d:'เช่น ตารางฟุตเป็นตัวผลักดันค่าประกันภัยโรงงาน, จำนวนครั้งสั่งซื้อเป็นตัวผลักดันกิจกรรมสั่งซื้อ',star:3,exam:true},
+  {q:'Activity Cost Pool คืออะไร?',a:'ถัง/ศูนย์ที่รวมต้นทุนกิจกรรมเดียวกัน',d:'รวมเงินก่อนปันเข้าผลิตภัณฑ์ในขั้นที่ 2',star:2,exam:false},
+  {q:'ABC ปันส่วนกี่ขั้น อะไรบ้าง?',a:'2 ขั้น: OH→ศูนย์กิจกรรม, ศูนย์กิจกรรม→ผลิตภัณฑ์',d:'ระบบเดิมปันทีเดียว ABC แทรกชั้นกิจกรรมตรงกลาง',star:3,exam:true},
+  {q:'Cost Hierarchy 4 ระดับ เรียงจากเล็กไปใหญ่?',a:'หน่วย → กลุ่ม → ผลิตภัณฑ์ → อำนวยการ',d:'Unit → Batch → Product → Facility (1 ชิ้น → 1 ล็อต → 1 รุ่น → ทั้งโรงงาน)',star:3,exam:true},
+  {q:'ระดับ "หน่วย" (Unit-level) คือ?',a:'เกิดทุกครั้งที่ผลิต 1 หน่วย',d:'ตัด พิมพ์ เจาะ (ชม.เครื่อง), ประกอบ ทาสี เย็บ (ชม.แรงงาน)',star:2,exam:true},
+  {q:'ระดับ "กลุ่ม" (Batch-level) คือ?',a:'เกิดทุกครั้งที่ผลิต 1 กลุ่ม',d:'เตรียมเครื่อง, สั่งซื้อ, ตรวจสอบ',star:2,exam:true},
+  {q:'ระดับ "ผลิตภัณฑ์" (Product-level) คือ?',a:'เกิดเมื่อมีผลิตภัณฑ์ใหม่',d:'ออกแบบผลิตภัณฑ์, ทดสอบผลิตภัณฑ์',star:1,exam:true},
+  {q:'ระดับ "อำนวยการ" (Facility-level) คือ?',a:'สนับสนุนการผลิตโดยรวม',d:'เงินเดือน ผจก.โรงงาน (จำนวนพนง.), ค่าเสื่อม/ประกัน (ตารางฟุต)',star:2,exam:true},
+  {q:'4 ขั้นตอน ABC — ขั้นที่ 1 ทำอะไร?',a:'ตั้งศูนย์กิจกรรม + กำหนดตัวผลักดัน',d:'รวม OH เข้าแต่ละศูนย์และจับคู่ driver ที่สัมพันธ์',star:2,exam:false},
+  {q:'4 ขั้นตอน ABC — ขั้นที่ 2 ทำอะไร?',a:'หาอัตราต่อหน่วยของ driver',d:'= ต้นทุนกิจกรรม ÷ ปริมาณ driver รวม',star:2,exam:false},
+  {q:'[PJeans เดิม] OH 240,000, DLH 3,000 อัตรา OH = ?',a:'80 บาท/ชั่วโมงแรงงาน',d:'240,000 ÷ 3,000 = 80',star:3,exam:true},
+  {q:'[PJeans เดิม] ขาสั้นใช้ 1 ชม./ตัว OH/ตัว = ?',a:'80 บาท',d:'80×1=80 (ขายาวใช้ 2 ชม. = 160)',star:2,exam:true},
+  {q:'[PJeans เดิม] ต้นทุน/ตัว ขาสั้น = ?',a:'280 บาท',d:'150+50+80 (ขายาว = 250+100+160 = 510)',star:3,exam:true},
+  {q:'[PJeans ABC] อัตราเดินเครื่อง 170,000 ÷ 17,000 = ?',a:'10 บาท/ชม.เครื่องจักร',d:'ปันด้วยชั่วโมงเครื่องจักรรวม',star:2,exam:true},
+  {q:'[PJeans ABC] อัตราสั่งซื้อ 5,000 ÷ 10 = ?',a:'500 บาท/ครั้ง',d:'ตัวผลักดัน = จำนวนครั้งสั่งซื้อ',star:2,exam:true},
+  {q:'[PJeans ABC] อัตราซ่อม & ตรวจสอบ = ?',a:'ซ่อม 400/ครั้ง · ตรวจ 1,000/ครั้ง',d:'10,000÷25=400 และ 55,000÷55=1,000',star:2,exam:true},
+  {q:'[PJeans ABC] OH รวมขาสั้น = ?',a:'97,000 → 48.50/ตัว',d:'70,000+4,000+8,000+15,000=97,000 ÷ 2,000',star:3,exam:true},
+  {q:'[PJeans ABC] OH รวมขายาว = ?',a:'143,000 → 286/ตัว',d:'100,000+1,000+2,000+40,000=143,000 ÷ 500',star:3,exam:true},
+  {q:'[PJeans ABC] ต้นทุน/ตัว ขาสั้น vs ขายาว?',a:'248.50 vs 636 บาท',d:'150+50+48.50 / 250+100+286',star:3,exam:true},
+  {q:'เทียบเดิม vs ABC — OH ย้ายไปทางไหน?',a:'ไปสินค้าซับซ้อน/ผลิตน้อย (ขายาว)',d:'ขายาว 160→286 (เพิ่ม), ขาสั้น 80→48.50 (ลด)',star:3,exam:true},
+  {q:'ถ้าตั้งราคาตามระบบเดิม จะเกิดอะไรกับขายาว?',a:'อาจขาดทุนโดยไม่รู้ตัว',d:'ระบบเดิมคิดต้นทุนขายาว 510 แต่จริง 636 → ตั้งราคาต่ำไป',star:3,exam:true},
+  {q:'ข้อดีหลักของ ABC?',a:'ต้นทุนแม่นยำขึ้น ช่วยตั้งราคา/ควบคุมต้นทุน',d:'เพราะใช้หลาย driver',star:1,exam:false},
+  {q:'ข้อจำกัดหลักของ ABC?',a:'ค่าเก็บข้อมูลสูง คำนวณยุ่งยากซับซ้อน',d:'ต้องรวบรวมต้นทุนแยกตามกิจกรรม',star:1,exam:false},
+  {q:'เมื่อไรควรใช้ ABC?',a:'OH สูง + สินค้าหลากหลาย/ซับซ้อน + แข่งขันสูง',d:'ยิ่งหลายข้อยิ่งคุ้มที่จะลงทุนทำ ABC',star:1,exam:false},
+];
+
+// ============ QUICK SECTIONS ============
+const quickSections = [
+  { divider:'🎯 สูตรต้องจำ' },
+  {s:'เดิม',t:'อัตรา OH ระบบเดิม',b:'= ประมาณการ OH ÷ เกณฑ์เดียว (DLH หรือ MH)',type:'formula'},
+  {s:'ABC',t:'อัตราต่อกิจกรรม',b:'= ต้นทุนกิจกรรม ÷ ปริมาณตัวผลักดันรวม',type:'formula'},
+  {s:'ปัน',t:'OH เข้าสินค้า (ABC)',b:'= อัตรากิจกรรม × ปริมาณ driver ที่สินค้านั้นใช้ (รวมทุกกิจกรรม)',type:'formula'},
+  {s:'ต่อหน่วย',t:'ต้นทุนต่อหน่วย',b:'= DM + DL + (OH ที่ปันได้ ÷ จำนวนหน่วย)',type:'formula'},
+
+  { divider:'🧠 ตัวช่วยจำ' },
+  {s:'3 ก้อน',t:'ต้นทุนผลิต',b:'DM + DL + OH — ABC ยุ่งแค่ OH ก้อนเดียว',type:'mnem'},
+  {s:'UBPF',t:'ลำดับชั้น 4 ระดับ',b:'Unit-Batch-Product-Facility = หน่วย-กลุ่ม-ผลิตภัณฑ์-อำนวยการ',type:'mnem'},
+  {s:'2 ขั้น',t:'การปันส่วน',b:'OH → ศูนย์กิจกรรม → ผลิตภัณฑ์',type:'mnem'},
+  {s:'หอพัก',t:'อุปมาค่าไฟ',b:'หารเท่ากัน=เดิม (ง่ายแต่ไม่แฟร์) / คิดตามการใช้=ABC (ยุ่งแต่จริง)',type:'mnem'},
+
+  { divider:'🔄 ขั้นตอน' },
+  {s:'4 steps',t:'คำนวณ ABC',b:'1 ตั้งศูนย์+driver → 2 หาอัตรา → 3 ปันเข้าสินค้า → 4 ต้นทุน/หน่วย',type:'flow'},
+
+  { divider:'⚔️ เปรียบเทียบ (มักหลอก)' },
+  {s:'เดิม vs ABC',t:'ผลต่าง',b:'เดิม=เกณฑ์เดียว สินค้ามากแบกเกิน / ABC=หลาย driver ต้นทุนย้ายไปสินค้าซับซ้อน-ผลิตน้อย',type:'contrast'},
+  {s:'ผล PJeans',t:'ขาสั้น/ขายาว',b:'เดิม 280/510 → ABC 248.50/636 (OH ขายาวเพิ่ม 160→286)',type:'contrast'},
+
+  { divider:'📦 ตัวเลขเคส PJeans (ทวนเร็ว)' },
+  {s:'อัตรา',t:'4 กิจกรรม',b:'เดินเครื่อง 10/ชม. · สั่งซื้อ 500/ครั้ง · ซ่อม 400/ครั้ง · ตรวจ 1,000/ครั้ง',type:'chunk'},
+  {s:'ขาสั้น',t:'OH = 97,000',b:'70,000+4,000+8,000+15,000 ÷ 2,000 = 48.50',type:'chunk'},
+  {s:'ขายาว',t:'OH = 143,000',b:'100,000+1,000+2,000+40,000 ÷ 500 = 286',type:'chunk'},
+];
+
+// ============ FORMULA DATA ============
+const formulaData = [
+  { group:'🏛️ ระบบเดิม (Traditional Costing)', items:[
+    { label:'อัตรา OH', f:'อัตรา OH = ประมาณการ OH ÷ เกณฑ์ (ชั่วโมงแรงงานรวม)', sub:'= 240,000 ÷ 3,000', r:'= 80 บาท/ชั่วโมงแรงงาน' },
+    { label:'OH ต่อหน่วย', f:'OH/หน่วย = อัตรา OH × ชั่วโมงแรงงานต่อหน่วย', sub:'ขาสั้น = 80 × 1\nขายาว = 80 × 2', r:'= 80 บาท  ;  160 บาท' },
+    { label:'ต้นทุนต่อหน่วย', f:'ต้นทุน/หน่วย = DM + DL + OH', sub:'ขาสั้น = 150 + 50 + 80\nขายาว = 250 + 100 + 160', r:'= 280 บาท  ;  510 บาท' },
+  ]},
+  { group:'🎯 ระบบ ABC (Activity-Based Costing)', items:[
+    { label:'อัตรากิจกรรม', f:'อัตรากิจกรรม = ต้นทุนกิจกรรม ÷ ปริมาณตัวผลักดันรวม', sub:'เดินเครื่องจักร = 170,000 ÷ 17,000 = 10/ชม.\nสั่งซื้อ = 5,000 ÷ 10 = 500/ครั้ง\nซ่อมบำรุง = 10,000 ÷ 25 = 400/ครั้ง\nตรวจสอบ = 55,000 ÷ 55 = 1,000/ครั้ง', r:'= 10 ; 500 ; 400 ; 1,000 บาท' },
+    { label:'OH เข้าสินค้า (ขาสั้น)', f:'OH = Σ (อัตรากิจกรรม × ปริมาณที่สินค้าใช้)', sub:'= (7,000×10) + (8×500) + (20×400) + (15×1,000)\n= 70,000 + 4,000 + 8,000 + 15,000', r:'= 97,000 บาท' },
+    { label:'OH เข้าสินค้า (ขายาว)', f:'OH = Σ (อัตรากิจกรรม × ปริมาณที่สินค้าใช้)', sub:'= (10,000×10) + (2×500) + (5×400) + (40×1,000)\n= 100,000 + 1,000 + 2,000 + 40,000', r:'= 143,000 บาท' },
+    { label:'OH ต่อหน่วย', f:'OH/หน่วย = OH รวม ÷ จำนวนหน่วยที่ผลิต', sub:'ขาสั้น = 97,000 ÷ 2,000\nขายาว = 143,000 ÷ 500', r:'= 48.50 บาท  ;  286 บาท' },
+    { label:'ต้นทุนต่อหน่วย', f:'ต้นทุน/หน่วย = DM + DL + OH (ABC)', sub:'ขาสั้น = 150 + 50 + 48.50\nขายาว = 250 + 100 + 286', r:'= 248.50 บาท  ;  636 บาท' },
+  ]},
+];
+
+// ============ HOMEWORK SOLUTION DATA ============
+const hwData = [
+  { part:'ส่วนทฤษฎี (ข้อ 1–4)' },
+  { n:'1', a:'ค) การคำนวณค่าใช้จ่ายในการผลิตต่างกัน',
+    ex:'ABC กับระบบเดิมคิดวัตถุดิบทางตรง (DM) และค่าแรงทางตรง (DL) เหมือนกันทุกประการ ต่างกันแค่วิธีปันส่วน "ค่าใช้จ่ายการผลิต (Overhead)" เท่านั้น',
+    ref:'หลักการ: ABC จัดการเฉพาะ Overhead (ดูแท็บสรุป หัวข้อ "ABC คืออะไร" และ "ปูพื้น: ต้นทุน 3 ก้อน")' },
+  { n:'2', a:'ง) ถูกทุกข้อ',
+    ex:'ประโยชน์ของ ABC คือ ต้นทุนแม่นยำขึ้น, ควบคุมต้นทุนมีประสิทธิภาพขึ้น และช่วยผู้บริหารตัดสินใจ (เช่น ตั้งราคา) ได้ดีขึ้น',
+    ref:'สไลด์: "ความสำคัญของการบัญชีต้นทุนกิจกรรม"' },
+  { n:'3', a:'ค) วิธีการคำนวณยุ่งยากและซับซ้อน',
+    ex:'ข้อจำกัดของ ABC คือค่าเก็บข้อมูลสูงและวิธีคำนวณซับซ้อนกว่าต้นทุนจริง/ปกติ (ไม่ใช่ "ใช้ได้แค่ธุรกิจผลิต" และไม่ใช่ "ไม่มีข้อจำกัด")',
+    ref:'สไลด์: "ข้อจำกัดของการบัญชีต้นทุนกิจกรรม"' },
+  { n:'4', a:'ค) กิจกรรมระดับผลิตภัณฑ์ (Product-level)',
+    ex:'การออกแบบผลิตภัณฑ์เกิดขึ้นเมื่อมีการสร้างผลิตภัณฑ์ใหม่ จึงเป็นกิจกรรมระดับผลิตภัณฑ์ (ไม่ได้เกิดทุกหน่วยหรือทุกกลุ่ม)',
+    ref:'สไลด์: "การจัดประเภทของกิจกรรม" / แท็บสรุป หัวข้อ Cost Hierarchy 4 ระดับ' },
+
+  { part:'บริษัท เคเคเอส (ข้อ 5–8)' },
+  { n:'5', a:'ก) 64.85 บาทต่อชั่วโมงเครื่องจักร',
+    ex:'ระบบเดิมใช้เกณฑ์เดียว: อัตรา OH = ต้นทุนรวม ÷ ชั่วโมงเครื่องจักร = 622,600 ÷ 9,600 = 64.85',
+    ref:'สูตร: อัตรา OH (เดิม) = ประมาณการ OH ÷ เกณฑ์เดียว (ดูแท็บสูตร & แทนค่า)' },
+  { n:'6', a:'ก) 648,541.67 บาท',
+    ex:'ค่าใช้จ่ายการผลิตจัดสรร = อัตรา × ชั่วโมงเครื่องจักรที่เกิดจริง = 64.85 × 10,000 = 648,541.67',
+    ref:'หลักการ: ปัน OH = อัตรา × ปริมาณเกณฑ์จริง' },
+  { n:'7', a:'ข) 40 / 16 / 15',
+    ex:'ABC หาอัตราแยกแต่ละศูนย์ = ต้นทุนกิจกรรม ÷ ตัวผลักดันของศูนย์นั้น\n• การควบคุมการผลิต = 304,000 ÷ 7,600 = 40 /ชม.แรงงาน\n• การเดินเครื่องจักร = 153,600 ÷ 9,600 = 16 /ชม.เครื่องจักร\n• ค่าเช่าโรงงาน = 165,000 ÷ 11,000 = 15 /ตร.ม.',
+    ref:'ABC ขั้นที่ 2: อัตรากิจกรรม = ต้นทุนกิจกรรม ÷ ปริมาณตัวผลักดันรวม' },
+  { n:'8', a:'ข) 281,000 บาท',
+    ex:'ปัน OH เข้าชิ้นส่วนคอมพิวเตอร์ = Σ(อัตรา × ปริมาณที่ใช้)\n= (2,600×40) + (4,500×16) + (7,000×15)\n= 104,000 + 72,000 + 105,000 = 281,000',
+    ref:'ABC ขั้นที่ 3: ปัน OH เข้าสินค้า = อัตรา × ปริมาณตัวผลักดันที่สินค้านั้นใช้' },
+
+  { part:'บริษัท PM (ข้อ 9–10)' },
+  { n:'9', a:'ข) 500 / 170 / 17,000',
+    ex:'• การรับคำสั่งซื้อ = 160,000 ÷ 320 ครั้ง = 500 /ครั้ง\n• การตรวจสอบคุณภาพ = 1,530,000 ÷ 9,000 ครั้ง = 170 /ครั้ง\n• การบริหารจัดการ = 170,000 ÷ 10 คน = 17,000 /คน',
+    ref:'ABC ขั้นที่ 2: อัตราต่อหน่วยตัวผลักดันของแต่ละศูนย์' },
+  { n:'10', a:'ก) 1,069,000 บาท',
+    ex:'ปัน OH ให้สินค้า A = (200×500) + (5,000×170) + (7×17,000)\n= 100,000 + 850,000 + 119,000 = 1,069,000',
+    ref:'ABC ขั้นที่ 3: รวมทุกศูนย์กิจกรรมที่สินค้า A ใช้' },
+
+  { part:'บริษัท EEM (ข้อ 11–13)' },
+  { n:'11', a:'A) $54,000',
+    ex:'Account inquiry rate = 320,000 ÷ 16,000 ชม. = 20/ชม.\nปันให้ Department A = 2,700 ชม. × 20 = 54,000',
+    ref:'ABC: อัตรากิจกรรม × ปริมาณที่แผนกใช้' },
+  { n:'12', a:'B) $63,700',
+    ex:'Labor rate = 392,000 ÷ 8,000 ชม. = 49/ชม.\nปันให้ Bush Department = 1,300 ชม. × 49 = 63,700',
+    ref:'ABC: อัตรากิจกรรม × ปริมาณที่แผนกใช้' },
+  { n:'13', a:'B) $83,800',
+    ex:'มี 2 ตัวผลักดัน ต้องแยกคิดแล้วรวม\n• Setups: 60,000 ÷ (11+29=40) = 1,500/ครั้ง → Deluxe 29×1,500 = 43,500\n• Components: 58,900 ÷ (6+13=19) = 3,100/ชิ้น → Deluxe 13×3,100 = 40,300\nรวม Deluxe = 43,500 + 40,300 = 83,800',
+    ref:'หลักการ ABC: ใช้หลายตัวผลักดัน แยกอัตราแต่ละกิจกรรมก่อนรวม' },
+
+  { part:'ส่วนทฤษฎี (ข้อ 14–15)' },
+  { n:'14', a:'A) สมมติว่ากิจกรรมสนับสนุนทั้งหมดกระทบทุกผลิตภัณฑ์เท่ากัน',
+    ex:'อัตราเดียว (single rate) ทำให้ต้นทุนบิดเบือน เพราะเหมาว่าทุกผลิตภัณฑ์ใช้กิจกรรมสนับสนุนในสัดส่วนเดียวกัน ทั้งที่จริงไม่เท่ากัน',
+    ref:'หลักการ: ทำไมระบบเดิมเพี้ยน (แท็บสรุป หัวข้อ "ระบบเดิม ทำไมถึงเพี้ยน")' },
+  { n:'15', a:'D) ต้นทุนทางอ้อม (Indirect costs)',
+    ex:'ABC ต่างจากระบบเดิมในการปฏิบัติต่อ "ต้นทุนทางอ้อม" (Overhead) ส่วนต้นทุนทางตรง (DM, DL, Prime) เหมือนกัน',
+    ref:'หลักการ: ABC จัดการเฉพาะ Overhead (เชื่อมโยงกับข้อ 1)' },
+];
+
+// ============ COMPONENTS ============
+function Stars({n}){ return <span style={{color:C.gold}}>{'⭐'.repeat(n)}</span>; }
+
+function HomeworkTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={14}>
+      <Alert type="success" showIcon message="เฉลยการบ้าน ABC (15 ข้อ)" description="แต่ละข้อมีคำตอบ คำอธิบายวิธีคิด และอ้างอิงหลักการ/สไลด์ที่เกี่ยวข้อง"/>
+      {hwData.map((it,i)=>{
+        if(it.part) return <Divider key={i} orientation="left" style={{color:C.text,fontWeight:700,fontSize:17,borderColor:C.border}}>{it.part}</Divider>;
+        return (
+          <Card key={i} size="small" style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:12}}
+            title={<span style={{color:C.text,fontWeight:700}}>ข้อ {it.n}</span>}
+            extra={<Tag color="green" style={{fontWeight:700}}>ตอบ {it.a}</Tag>}>
+            <div style={{whiteSpace:'pre-line',color:C.text2,marginBottom:8}}>{it.ex}</div>
+            <div style={{background:C.purpleBg,border:`1px solid ${C.purple}`,borderRadius:8,padding:'6px 10px',color:C.purple,fontSize:13}}>📎 อ้างอิง: {it.ref}</div>
+          </Card>
+        );
+      })}
+    </Space>
+  );
+}
+
+function FormulaBlock({it}){
+  return (
+    <div style={{background:C.surface3,border:`1px solid ${C.border}`,borderRadius:10,padding:'12px 14px',marginBottom:12}}>
+      <Tag color="gold" style={{marginBottom:8}}>{it.label}</Tag>
+      <div style={{background:'#F3ECDC',border:`1px solid ${C.goldDark}`,borderRadius:8,padding:'8px 12px',fontWeight:700,color:C.goldDark,marginBottom:8}}>📐 {it.f}</div>
+      <div style={{background:C.blueBg,border:`1px solid ${C.blue}`,borderRadius:8,padding:'8px 12px',whiteSpace:'pre-line',color:C.text2,marginBottom:8}}><strong style={{color:C.blue}}>แทนค่า:</strong>{'\n'}{it.sub}</div>
+      <div style={{background:C.greenBg,border:`1px solid ${C.green}`,borderRadius:8,padding:'8px 12px',whiteSpace:'pre-line',fontWeight:700,color:C.green}}>{it.r}</div>
+    </div>
+  );
+}
+
+function FormulaTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Alert type="info" showIcon message="วิธีอ่าน" description="แต่ละสูตรมี 3 ชั้น — กล่องทอง = สูตร (สัญลักษณ์), กล่องฟ้า = แทนตัวเลขจากเคส PJeans, กล่องเขียว = คำตอบ ลองปิดกล่องล่างแล้วแทนเองก่อนดูเฉลย"/>
+      {formulaData.map((sec,i)=>(
+        <Card key={i} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+          title={<span style={{color:C.text,fontWeight:700}}>{sec.group}</span>}>
+          {sec.items.map((it,j)=><FormulaBlock key={j} it={it}/>)}
+        </Card>
+      ))}
+    </Space>
+  );
+}
+
+function SummaryTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Alert type="info" showIcon message="วิธีใช้ไฟล์นี้"
+        description="แท็บนี้เรียงจากง่ายไปยาก (ปูพื้น → นิยาม → คำนวณ) อ่านไล่ลงมาทีละการ์ด แล้วไปดูเคส PJeans เพื่อเห็นการคำนวณจริง จากนั้นทดสอบด้วย Flashcard"/>
+      {summaryData.map(it=>(
+        <Card key={it.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+          title={<span style={{color:C.text,fontWeight:700}}>{it.title}</span>}
+          extra={<Space>{it.tags.map((t,i)=><Tag key={i} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+          {it.content()}
+        </Card>
+      ))}
+    </Space>
+  );
+}
+
+function CaseTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>👖 ฉาก: บริษัท PJeans — กางเกง 2 แบบ</span>}>
+        <Paragraph>PJeans ผลิตกางเกง 2 แบบ: <strong>ขาสั้น (ผลิตมาก 2,000 ตัว ง่าย)</strong> และ <strong>ยีนส์ขายาว (ผลิตน้อย 500 ตัว แต่ซับซ้อน)</strong> เราจะคิดต้นทุน 2 วิธีแล้วเทียบกัน เพื่อพิสูจน์ว่าทำไม ABC สะท้อนความจริงมากกว่า</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ข้อมูล',dataIndex:'a'},{title:'ขาสั้น',dataIndex:'b',align:'right'},{title:'ยีนส์ขายาว',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'ปริมาณการผลิต/ปี',b:'2,000 ตัว',c:'500 ตัว'},
+            {key:2,a:'วัตถุดิบทางตรง/ตัว',b:'150',c:'250'},
+            {key:3,a:'ค่าแรงทางตรง/ตัว',b:'50',c:'100'},
+            {key:4,a:'ชั่วโมงแรงงาน/ตัว',b:'1 ชม.',c:'2 ชม.'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="info" showIcon message="ค่าใช้จ่ายการผลิตทั้งปี = 240,000 บาท · ชั่วโมงแรงงานรวม = 3,000 ชม."/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🏛️ วิธีที่ 1: ระบบเดิม (เกณฑ์เดียว = ชั่วโมงแรงงาน)</span>}
+        extra={<Tag color="blue">Traditional</Tag>}>
+        <Paragraph>ระบบเดิมเอา OH ทั้งก้อนหารด้วยชั่วโมงแรงงานรวม ได้อัตราเดียว แล้วคูณกลับตามชั่วโมงที่สินค้าใช้</Paragraph>
+        <div style={box(C.goldLight,C.goldDark)}>อัตรา OH = 240,000 ÷ 3,000 ชม. = <strong>80 บาท/ชั่วโมงแรงงาน</strong></div>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ต้นทุนการผลิต',dataIndex:'a'},{title:'ขาสั้น',dataIndex:'b',align:'right'},{title:'ยีนส์ขายาว',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'วัตถุดิบทางตรง',b:'150',c:'250'},
+            {key:2,a:'ค่าแรงทางตรง',b:'50',c:'100'},
+            {key:3,a:'ค่าใช้จ่ายการผลิต (80 × ชม.)',b:'80',c:'160'},
+            {key:4,a:'ต้นทุนต่อหน่วย',b:'280',c:'510'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="warning" showIcon message="สังเกตข้อสงสัย" description="ระบบเดิมคิดว่าขายาวกิน OH เป็น 2 เท่าของขาสั้น (160 vs 80) เพียงเพราะใช้แรงงาน 2 เท่า — แต่จริงๆ ขายาวตรวจสอบบ่อยกว่า ตั้งเครื่องบ่อยกว่ามาก ระบบเดิมมองไม่เห็นจุดนี้"/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}><span className="step-num">1</span>ตั้งศูนย์กิจกรรม + ตัวผลักดัน</span>}
+        extra={<Tag color="gold">ABC Step 1</Tag>}>
+        <Paragraph>แทนที่จะมอง OH เป็นก้อนเดียว เราแยกว่า 240,000 มาจาก 4 กิจกรรมอะไรบ้าง และแต่ละกิจกรรมวัดด้วยอะไร</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'กิจกรรม',dataIndex:'a'},{title:'ต้นทุน',dataIndex:'b',align:'right'},{title:'ตัวผลักดัน',dataIndex:'c'}]}
+          dataSource={[
+            {key:1,a:'เดินเครื่องจักร',b:'170,000',c:'ชั่วโมงเครื่องจักร'},
+            {key:2,a:'สั่งซื้อวัตถุดิบ',b:'5,000',c:'จำนวนครั้งการสั่งซื้อ'},
+            {key:3,a:'ซ่อมบำรุงเครื่องจักร',b:'10,000',c:'จำนวนครั้งการซ่อม'},
+            {key:4,a:'ตรวจสอบคุณภาพ',b:'55,000',c:'จำนวนครั้งการตรวจสอบ'},
+            {key:5,a:'รวม',b:'240,000',c:''},
+          ]}/>
+        <Paragraph style={{marginTop:12,marginBottom:6}}><strong>ปริมาณกิจกรรมที่แต่ละแบบใช้จริง:</strong></Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ผลิตภัณฑ์',dataIndex:'a'},{title:'ชม.เครื่อง',dataIndex:'b',align:'right'},{title:'ครั้งสั่งซื้อ',dataIndex:'c',align:'right'},{title:'ครั้งซ่อม',dataIndex:'d',align:'right'},{title:'ครั้งตรวจ',dataIndex:'e',align:'right'}]}
+          dataSource={[
+            {key:1,a:'ขาสั้น',b:'7,000',c:'8',d:'20',e:'15'},
+            {key:2,a:'ยีนส์ขายาว',b:'10,000',c:'2',d:'5',e:'40'},
+            {key:3,a:'รวม',b:'17,000',c:'10',d:'25',e:'55'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="success" showIcon message="จุดสังเกตสำคัญ" description="ขายาวผลิตแค่ 500 ตัว แต่ตรวจสอบถึง 40 ครั้ง (ขาสั้น 2,000 ตัวตรวจแค่ 15 ครั้ง!) → ขายาวกินกิจกรรมตรวจสอบมหาศาล นี่คือสิ่งที่ระบบเดิมมองข้าม"/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}><span className="step-num">2</span>หาอัตราต่อหน่วยของตัวผลักดัน</span>}
+        extra={<Tag color="gold">ABC Step 2</Tag>}>
+        <Paragraph>เอาต้นทุนแต่ละกิจกรรม หารด้วยปริมาณ driver รวม → ได้ "ราคาต่อครั้ง/ต่อชั่วโมง" ของแต่ละกิจกรรม</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'กิจกรรม',dataIndex:'a'},{title:'ต้นทุน ÷ driver',dataIndex:'b',align:'right'},{title:'อัตรา',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'เดินเครื่องจักร',b:'170,000 ÷ 17,000',c:'10 บาท/ชม.'},
+            {key:2,a:'สั่งซื้อวัตถุดิบ',b:'5,000 ÷ 10',c:'500 บาท/ครั้ง'},
+            {key:3,a:'ซ่อมบำรุง',b:'10,000 ÷ 25',c:'400 บาท/ครั้ง'},
+            {key:4,a:'ตรวจสอบคุณภาพ',b:'55,000 ÷ 55',c:'1,000 บาท/ครั้ง'},
+          ]}/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}><span className="step-num">3</span><span className="step-num">4</span>ปัน OH เข้าสินค้า และหาต้นทุนต่อหน่วย</span>}
+        extra={<Tag color="gold">ABC Step 3–4</Tag>}>
+        <Paragraph>เอา "อัตราต่อครั้ง" × "ปริมาณที่สินค้านั้นใช้" ของทุกกิจกรรมแล้วรวม → ได้ OH รวมของสินค้าแต่ละแบบ</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'กิจกรรม (อัตรา × ปริมาณ)',dataIndex:'a'},{title:'ขาสั้น',dataIndex:'b',align:'right'},{title:'ยีนส์ขายาว',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'เดินเครื่องจักร (×10)',b:'7,000×10 = 70,000',c:'10,000×10 = 100,000'},
+            {key:2,a:'สั่งซื้อ (×500)',b:'8×500 = 4,000',c:'2×500 = 1,000'},
+            {key:3,a:'ซ่อมบำรุง (×400)',b:'20×400 = 8,000',c:'5×400 = 2,000'},
+            {key:4,a:'ตรวจสอบ (×1,000)',b:'15×1,000 = 15,000',c:'40×1,000 = 40,000'},
+            {key:5,a:'รวม OH',b:'97,000',c:'143,000'},
+            {key:6,a:'OH ต่อตัว (÷ จำนวนผลิต)',b:'97,000 ÷ 2,000 = 48.50',c:'143,000 ÷ 500 = 286'},
+          ]}/>
+        <Table style={{marginTop:12}} size="small" pagination={false} bordered
+          columns={[{title:'ต้นทุนการผลิต',dataIndex:'a'},{title:'ขาสั้น',dataIndex:'b',align:'right'},{title:'ยีนส์ขายาว',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'วัตถุดิบทางตรง',b:'150',c:'250'},
+            {key:2,a:'ค่าแรงทางตรง',b:'50',c:'100'},
+            {key:3,a:'ค่าใช้จ่ายการผลิต (ABC)',b:'48.50',c:'286'},
+            {key:4,a:'ต้นทุนต่อหน่วย',b:'248.50',c:'636'},
+          ]}/>
+      </Card>
+
+      <Card style={{background:C.purpleBg,border:`1px solid ${C.purple}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>⚖️ เทียบผลลัพธ์: ระบบเดิม vs ABC</span>}>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 280" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <text x="36" y="32" font-size="15" font-weight="700" fill="#3D3229">เปรียบเทียบ OH ต่อตัว (ระบบเดิม กับ ABC)</text>
+
+  <text x="40" y="80" font-size="13" font-weight="700" fill="#5B7A9E">ขาสั้น</text>
+  <text x="40" y="98" font-size="11" fill="#7A6E62">(ผลิตมาก)</text>
+  <rect x="150" y="64" width="160" height="22" fill="#5B7A9E" opacity="0.8"/>
+  <text x="320" y="81" font-size="12" fill="#3D3229">เดิม 80</text>
+  <rect x="150" y="92" width="97" height="22" fill="#5D8A66" opacity="0.85"/>
+  <text x="257" y="109" font-size="12" font-weight="700" fill="#5D8A66">ABC 48.50  (ลดลง)</text>
+
+  <line x1="36" y1="135" x2="784" y2="135" stroke="#DDD3C1" stroke-width="1"/>
+
+  <text x="40" y="170" font-size="13" font-weight="700" fill="#B85C5C">ยีนส์ขายาว</text>
+  <text x="40" y="188" font-size="11" fill="#7A6E62">(ผลิตน้อย ซับซ้อน)</text>
+  <rect x="150" y="154" width="80" height="22" fill="#5B7A9E" opacity="0.8"/>
+  <text x="240" y="171" font-size="12" fill="#3D3229">เดิม 160</text>
+  <rect x="150" y="182" width="286" height="22" fill="#B85C5C" opacity="0.85"/>
+  <text x="446" y="199" font-size="12" font-weight="700" fill="#B85C5C">ABC 286  (เพิ่มขึ้น)</text>
+
+  <text x="36" y="245" font-size="12" fill="#5C4F42">สรุป: ABC ย้ายต้นทุน OH ไปยังสินค้าที่ใช้กิจกรรมมาก (ขายาว) ทำให้สะท้อนต้นทุนจริงกว่า</text>
+  <text x="36" y="266" font-size="12" fill="#5C4F42">ส่วนกราฟด้านบนยาวสั้นตามมูลค่า OH ต่อตัว (สเกล 1 บาท = 1 จุด)</text>
+</svg>
+        `}}/>
+        <Table style={{marginTop:10}} size="small" pagination={false} bordered
+          columns={[{title:'ต้นทุน/หน่วย',dataIndex:'a'},{title:'เดิม–ขาสั้น',dataIndex:'b',align:'right'},{title:'เดิม–ขายาว',dataIndex:'c',align:'right'},{title:'ABC–ขาสั้น',dataIndex:'d',align:'right'},{title:'ABC–ขายาว',dataIndex:'e',align:'right'}]}
+          dataSource={[
+            {key:1,a:'ค่าใช้จ่ายการผลิต',b:'80',c:'160',d:'48.50',e:'286'},
+            {key:2,a:'ต้นทุนต่อหน่วย',b:'280',c:'510',d:'248.50',e:'636'},
+          ]}/>
+        <Paragraph style={{marginTop:10,marginBottom:0}}>
+          <strong>บทเรียน:</strong> ระบบเดิมคิดต้นทุนขายาวต่ำไป (510) ทั้งที่จริงคือ 636 บาท เพราะขายาวกินกิจกรรมตรวจสอบ/ตั้งเครื่องมากกว่ามาก ถ้าตั้งราคาขายตามระบบเดิม อาจ<strong>ขายขาดทุนโดยไม่รู้ตัว</strong> — นี่คือเหตุผลที่ ABC สำคัญต่อการตัดสินใจ
+        </Paragraph>
+      </Card>
+    </Space>
+  );
+}
+
+function FlashcardTab(){
+  const [mode,setMode]=useState('all');
+  const [order,setOrder]=useState(()=>flashcards.map((_,i)=>i));
+  const [idx,setIdx]=useState(0);
+  const [flip,setFlip]=useState(false);
+  const [score,setScore]=useState({c:0,w:0});
+
+  const pool = useMemo(()=>{
+    let f=flashcards.map((c,i)=>({...c,_i:i}));
+    if(mode==='exam') f=f.filter(c=>c.exam);
+    if(mode==='star3') f=f.filter(c=>c.star===3);
+    return f;
+  },[mode]);
+
+  const list = useMemo(()=>{
+    const ids = order.filter(i=>pool.some(p=>p._i===i));
+    return ids.length?ids.map(i=>flashcards[i]):pool;
+  },[order,pool]);
+
+  const card = list[idx] || pool[0];
+  const reset=(m)=>{ setMode(m); setIdx(0); setFlip(false); setScore({c:0,w:0}); setOrder(flashcards.map((_,i)=>i)); };
+  const shuffle=()=>{ const o=[...order]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const next=()=>{ setFlip(false); setIdx(i=>Math.min(i+1,list.length-1)); };
+  const prev=()=>{ setFlip(false); setIdx(i=>Math.max(i-1,0)); };
+  if(!card) return <Text>ไม่มีการ์ด</Text>;
+
+  return (
+    <div>
+      <Flex justify="space-between" align="center" wrap="wrap" gap={8} style={{marginBottom:14}}>
+        <Space wrap>
+          <Button type={mode==='all'?'primary':'default'} onClick={()=>reset('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={mode==='exam'?'primary':'default'} onClick={()=>reset('exam')}>เฉพาะข้อสอบ</Button>
+          <Button type={mode==='star3'?'primary':'default'} onClick={()=>reset('star3')}>⭐⭐⭐ สำคัญสุด</Button>
+        </Space>
+        <Space>
+          <Button onClick={shuffle}>🔀 สลับ</Button>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+        </Space>
+      </Flex>
+      <div className="fc-perspective" style={{marginBottom:14}}>
+        <div className={"fc-card"+(flip?" flipped":"")} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white,border:`2px solid ${C.borderDark}`,padding:24,display:'flex',flexDirection:'column',justifyContent:'center'}}>
+            <Space style={{marginBottom:10}}><Stars n={card.star}/>{card.exam&&<Tag color="volcano">ข้อสอบ</Tag>}</Space>
+            <Text style={{fontSize:20,fontWeight:600,color:C.text}}>{card.q}</Text>
+            <Text type="secondary" style={{marginTop:16}}>👆 แตะเพื่อดูคำตอบ</Text>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.greenBg,border:`2px solid ${C.green}`,padding:24,display:'flex',flexDirection:'column',justifyContent:'center'}}>
+            <Text style={{fontSize:22,fontWeight:700,color:C.green}}>{card.a}</Text>
+            <Divider style={{margin:'12px 0'}}/>
+            <Text style={{color:C.text2}}>{card.d}</Text>
+          </div>
+        </div>
+      </div>
+      <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
+        <Button onClick={prev} disabled={idx===0}>← ก่อนหน้า</Button>
+        <Space>
+          <Button style={{background:C.green,color:'#fff',border:'none'}} onClick={()=>{setScore(s=>({...s,c:s.c+1}));next();}}>✓ ถูก</Button>
+          <Button style={{background:C.red,color:'#fff',border:'none'}} onClick={()=>{setScore(s=>({...s,w:s.w+1}));next();}}>✗ ผิด</Button>
+        </Space>
+        <Button onClick={next} disabled={idx>=list.length-1}>ถัดไป →</Button>
+      </Flex>
+      <div style={{textAlign:'center',marginTop:12}}><Text type="secondary">การ์ดที่ {idx+1} / {list.length}</Text></div>
+    </div>
+  );
+}
+
+const qcColor = {
+  mnem:{bd:C.purple,bg:C.purpleBg}, flow:{bd:C.cyan,bg:C.cyanBg},
+  contrast:{bd:C.red,bg:C.redBg}, chunk:{bd:C.blue,bg:C.blueBg},
+  formula:{bd:C.goldDark,bg:'#F3ECDC'},
+};
+
+function QuickTab(){
+  return (
+    <Row gutter={[14,14]}>
+      {quickSections.map((q,i)=>{
+        if(q.divider) return <Col span={24} key={i}><Divider orientation="left" style={{color:C.text,fontWeight:700,fontSize:18,borderColor:C.border}}>{q.divider}</Divider></Col>;
+        const col=qcColor[q.type]||qcColor.chunk;
+        return (
+          <Col xs={24} sm={12} key={i}>
+            <div className="qc" style={{background:col.bg,borderLeft:`5px solid ${col.bd}`,border:`1px solid ${C.border}`,borderLeftWidth:5,borderRadius:10,padding:'14px 16px',height:'100%'}}>
+              <Space align="center" style={{marginBottom:6}}>
+                <Tag color="default" style={{fontWeight:700,borderColor:col.bd,color:col.bd}}>{q.s}</Tag>
+                <Text strong style={{color:C.text}}>{q.t}</Text>
+              </Space>
+              <div style={{color:C.text2,whiteSpace:'pre-line'}}>{q.b}</div>
+            </div>
+          </Col>
+        );
+      })}
+    </Row>
+  );
+}
+
+function App(){
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{ colorPrimary:C.gold, colorBgBase:C.bg, colorTextBase:C.text, colorBorder:C.border, borderRadius:10, fontFamily:"'Noto Sans Thai',sans-serif", fontSize:15 },
+      components:{ Card:{colorBgContainer:C.white}, Table:{colorBgContainer:C.white,headerBg:C.surface2} }
+    }}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:900,margin:'0 auto',padding:'28px 16px',width:'100%'}}>
+          <div style={{textAlign:'center',marginBottom:8}}>
+            <Title level={2} style={{color:C.text,marginBottom:4}}>📚 GA511 บัญชีต้นทุน — Week 3</Title>
+            <Text style={{color:C.text2,fontSize:16}}>การบัญชีต้นทุนตามกิจกรรม (Activity-Based Costing)</Text>
+          </div>
+          <Tabs centered type="card" defaultActiveKey="1" items={[
+            {key:'1',label:'📖 สรุปเนื้อหา',children:<SummaryTab/>},
+            {key:'2',label:'📜 เคสจริง (PJeans)',children:<CaseTab/>},
+            {key:'3',label:'📐 สูตร & แทนค่า',children:<FormulaTab/>},
+            {key:'4',label:'📝 เฉลยการบ้าน',children:<HomeworkTab/>},
+            {key:'5',label:'🃏 Flashcard',children:<FlashcardTab/>},
+            {key:'6',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+          ]}/>
+        </Content>
+        <Footer style={{textAlign:'center',background:'transparent',color:C.text3}}>
+          ไฟล์ทบทวน GA511 Week 3 · Activity-Based Costing · ปูพื้น → เคส → ทดสอบ → ทวนเร็ว
+        </Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
