@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 Week 1 — บัญชีบริหารและแนวคิดต้นทุน (ทบทวน)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai',sans-serif; color:#3D3229; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif; }
+  .fc-perspective { perspective:1200px; }
+  .fc-card { position:relative; width:100%; min-height:300px; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:14px; }
+  .fc-back { transform:rotateY(180deg); }
+  .qc { transition:transform 0.2s, box-shadow 0.2s; }
+  .qc:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(120,100,70,0.18); }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:6px; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  .ant-table-cell { line-height:1.9 !important; }
+  .step-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:#A8906C; color:#fff; font-weight:700; margin-right:8px; flex:none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { Content, Footer } = Layout;
+const { useState, useMemo } = React;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  amber:'#B5986A', amberDark:'#7A6548',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62',
+  white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+const box = (bg,bd) => ({ background:bg, border:`1px solid ${bd}`, borderRadius:10, padding:'12px 16px', marginBottom:12 });
+
+// ============ SUMMARY DATA ============
+const summaryData = [
+  {
+    key:'fin-vs-man', title:'🏁 บัญชีการเงิน vs บัญชีบริหาร',
+    tags:[['ภาพรวม','volcano']],
+    content: () => (
+      <div>
+        <Paragraph><strong>บัญชีบริหาร (Managerial Accounting)</strong> คือการนำข้อมูลบัญชีมาใช้ <em>ภายในองค์กร</em> เพื่อการวางแผน ควบคุม และตัดสินใจ ส่วน <strong>บัญชีการเงิน</strong> เน้นรายงานต่อ <em>บุคคลภายนอก</em></Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ประเด็น',dataIndex:'a',width:130},{title:'บัญชีการเงิน',dataIndex:'b'},{title:'บัญชีบริหาร',dataIndex:'c'}]}
+          dataSource={[
+            {key:1,a:'ผู้ใช้',b:'ภายนอก (นักลงทุน เจ้าหนี้ รัฐ)',c:'ภายใน (ผู้บริหาร)'},
+            {key:2,a:'จุดประสงค์',b:'รายงานฐานะ/ผลการเงิน',c:'วางแผน ควบคุม ตัดสินใจ'},
+            {key:3,a:'มาตรฐาน',b:'ต้องตามมาตรฐานบัญชี',c:'ยืดหยุ่น ตามที่ผู้บริหารต้องการ'},
+            {key:4,a:'มุมเวลา',b:'อดีต',c:'อนาคต + อดีต'},
+          ]}/>
+        <Alert style={{marginTop:10}} type="info" showIcon message="บัญชีต้นทุน (Cost Accounting)" description="คือการคำนวณ วิเคราะห์ และรายงานข้อมูลต้นทุนของสินค้า/บริการ ปัจจุบันถือเป็นส่วนหนึ่งของบัญชีบริหาร · หน้าที่ผู้บริหาร 4 ข้อ: วางแผน → สั่งการ/จูงใจ → ควบคุม → ตัดสินใจ"/>
+      </div>
+    )
+  },
+  {
+    key:'biz-types', title:'🏢 ประเภทธุรกิจ 3 แบบ',
+    tags:[['พื้นฐาน','blue']],
+    content: () => (
+      <Table size="small" pagination={false} bordered
+        columns={[{title:'ประเภท',dataIndex:'a'},{title:'ลักษณะ',dataIndex:'b'},{title:'ต้นทุนสินค้า',dataIndex:'c'}]}
+        dataSource={[
+          {key:1,a:'บริการ (Service)',b:'ขายบริการ ไม่มีสินค้าคงเหลือ',c:'ค่าแรง/ค่าใช้จ่ายบริการ'},
+          {key:2,a:'พาณิชยกรรม (Merchandising)',b:'ซื้อมาขายไป',c:'ต้นทุนซื้อสินค้ามาขาย'},
+          {key:3,a:'ผลิตกรรม (Manufacturing)',b:'ผลิตเอง',c:'DM + DL + OH'},
+        ]}/>
+    )
+  },
+  {
+    key:'mfg-costs', title:'🧱 ต้นทุนการผลิต 3 ก้อน (DM / DL / OH)',
+    tags:[['ออกสอบ','volcano']],
+    content: () => (
+      <div>
+        <div style={box(C.greenBg,C.green)}><strong>วัตถุดิบทางตรง (Direct Materials: DM)</strong> — วัตถุดิบหลักที่เป็นเนื้อสินค้า ระบุได้ชัด เช่น ไม้ทำโต๊ะ, ผ้าทำเสื้อ</div>
+        <div style={box(C.blueBg,C.blue)}><strong>ค่าแรงทางตรง (Direct Labor: DL)</strong> — ค่าจ้างคนที่แปรสภาพวัตถุดิบเป็นสินค้าโดยตรง เช่น ค่าแรงช่างไม้ คนเย็บผ้า</div>
+        <div style={box(C.purpleBg,C.purple)}><strong>ค่าใช้จ่ายการผลิต (Factory Overhead: OH)</strong> — ต้นทุนผลิตทั้งหมด <em>ยกเว้น</em> DM และ DL เช่น วัตถุดิบทางอ้อม แรงงานทางอ้อม ค่าสาธารณูปโภคโรงงาน ค่าเช่า ค่าเสื่อมเครื่องจักร</div>
+        <Alert style={{marginTop:8}} type="warning" showIcon message="สูตรที่ออกสอบบ่อย"
+          description={<span><strong>Prime Cost = DM + DL</strong> | <strong>Conversion Cost = DL + OH</strong>{'\n'}DL อยู่ทั้งสองสูตร — จุดที่มักหลอก</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'direct-indirect', title:'🎯 ต้นทุนทางตรง vs ทางอ้อม',
+    tags:[['นิยาม','blue']],
+    content: () => (
+      <div>
+        <div style={box(C.greenBg,C.green)}><strong>ต้นทุนทางตรง (Direct Cost)</strong> — ติดตาม/ระบุเข้าสู่ผลิตภัณฑ์ (cost object) ได้ชัดเจนและคุ้มค่า → ใช้การ <em>สืบหา (tracing)</em></div>
+        <div style={box(C.redBg,C.red)}><strong>ต้นทุนทางอ้อม (Indirect Cost)</strong> — ระบุเข้าผลิตภัณฑ์โดยตรงไม่ได้อย่างคุ้มค่า ต้องใช้การ <em>ปันส่วน (allocation)</em> เช่น เงินเดือนหัวหน้าคนงาน ค่าเสื่อมราคา</div>
+        <Alert type="info" showIcon message="ข้อควรจำ" description="ต้นทุนทางอ้อม (indirect) ไม่ได้แปลว่าเป็นต้นทุนคงที่เสมอ และไม่ได้เป็นต้นทุนจมเสมอ — เป็นคนละมิติกับพฤติกรรมต้นทุน"/>
+      </div>
+    )
+  },
+  {
+    key:'cost-behavior', title:'📈 พฤติกรรมต้นทุน (Cost Behavior) 4 แบบ',
+    tags:[['ออกสอบ','volcano'],['ตาราง','blue']],
+    content: () => (
+      <div>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'ประเภท',dataIndex:'a',width:150},{title:'ต้นทุนรวม',dataIndex:'b'},{title:'ต้นทุนต่อหน่วย',dataIndex:'c'},{title:'ตัวอย่าง',dataIndex:'d'}]}
+          dataSource={[
+            {key:1,a:'ผันแปร (Variable)',b:'เปลี่ยนตามปริมาณ',c:'คงที่',d:'ค่าวัตถุดิบทางตรง'},
+            {key:2,a:'คงที่ (Fixed)',b:'คงที่',c:'ลดลงเมื่อผลิตมาก',d:'ค่าเช่าโรงงาน ค่าเสื่อม'},
+            {key:3,a:'กึ่งผันแปร/ผสม (Mixed)',b:'มีทั้งคงที่+ผันแปร',c:'-',d:'ค่าไฟ ค่าโทรศัพท์'},
+            {key:4,a:'กึ่งคงที่ (Step)',b:'คงที่เป็นช่วงๆ (ขั้นบันได)',c:'-',d:'เงินเดือนหัวหน้าคุมงาน'},
+          ]}/>
+        <div style={{...box(C.goldLight,C.goldDark),marginTop:10}}>
+          <strong>สมการต้นทุน:</strong> ต้นทุนผันแปร Y = bX | ต้นทุนผสม Y = a + bX{'\n'}(a = ต้นทุนคงที่, b = ต้นทุนผันแปรต่อหน่วย, X = ปริมาณกิจกรรม)
+        </div>
+      </div>
+    )
+  },
+  {
+    key:'multi-class', title:'🔀 การจำแนกหลายมิติ (Direct/Indirect × Variable/Fixed)',
+    tags:[['ออกสอบ','volcano']],
+    content: () => (
+      <div>
+        <Paragraph>ต้นทุนหนึ่งตัวมีได้ 2 มิติพร้อมกัน เกิดเป็น 4 คู่ผสม:</Paragraph>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'',dataIndex:'a',width:120},{title:'ผันแปร (Variable)',dataIndex:'b'},{title:'คงที่ (Fixed)',dataIndex:'c'}]}
+          dataSource={[
+            {key:1,a:'ทางตรง (Direct)',b:'วัตถุดิบทางตรง',c:'เงินเดือนหัวหน้าสายการผลิตเฉพาะรุ่น'},
+            {key:2,a:'ทางอ้อม (Indirect)',b:'ค่าไฟเครื่องจักร (ส่วนผันแปร)',c:'ค่าเช่าโรงงาน ค่าเสื่อมอาคาร'},
+          ]}/>
+      </div>
+    )
+  },
+  {
+    key:'product-period', title:'📦 ต้นทุนผลิตภัณฑ์ (Product) vs ต้นทุนงวดเวลา (Period)',
+    tags:[['ออกสอบ','volcano'],['สำคัญ','red']],
+    content: () => (
+      <div>
+        <div style={box(C.greenBg,C.green)}><strong>ต้นทุนผลิตภัณฑ์ (Product Costs)</strong> = DM + DL + OH (ธุรกิจผลิต){'\n'}• ของที่ยังไม่ขาย → เป็น <strong>สินค้าคงเหลือ</strong> ในงบฐานะการเงิน{'\n'}• ของที่ขายแล้ว → เป็น <strong>ต้นทุนขาย</strong> ในงบกำไรขาดทุน</div>
+        <div style={box(C.redBg,C.red)}><strong>ต้นทุนงวดเวลา (Period Costs)</strong> = ค่าใช้จ่ายขาย + ค่าใช้จ่ายบริหาร → ตัดเป็นค่าใช้จ่าย <strong>ทันทีในงวด</strong> ที่เกิด (ไม่เข้าสินค้าคงเหลือ)</div>
+        <Alert type="warning" showIcon message="จุดที่มักหลอก" description="ค่านายหน้าขาย เงินเดือนผู้บริหาร ค่าขนส่งสินค้าออก = Period Costs (ไม่ใช่ต้นทุนการผลิต) แม้จะดูเกี่ยวกับสินค้า"/>
+      </div>
+    )
+  },
+  {
+    key:'cogm-flow', title:'🔄 การไหลของต้นทุน & สูตร COGM → COGS',
+    tags:[['ออกสอบทุกครั้ง','volcano'],['ภาพ','green']],
+    content: () => (
+      <div>
+        <div dangerouslySetInnerHTML={{__html:`
+<svg viewBox="0 0 820 200" width="100%" style="height:auto;background:#FAF7F2;border:1px solid #DDD3C1;border-radius:12px;font-family:'Noto Sans Thai',sans-serif;">
+  <rect x="20" y="70" width="150" height="60" rx="8" fill="#EFF5F0" stroke="#5D8A66" stroke-width="1.5"/>
+  <text x="95" y="95" font-size="12" font-weight="700" fill="#5D8A66" text-anchor="middle">วัตถุดิบ (RM)</text>
+  <text x="95" y="114" font-size="11" fill="#3D3229" text-anchor="middle">+ DL + OH</text>
+  <path d="M170 100 L 215 100" stroke="#A8906C" stroke-width="2"/><polygon points="215,100 203,94 203,106" fill="#A8906C"/>
+  <rect x="220" y="70" width="160" height="60" rx="8" fill="#ECF0F5" stroke="#5B7A9E" stroke-width="1.5"/>
+  <text x="300" y="95" font-size="12" font-weight="700" fill="#5B7A9E" text-anchor="middle">งานระหว่างทำ (WIP)</text>
+  <text x="300" y="114" font-size="11" fill="#3D3229" text-anchor="middle">→ ผลิตเสร็จ</text>
+  <path d="M380 100 L 425 100" stroke="#A8906C" stroke-width="2"/><polygon points="425,100 413,94 413,106" fill="#A8906C"/>
+  <rect x="430" y="70" width="160" height="60" rx="8" fill="#F0ECF3" stroke="#7B6B8A" stroke-width="1.5"/>
+  <text x="510" y="95" font-size="12" font-weight="700" fill="#7B6B8A" text-anchor="middle">สินค้าสำเร็จรูป (FG)</text>
+  <text x="510" y="114" font-size="11" fill="#3D3229" text-anchor="middle">COGM เข้ามา</text>
+  <path d="M590 100 L 635 100" stroke="#A8906C" stroke-width="2"/><polygon points="635,100 623,94 623,106" fill="#A8906C"/>
+  <rect x="640" y="70" width="160" height="60" rx="8" fill="#F5ECEA" stroke="#B85C5C" stroke-width="1.5"/>
+  <text x="720" y="95" font-size="12" font-weight="700" fill="#B85C5C" text-anchor="middle">ต้นทุนขาย (COGS)</text>
+  <text x="720" y="114" font-size="11" fill="#3D3229" text-anchor="middle">เมื่อขายออกไป</text>
+  <text x="410" y="35" font-size="13" font-weight="700" fill="#3D3229" text-anchor="middle">เส้นทางต้นทุน: วัตถุดิบ → ผลิต → สำเร็จรูป → ขาย</text>
+  <text x="410" y="165" font-size="11" fill="#5C4F42" text-anchor="middle">แต่ละกล่องมีสินค้าคงเหลือต้นงวด/ปลายงวด ที่ต้องบวก-หักตามสูตร</text>
+</svg>
+        `}}/>
+        <div style={{...box(C.surface3,C.border),marginTop:12}}>
+          <strong>1. วัตถุดิบทางตรงใช้ไป</strong> = วัตถุดิบต้นงวด + ซื้อ − วัตถุดิบปลายงวด{'\n'}
+          <strong>2. ต้นทุนการผลิตรวม</strong> = DM ใช้ไป + DL + OH{'\n'}
+          <strong>3. ต้นทุนสินค้าที่ผลิตเสร็จ (COGM)</strong> = WIP ต้นงวด + ต้นทุนการผลิตรวม − WIP ปลายงวด{'\n'}
+          <strong>4. ต้นทุนขาย (COGS)</strong> = FG ต้นงวด + COGM − FG ปลายงวด
+        </div>
+      </div>
+    )
+  },
+];
+
+// ============ FLASHCARDS ============
+const flashcards = [
+  {q:'บัญชีบริหารต่างจากบัญชีการเงินอย่างไร?',a:'บริหาร=ใช้ภายในเพื่อตัดสินใจ / การเงิน=รายงานภายนอก',d:'บัญชีบริหารยืดหยุ่น มองอนาคต ส่วนบัญชีการเงินต้องตามมาตรฐาน รายงานต่อบุคคลภายนอก',star:3,exam:true},
+  {q:'ผู้บริหารใช้ข้อมูลบัญชีบริหารเพื่ออะไร?',a:'สื่อสาร พัฒนา และนำกลยุทธ์ไปปฏิบัติ',d:'(communicate, develop, implement strategies) ไม่ใช่เพื่อรายงานต่อบุคคลภายนอก',star:2,exam:true},
+  {q:'หน้าที่ผู้บริหาร 4 ข้อ?',a:'วางแผน → สั่งการ/จูงใจ → ควบคุม → ตัดสินใจ',d:'Planning, Directing & Motivating, Controlling, Decision Making',star:2,exam:false},
+  {q:'ต้นทุนการผลิต (Manufacturing Costs) ประกอบด้วย?',a:'DM + DL + OH',d:'วัตถุดิบทางตรง + ค่าแรงทางตรง + ค่าใช้จ่ายการผลิต',star:3,exam:true},
+  {q:'Prime Cost = ?',a:'DM + DL',d:'ต้นทุนขั้นต้น',star:3,exam:true},
+  {q:'Conversion Cost = ?',a:'DL + OH',d:'ต้นทุนแปลงสภาพ — DL อยู่ทั้ง Prime และ Conversion',star:3,exam:true},
+  {q:'Direct cost ต่างจาก Indirect cost อย่างไร?',a:'Direct=ระบุเข้าสินค้าตรงได้ / Indirect=ต้องปันส่วน',d:'Direct ใช้ tracing, Indirect ใช้ allocation',star:3,exam:true},
+  {q:'คำกล่าวใดถูกเกี่ยวกับต้นทุนทางอ้อม?',a:'ระบุเข้า cost object โดยตรงอย่างคุ้มค่าไม่ได้',d:'ไม่ใช่ต้นทุนจมเสมอ ไม่ใช่ COGS ทั้งหมด ไม่ได้ผันแปรตรงกับการผลิตเสมอ',star:2,exam:true},
+  {q:'ต้นทุนคงที่ (Fixed cost) ขึ้นกับอะไร?',a:'ไม่เปลี่ยนแปลงในช่วงเวลาหนึ่ง',d:'ต้นทุนรวมคงที่ไม่ขึ้นกับปริมาณการผลิต แต่ต่อหน่วยลดลงเมื่อผลิตมาก',star:3,exam:true},
+  {q:'ต้นทุนผันแปร: ต้นทุนรวมและต่อหน่วยเป็นอย่างไร?',a:'รวม=เปลี่ยนตามปริมาณ, ต่อหน่วย=คงที่',d:'เช่น หนังวัวทำกระเป๋า ใบละ 5,000 — 5 ใบ = 25,000 แต่ต่อใบเท่าเดิม',star:3,exam:true},
+  {q:'ต้นทุนคงที่: ต้นทุนรวมและต่อหน่วยเป็นอย่างไร?',a:'รวม=คงที่, ต่อหน่วย=ลดลงเมื่อผลิตมาก',d:'ค่าเสื่อม 30,000/เดือน → ผลิต 1,000 หน่วย = 30/หน่วย, ผลิต 2,000 = 15/หน่วย',star:3,exam:true},
+  {q:'ต้นทุนผสม (Mixed cost) คือ?',a:'มีทั้งส่วนคงที่และผันแปร',d:'Y = a + bX เช่น ค่าโทรศัพท์ (ค่าบริการคงที่ + ค่าโทรตามครั้ง)',star:2,exam:true},
+  {q:'ต้นทุนกึ่งคงที่ (Step cost) คือ?',a:'คงที่เป็นช่วงๆ แบบขั้นบันได',d:'เช่น หัวหน้าคุมงาน 1 คนคุมได้ 20 คน เกินต้องจ้างเพิ่ม',star:2,exam:true},
+  {q:'ตัวอย่างต้นทุนผันแปรของบริษัทประกัน?',a:'ค่าไฟ (electricity)',d:'ค่าเช่าตึก เงินเดือน CEO ภาษีอาคาร = ต้นทุนคงที่',star:2,exam:true},
+  {q:'Product Costs คืออะไร?',a:'DM + DL + OH (ต้นทุนผลิต)',d:'ของยังไม่ขาย→สินค้าคงเหลือ, ขายแล้ว→ต้นทุนขาย',star:3,exam:true},
+  {q:'Period Costs คืออะไร?',a:'ค่าใช้จ่ายขาย + บริหาร',d:'ตัดเป็นค่าใช้จ่ายทันทีในงวด ไม่เข้าสินค้าคงเหลือ',star:3,exam:true},
+  {q:'ค่านายหน้าขาย/ค่าขนส่งสินค้าออก จัดเป็นต้นทุนแบบใด?',a:'Period cost (ค่าใช้จ่ายขาย)',d:'ไม่ใช่ต้นทุนการผลิต แม้เกี่ยวกับสินค้า',star:2,exam:true},
+  {q:'Work-in-process inventory คือ?',a:'สินค้าระหว่างผลิต ยังไม่เสร็จ',d:'อยู่ระหว่างกระบวนการผลิต ณ วันสิ้นงวด',star:2,exam:true},
+  {q:'[คำนวณ] DM ใช้ไป = ?',a:'วัตถุดิบต้นงวด + ซื้อ − วัตถุดิบปลายงวด',d:'เช่น 30,000 + 205,000 − 20,000 = 215,000',star:3,exam:true},
+  {q:'[คำนวณ] ต้นทุนสินค้าที่ผลิตเสร็จ (COGM) = ?',a:'WIP ต้นงวด + ต้นทุนการผลิตรวม − WIP ปลายงวด',d:'เช่น 80,000 + 854,000 − 50,000 = 884,000',star:3,exam:true},
+  {q:'[คำนวณ] ต้นทุนขาย (COGS) = ?',a:'FG ต้นงวด + COGM − FG ปลายงวด',d:'เช่น 110,000 + 884,000 − 120,000 = 874,000',star:3,exam:true},
+  {q:'[คำนวณ] ต้นทุนการผลิตรวม = ?',a:'DM ใช้ไป + DL + OH',d:'เช่น 215,000 + 350,000 + 289,000 = 854,000',star:2,exam:true},
+  {q:'[B1] ต้นทุนผลิตทางตรงผันแปรต่อหน่วย = ?',a:'$200',d:'DM 110 + DL 90 = 200 (VMOH เป็นทางอ้อม, FMOH คงที่)',star:2,exam:true},
+  {q:'งบเฉพาะของธุรกิจผลิตที่ธุรกิจอื่นไม่มี?',a:'งบต้นทุนสินค้าที่ผลิตเสร็จ (COGM statement)',d:'Statement of cost of goods manufactured',star:1,exam:false},
+];
+
+// ============ QUICK SECTIONS ============
+const quickSections = [
+  { divider:'🎯 สูตรต้องจำ' },
+  {s:'DM ใช้ไป',t:'วัตถุดิบทางตรงใช้ไป',b:'= วัตถุดิบต้นงวด + ซื้อ − วัตถุดิบปลายงวด',type:'formula'},
+  {s:'TMC',t:'ต้นทุนการผลิตรวม',b:'= DM ใช้ไป + DL + OH',type:'formula'},
+  {s:'COGM',t:'ต้นทุนสินค้าที่ผลิตเสร็จ',b:'= WIP ต้นงวด + ต้นทุนการผลิตรวม − WIP ปลายงวด',type:'formula'},
+  {s:'COGS',t:'ต้นทุนขาย',b:'= FG ต้นงวด + COGM − FG ปลายงวด',type:'formula'},
+  {s:'Prime/Conv',t:'ต้นทุนขั้นต้น/แปลงสภาพ',b:'Prime = DM + DL | Conversion = DL + OH',type:'formula'},
+  {s:'Mixed',t:'สมการต้นทุนผสม',b:'Y = a + bX (a=คงที่, b=ผันแปร/หน่วย, X=ปริมาณ)',type:'formula'},
+
+  { divider:'🧠 ตัวช่วยจำ' },
+  {s:'VC/FC ต่อหน่วย',t:'พฤติกรรมต่อหน่วย',b:'ผันแปร: รวมขยับ-ต่อหน่วยนิ่ง / คงที่: รวมนิ่ง-ต่อหน่วยลด (สลับกัน)',type:'mnem'},
+  {s:'Product/Period',t:'เข้าสินค้าหรือไม่',b:'Product (DM/DL/OH) เข้าสินค้าคงเหลือ / Period (ขาย+บริหาร) ตัดทิ้งทันที',type:'mnem'},
+  {s:'OH = ที่เหลือ',t:'นิยาม Overhead',b:'ต้นทุนผลิตทั้งหมด "ยกเว้น" DM และ DL = OH',type:'mnem'},
+
+  { divider:'🔄 เส้นทางต้นทุน' },
+  {s:'Flow',t:'การไหลของต้นทุน',b:'วัตถุดิบ → WIP → สินค้าสำเร็จรูป → ต้นทุนขาย',type:'flow'},
+  {s:'4 สูตร',t:'ลำดับคำนวณ',b:'DM ใช้ไป → ต้นทุนการผลิตรวม → COGM → COGS',type:'flow'},
+
+  { divider:'⚔️ จุดเปรียบเทียบ (มักหลอก)' },
+  {s:'ตรง vs อ้อม',t:'มิติการระบุ',b:'Direct=tracing / Indirect=allocation (คนละมิติกับ ผันแปร/คงที่)',type:'contrast'},
+  {s:'Product vs Period',t:'มิติเวลา',b:'ค่าขนส่งออก/นายหน้า/บริหาร = Period (ไม่ใช่ต้นทุนผลิต)',type:'contrast'},
+
+  { divider:'📦 ตัวเลขเคส Moon (ทวนเร็ว)' },
+  {s:'DM',t:'วัตถุดิบใช้ไป',b:'30,000 + 205,000 − 20,000 = 215,000',type:'chunk'},
+  {s:'COGM',t:'ผลิตเสร็จ',b:'80,000 + 854,000 − 50,000 = 884,000',type:'chunk'},
+  {s:'NI',t:'กำไรสุทธิ',b:'GM 626,000 − ค่าใช้จ่าย 550,000 = 76,000',type:'chunk'},
+];
+
+// ============ FORMULA DATA ============
+const formulaData = [
+  { group:'🧮 งบต้นทุนสินค้าที่ผลิตเสร็จ (เคส Moon)', items:[
+    { label:'วัตถุดิบทางตรงใช้ไป', f:'= วัตถุดิบต้นงวด + ซื้อ − วัตถุดิบปลายงวด', sub:'= 30,000 + 205,000 − 20,000', r:'= 215,000' },
+    { label:'ค่าใช้จ่ายการผลิต (OH)', f:'= ผลรวมต้นทุนผลิตทางอ้อมทั้งหมด', sub:'= 90,000 + 65,000 + 40,000 + 35,000 + 24,000 + 15,000 + 14,000 + 6,000', r:'= 289,000' },
+    { label:'ต้นทุนการผลิตรวม', f:'= DM ใช้ไป + DL + OH', sub:'= 215,000 + 350,000 + 289,000', r:'= 854,000' },
+    { label:'ต้นทุนสินค้าที่ผลิตเสร็จ (COGM)', f:'= WIP ต้นงวด + ต้นทุนการผลิตรวม − WIP ปลายงวด', sub:'= 80,000 + 854,000 − 50,000', r:'= 884,000' },
+  ]},
+  { group:'💰 งบกำไรขาดทุน (เคส Moon)', items:[
+    { label:'ต้นทุนขาย (COGS)', f:'= FG ต้นงวด + COGM − FG ปลายงวด', sub:'= 110,000 + 884,000 − 120,000', r:'= 874,000' },
+    { label:'กำไรขั้นต้น', f:'= ขาย − ต้นทุนขาย', sub:'= 1,500,000 − 874,000', r:'= 626,000' },
+    { label:'ค่าใช้จ่ายขาย+บริหาร', f:'= นายหน้า + บริหาร + ค่าขนส่ง', sub:'= 150,000 + 300,000 + 100,000', r:'= 550,000' },
+    { label:'กำไรสุทธิ', f:'= กำไรขั้นต้น − ค่าใช้จ่ายขาย+บริหาร', sub:'= 626,000 − 550,000', r:'= 76,000' },
+  ]},
+];
+
+// ============ HOMEWORK SOLUTION DATA (HW1) ============
+const hwData = [
+  { part:'ตอนที่ 1 — ความหมายของคำ (ข้อ 1–7)' },
+  { n:'1', a:'Manufacturing Costs',
+    ex:'ต้นทุนการผลิต = DM + DL + OH (ต้นทุนทั้งหมดในการผลิตสินค้า)',
+    ref:'สไลด์: ต้นทุนการผลิต (Manufacturing costs)' },
+  { n:'2', a:'Direct Costs',
+    ex:'ต้นทุนที่ติดตาม/ระบุเข้าสู่ผลิตภัณฑ์ได้ชัดเจนและคุ้มค่า เช่น DM, DL',
+    ref:'สไลด์: Direct and Indirect Costs' },
+  { n:'3', a:'Indirect Costs',
+    ex:'ต้นทุนที่ระบุเข้าผลิตภัณฑ์โดยตรงไม่ได้อย่างคุ้มค่า ต้องปันส่วน เช่น เงินเดือนหัวหน้าคนงาน ค่าเสื่อม',
+    ref:'สไลด์: Direct and Indirect Costs' },
+  { n:'4', a:'Variable Costs',
+    ex:'ต้นทุนรวมเปลี่ยนตามปริมาณกิจกรรมในสัดส่วนตรง (ต่อหน่วยคงที่)',
+    ref:'สไลด์: ต้นทุนผันแปร (Variable Cost)' },
+  { n:'5', a:'Fixed Cost',
+    ex:'ต้นทุนรวมคงที่ไม่เปลี่ยนตามกิจกรรม (ต่อหน่วยลดลงเมื่อผลิตมาก)',
+    ref:'สไลด์: ต้นทุนคงที่ (Fixed Cost)' },
+  { n:'6', a:'Work-in-process Inventory',
+    ex:'สินค้าที่อยู่ระหว่างผลิต ยังไม่เสร็จสมบูรณ์ ณ วันสิ้นงวด',
+    ref:'สไลด์: การไหลของต้นทุน (WIP)' },
+  { n:'7', a:'Period Costs',
+    ex:'ค่าใช้จ่ายที่ไม่เกี่ยวกับการผลิต (ขาย + บริหาร) ตัดเป็นค่าใช้จ่ายทันทีในงวด',
+    ref:'สไลด์: Other costs concept (Period Costs)' },
+
+  { part:'ตอนที่ 2 — Multiple Choice (ข้อ 1–5)' },
+  { n:'1', a:'B',
+    ex:'ต้นทุนคงที่ไม่เปลี่ยนแปลงในช่วงระยะเวลาหนึ่ง (ไม่ขึ้นกับปริมาณการผลิต)',
+    ref:'หลักการ: พฤติกรรมต้นทุนคงที่' },
+  { n:'2', a:'C',
+    ex:'ค่าไฟ (electricity) เป็นต้นทุนผันแปรของบริษัทประกัน ส่วนค่าเช่า/เงินเดือน CEO/ภาษีอาคาร = คงที่',
+    ref:'หลักการ: ต้นทุนผันแปร vs คงที่' },
+  { n:'3', a:'D',
+    ex:'ต้นทุนทางอ้อมไม่สามารถโยงเข้า cost object ได้โดยง่ายอย่างคุ้มค่า (ไม่ใช่ต้นทุนจมเสมอ/ไม่ใช่ COGS ทั้งหมด)',
+    ref:'สไลด์: Direct and Indirect Costs' },
+  { n:'4', a:'B',
+    ex:'ผู้บริหารใช้ข้อมูลบัญชีบริหารเพื่อสื่อสาร พัฒนา และนำกลยุทธ์ไปปฏิบัติ (communicate, develop, implement strategies)',
+    ref:'สไลด์: บัญชีบริหารคืออะไร' },
+  { n:'5', a:'B ($200)',
+    ex:'ต้นทุนการผลิตทางตรงผันแปร = DM + DL = 110 + 90 = 200 (VMOH เป็นทางอ้อม, FMOH คงที่, ค่าอื่นเป็น period)',
+    ref:'หลักการ: Direct + Variable + Manufacturing เท่านั้น' },
+
+  { part:'ตอนที่ 3 — บริษัท Moon Manufacturing' },
+  { n:'(ก)', a:'COGM = 884,000',
+    ex:'DM ใช้ไป = 30,000+205,000−20,000 = 215,000\nOH รวม = 289,000 (รวมต้นทุนผลิตทางอ้อม 8 รายการ)\nต้นทุนการผลิตรวม = 215,000+350,000+289,000 = 854,000\nCOGM = 80,000(WIP ต้น) + 854,000 − 50,000(WIP ปลาย) = 884,000',
+    ref:'สูตร COGM (ดูแท็บสูตร & แทนค่า)' },
+  { n:'(ข)', a:'กำไรสุทธิ = 76,000',
+    ex:'ต้นทุนขาย = 110,000 + 884,000 − 120,000 = 874,000\nกำไรขั้นต้น = 1,500,000 − 874,000 = 626,000\nค่าใช้จ่ายขาย+บริหาร = 150,000 + 300,000 + 100,000 = 550,000\nกำไรสุทธิ = 626,000 − 550,000 = 76,000',
+    ref:'จุดระวัง: ค่านายหน้า/บริหาร/ค่าขนส่ง = Period cost ไม่เข้า COGM' },
+];
+
+// ============ COMPONENTS ============
+function Stars({n}){ return <span style={{color:C.gold}}>{'⭐'.repeat(n)}</span>; }
+
+function SummaryTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Alert type="info" showIcon message="วิธีใช้ไฟล์นี้"
+        description="แท็บนี้เรียงจากพื้นฐาน → คำนวณ อ่านไล่ลงมาทีละการ์ด แล้วไปดูเคส Moon เพื่อเห็นการทำงบจริง จากนั้นทดสอบด้วย Flashcard"/>
+      {summaryData.map(it=>(
+        <Card key={it.key} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+          title={<span style={{color:C.text,fontWeight:700}}>{it.title}</span>}
+          extra={<Space>{it.tags.map((t,i)=><Tag key={i} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+          {it.content()}
+        </Card>
+      ))}
+    </Space>
+  );
+}
+
+function CaseTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}>🏭 เคส: บริษัท Moon Manufacturing (ปี 2024)</span>}>
+        <Paragraph>โจทย์ให้ข้อมูลต้นทุนปนกันทั้งต้นทุนผลิตและไม่ผลิต งานคือ "คัดแยก" ให้ถูกว่าอะไรเข้างบต้นทุนผลิต อะไรเป็น period cost แล้วทำ 2 งบ: งบต้นทุนสินค้าที่ผลิตเสร็จ (COGM) และงบกำไรขาดทุน</Paragraph>
+        <Alert type="warning" showIcon message="กับดักของโจทย์" description="วัตถุดิบทางอ้อม/ค่าประกันโรงงาน/ภาษีอาคารโรงงาน = เข้า OH (ต้นทุนผลิต) | แต่ค่านายหน้าขาย ค่าบริหาร ค่าขนส่งสินค้าออก = Period cost (ไปงบกำไรขาดทุน ไม่เข้า COGM)"/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}><span className="step-num">ก</span>งบต้นทุนสินค้าที่ผลิตเสร็จ (COGM)</span>}
+        extra={<Tag color="gold">ส่วน (ก)</Tag>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'รายการ',dataIndex:'a'},{title:'ย่อย',dataIndex:'b',align:'right'},{title:'รวม',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'วัตถุดิบต้นงวด',b:'30,000',c:''},
+            {key:2,a:'บวก ซื้อวัตถุดิบ',b:'205,000',c:''},
+            {key:3,a:'หัก วัตถุดิบปลายงวด',b:'(20,000)',c:''},
+            {key:4,a:'วัตถุดิบทางตรงใช้ไป',b:'',c:'215,000'},
+            {key:5,a:'ค่าแรงงานทางตรง',b:'',c:'350,000'},
+            {key:6,a:'ค่าใช้จ่ายการผลิต (OH) รวม',b:'',c:'289,000'},
+            {key:7,a:'ต้นทุนการผลิตรวม',b:'',c:'854,000'},
+            {key:8,a:'บวก งานระหว่างทำต้นงวด',b:'',c:'80,000'},
+            {key:9,a:'หัก งานระหว่างทำปลายงวด',b:'',c:'(50,000)'},
+            {key:10,a:'ต้นทุนสินค้าที่ผลิตเสร็จ (COGM)',b:'',c:'884,000'},
+          ]}/>
+        <Alert style={{marginTop:8}} type="info" showIcon message="OH รวม 289,000 มาจาก"
+          description="แรงงานทางอ้อม 90,000 + สาธารณูปโภคโรงงาน 65,000 + ค่าเช่าเครื่องจักร 40,000 + เงินเดือนผู้จัดการโรงงาน 35,000 + ค่าเสื่อมอาคารโรงงาน 24,000 + วัตถุดิบทางอ้อม 15,000 + ประกันโรงงาน 14,000 + ภาษีอาคารโรงงาน 6,000"/>
+      </Card>
+
+      <Card style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+        title={<span style={{color:C.text,fontWeight:700}}><span className="step-num">ข</span>งบกำไรขาดทุน (Income Statement)</span>}
+        extra={<Tag color="gold">ส่วน (ข)</Tag>}>
+        <Table size="small" pagination={false} bordered
+          columns={[{title:'รายการ',dataIndex:'a'},{title:'ย่อย',dataIndex:'b',align:'right'},{title:'รวม',dataIndex:'c',align:'right'}]}
+          dataSource={[
+            {key:1,a:'ขาย (สุทธิ)',b:'',c:'1,500,000'},
+            {key:2,a:'สินค้าสำเร็จรูปต้นงวด',b:'110,000',c:''},
+            {key:3,a:'บวก ต้นทุนสินค้าที่ผลิตเสร็จ (COGM)',b:'884,000',c:''},
+            {key:4,a:'หัก สินค้าสำเร็จรูปปลายงวด',b:'(120,000)',c:''},
+            {key:5,a:'ต้นทุนขาย (COGS)',b:'',c:'(874,000)'},
+            {key:6,a:'กำไรขั้นต้น',b:'',c:'626,000'},
+            {key:7,a:'ค่าใช้จ่ายขาย+บริหาร (150k+300k+100k)',b:'',c:'(550,000)'},
+            {key:8,a:'กำไรสุทธิ',b:'',c:'76,000'},
+          ]}/>
+        <Alert style={{marginTop:8}} type="success" showIcon message="ผลลัพธ์" description="COGM = 884,000 และกำไรสุทธิ = 76,000 (ตรงกับเฉลยทางการ)"/>
+      </Card>
+    </Space>
+  );
+}
+
+function FormulaBlock({it}){
+  return (
+    <div style={{background:C.surface3,border:`1px solid ${C.border}`,borderRadius:10,padding:'12px 14px',marginBottom:12}}>
+      <Tag color="gold" style={{marginBottom:8}}>{it.label}</Tag>
+      <div style={{background:'#F3ECDC',border:`1px solid ${C.goldDark}`,borderRadius:8,padding:'8px 12px',fontWeight:700,color:C.goldDark,marginBottom:8}}>📐 {it.f}</div>
+      <div style={{background:C.blueBg,border:`1px solid ${C.blue}`,borderRadius:8,padding:'8px 12px',whiteSpace:'pre-line',color:C.text2,marginBottom:8}}><strong style={{color:C.blue}}>แทนค่า:</strong>{'\n'}{it.sub}</div>
+      <div style={{background:C.greenBg,border:`1px solid ${C.green}`,borderRadius:8,padding:'8px 12px',whiteSpace:'pre-line',fontWeight:700,color:C.green}}>{it.r}</div>
+    </div>
+  );
+}
+
+function FormulaTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={16}>
+      <Alert type="info" showIcon message="วิธีอ่าน" description="แต่ละสูตรมี 3 ชั้น — กล่องทอง = สูตร, กล่องฟ้า = แทนตัวเลขจากเคส Moon, กล่องเขียว = คำตอบ"/>
+      {formulaData.map((sec,i)=>(
+        <Card key={i} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:14}}
+          title={<span style={{color:C.text,fontWeight:700}}>{sec.group}</span>}>
+          {sec.items.map((it,j)=><FormulaBlock key={j} it={it}/>)}
+        </Card>
+      ))}
+    </Space>
+  );
+}
+
+function HomeworkTab(){
+  return (
+    <Space direction="vertical" style={{width:'100%'}} size={14}>
+      <Alert type="success" showIcon message="เฉลยการบ้าน HW1" description="แต่ละข้อมีคำตอบ คำอธิบาย และอ้างอิงหลักการ/สไลด์ที่เกี่ยวข้อง"/>
+      {hwData.map((it,i)=>{
+        if(it.part) return <Divider key={i} orientation="left" style={{color:C.text,fontWeight:700,fontSize:17,borderColor:C.border}}>{it.part}</Divider>;
+        return (
+          <Card key={i} size="small" style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:12}}
+            title={<span style={{color:C.text,fontWeight:700}}>ข้อ {it.n}</span>}
+            extra={<Tag color="green" style={{fontWeight:700}}>{it.a}</Tag>}>
+            <div style={{whiteSpace:'pre-line',color:C.text2,marginBottom:8}}>{it.ex}</div>
+            <div style={{background:C.purpleBg,border:`1px solid ${C.purple}`,borderRadius:8,padding:'6px 10px',color:C.purple,fontSize:13}}>📎 อ้างอิง: {it.ref}</div>
+          </Card>
+        );
+      })}
+    </Space>
+  );
+}
+
+function FlashcardTab(){
+  const [mode,setMode]=useState('all');
+  const [order,setOrder]=useState(()=>flashcards.map((_,i)=>i));
+  const [idx,setIdx]=useState(0);
+  const [flip,setFlip]=useState(false);
+  const [score,setScore]=useState({c:0,w:0});
+  const pool = useMemo(()=>{
+    let f=flashcards.map((c,i)=>({...c,_i:i}));
+    if(mode==='exam') f=f.filter(c=>c.exam);
+    if(mode==='star3') f=f.filter(c=>c.star===3);
+    return f;
+  },[mode]);
+  const list = useMemo(()=>{
+    const ids = order.filter(i=>pool.some(p=>p._i===i));
+    return ids.length?ids.map(i=>flashcards[i]):pool;
+  },[order,pool]);
+  const card = list[idx] || pool[0];
+  const reset=(m)=>{ setMode(m); setIdx(0); setFlip(false); setScore({c:0,w:0}); setOrder(flashcards.map((_,i)=>i)); };
+  const shuffle=()=>{ const o=[...order]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const next=()=>{ setFlip(false); setIdx(i=>Math.min(i+1,list.length-1)); };
+  const prev=()=>{ setFlip(false); setIdx(i=>Math.max(i-1,0)); };
+  if(!card) return <Text>ไม่มีการ์ด</Text>;
+  return (
+    <div>
+      <Flex justify="space-between" align="center" wrap="wrap" gap={8} style={{marginBottom:14}}>
+        <Space wrap>
+          <Button type={mode==='all'?'primary':'default'} onClick={()=>reset('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={mode==='exam'?'primary':'default'} onClick={()=>reset('exam')}>เฉพาะข้อสอบ</Button>
+          <Button type={mode==='star3'?'primary':'default'} onClick={()=>reset('star3')}>⭐⭐⭐ สำคัญสุด</Button>
+        </Space>
+        <Space>
+          <Button onClick={shuffle}>🔀 สลับ</Button>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+        </Space>
+      </Flex>
+      <div className="fc-perspective" style={{marginBottom:14}}>
+        <div className={"fc-card"+(flip?" flipped":"")} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white,border:`2px solid ${C.borderDark}`,padding:24,display:'flex',flexDirection:'column',justifyContent:'center'}}>
+            <Space style={{marginBottom:10}}><Stars n={card.star}/>{card.exam&&<Tag color="volcano">ข้อสอบ</Tag>}</Space>
+            <Text style={{fontSize:20,fontWeight:600,color:C.text}}>{card.q}</Text>
+            <Text type="secondary" style={{marginTop:16}}>👆 แตะเพื่อดูคำตอบ</Text>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.greenBg,border:`2px solid ${C.green}`,padding:24,display:'flex',flexDirection:'column',justifyContent:'center'}}>
+            <Text style={{fontSize:22,fontWeight:700,color:C.green}}>{card.a}</Text>
+            <Divider style={{margin:'12px 0'}}/>
+            <Text style={{color:C.text2}}>{card.d}</Text>
+          </div>
+        </div>
+      </div>
+      <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
+        <Button onClick={prev} disabled={idx===0}>← ก่อนหน้า</Button>
+        <Space>
+          <Button style={{background:C.green,color:'#fff',border:'none'}} onClick={()=>{setScore(s=>({...s,c:s.c+1}));next();}}>✓ ถูก</Button>
+          <Button style={{background:C.red,color:'#fff',border:'none'}} onClick={()=>{setScore(s=>({...s,w:s.w+1}));next();}}>✗ ผิด</Button>
+        </Space>
+        <Button onClick={next} disabled={idx>=list.length-1}>ถัดไป →</Button>
+      </Flex>
+      <div style={{textAlign:'center',marginTop:12}}><Text type="secondary">การ์ดที่ {idx+1} / {list.length}</Text></div>
+    </div>
+  );
+}
+
+const qcColor = {
+  mnem:{bd:C.purple,bg:C.purpleBg}, flow:{bd:C.cyan,bg:C.cyanBg},
+  contrast:{bd:C.red,bg:C.redBg}, chunk:{bd:C.blue,bg:C.blueBg},
+  formula:{bd:C.goldDark,bg:'#F3ECDC'},
+};
+
+function QuickTab(){
+  return (
+    <Row gutter={[14,14]}>
+      {quickSections.map((q,i)=>{
+        if(q.divider) return <Col span={24} key={i}><Divider orientation="left" style={{color:C.text,fontWeight:700,fontSize:18,borderColor:C.border}}>{q.divider}</Divider></Col>;
+        const col=qcColor[q.type]||qcColor.chunk;
+        return (
+          <Col xs={24} sm={12} key={i}>
+            <div className="qc" style={{background:col.bg,borderLeft:`5px solid ${col.bd}`,border:`1px solid ${C.border}`,borderLeftWidth:5,borderRadius:10,padding:'14px 16px',height:'100%'}}>
+              <Space align="center" style={{marginBottom:6}}>
+                <Tag color="default" style={{fontWeight:700,borderColor:col.bd,color:col.bd}}>{q.s}</Tag>
+                <Text strong style={{color:C.text}}>{q.t}</Text>
+              </Space>
+              <div style={{color:C.text2,whiteSpace:'pre-line'}}>{q.b}</div>
+            </div>
+          </Col>
+        );
+      })}
+    </Row>
+  );
+}
+
+function App(){
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{ colorPrimary:C.gold, colorBgBase:C.bg, colorTextBase:C.text, colorBorder:C.border, borderRadius:10, fontFamily:"'Noto Sans Thai',sans-serif", fontSize:15 },
+      components:{ Card:{colorBgContainer:C.white}, Table:{colorBgContainer:C.white,headerBg:C.surface2} }
+    }}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:900,margin:'0 auto',padding:'28px 16px',width:'100%'}}>
+          <div style={{textAlign:'center',marginBottom:8}}>
+            <Title level={2} style={{color:C.text,marginBottom:4}}>📚 GA511 บัญชีต้นทุน — Week 1</Title>
+            <Text style={{color:C.text2,fontSize:16}}>บัญชีบริหารและแนวคิดต้นทุน (Management Accounting & Cost Concepts)</Text>
+          </div>
+          <Tabs centered type="card" defaultActiveKey="1" items={[
+            {key:'1',label:'📖 สรุปเนื้อหา',children:<SummaryTab/>},
+            {key:'2',label:'🏭 เคส (Moon)',children:<CaseTab/>},
+            {key:'3',label:'📐 สูตร & แทนค่า',children:<FormulaTab/>},
+            {key:'4',label:'📝 เฉลยการบ้าน',children:<HomeworkTab/>},
+            {key:'5',label:'🃏 Flashcard',children:<FlashcardTab/>},
+            {key:'6',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+          ]}/>
+        </Content>
+        <Footer style={{textAlign:'center',background:'transparent',color:C.text3}}>
+          ไฟล์ทบทวน GA511 Week 1 · บัญชีบริหารและแนวคิดต้นทุน · พื้นฐาน → เคส → ทดสอบ → ทวนเร็ว
+        </Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
