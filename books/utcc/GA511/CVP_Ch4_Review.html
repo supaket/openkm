@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVP Analysis — Chapter 4 Review (Cornerstones of Managerial Accounting)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai', sans-serif; margin:0; }
+.fc-perspective { perspective:1200px; }
+.fc-card { position:relative; width:100%; height:320px; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+.fc-card.flipped { transform:rotateY(180deg); }
+.fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:12px; padding:28px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; overflow-y:auto; }
+.fc-back { transform:rotateY(180deg); }
+.qc { transition:all .2s; }
+.qc:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(61,50,41,.12); }
+::-webkit-scrollbar { width:10px; height:10px; }
+::-webkit-scrollbar-track { background:#EDE8DF; }
+::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:5px; }
+::selection { background:#DDD3C1; color:#3D3229; }
+.ant-table-cell { line-height:1.9 !important; }
+.step-line { padding:6px 12px; border-left:3px solid #A8906C; margin:6px 0; background:#F0EBE2; border-radius:0 8px 8px 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Collapse } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState } = React;
+
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  amber: '#B5986A', amberDark: '#7A6548',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+
+const Stars = ({n}) => <span>{'⭐'.repeat(n)}</span>;
+
+/* ============================================================
+   TAB 1 — ตัวตรวจข้อสอบ + เฉลยวิธีคิดละเอียด (6 ข้อ)
+   ============================================================ */
+const solutions = [
+  {
+    key: 'p1', title: 'ข้อ 1 — Dance Unlimited (Break-even หน่วย & ยอดขาย)',
+    concept: 'Break-even พื้นฐาน (สินค้าเดียว)',
+    given: ['ราคาขาย P = $50/หน่วย', 'ต้นทุนผันแปร V = $30/หน่วย', 'ต้นทุนคงที่ F = $65,000', 'แผนขาย 10,000 หน่วย (ข้อมูลลวง — ไม่ได้ใช้คำนวณจุดคุ้มทุน!)'],
+    steps: [
+      ['หา CM ต่อหน่วย', 'CM = P − V = 50 − 30 = $20'],
+      ['A) จุดคุ้มทุน (หน่วย)', 'BE units = F ÷ CM = 65,000 ÷ 20 = 3,250 คู่'],
+      ['หา CM ratio', 'CM ratio = CM ÷ P = 20 ÷ 50 = 0.40'],
+      ['B) จุดคุ้มทุน (ยอดขาย)', 'BE sales = F ÷ CM ratio = 65,000 ÷ 0.40 = $162,500'],
+      ['ตรวจคำตอบ', '3,250 คู่ × $50 = $162,500 ✓ ตรงกันทั้งสองวิธี'],
+    ],
+    answer: 'A) 3,250 คู่   B) $162,500',
+    pitfall: 'อย่าเอา 10,000 หน่วยที่ "วางแผนจะขาย" มาปนกับการหาจุดคุ้มทุน — จุดคุ้มทุนขึ้นกับ F, P, V เท่านั้น',
+  },
+  {
+    key: 'p2', title: 'ข้อ 2 — Newman Company (VC, CM, Ratio)',
+    concept: 'แยกต้นทุนผันแปร/คงที่ + อัตราส่วน',
+    given: ['ราคาขาย $40', 'VC ผลิต $10/หน่วย + VC ขาย $6/หน่วย', 'FC ผลิต $16,000 + FC ขาย $8,000 (ไม่ได้ใช้ในข้อนี้)', 'ผลิตขาย 2,000 หน่วย'],
+    steps: [
+      ['A) VC ต่อหน่วย', 'รวมต้นทุนผันแปร "ทุกประเภท" = 10 + 6 = $16'],
+      ['B) CM ต่อหน่วย', 'CM = 40 − 16 = $24'],
+      ['C) Variable cost ratio', 'VC ratio = 16 ÷ 40 = 0.40 = 40%'],
+      ['D) CM ratio', 'CM ratio = 24 ÷ 40 = 0.60 = 60%'],
+      ['เช็คความสัมพันธ์', 'VC ratio + CM ratio = 40% + 60% = 100% เสมอ ✓'],
+    ],
+    answer: 'A) $16   B) $24   C) 40%   D) 60%',
+    pitfall: 'พลาดบ่อย: ลืมบวก variable selling cost ($6) — ต้นทุนผันแปรรวมทั้งฝ่ายผลิตและฝ่ายขาย',
+  },
+  {
+    key: 'p3', title: 'ข้อ 3 — Music Now (Ratio + Target Profit)',
+    concept: 'CM ratio + จำนวนหน่วยเพื่อกำไรเป้าหมาย',
+    given: ['P = $60', 'V = $12', 'F = $24,000', 'กำไรเป้าหมาย $90,000'],
+    steps: [
+      ['A) VC ratio', '12 ÷ 60 = 0.20 = 20%'],
+      ['B) CM ratio', '(60 − 12) ÷ 60 = 48 ÷ 60 = 0.80 = 80% (หรือ 1 − 0.20)'],
+      ['C) BE ยอดขาย', 'F ÷ CM ratio = 24,000 ÷ 0.80 = $30,000'],
+      ['D) หน่วยเพื่อกำไรเป้าหมาย', 'Units = (F + Target) ÷ CM = (24,000 + 90,000) ÷ 48 = 114,000 ÷ 48 = 2,375 เครื่อง'],
+      ['ตรวจคำตอบ', 'ขาย 2,375×$60=142,500 | VC 2,375×$12=28,500 | CM=114,000 | หัก F 24,000 → กำไร $90,000 ✓'],
+    ],
+    answer: 'A) 20%   B) 80%   C) $30,000   D) 2,375 เครื่อง',
+    pitfall: 'สูตร target profit คือ (F + กำไรเป้าหมาย) ÷ CM — ห้ามลืม "บวก" กำไรเข้าไปกับต้นทุนคงที่',
+  },
+  {
+    key: 'p4', title: 'ข้อ 4 — Crisby Company (BE จากงบรวม)',
+    concept: 'ใช้ CM ratio จากยอดรวม (ไม่มีข้อมูลต่อหน่วย)',
+    given: ['Sales = $500,000', 'Variable costs = $100,000', 'Fixed costs = $200,000'],
+    steps: [
+      ['หา CM รวม', 'CM = 500,000 − 100,000 = $400,000'],
+      ['หา CM ratio', '400,000 ÷ 500,000 = 0.80'],
+      ['A) BE ยอดขาย', '200,000 ÷ 0.80 = $250,000'],
+      ['B) ยอดขายเพื่อกำไร $40,000', '(200,000 + 40,000) ÷ 0.80 = $300,000'],
+      ['ตรวจคำตอบ', 'ที่ยอดขาย 300,000: CM = 300,000×0.8 = 240,000 − F 200,000 = กำไร $40,000 ✓'],
+    ],
+    answer: 'A) $250,000   B) $300,000',
+    pitfall: 'โจทย์ไม่มีข้อมูลต่อหน่วย → ต้องคิดเป็น "ยอดขาย (dollars)" ด้วย CM ratio เท่านั้น หาเป็นหน่วยไม่ได้',
+  },
+  {
+    key: 'p5', title: 'ข้อ 5 — Lauren Company (2 สินค้า, Sales Mix)',
+    concept: 'Multi-product BE ด้วย weighted average CM',
+    given: ['X: CM = $40/หน่วย (ขาย 60%)', 'Y: CM = $60/หน่วย (ขาย 40%)', 'F = $144,000'],
+    steps: [
+      ['หา weighted CM ต่อหน่วย', '(0.60 × 40) + (0.40 × 60) = 24 + 24 = $48'],
+      ['BE รวมทุกสินค้า', '144,000 ÷ 48 = 3,000 หน่วย'],
+      ['แยกตามสัดส่วน', 'X = 3,000 × 60% = 1,800 หน่วย | Y = 3,000 × 40% = 1,200 หน่วย'],
+      ['ตรวจคำตอบ', 'CM: (1,800×40) + (1,200×60) = 72,000 + 72,000 = 144,000 = F พอดี ✓'],
+    ],
+    answer: 'X = 1,800 หน่วย และ Y = 1,200 หน่วย',
+    pitfall: 'วิธี package ก็ได้คำตอบเดียวกัน: 1 package = 3X+2Y, CM = $240 → 144,000÷240 = 600 packages → X=1,800, Y=1,200',
+  },
+  {
+    key: 'p6', title: 'ข้อ 6 — Young Manufacturing (3 สินค้า, Package Method)',
+    concept: 'Multi-product BE ด้วยวิธี package',
+    given: ['ค้อน CM $12 (50%)', 'ไขควง CM $4 (30%)', 'เลื่อย CM $20 (20%)', 'F = $76,000/ปี', 'กำไรเป้าหมาย $19,000'],
+    steps: [
+      ['สร้าง package ตามสัดส่วน', '1 package = ค้อน 5 : ไขควง 3 : เลื่อย 2 (รวม 10 หน่วย)'],
+      ['CM ต่อ package', '(5×12) + (3×4) + (2×20) = 60 + 12 + 40 = $112'],
+      ['A) BE packages', '76,000 ÷ 112 = 678.57 → ปัดขึ้น 679 packages'],
+      ['B) ค้อน ณ จุดคุ้มทุน', '679 × 5 = 3,395 อัน'],
+      ['C) target income $19,000', '(76,000 + 19,000) ÷ 112 = 848.21 → 849 packages → 849 × 10 = 8,490 หน่วย'],
+    ],
+    answer: 'A) 679 packages   B) ค้อน 3,395 อัน   C) 8,490 หน่วย',
+    pitfall: 'หารไม่ลงตัวให้ "ปัดขึ้น" เสมอ (ปัดลงจะยังขาดทุน/ไม่ถึงเป้า) และอย่าลืมคูณ 10 กลับเป็นหน่วยรวมในข้อ C',
+  },
+];
+
+const SolutionCard = ({s}) => {
+  const [show, setShow] = useState(false);
+  return (
+    <Card style={{ marginBottom:16, background:C.white, borderColor:C.border }}
+      title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text><Tag color="gold">{s.concept}</Tag></Space>}>
+      <Text strong style={{color:C.blue}}>สิ่งที่โจทย์ให้:</Text>
+      <ul style={{marginTop:4}}>{s.given.map((g,i)=><li key={i}><Text style={{color:C.text2}}>{g}</Text></li>)}</ul>
+      {!show
+        ? <Button type="primary" onClick={()=>setShow(true)}>👀 ลองคิดเองก่อน แล้วกดดูเฉลย</Button>
+        : <div>
+            <Divider style={{margin:'12px 0'}}>วิธีคิดทีละขั้น</Divider>
+            {s.steps.map((st,i)=>(
+              <div className="step-line" key={i}>
+                <Text strong style={{color:C.goldDark}}>ขั้นที่ {i+1} — {st[0]}: </Text>
+                <Text style={{color:C.text}}>{st[1]}</Text>
+              </div>
+            ))}
+            <Alert style={{marginTop:12}} type="success" message={<Text strong>✅ คำตอบ: {s.answer}</Text>} />
+            <Alert style={{marginTop:8}} type="warning" message={<span><Text strong>⚠️ จุดที่พลาดบ่อย: </Text>{s.pitfall}</span>} />
+            <Button size="small" style={{marginTop:8}} onClick={()=>setShow(false)}>ซ่อนเฉลย</Button>
+          </div>}
+    </Card>
+  );
+};
+
+const SolutionsTab = () => (
+  <div>
+    <Alert type="info" style={{marginBottom:16}}
+      message={<Text strong>วิธีใช้: อ่านโจทย์ → คิดคำตอบเอง → กดดูเฉลยเพื่อตรวจ ทีละขั้น พร้อมจุดที่คนพลาดบ่อย</Text>} />
+    {solutions.map(s => <SolutionCard key={s.key} s={s} />)}
+  </div>
+);
+
+/* ============================================================
+   TAB 2 — สรุปเนื้อหา + หลักการที่ต้องอ่านเพิ่ม
+   ============================================================ */
+const fmtTable = (cols, data) => <Table size="small" pagination={false} columns={cols} dataSource={data} style={{marginTop:8}} />;
+
+const summaryData = [
+  {
+    key: 'overview', title: '📋 ภาพรวม CVP Analysis คืออะไร', tags: [['พื้นฐานต้องแม่น','volcano']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>
+          <strong>Cost-Volume-Profit (CVP) Analysis</strong> = เครื่องมือวิเคราะห์ความสัมพันธ์ระหว่าง
+          <Tag color="blue">ต้นทุน (Cost)</Tag><Tag color="purple">ปริมาณขาย (Volume)</Tag><Tag color="green">กำไร (Profit)</Tag>
+          ใช้ตอบคำถามเช่น "ต้องขายกี่หน่วยถึงคุ้มทุน?" "ขายเท่าไหร่ถึงได้กำไรตามเป้า?"
+        </Paragraph>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text strong style={{color:C.green}}>หัวใจของบท: สมการกำไร</Text><br/>
+          <Text style={{color:C.text}}>Operating Income = (P × Q) − (V × Q) − F  หรือ  กำไร = CM รวม − ต้นทุนคงที่</Text>
+        </Card>
+        <Card size="small" style={{background:C.redBg, borderColor:C.red}}>
+          <Text strong style={{color:C.red}}>ข้อสมมติของ CVP (ออกสอบทฤษฎีบ่อย)</Text>
+          <ul style={{margin:'4px 0'}}>
+            <li>ราคาขายและต้นทุนผันแปรต่อหน่วย <strong>คงที่</strong> ตลอดช่วงที่วิเคราะห์ (linear)</li>
+            <li>แยกต้นทุนได้ชัดเป็น <strong>ผันแปร</strong> กับ <strong>คงที่</strong></li>
+            <li>ผลิต = ขาย (ไม่มีการเปลี่ยนแปลงสินค้าคงเหลือ)</li>
+            <li>กรณีหลายสินค้า: <strong>sales mix คงที่</strong></li>
+          </ul>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key: 'cm', title: '💰 Contribution Margin — แกนกลางของทุกสูตร', tags: [['ออกทุกครั้ง','volcano']],
+    content: () => (
+      <div>
+        {fmtTable(
+          [{title:'แนวคิด',dataIndex:'c',key:'c'},{title:'สูตร',dataIndex:'f',key:'f'},{title:'ความหมาย',dataIndex:'m',key:'m'}],
+          [
+            {key:1,c:'CM ต่อหน่วย',f:'P − V',m:'ขาย 1 หน่วย เหลือเงินไป "ช่วยจ่าย" ต้นทุนคงที่เท่าไร'},
+            {key:2,c:'CM รวม',f:'Sales − Total VC',m:'เงินที่เหลือทั้งหมดก่อนหักต้นทุนคงที่'},
+            {key:3,c:'CM ratio',f:'CM ÷ P หรือ CM รวม ÷ Sales',m:'ยอดขาย $1 เหลือเป็น CM กี่เซนต์'},
+            {key:4,c:'VC ratio',f:'V ÷ P',m:'ยอดขาย $1 เป็นต้นทุนผันแปรกี่เซนต์'},
+          ]
+        )}
+        <Alert style={{marginTop:12}} type="info" message={<span><Text strong>ความสัมพันธ์สำคัญ: </Text>VC ratio + CM ratio = 1 เสมอ (เช่นข้อ 3: 20% + 80% = 100%) — ใช้เช็คคำตอบตัวเองได้ทันที</span>} />
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, marginTop:8}}>
+          <Text strong style={{color:C.cyan}}>ตัวอย่าง:</Text> <Text style={{color:C.text}}>กาแฟแก้วละ 100 บาท ต้นทุนผันแปร (เมล็ด+นม+แก้ว) 40 บาท → CM = 60 บาท, CM ratio = 60% แปลว่าทุกยอดขาย 100 บาท มีเงิน 60 บาทไว้จ่ายค่าเช่าร้าน (F) และเป็นกำไร</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key: 'be', title: '⚖️ Break-Even Point — จุดคุ้มทุน 2 แบบ', tags: [['ออกทุกครั้ง','volcano']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col span={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>แบบที่ 1: เป็นหน่วย (units)</Text><br/>
+            <Text style={{color:C.text, fontSize:16}}><strong>BE units = F ÷ CM ต่อหน่วย</strong></Text><br/>
+            <Text style={{color:C.text3}}>ใช้เมื่อโจทย์ให้ข้อมูล "ต่อหน่วย" (ข้อ 1A)</Text>
+          </Card></Col>
+          <Col span={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>แบบที่ 2: เป็นยอดขาย (dollars)</Text><br/>
+            <Text style={{color:C.text, fontSize:16}}><strong>BE sales = F ÷ CM ratio</strong></Text><br/>
+            <Text style={{color:C.text3}}>ใช้เมื่อโจทย์ให้แต่ยอดรวม ไม่มีข้อมูลต่อหน่วย (ข้อ 4)</Text>
+          </Card></Col>
+        </Row>
+        <Paragraph style={{color:C.text, marginTop:12}}>
+          <strong>ที่มาของสูตร (เข้าใจแล้วไม่ต้องท่อง):</strong> ที่จุดคุ้มทุน กำไร = 0 →
+          CM รวม = F → Q × CM = F → <strong>Q = F ÷ CM</strong>
+        </Paragraph>
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan}}>
+          <Text strong style={{color:C.cyan}}>ตัวอย่างเพิ่ม:</Text> <Text style={{color:C.text}}>ร้านขายเสื้อ P=300, V=180, F=36,000/เดือน → CM=120 → BE = 36,000÷120 = 300 ตัว/เดือน = ยอดขาย 90,000 บาท (ตรวจ: 36,000 ÷ 0.40 = 90,000 ✓)</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key: 'target', title: '🎯 Target Profit — ขายเท่าไรถึงได้กำไรตามเป้า', tags: [['ออกทุกครั้ง','volcano']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text style={{color:C.text, fontSize:16}}><strong>Units = (F + Target Income) ÷ CM ต่อหน่วย</strong></Text><br/>
+          <Text style={{color:C.text, fontSize:16}}><strong>Sales = (F + Target Income) ÷ CM ratio</strong></Text>
+        </Card>
+        <Paragraph style={{color:C.text}}>
+          มองง่าย ๆ: กำไรเป้าหมายเปรียบเสมือน "ต้นทุนคงที่ก้อนพิเศษ" ที่ต้องหาให้ครอบคลุมเพิ่ม
+          — สูตรเดียวกับ BE แค่บวก target เข้าไป (ข้อ 3D, 4B, 6C ใช้แบบนี้ทั้งหมด)
+        </Paragraph>
+        <Alert type="warning" message={<span><Text strong>อ่านเพิ่ม (มักออกสอบข้อยาก): </Text>ถ้าโจทย์ให้กำไรเป้าหมาย "หลังภาษี" (after-tax) ต้องแปลงก่อน: Before-tax income = After-tax ÷ (1 − tax rate) แล้วค่อยเข้าสูตร</span>} />
+      </div>
+    )
+  },
+  {
+    key: 'multi', title: '📦 Multi-Product CVP — หลายสินค้า (Sales Mix)', tags: [['ข้อยากประจำบท','red']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>มี 2 วิธี ได้คำตอบเดียวกันเสมอ เลือกที่ถนัด:</Paragraph>
+        <Row gutter={12}>
+          <Col span={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>วิธี 1: Weighted Average CM</Text>
+            <ol style={{margin:'4px 0', paddingLeft:20}}>
+              <li>WCM = Σ(สัดส่วน × CM แต่ละตัว)</li>
+              <li>BE รวม = F ÷ WCM</li>
+              <li>คูณสัดส่วนกลับเป็นรายสินค้า</li>
+            </ol>
+            <Text style={{color:C.text3}}>(ใช้ในข้อ 5)</Text>
+          </Card></Col>
+          <Col span={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>วิธี 2: Package Method</Text>
+            <ol style={{margin:'4px 0', paddingLeft:20}}>
+              <li>จัด 1 package ตามสัดส่วนขาย (เช่น 5:3:2)</li>
+              <li>CM/package = Σ(จำนวนในแพ็ก × CM)</li>
+              <li>BE packages = F ÷ CM/package → คูณกลับ</li>
+            </ol>
+            <Text style={{color:C.text3}}>(ใช้ในข้อ 6)</Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:12}} type="error" message={<span><Text strong>กับดัก: </Text>สัดส่วนต้องเป็น "สัดส่วนจำนวนหน่วยที่ขาย (units)" ไม่ใช่สัดส่วนยอดเงิน และถ้าหารไม่ลงตัวให้ปัดขึ้นเสมอ</span>} />
+      </div>
+    )
+  },
+  {
+    key: 'extra', title: '📖 หลักการที่ต้องอ่านเพิ่ม (อยู่ใน Ch.4 แต่ไม่อยู่ในโจทย์ชุดนี้)', tags: [['อ่านเพิ่ม','blue']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.blueBg, borderColor:C.blue, marginBottom:8}}>
+          <Text strong style={{color:C.blue}}>1. Margin of Safety (ส่วนเผื่อความปลอดภัย)</Text><br/>
+          <Text style={{color:C.text}}>MOS = ยอดขายจริง (หรือคาดการณ์) − ยอดขาย ณ จุดคุ้มทุน — บอกว่า "ยอดขายตกได้อีกเท่าไรก่อนเริ่มขาดทุน"</Text><br/>
+          <Text style={{color:C.text3}}>ตัวอย่างจากข้อ 1: แผนขาย 10,000 คู่ (=$500,000) − BE $162,500 → MOS = $337,500 หรือ 67.5% ของยอดขาย</Text>
+        </Card>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple, marginBottom:8}}>
+          <Text strong style={{color:C.purple}}>2. Operating Leverage (DOL)</Text><br/>
+          <Text style={{color:C.text}}>DOL = CM รวม ÷ Operating Income — บริษัทที่ F สูงจะมี DOL สูง → กำไรผันผวนแรงเมื่อยอดขายเปลี่ยน</Text><br/>
+          <Text style={{color:C.text3}}>ใช้ต่อ: %Δกำไร = DOL × %Δยอดขาย (เช่น DOL = 3, ยอดขายโต 10% → กำไรโต 30%)</Text>
+        </Card>
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, marginBottom:8}}>
+          <Text strong style={{color:C.cyan}}>3. กราฟ CVP และ Profit-Volume Graph</Text><br/>
+          <Text style={{color:C.text}}>แกน X = ปริมาณขาย, แกน Y = เงิน; เส้นรายได้ตัดเส้นต้นทุนรวมที่จุดคุ้มทุน — ซ้ายของจุด = ขาดทุน, ขวา = กำไร ควรวาดเองได้ 1 รอบ</Text>
+        </Card>
+        <Card size="small" style={{background:C.redBg, borderColor:C.red}}>
+          <Text strong style={{color:C.red}}>4. การเปลี่ยนแปลงตัวแปร (What-if / Sensitivity)</Text><br/>
+          <Text style={{color:C.text}}>F เพิ่ม → BE สูงขึ้น | V เพิ่ม → CM ลด → BE สูงขึ้น | P เพิ่ม → CM เพิ่ม → BE ต่ำลง — ข้อสอบชอบถามว่าเปลี่ยนค่าแล้ว BE ขยับทางไหน</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key: 'mistakes', title: '🚨 สรุปข้อผิดพลาดยอดฮิต', tags: [['กันพลาด','red']],
+    content: () => (
+      <div>
+        {fmtTable(
+          [{title:'ผิดบ่อย',dataIndex:'w',key:'w'},{title:'ที่ถูกต้อง',dataIndex:'r',key:'r'}],
+          [
+            {key:1,w:'ใช้ยอดขายที่วางแผนไว้มาคำนวณ BE',r:'BE ใช้แค่ F, P, V (ข้อ 1: 10,000 คู่คือข้อมูลลวง)'},
+            {key:2,w:'ลืมรวม VC ฝ่ายขาย/บริหาร',r:'VC ต่อหน่วย = VC ทุกประเภทรวมกัน (ข้อ 2: 10+6)'},
+            {key:3,w:'หา BE dollars ด้วย F ÷ VC ratio',r:'ต้องหารด้วย CM ratio ไม่ใช่ VC ratio'},
+            {key:4,w:'target profit แล้วลืมบวก F',r:'(F + Target) ÷ CM เสมอ'},
+            {key:5,w:'multi-product ใช้สัดส่วนยอดเงิน',r:'ต้องใช้สัดส่วนจำนวนหน่วย (units mix)'},
+            {key:6,w:'ปัดเศษลง',r:'จำนวนหน่วย/แพ็กเกจปัดขึ้นเสมอ ไม่งั้นไม่ถึงเป้า'},
+          ]
+        )}
+      </div>
+    )
+  },
+];
+
+const SummaryTab = () => (
+  <div>{summaryData.map(s => (
+    <Card key={s.key} style={{marginBottom:16, background:C.white, borderColor:C.border}}
+      title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text>{s.tags.map((t,i)=><Tag key={i} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+      {s.content()}
+    </Card>
+  ))}</div>
+);
+
+/* ============================================================
+   TAB 3 — FLASHCARDS
+   ============================================================ */
+const flashcards = [
+  {q:'สูตรจุดคุ้มทุนเป็น "หน่วย" คือ?', a:'BE units = Fixed cost ÷ CM ต่อหน่วย', d:'ที่จุดคุ้มทุน กำไร = 0 ดังนั้น CM รวมต้องเท่ากับต้นทุนคงที่พอดี → Q = F ÷ CM', star:3, exam:true},
+  {q:'สูตรจุดคุ้มทุนเป็น "ยอดขาย (dollars)" คือ?', a:'BE sales = Fixed cost ÷ CM ratio', d:'ใช้เมื่อไม่มีข้อมูลต่อหน่วย หรือโจทย์ถามเป็นเงิน เช่นข้อ 1B และข้อ 4A', star:3, exam:true},
+  {q:'Contribution margin ต่อหน่วย คำนวณจาก?', a:'ราคาขาย − ต้นทุนผันแปรต่อหน่วย (P − V)', d:'คือเงินที่เหลือจากการขาย 1 หน่วยไว้จ่ายต้นทุนคงที่และเป็นกำไร', star:3, exam:true},
+  {q:'CM ratio คำนวณจาก?', a:'CM ÷ ราคาขาย (หรือ CM รวม ÷ ยอดขายรวม)', d:'บอกว่ายอดขายทุก $1 กลายเป็น CM กี่เซนต์ เช่นข้อ 3: 48/60 = 80%', star:3, exam:true},
+  {q:'VC ratio + CM ratio เท่ากับเท่าไรเสมอ?', a:'= 1 (100%)', d:'เพราะยอดขายแบ่งเป็นสองส่วน: ต้นทุนผันแปร + CM ใช้เช็คคำตอบได้เร็วมาก', star:2, exam:false},
+  {q:'สูตรจำนวนหน่วยเพื่อให้ได้กำไรเป้าหมาย?', a:'(F + Target Income) ÷ CM ต่อหน่วย', d:'มองกำไรเป้าหมายเป็นภาระอีกก้อนที่ CM ต้องครอบคลุม เช่นข้อ 3D: (24,000+90,000)÷48 = 2,375', star:3, exam:true},
+  {q:'[จากข้อ 1] P=$50, V=$30, F=$65,000 → BE กี่หน่วย?', a:'3,250 หน่วย', d:'CM = 20 → 65,000 ÷ 20 = 3,250 (แผนขาย 10,000 หน่วยเป็นข้อมูลลวง)', star:3, exam:true},
+  {q:'[จากข้อ 2] มีทั้ง VC ผลิต $10 และ VC ขาย $6 — VC ต่อหน่วยคือ?', a:'$16 (ต้องรวมทุกประเภท)', d:'ต้นทุนผันแปรใน CVP รวมทั้งฝ่ายผลิต ฝ่ายขาย ฝ่ายบริหาร — จุดที่คนพลาดบ่อยที่สุด', star:3, exam:true},
+  {q:'[จากข้อ 4] มีแต่ยอดรวม (Sales 500k, VC 100k, F 200k) หา BE ยังไง?', a:'ใช้ CM ratio: (500−100)/500 = 0.8 → BE = 200,000÷0.8 = $250,000', d:'ไม่มีข้อมูลต่อหน่วย → คิดเป็น dollars เท่านั้น', star:3, exam:true},
+  {q:'Multi-product: weighted average CM คำนวณจาก?', a:'Σ (สัดส่วนหน่วยขาย × CM ของแต่ละสินค้า)', d:'เช่นข้อ 5: (0.6×40)+(0.4×60) = $48 แล้ว BE = F ÷ WCM', star:3, exam:true},
+  {q:'Package method มีขั้นตอนอย่างไร?', a:'จัดแพ็กตามสัดส่วนขาย → หา CM ต่อแพ็ก → F ÷ CM แพ็ก → คูณกลับ', d:'ข้อ 6: แพ็ก 5:3:2, CM = 112, 76,000÷112 = 679 แพ็ก (ปัดขึ้น)', star:3, exam:true},
+  {q:'BE คำนวณแล้วได้ 678.57 packages ต้องตอบ?', a:'679 (ปัดขึ้นเสมอ)', d:'ขาย 678 แพ็กยังขาดทุนอยู่เล็กน้อย — ปริมาณต้อง "อย่างน้อย" ถึงจุดคุ้มทุน', star:2, exam:true},
+  {q:'ข้อสมมติสำคัญของ CVP มีอะไรบ้าง?', a:'ราคา/ต้นทุนต่อหน่วยคงที่ (linear), แยก VC/FC ได้, ผลิต=ขาย, sales mix คงที่', d:'ออกสอบทฤษฎีบ่อย โดยเฉพาะ "sales mix คงที่" สำหรับ multi-product', star:2, exam:false},
+  {q:'Margin of Safety คือ?', a:'ยอดขายจริง − ยอดขาย ณ จุดคุ้มทุน', d:'บอกว่ายอดขายลดลงได้เท่าไรก่อนเริ่มขาดทุน ยิ่งสูงยิ่งเสี่ยงต่ำ', star:2, exam:false},
+  {q:'Degree of Operating Leverage (DOL) คำนวณจาก?', a:'CM รวม ÷ Operating Income', d:'ใช้ต่อ: %Δกำไร = DOL × %Δยอดขาย — บริษัท F สูง → DOL สูง → กำไรผันผวนแรง', star:2, exam:false},
+  {q:'ถ้าต้นทุนคงที่ (F) เพิ่มขึ้น จุดคุ้มทุนจะ?', a:'สูงขึ้น (ต้องขายมากขึ้น)', d:'BE = F ÷ CM — ตัวเศษโต ผลหารโต ส่วน P เพิ่ม → CM เพิ่ม → BE ลด', star:2, exam:false},
+  {q:'ถ้า V ต่อหน่วยเพิ่ม แต่ P เท่าเดิม จุดคุ้มทุนจะ?', a:'สูงขึ้น เพราะ CM ต่อหน่วยลดลง', d:'CM = P − V เมื่อ V เพิ่ม CM เล็กลง F ÷ CM จึงใหญ่ขึ้น', star:2, exam:false},
+  {q:'กำไรเป้าหมาย "หลังภาษี" ต้องทำอะไรก่อนเข้าสูตร?', a:'แปลงเป็นก่อนภาษี: Before-tax = After-tax ÷ (1 − tax rate)', d:'เช่น อยากได้ 70,000 หลังภาษี 30% → ต้องมีกำไรก่อนภาษี 100,000 แล้วค่อยใช้ (F+100,000)÷CM', star:2, exam:false},
+  {q:'ที่จุดคุ้มทุน CM รวมเท่ากับอะไร?', a:'เท่ากับต้นทุนคงที่ (F) พอดี', d:'นี่คือแก่นของทุกสูตร — ใช้ตรวจคำตอบได้ เช่นข้อ 5: CM รวม = 144,000 = F ✓', star:3, exam:false},
+  {q:'Variable cost ratio ของข้อ 3 (P=60, V=12) คือ?', a:'20% (12 ÷ 60)', d:'และ CM ratio = 80% ทันทีโดยไม่ต้องคิดใหม่ เพราะรวมกันได้ 100%', star:2, exam:true},
+  {q:'โจทย์ให้ยอดขายเป้าหมายเป็น "เงิน" ใช้สูตรไหน?', a:'Sales = (F + Target) ÷ CM ratio', d:'ข้อ 4B: (200,000+40,000) ÷ 0.80 = $300,000', star:3, exam:true},
+  {q:'ทำไมข้อมูล "แผนจะขาย 10,000 หน่วย" ไม่ถูกใช้หาจุดคุ้มทุน?', a:'เพราะ BE ขึ้นกับโครงสร้างต้นทุน (F, P, V) เท่านั้น', d:'ยอดขายที่วางแผนใช้หา margin of safety หรือกำไรคาดการณ์ ไม่ใช่ BE', star:2, exam:false},
+  {q:'Operating income = ?  (เขียนสมการ CVP)', a:'(P × Q) − (V × Q) − F', d:'จัดรูปได้เป็น Q(P−V) − F = CM รวม − F ทุกสูตรในบทมาจากสมการนี้', star:3, exam:false},
+  {q:'สินค้า 2 ตัว mix 60:40 → 1 package ควรจัดเป็น?', a:'3 : 2 (ย่อสัดส่วน 60:40)', d:'หรือใช้ทศนิยม 0.6/0.4 แบบ weighted average ก็ได้คำตอบเดียวกัน', star:2, exam:true},
+  {q:'ขาย 2,375 เครื่อง (ข้อ 3D) พิสูจน์ว่าได้กำไร $90,000 อย่างไร?', a:'CM รวม = 2,375 × 48 = 114,000 − F 24,000 = 90,000 ✓', d:'วิธีตรวจคำตอบมาตรฐาน: เอาจำนวนหน่วยคูณ CM แล้วหัก F ต้องได้กำไรตามเป้า', star:2, exam:false},
+];
+
+const FlashcardTab = () => {
+  const [filter, setFilter] = useState('all');
+  const [order, setOrder] = useState(flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [score, setScore] = useState({ok:0, ng:0});
+  const pool = order.map(i=>flashcards[i]).filter(c => filter==='all' ? true : filter==='exam' ? c.exam : c.star===3);
+  const card = pool[Math.min(idx, pool.length-1)];
+  const shuffle = () => { const a=[...Array(flashcards.length).keys()]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} setOrder(a); setIdx(0); setFlipped(false); setScore({ok:0,ng:0}); };
+  const nav = (d) => { setFlipped(false); setIdx(i => (i + d + pool.length) % pool.length); };
+  const mark = (good) => { setScore(s => good ? {...s, ok:s.ok+1} : {...s, ng:s.ng+1}); nav(1); };
+  const setF = (f) => { setFilter(f); setIdx(0); setFlipped(false); };
+  if (!card) return <Alert type="warning" message="ไม่มีการ์ดในโหมดนี้" />;
+  return (
+    <div>
+      <Flex justify="space-between" wrap="wrap" gap={8} style={{marginBottom:12}}>
+        <Space>
+          <Button type={filter==='all'?'primary':'default'} onClick={()=>setF('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={filter==='exam'?'primary':'default'} onClick={()=>setF('exam')}>เฉพาะแนวข้อสอบ ({flashcards.filter(c=>c.exam).length})</Button>
+          <Button type={filter==='star3'?'primary':'default'} onClick={()=>setF('star3')}>⭐⭐⭐ ({flashcards.filter(c=>c.star===3).length})</Button>
+        </Space>
+        <Button onClick={shuffle}>🔀 สลับการ์ด</Button>
+      </Flex>
+      <Row gutter={16} style={{marginBottom:12}}>
+        <Col span={8}><Statistic title="การ์ดที่" value={`${idx+1} / ${pool.length}`} /></Col>
+        <Col span={8}><Statistic title="ตอบถูก" value={score.ok} valueStyle={{color:C.green}} /></Col>
+        <Col span={8}><Statistic title="ตอบผิด" value={score.ng} valueStyle={{color:C.red}} /></Col>
+      </Row>
+      <div className="fc-perspective" onClick={()=>setFlipped(f=>!f)}>
+        <div className={'fc-card' + (flipped ? ' flipped' : '')}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.borderDark}`}}>
+            <Space direction="vertical" align="center">
+              <Space>{card.exam && <Tag color="volcano">แนวข้อสอบ</Tag>}<Stars n={card.star} /></Space>
+              <Title level={4} style={{color:C.text, margin:0}}>{card.q}</Title>
+              <Text style={{color:C.text3}}>(คลิกเพื่อพลิกดูคำตอบ)</Text>
+            </Space>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.gold}`}}>
+            <Space direction="vertical" align="center">
+              <Title level={4} style={{color:C.goldDark, margin:0}}>{card.a}</Title>
+              <Text style={{color:C.text2}}>{card.d}</Text>
+            </Space>
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" gap={8} style={{marginTop:16}} wrap="wrap">
+        <Button onClick={()=>nav(-1)}>← ก่อนหน้า</Button>
+        <Button style={{background:C.greenBg, borderColor:C.green, color:C.green}} onClick={()=>mark(true)}>✓ ตอบถูก</Button>
+        <Button style={{background:C.redBg, borderColor:C.red, color:C.red}} onClick={()=>mark(false)}>✗ ตอบผิด</Button>
+        <Button onClick={()=>nav(1)}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+};
+
+/* ============================================================
+   TAB 4 — QUICK REFERENCE (การ์ดจำด่วน)
+   ============================================================ */
+const quickSections = [
+  { divider: '🎯 สูตรหลัก — ต้องเขียนได้ใน 30 วินาที' },
+  { s:'BE units', t:'จุดคุ้มทุน (หน่วย)', b:'F ÷ CM ต่อหน่วย   |   ข้อ 1: 65,000 ÷ 20 = 3,250', type:'formula' },
+  { s:'BE $', t:'จุดคุ้มทุน (ยอดขาย)', b:'F ÷ CM ratio   |   ข้อ 4: 200,000 ÷ 0.80 = 250,000', type:'formula' },
+  { s:'Target', t:'กำไรเป้าหมาย', b:'(F + Target) ÷ CM (หรือ ÷ CM ratio ถ้าเป็นเงิน)   |   ข้อ 3D: 114,000 ÷ 48 = 2,375', type:'formula' },
+  { s:'CM ratio', t:'อัตรากำไรส่วนเกิน', b:'CM ÷ P = 1 − VC ratio   |   จำ: สองอัตรารวมกัน = 100% เสมอ', type:'formula' },
+  { s:'WCM', t:'Multi-product', b:'Σ(mix% × CM) แล้ว F ÷ WCM   |   หรือวิธี package: F ÷ CM ต่อแพ็ก', type:'formula' },
+  { divider: '🧠 ตัวช่วยจำ' },
+  { s:'F/CM', t:'"เอฟหารซีเอ็ม"', b:'ทุกโจทย์ BE คือ F÷CM เวอร์ชันใดเวอร์ชันหนึ่ง — ถามหน่วยใช้ CM/หน่วย, ถามเงินใช้ CM ratio, หลายสินค้าใช้ CM ถัวเฉลี่ย/แพ็ก', type:'mnem' },
+  { s:'บวกก่อนหาร', t:'target profit', b:'อยากได้กำไร → "บวก" กำไรเข้ากับ F ก่อนแล้วค่อยหาร (F + Target) ÷ CM', type:'mnem' },
+  { s:'ปัดขึ้น!', t:'เศษหน่วย/แพ็กเกจ', b:'678.57 → 679 เสมอ เพราะปัดลง = ยังไม่คุ้มทุน', type:'mnem' },
+  { divider: '⚡ ขั้นตอนทำโจทย์ (ทุกข้อใช้ flow เดียวกัน)' },
+  { s:'Flow', t:'5 ขั้นแก้โจทย์ CVP', b:'1) แยก P, V, F ออกจากโจทย์ → 2) หา CM (ต่อหน่วยหรือ ratio) → 3) เลือกสูตรตามสิ่งที่ถาม (หน่วย/เงิน/target) → 4) แทนค่า → 5) ตรวจ: CM รวม − F ต้องเท่ากำไรที่โจทย์กำหนด', type:'flow' },
+  { s:'Multi', t:'Flow หลายสินค้า', b:'1) เช็ค mix เป็นสัดส่วน "หน่วย" → 2) จัด package หรือถัว WCM → 3) F ÷ CM → 4) กระจายกลับรายสินค้าตามสัดส่วน', type:'flow' },
+  { divider: '⚔️ คู่เปรียบเทียบที่ชอบสับสน' },
+  { s:'VC vs CM', t:'ratio ไหนใช้หาร?', b:'BE ใช้ CM ratio หาร ไม่ใช่ VC ratio! (VC ratio มีไว้เช็คว่า 1−CM ratio ถูกไหม)', type:'contrast' },
+  { s:'หน่วย vs เงิน', t:'โจทย์ถามอะไร?', b:'"how many units" → F÷CM/หน่วย | "sales in dollars" → F÷CM ratio — อ่านคำถามให้จบก่อนเลือกสูตร', type:'contrast' },
+  { s:'ผลิต vs ขาย', t:'VC ไหนบ้าง?', b:'VC = ผลิต + ขาย + บริหาร (ทุกก้อนที่ผันตามปริมาณ) | FC ไม่เกี่ยวกับ CM ต่อหน่วยเลย', type:'contrast' },
+  { divider: '📌 เก็บตกแนวคิดเสริม (อ่านเพิ่ม)' },
+  { s:'MOS', t:'Margin of Safety', b:'ยอดขายจริง − ยอดขายคุ้มทุน = เผื่อได้แค่ไหนก่อนขาดทุน', type:'chunk' },
+  { s:'DOL', t:'Operating Leverage', b:'CM ÷ กำไร | %Δกำไร = DOL × %Δยอดขาย | F สูง → DOL สูง → เสี่ยงสูง', type:'chunk' },
+  { s:'Tax', t:'กำไรหลังภาษี', b:'Before-tax = After-tax ÷ (1 − t) แล้วค่อยเข้าสูตร target profit', type:'chunk' },
+  { s:'Assumption', t:'ข้อสมมติ CVP', b:'linear ทั้งราคา/ต้นทุน · แยก VC/FC ได้ · ผลิต=ขาย · mix คงที่', type:'chunk' },
+];
+
+const typeStyle = {
+  mnem: { color:C.purple, bg:C.purpleBg, label:'จำ' },
+  flow: { color:C.cyan, bg:C.cyanBg, label:'ขั้นตอน' },
+  contrast: { color:C.red, bg:C.redBg, label:'เทียบ' },
+  chunk: { color:C.blue, bg:C.blueBg, label:'กลุ่ม' },
+  formula: { color:C.goldDark, bg:'#F3EDDF', label:'สูตร' },
+};
+
+const QuickTab = () => (
+  <div>
+    {quickSections.map((it, i) => it.divider
+      ? <Divider key={i} orientation="left"><Text strong style={{color:C.text2}}>{it.divider}</Text></Divider>
+      : (() => { const st = typeStyle[it.type]; return (
+          <Card key={i} className="qc" size="small"
+            style={{marginBottom:10, background:st.bg, borderColor:st.color, borderLeft:`5px solid ${st.color}`}}>
+            <Space align="start">
+              <Tag color="default" style={{color:st.color, borderColor:st.color, background:'transparent', fontWeight:700}}>{it.s}</Tag>
+              <div>
+                <Text strong style={{color:C.text}}>{it.t}</Text><br/>
+                <Text style={{color:C.text2}}>{it.b}</Text>
+              </div>
+            </Space>
+          </Card>
+        );})()
+    )}
+  </div>
+);
+
+/* ============================================================ */
+const App = () => (
+  <ConfigProvider theme={{
+    algorithm: theme.defaultAlgorithm,
+    token: {
+      colorPrimary: C.gold, colorBgBase: C.bg, colorTextBase: C.text,
+      colorBgContainer: C.white, colorBorder: C.border, borderRadius: 10,
+      fontFamily: "'Noto Sans Thai', sans-serif",
+    },
+  }}>
+    <Layout style={{minHeight:'100vh', background:C.bg}}>
+      <Layout.Content style={{maxWidth:900, width:'100%', margin:'0 auto', padding:'32px 16px'}}>
+        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>📊 CVP Analysis — Chapter 4</Title>
+        <Paragraph style={{textAlign:'center', color:C.text3, marginBottom:24}}>
+          Cornerstones of Managerial Accounting · ตัวตรวจข้อสอบ + เฉลยวิธีคิด + สรุปหลักการ + Flashcards
+        </Paragraph>
+        <Tabs centered type="card" defaultActiveKey="sol" items={[
+          { key:'sol', label:'📝 ตรวจข้อสอบ + เฉลย', children:<SolutionsTab/> },
+          { key:'sum', label:'📚 สรุปเนื้อหา', children:<SummaryTab/> },
+          { key:'fc', label:'🎴 Flashcard', children:<FlashcardTab/> },
+          { key:'quick', label:'⚡ การ์ดจำด่วน', children:<QuickTab/> },
+        ]}/>
+        <Divider/>
+        <Text style={{display:'block', textAlign:'center', color:C.text3}}>
+          สร้างจากโจทย์ Ch.4 Problem ของ Supaket · อิง Cornerstones of Managerial Accounting (Mowen, Hansen, Heitger)
+        </Text>
+      </Layout.Content>
+    </Layout>
+  </ConfigProvider>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
