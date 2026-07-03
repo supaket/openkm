@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Books — Directory Index | Enersys Library</title>
+    <title>🎓 UTCC — Directory Index | Enersys Library</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -69,6 +69,29 @@
             overflow: hidden;
         }
 
+        .course-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1.25rem;
+            background: linear-gradient(90deg, var(--cream-warm), var(--parchment));
+            border-bottom: 1px solid var(--gold-pale);
+        }
+
+        .course-icon { font-size: 1.4rem; }
+
+        .course-header h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--mahogany);
+        }
+
+        .course-header .course-code {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-right: 0.25rem;
+        }
+
         .file-list { list-style: none; }
 
         .file-list li {
@@ -101,8 +124,6 @@
         }
 
         .badge-latest { background: var(--gold); color: var(--mahogany); }
-        .badge-old { background: var(--cream-warm); color: var(--text-muted); border: 1px solid var(--gold-pale); }
-        .badge-count { background: var(--cream-warm); color: var(--text-muted); border: 1px solid var(--gold-pale); }
 
         .footer {
             text-align: center;
@@ -116,32 +137,41 @@
 </head>
 <body>
     <header class="header">
-        <h1>📚 Books — สารบบหมวดหนังสือ</h1>
-        <p>เลือกหมวดเพื่อดูรายการทั้งหมดในแต่ละหมวด</p>
+        <h1>🎓 UTCC — วิชาบัญชี</h1>
+        <p>รวมสรุปทบทวนรายวิชา · มหาวิทยาลัยหอการค้าไทย</p>
     </header>
 
     <main class="container">
         <nav class="breadcrumb">
-            <a href="../book-learning-hub.html">📚 Library Hub</a> / <a href="../index.html">🙏 หน้าหลัก</a> / books
+            <a href="../../book-learning-hub.html">📚 Library Hub</a> / <a href="../../index.html">🙏 หน้าหลัก</a> / <a href="../index.html">books</a> / utcc
         </nav>
 
         <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">📊</span>
+                <h2><span class="course-code">GA511</span> บัญชีบริหาร (Managerial Accounting)</h2>
+            </div>
             <ul class="file-list">
-                <li><a href="business-finance/"><span class="file-name">💰 Business & Finance</span><span class="badge badge-count">9 เล่ม</span></a></li>
-                <li><a href="communication-leadership/"><span class="file-name">💬 Communication & Leadership</span><span class="badge badge-count">8 เล่ม</span></a></li>
-                <li><a href="law-legal/"><span class="file-name">⚖️ Law & Legal Studies</span><span class="badge badge-count">16 ไฟล์</span></a></li>
-                <li><a href="odoo/"><span class="file-name">🖥️ Odoo Presentations</span><span class="badge badge-count">1 ไฟล์</span></a></li>
-                <li><a href="personal-development/"><span class="file-name">🌱 Personal Development</span><span class="badge badge-count">6 เล่ม</span></a></li>
-                <li><a href="philosophy-strategy/"><span class="file-name">🧠 Philosophy & Strategy</span><span class="badge badge-count">8 เล่ม</span></a></li>
-                <li><a href="science-knowledge/"><span class="file-name">🔬 Science & Knowledge</span><span class="badge badge-count">2 เล่ม</span></a></li>
-                <li><a href="utcc/"><span class="file-name">🎓 UTCC — วิชาบัญชี (GA511 · GA513)</span><span class="badge badge-count">4 ไฟล์</span></a></li>
+                <li><a href="GA511/GA511_Week1_Review.html"><span class="file-name">1️⃣ Week 1 · บัญชีบริหารและแนวคิดต้นทุน</span></a></li>
+                <li><a href="GA511/GA511_Week2_Review.html"><span class="file-name">2️⃣ Week 2 · ต้นทุนงานสั่งทำ &amp; ต้นทุนช่วง</span></a></li>
+                <li><a href="GA511/GA511_Week3_Review.html"><span class="file-name">3️⃣ Week 3 · การบัญชีต้นทุนตามกิจกรรม (ABC)</span></a></li>
+            </ul>
+        </section>
+
+        <section class="course-group">
+            <div class="course-header">
+                <span class="course-icon">🧾</span>
+                <h2><span class="course-code">GA513</span> ภาษีเงินได้บุคคลธรรมดา (PIT)</h2>
+            </div>
+            <ul class="file-list">
+                <li><a href="GA513/GA513-PIT-หนังสือทบทวน.html"><span class="file-name">📖 หนังสือทบทวนก่อนสอบ — ภาษีเงินได้บุคคลธรรมดา</span><span class="badge badge-latest">ใหม่</span></a></li>
             </ul>
         </section>
     </main>
 
     <footer class="footer">
-        <p><a href="../book-learning-hub.html">📚 กลับ Library Hub</a></p>
-        <p>Enersys Library — Books</p>
+        <p><a href="../../book-learning-hub.html">📚 กลับ Library Hub</a></p>
+        <p>Enersys Library — UTCC</p>
     </footer>
 </body>
 </html>
