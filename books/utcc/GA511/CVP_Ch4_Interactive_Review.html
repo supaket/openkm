@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVP Analysis — Chapter 4 Interactive Review</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai', sans-serif; margin:0; }
+.fc-perspective { perspective:1200px; }
+.fc-card { position:relative; width:100%; height:320px; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+.fc-card.flipped { transform:rotateY(180deg); }
+.fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:12px; padding:28px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; overflow-y:auto; }
+.fc-back { transform:rotateY(180deg); }
+.qc { transition:all .2s; }
+.qc:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(61,50,41,.12); }
+::-webkit-scrollbar { width:10px; height:10px; }
+::-webkit-scrollbar-track { background:#EDE8DF; }
+::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:5px; }
+::selection { background:#DDD3C1; color:#3D3229; }
+.ant-table-cell { line-height:1.9 !important; }
+.fadein { animation: fadeInUp .6s ease both; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:translateY(0);} }
+.pop { display:inline-block; animation: pop .45s ease; }
+@keyframes pop { 0% { transform:scale(1.25); color:#8B7355; } 100% { transform:scale(1); } }
+.wf-bar { transition: all .6s ease; border-radius:8px 8px 0 0; }
+.node { transition: all .45s ease; opacity:.4; border-radius:10px; padding:8px 10px; text-align:center; border:2px solid #DDD3C1; background:#FAF7F2; font-size:13px; font-weight:600; color:#3D3229; }
+.node.active { opacity:1; transform:scale(1.08); border-color:#A8906C; background:#F3EDDF; box-shadow:0 4px 14px rgba(139,115,85,.35); }
+.node.done { opacity:.95; border-color:#5D8A66; background:#EFF5F0; }
+.pulse { animation: pulse 1.6s ease infinite; }
+@keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(168,144,108,.45);} 50% { box-shadow:0 0 0 10px rgba(168,144,108,0);} }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Slider, InputNumber, Switch } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef } = React;
+
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  amber: '#B5986A', amberDark: '#7A6548',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+const fmt = (n) => Math.round(n).toLocaleString('en-US');
+const fmt1 = (n) => (Math.round(n*100)/100).toLocaleString('en-US');
+const Stars = ({n}) => <span>{'⭐'.repeat(n)}</span>;
+const Pop = ({v, color, prefix, suffix, f}) => <span key={String(v)} className="pop" style={{fontWeight:700, color: color||C.goldDark}}>{prefix||''}{(f||fmt)(v)}{suffix||''}</span>;
+
+/* ============================================================
+   TAB 0 — ปูพื้นก่อน (คนไม่มีพื้น)
+   ============================================================ */
+const CoffeeShop = () => {
+  const [cups, setCups] = useState(100);
+  const P = 100, V = 40, F = 9000;
+  const cm = P - V;
+  const profit = cm*cups - F;
+  const be = F / cm;
+  return (
+    <Card size="small" style={{background:C.white, borderColor:C.borderDark}}
+      title={<Text strong style={{color:C.text}}>☕ ลองเล่น: ร้านกาแฟของคุณ — ขายแก้วละ 100.- ต้นทุนต่อแก้ว 40.- ค่าเช่า+เงินเดือน 9,000.-/เดือน</Text>}>
+      <Text style={{color:C.text2}}>เดือนนี้ขายได้: <Pop v={cups}/> แก้ว</Text>
+      <Slider min={0} max={400} value={cups} onChange={setCups}/>
+      <Row gutter={12}>
+        <Col xs={12} md={6}><Statistic title="เงินเข้าร้าน" value={fmt(P*cups)} valueStyle={{color:C.blue, fontSize:18}}/></Col>
+        <Col xs={12} md={6}><Statistic title="ค่าของ (ผันแปร)" value={fmt(V*cups)} valueStyle={{color:C.red, fontSize:18}}/></Col>
+        <Col xs={12} md={6}><Statistic title="เหลือช่วยจ่ายค่าเช่า (CM)" value={fmt(cm*cups)} valueStyle={{color:C.cyan, fontSize:18}}/></Col>
+        <Col xs={12} md={6}><Statistic title="กำไร/ขาดทุน" value={fmt(profit)} valueStyle={{color: profit>=0?C.green:C.red, fontSize:18}}/></Col>
+      </Row>
+      <Alert style={{marginTop:8}} type={profit>=0 ? 'success':'error'}
+        message={profit>=0
+          ? <span>เกินจุดคุ้มทุนแล้ว! ทุกแก้วที่ขายเพิ่มจากนี้ = กำไรเพิ่มแก้วละ 60.- เต็ม ๆ (เพราะค่าเช่าถูกจ่ายครบแล้ว)</span>
+          : <span>ยังขาดทุนอยู่ — ทุกแก้วช่วย "อุด" ค่าเช่าได้แก้วละ 60.- ต้องขายให้ถึง <Text strong>{fmt(be)} แก้ว</Text> ถึงจะเท่าทุน (9,000 ÷ 60 = 150)</span>}/>
+      <Paragraph style={{color:C.text3, marginTop:8}}>
+        แค่นี้คุณเข้าใจทั้งบทแล้ว: เงินที่เหลือต่อแก้ว (60.-) คือ <strong>Contribution Margin</strong> และจำนวนแก้วที่พอดีเท่าทุน (150) คือ <strong>Break-Even Point</strong>
+      </Paragraph>
+    </Card>
+  );
+};
+
+const vocab4 = [
+  {key:1, w:'Variable cost (VC)', m:'ต้นทุนที่โตตามจำนวนที่ขาย — ขายมากจ่ายมาก เช่น ค่าเมล็ดกาแฟ ค่านม ค่าคอมมิชชั่น'},
+  {key:2, w:'Fixed cost (FC/F)', m:'ต้นทุนที่นิ่งไม่ว่าขายเท่าไร เช่น ค่าเช่า เงินเดือนพนักงานประจำ ค่าเสื่อมเครื่องจักร'},
+  {key:3, w:'Contribution Margin (CM)', m:'ราคาขาย − ต้นทุนผันแปร = เงินที่เหลือจากการขาย 1 หน่วยไว้ "ช่วยจ่าย" ต้นทุนคงที่ พอจ่ายครบ ที่เหลือคือกำไร'},
+  {key:4, w:'Break-Even Point (BE)', m:'จุดที่รายได้รวม = ต้นทุนรวม กำไรเป็นศูนย์พอดี — ขายต่ำกว่านี้ขาดทุน สูงกว่านี้กำไร'},
+  {key:5, w:'Operating Income (OI)', m:'กำไรจากการดำเนินงาน (ก่อนดอกเบี้ยและภาษี) — ตัวที่ CVP ใช้เป็น "กำไร" ตลอดทั้งบท'},
+  {key:6, w:'Relevant range', m:'ช่วงปริมาณที่สมมติฐาน "เส้นตรง" ยังใช้ได้ — นอกช่วงนี้ราคา/ต้นทุนอาจเปลี่ยนพฤติกรรม'},
+  {key:7, w:'Sales mix', m:'สัดส่วนจำนวนหน่วยของสินค้าแต่ละตัวที่ขาย เช่น ขายเครื่องตัดหญ้าแบบเดินตาม 3 คัน ต่อแบบนั่งขับ 2 คัน'},
+  {key:8, w:'Contribution margin income statement', m:'งบกำไรขาดทุนที่จัดเรียงใหม่: ขาย − VC = CM − F = กำไร (ต่างจากงบปกติที่แยกตามหน้าที่)'},
+];
+
+const BasicsTab = () => (
+  <div>
+    <Card className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border}}
+      title={<Text strong style={{color:C.text}}>🤔 บทนี้ตอบคำถามอะไร?</Text>}>
+      <Paragraph style={{color:C.text}}>
+        CVP (Cost-Volume-Profit) คือเครื่องมือถามตอบเรื่อง <Tag color="blue">ต้นทุน</Tag><Tag color="purple">ปริมาณขาย</Tag><Tag color="green">กำไร</Tag>:
+        "ต้องขายกี่ชิ้นถึงเท่าทุน?" · "อยากได้กำไรเท่านี้ต้องขายเท่าไร?" · "ถ้าลดราคา/ค่าเช่าขึ้น กำไรกระทบแค่ไหน?"
+      </Paragraph>
+      <Paragraph style={{color:C.text}}>
+        หนังสือใช้บริษัท <strong>Whittier Company</strong> ขายเครื่องตัดหญ้า คันละ $400 เป็นตัวอย่างตลอดบท — ไฟล์นี้ก็ใช้ตัวเลขชุดเดียวกัน
+      </Paragraph>
+    </Card>
+    <div className="fadein" style={{animationDelay:'0.1s'}}><CoffeeShop/></div>
+    <Card className="fadein" style={{marginTop:16, marginBottom:16, background:C.white, borderColor:C.border, animationDelay:'0.2s'}}
+      title={<Text strong style={{color:C.text}}>📖 ศัพท์ที่ต้องรู้ (8 คำ)</Text>}>
+      <Table size="small" pagination={false} columns={[
+        {title:'คำศัพท์', dataIndex:'w', key:'w', width:260, render:t=><Text strong style={{color:C.goldDark}}>{t}</Text>},
+        {title:'ความหมายแบบบ้าน ๆ', dataIndex:'m', key:'m'},
+      ]} dataSource={vocab4}/>
+    </Card>
+    <Card className="fadein" style={{background:C.white, borderColor:C.border, animationDelay:'0.3s'}}
+      title={<Text strong style={{color:C.text}}>🧭 แผนที่ของบท (เชื่อมกับการบ้านที่ทำไปแล้ว)</Text>}>
+      <Table size="small" pagination={false} columns={[
+        {title:'LO', dataIndex:'lo', key:'lo', width:60},
+        {title:'เรื่อง', dataIndex:'t', key:'t'},
+        {title:'โจทย์การบ้านที่ใช้', dataIndex:'h', key:'h'},
+      ]} dataSource={[
+        {key:1, lo:'LO-1', t:'จุดคุ้มทุนเป็นหน่วยและยอดขาย + CM/VC ratio', h:'ข้อ 1, 2, 3(A-C), 4A'},
+        {key:2, lo:'LO-2', t:'ขายเท่าไรให้ได้กำไรเป้าหมาย', h:'ข้อ 3D, 4B'},
+        {key:3, lo:'LO-3', t:'กราฟ Profit-Volume และ CVP + ข้อสมมติ', h:'(ลองในห้องทดลอง)'},
+        {key:4, lo:'LO-4', t:'หลายสินค้า (sales mix, package)', h:'ข้อ 5, 6'},
+        {key:5, lo:'LO-5', t:'ความเสี่ยง: Margin of Safety, Operating Leverage', h:'(เนื้อหาอ่านเพิ่มที่แนะนำไว้)'},
+      ]}/>
+    </Card>
+  </div>
+);
+
+/* ============================================================
+   TAB 1 — สรุปเนื้อหา + WATERFALL ANIMATION
+   ============================================================ */
+const wfSteps = [
+  {label:'ยอดขาย', v:400000, color:C.blue, d:'Whittier ขาย 1,000 คัน × $400 = $400,000 — จุดตั้งต้นของทุกอย่าง'},
+  {label:'− ต้นทุนผันแปร', v:325000, color:C.red, d:'1,000 คัน × $325 (DM 180 + DL 100 + VOH 25 + คอมมิชชั่น 20) = $325,000'},
+  {label:'= Contribution Margin', v:75000, color:C.cyan, d:'เหลือ $75,000 (คันละ $75) — เงินก้อนนี้มีหน้าที่ "จ่ายต้นทุนคงที่ก่อน แล้วที่เหลือเป็นกำไร"'},
+  {label:'− ต้นทุนคงที่', v:45000, color:C.purple, d:'FOH $15,000 + Fixed S&A $30,000 = $45,000 นิ่งเท่านี้ไม่ว่าขายกี่คัน'},
+  {label:'= กำไรดำเนินงาน', v:30000, color:C.green, d:'$30,000 — ถ้า CM = F พอดี กำไรเป็น 0 นั่นแหละคือจุดคุ้มทุน (600 คัน)'},
+];
+
+const Waterfall = () => {
+  const [step, setStep] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const timer = useRef(null);
+  useEffect(() => {
+    if (playing) {
+      timer.current = setInterval(() => setStep(s => {
+        if (s >= wfSteps.length-1) { setPlaying(false); return s; }
+        return s+1;
+      }), 1500);
+    }
+    return () => clearInterval(timer.current);
+  }, [playing]);
+  const maxV = 400000;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🎬 เส้นทางจากยอดขายสู่กำไร (กด Play — งบกำไรขาดทุนแบบ CM ของ Whittier)</Text>}>
+      <Flex gap={8} style={{marginBottom:12}}>
+        <Button type="primary" className={playing?'':'pulse'} disabled={playing} onClick={()=>{setStep(0); setPlaying(true);}}>▶ Play</Button>
+        <Button onClick={()=>{setPlaying(false); setStep(-1);}}>รีเซ็ต</Button>
+        <Button onClick={()=>{setPlaying(false); setStep(wfSteps.length-1);}}>แสดงทั้งหมด</Button>
+      </Flex>
+      <Flex gap={12} align="end" justify="center" style={{height:190, marginBottom:8}}>
+        {wfSteps.map((s,i)=>(
+          <div key={i} style={{textAlign:'center', width:110}}>
+            <div className="wf-bar" style={{
+              height: i<=step ? Math.max(10, s.v/maxV*150) : 0,
+              background: s.color, opacity: i<=step?1:.0, margin:'0 auto', width:'80%'}}/>
+            <Text strong style={{color: i<=step ? s.color : C.border, fontSize:12}}>{s.label}</Text><br/>
+            {i<=step && <Text className="pop" strong style={{color:s.color, fontSize:13}}>${fmt(s.v)}</Text>}
+          </div>
+        ))}
+      </Flex>
+      <div style={{minHeight:56}}>
+        {step>=0
+          ? <Alert type="info" message={<span><Text strong>{wfSteps[step].label}: </Text>{wfSteps[step].d}</span>}/>
+          : <Alert type="warning" message="โครง 5 บรรทัดนี้คือ Contribution Margin Income Statement (Cornerstone 4.1) — กระดูกสันหลังของทั้งบท"/>}
+      </div>
+    </Card>
+  );
+};
+
+const summaryData4 = [
+  {
+    key:'lo1', title:'⚖️ LO-1: จุดคุ้มทุน — หน่วย & ยอดขาย', tags:[['ออกทุกครั้ง','volcano']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>BE (หน่วย) = F ÷ CM ต่อหน่วย</Text><br/>
+            <Text style={{color:C.text}}>Whittier: 45,000 ÷ (400−325) = 45,000 ÷ 75 = <strong>600 คัน</strong> (CS 4.2)</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>BE (ยอดขาย) = F ÷ CM ratio</Text><br/>
+            <Text style={{color:C.text}}>CM ratio = 75/400 = 18.75% → 45,000 ÷ 0.1875 = <strong>$240,000</strong> (CS 4.4) — เช็ค: 600×400 = 240,000 ✓</Text>
+          </Card></Col>
+        </Row>
+        <Paragraph style={{color:C.text, marginTop:12}}>
+          <strong>ที่มา (เข้าใจไม่ต้องท่อง):</strong> กำไร = PQ − VQ − F ตั้งกำไร = 0 → Q(P−V) = F → Q = F ÷ (P−V)
+        </Paragraph>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark}}>
+          <Text strong style={{color:C.text2}}>ความสัมพันธ์ 3 กรณี (สไลด์เน้น): </Text>
+          <Text style={{color:C.text}}>CM = F → กำไร 0 (คุ้มทุน) | CM &gt; F → กำไร | CM &lt; F → ขาดทุน</Text><br/>
+          <Text strong style={{color:C.text2}}>อัตราส่วนคู่หู: </Text>
+          <Text style={{color:C.text}}>VC ratio = 325/400 = 81.25% และ CM ratio = 18.75% → รวมกัน = 100% เสมอ (CS 4.3)</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'lo2', title:'🎯 LO-2: Target Income — ขายเท่าไรให้ได้กำไรตามเป้า', tags:[['ออกทุกครั้ง','volcano']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text style={{color:C.text, fontSize:16}}><strong>หน่วย = (F + Target) ÷ CM</strong>   |   <strong>ยอดขาย = (F + Target) ÷ CM ratio</strong></Text>
+        </Card>
+        <Paragraph style={{color:C.text}}>
+          Whittier อยากได้กำไร $37,500: หน่วย = (45,000+37,500) ÷ 75 = <strong>1,100 คัน</strong> (CS 4.5)
+          หรือยอดขาย = 82,500 ÷ 0.1875 = <strong>$440,000</strong> (CS 4.6) — มอง target เป็น "ต้นทุนคงที่ก้อนพิเศษ" ที่ต้องหาเพิ่ม
+        </Paragraph>
+        <Alert type="info" message={<span><Text strong>ทางลัดที่ข้อสอบชอบ (สไลด์ 35): </Text>Δกำไร = CM ratio × Δยอดขาย — ยอดขายเพิ่ม $40,000 → กำไรเพิ่ม 0.1875 × 40,000 = $7,500 ทันที ไม่ต้องทำงบใหม่ (F ไม่เปลี่ยน)</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'lo3', title:'📈 LO-3: กราฟ 2 แบบ + ข้อสมมติ 4 ข้อ', tags:[['ทฤษฎี','blue']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, height:'100%'}}>
+            <Text strong style={{color:C.cyan}}>Profit-Volume Graph</Text><br/>
+            <Text style={{color:C.text}}>เส้นเดียว: กำไร vs หน่วยขาย เริ่มที่ −F (ขายศูนย์ = ขาดทุนเท่าต้นทุนคงที่) ชันขึ้นทีละ CM ตัดแกนศูนย์ที่ BE</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>CVP Graph</Text><br/>
+            <Text style={{color:C.text}}>สองเส้น: รายได้ (ชัน P) กับต้นทุนรวม (เริ่ม F ชัน V) — จุดตัด = BE ซ้ายคือโซนขาดทุน ขวาคือโซนกำไร</Text>
+          </Card></Col>
+        </Row>
+        <Card size="small" style={{background:C.redBg, borderColor:C.red, marginTop:8}}>
+          <Text strong style={{color:C.red}}>ข้อสมมติ CVP 4 ข้อ (สไลด์ 39 — ออกสอบทฤษฎีบ่อย):</Text>
+          <ol style={{margin:'4px 0'}}>
+            <li><Text style={{color:C.text}}>รายได้/ต้นทุนเป็น <strong>เส้นตรง</strong> ภายใน relevant range</Text></li>
+            <li><Text style={{color:C.text}}><strong>Sales mix รู้แน่นอน</strong> (กรณีหลายสินค้า)</Text></li>
+            <li><Text style={{color:C.text}}>ราคาและต้นทุน <strong>รู้แน่นอน</strong></Text></li>
+            <li><Text style={{color:C.text}}><strong>ผลิตหมดขายหมด</strong> ไม่มีสินค้าคงเหลือ</Text></li>
+          </ol>
+        </Card>
+        <Text style={{color:C.text3}}>ไปลองลากกราฟจริงได้ในแท็บ 🧪 ห้องทดลอง</Text>
+      </div>
+    )
+  },
+  {
+    key:'lo4', title:'📦 LO-4: หลายสินค้า — Package Method', tags:[['ข้อยากประจำบท','red']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>Whittier เพิ่มเครื่องตัดหญ้านั่งขับ: mulching (P400, V325, CM 75) : riding (P800, V600, CM 200) ขายสัดส่วน <strong>3 : 2</strong> (CS 4.7)</Paragraph>
+        <Table size="small" pagination={false} columns={[
+          {title:'สินค้า', dataIndex:'p', key:'p'},
+          {title:'CM/หน่วย', dataIndex:'cm', key:'cm', align:'right'},
+          {title:'Mix', dataIndex:'m', key:'m', align:'right'},
+          {title:'CM ต่อ package', dataIndex:'t', key:'t', align:'right'},
+        ]} dataSource={[
+          {key:1, p:'Mulching', cm:'$75', m:'3', t:'$225'},
+          {key:2, p:'Riding', cm:'$200', m:'2', t:'$400'},
+          {key:3, p:<Text strong>รวม (1 package = 5 คัน)</Text>, cm:'', m:'', t:<Text strong>$625</Text>},
+        ]}/>
+        <Paragraph style={{color:C.text, marginTop:8}}>
+          F รวม = $96,250 (direct fixed ของแต่ละสาย + common fixed) → BE = 96,250 ÷ 625 = <strong>154 packages</strong>
+          → mulching 154×3 = <strong>462 คัน</strong>, riding 154×2 = <strong>308 คัน</strong> (ยอดขายที่ BE = $431,200)
+        </Paragraph>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple}}>
+          <Text strong style={{color:C.purple}}>ศัพท์ที่ชอบออก: </Text>
+          <Text style={{color:C.text}}><strong>Direct fixed expenses</strong> = ต้นทุนคงที่ที่ตามสายผลิตภัณฑ์ (เลิกขายก็หายไป) | <strong>Common fixed expenses</strong> = ก้อนกลางของทั้งบริษัท (เลิกสายหนึ่งก็ยังอยู่)</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'lo5', title:'🛡️ LO-5: ความเสี่ยง — Margin of Safety & Operating Leverage', tags:[['อ่านเพิ่มที่แนะนำไว้','blue']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>Margin of Safety (CS 4.9)</Text><br/>
+            <Text style={{color:C.text}}>ขายจริง/แผน − BE = เผื่อได้แค่ไหนก่อนขาดทุน<br/>Whittier: 1,000 − 600 = <strong>400 คัน</strong> = <strong>$160,000</strong> (40% ของยอดขาย)</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>Degree of Operating Leverage (CS 4.10)</Text><br/>
+            <Text style={{color:C.text}}>DOL = CM รวม ÷ กำไร = 75,000 ÷ 30,000 = <strong>2.5</strong><br/>ใช้ต่อ (CS 4.11): ยอดขาย +20% → กำไร +2.5×20% = <strong>+50%</strong> → กำไรใหม่ $45,000</Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:8}} type="warning" message={<span><Text strong>แก่นของ leverage: </Text>บริษัทต้นทุนคงที่สูง → DOL สูง → ขาขึ้นกำไรพุ่งแรง แต่ขาลงก็เจ็บแรงเท่ากัน (ตารางสรุปสไลด์ 61) — วิธีรับมือความไม่แน่นอน: sensitivity analysis, MOS, DOL</span>}/>
+      </div>
+    )
+  },
+];
+
+const SummaryTab = () => (
+  <div>
+    <Waterfall/>
+    {summaryData4.map((s,i) => (
+      <Card key={s.key} className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border, animationDelay:`${i*0.1}s`}}
+        title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text>{s.tags.map((t,j)=><Tag key={j} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+        {s.content()}
+      </Card>
+    ))}
+  </div>
+);
+
+/* ============================================================
+   TAB 2 — ห้องทดลอง
+   ============================================================ */
+const CVPGraph = ({P, V, F, Q, mode}) => {
+  const W=440, H=280, ml=56, mr=14, mt=14, mb=34;
+  const iw = W-ml-mr, ih = H-mt-mb;
+  const cm = P - V;
+  const be = cm>0 ? F/cm : Infinity;
+  const xmax = Math.max(Q*1.3, (isFinite(be)?be:0)*1.8, 100);
+  let ymin, ymax;
+  if (mode==='pv') { ymin = -F*1.15; ymax = Math.max(cm*xmax - F, F)*1.1; }
+  else { ymin = 0; ymax = Math.max(P*xmax, F + V*xmax)*1.05; }
+  const X = x => ml + x/xmax*iw;
+  const Y = y => mt + (1 - (y-ymin)/(ymax-ymin))*ih;
+  const ticksX = [0, xmax/2, xmax].map(Math.round);
+  const profitQ = cm*Q - F;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%', background:C.white, borderRadius:10, border:`1px solid ${C.border}`}}>
+      <line x1={ml} y1={mt} x2={ml} y2={H-mb} stroke={C.text3} strokeWidth="1.5"/>
+      <line x1={ml} y1={Y(0)} x2={W-mr} y2={Y(0)} stroke={C.text3} strokeWidth="1.5"/>
+      {ticksX.map((t,i)=><text key={i} x={X(t)} y={H-mb+16} fontSize="10" fill={C.text3} textAnchor="middle">{fmt(t)}</text>)}
+      <text x={W-mr} y={H-mb+28} fontSize="10" fill={C.text3} textAnchor="end">หน่วยขาย →</text>
+      {mode==='pv' ? (
+        <g>
+          <line x1={X(0)} y1={Y(-F)} x2={X(xmax)} y2={Y(cm*xmax-F)} stroke={C.goldDark} strokeWidth="3"/>
+          <text x={X(0)+6} y={Y(-F)-6} fontSize="10" fill={C.red}>เริ่มที่ −F = -{fmt(F)}</text>
+          {isFinite(be) && be<=xmax && <g>
+            <circle cx={X(be)} cy={Y(0)} r="6" fill={C.red}/>
+            <text x={X(be)} y={Y(0)-10} fontSize="11" fontWeight="700" fill={C.red} textAnchor="middle">BE = {fmt(be)}</text>
+          </g>}
+          <line x1={X(Q)} y1={mt} x2={X(Q)} y2={H-mb} stroke={C.blue} strokeWidth="1" strokeDasharray="4 3"/>
+          <circle cx={X(Q)} cy={Y(profitQ)} r="6" fill={profitQ>=0?C.green:C.red}/>
+          <text x={X(Q)+8} y={Y(profitQ)+4} fontSize="11" fontWeight="700" fill={profitQ>=0?C.green:C.red}>{profitQ>=0?'กำไร ':'ขาดทุน '}{fmt(Math.abs(profitQ))}</text>
+        </g>
+      ) : (
+        <g>
+          <line x1={X(0)} y1={Y(0)} x2={X(xmax)} y2={Y(P*xmax)} stroke={C.blue} strokeWidth="3"/>
+          <text x={X(xmax*0.72)} y={Y(P*xmax*0.72)-8} fontSize="11" fontWeight="700" fill={C.blue}>รายได้ (ชัน P)</text>
+          <line x1={X(0)} y1={Y(F)} x2={X(xmax)} y2={Y(F+V*xmax)} stroke={C.red} strokeWidth="3"/>
+          <text x={X(xmax*0.72)} y={Y(F+V*xmax*0.72)+16} fontSize="11" fontWeight="700" fill={C.red}>ต้นทุนรวม (เริ่ม F ชัน V)</text>
+          {isFinite(be) && be<=xmax && <g>
+            <circle cx={X(be)} cy={Y(P*be)} r="6" fill={C.goldDark}/>
+            <text x={X(be)} y={Y(P*be)-10} fontSize="11" fontWeight="700" fill={C.goldDark} textAnchor="middle">BE = {fmt(be)} หน่วย</text>
+          </g>}
+          <line x1={X(Q)} y1={mt} x2={X(Q)} y2={H-mb} stroke={C.text3} strokeWidth="1" strokeDasharray="4 3"/>
+        </g>
+      )}
+    </svg>
+  );
+};
+
+const GraphLab = () => {
+  const [P, setP] = useState(400);
+  const [V, setV] = useState(325);
+  const [F, setF] = useState(45000);
+  const [Q, setQ] = useState(1000);
+  const [mode, setMode] = useState('pv');
+  const cm = P-V;
+  const cmr = cm/P;
+  const be = cm>0 ? F/cm : Infinity;
+  const profit = cm*Q - F;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>📈 Lab 1: เครื่องจำลอง CVP — ลากแล้วดูกราฟขยับ (ค่าเริ่มต้น = Whittier)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={10}>
+          <Text style={{color:C.text2}}>ราคาขาย P: $<Pop v={P}/></Text>
+          <Slider min={100} max={800} step={5} value={P} onChange={setP}/>
+          <Text style={{color:C.text2}}>ต้นทุนผันแปร V: $<Pop v={V} color={C.red}/></Text>
+          <Slider min={50} max={800} step={5} value={V} onChange={setV}/>
+          <Text style={{color:C.text2}}>ต้นทุนคงที่ F: $<Pop v={F} color={C.purple}/></Text>
+          <Slider min={5000} max={120000} step={1000} value={F} onChange={setF}/>
+          <Text style={{color:C.text2}}>จำนวนที่ขายจริง Q: <Pop v={Q} color={C.blue}/> หน่วย</Text>
+          <Slider min={0} max={2000} step={10} value={Q} onChange={setQ}/>
+          <Flex gap={8} style={{marginTop:8}}>
+            <Button size="small" type={mode==='pv'?'primary':'default'} onClick={()=>setMode('pv')}>กราฟกำไร (P-V)</Button>
+            <Button size="small" type={mode==='cvp'?'primary':'default'} onClick={()=>setMode('cvp')}>กราฟรายได้-ต้นทุน (CVP)</Button>
+          </Flex>
+        </Col>
+        <Col xs={24} md={14}>
+          <CVPGraph P={P} V={V} F={F} Q={Q} mode={mode}/>
+          <Row gutter={8} style={{marginTop:8}}>
+            <Col span={6}><Statistic title="CM/หน่วย" value={cm} valueStyle={{fontSize:16, color: cm>0?C.cyan:C.red}}/></Col>
+            <Col span={6}><Statistic title="CM ratio" value={(cmr*100).toFixed(2)+'%'} valueStyle={{fontSize:16, color:C.cyan}}/></Col>
+            <Col span={6}><Statistic title="BE (หน่วย)" value={isFinite(be)?fmt(Math.ceil(be)):'—'} valueStyle={{fontSize:16, color:C.goldDark}}/></Col>
+            <Col span={6}><Statistic title="กำไรที่ Q" value={fmt(profit)} valueStyle={{fontSize:16, color: profit>=0?C.green:C.red}}/></Col>
+          </Row>
+          {cm<=0 && <Alert type="error" style={{marginTop:8}} message="V ≥ P: ขายยิ่งมากยิ่งขาดทุน ไม่มีวันคุ้มทุน! (CM ติดลบ)"/>}
+        </Col>
+      </Row>
+      <Alert style={{marginTop:8}} type="info" message={<span>โจทย์ทดลอง: 1) เลื่อน F ขึ้น ดูจุด BE วิ่งไปทางขวา 2) เลื่อน P ขึ้น ดูเส้นชันขึ้น BE ถอยซ้าย 3) ตั้ง V=P ดูเส้นแบนราบ — สามพฤติกรรมนี้คือหัวใจ sensitivity analysis ของ LO-5</span>}/>
+    </Card>
+  );
+};
+
+const TargetLab = () => {
+  const [target, setTarget] = useState(37500);
+  const [useTax, setUseTax] = useState(false);
+  const [taxRate, setTaxRate] = useState(30);
+  const P=400, V=325, F=45000, cm=P-V, cmr=cm/P;
+  const beforeTax = useTax ? target/(1-taxRate/100) : target;
+  const units = (F + beforeTax)/cm;
+  const sales = (F + beforeTax)/cmr;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🎯 Lab 2: Target Profit — อยากได้กำไรเท่านี้ ต้องขายเท่าไร? (Whittier: P400, V325, F45,000)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>กำไรเป้าหมาย: $<Pop v={target} color={C.green}/></Text>
+          <Slider min={0} max={150000} step={2500} value={target} onChange={setTarget}/>
+          <Space style={{marginTop:4}}>
+            <Switch checked={useTax} onChange={setUseTax}/>
+            <Text style={{color:C.text2}}>เป้าเป็นกำไร "หลังภาษี" (โจทย์ขั้นสูง)</Text>
+          </Space>
+          {useTax && <div>
+            <Text style={{color:C.text2}}>อัตราภาษี: <Pop v={taxRate}/>%</Text>
+            <Slider min={0} max={50} value={taxRate} onChange={setTaxRate}/>
+            <Alert type="warning" message={<span>ต้องแปลงก่อน: กำไรก่อนภาษี = {fmt(target)} ÷ (1−{(taxRate/100).toFixed(2)}) = <Text strong>${fmt(beforeTax)}</Text></span>}/>
+          </div>}
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              (F + Target) ÷ CM = ({fmt(F)} + {fmt(beforeTax)}) ÷ {cm}<br/>
+              <Text strong style={{fontSize:18, color:C.goldDark}}>ต้องขาย = </Text><span key={units} className="pop" style={{fontSize:26, fontWeight:700, color:C.goldDark}}>{fmt(Math.ceil(units))}</span><Text strong style={{fontSize:16, color:C.goldDark}}> คัน</Text><br/>
+              <Text strong style={{fontSize:16, color:C.blue}}>= ยอดขาย $</Text><span key={sales} className="pop" style={{fontSize:20, fontWeight:700, color:C.blue}}>{fmt(sales)}</span>
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ตั้งเป้า $37,500 (ไม่คิดภาษี) → 1,100 คัน / $440,000 ตรงกับ Cornerstone 4.5–4.6"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const MixLab = () => {
+  const [m1, setM1] = useState(3);
+  const [m2, setM2] = useState(2);
+  const [F, setF] = useState(96250);
+  const cm1=75, cm2=200;
+  const pkgCM = m1*cm1 + m2*cm2;
+  const pkgs = pkgCM>0 ? F/pkgCM : 0;
+  const pkgsUp = Math.ceil(pkgs - 1e-9);
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>📦 Lab 3: Multi-Product — จัด package เอง (mulching CM $75, riding CM $200)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>Mulching ในแพ็ก: <Pop v={m1}/> คัน</Text>
+          <Slider min={0} max={10} value={m1} onChange={setM1}/>
+          <Text style={{color:C.text2}}>Riding ในแพ็ก: <Pop v={m2}/> คัน</Text>
+          <Slider min={0} max={10} value={m2} onChange={setM2}/>
+          <Text style={{color:C.text2}}>ต้นทุนคงที่รวม: $<Pop v={F} color={C.purple}/></Text>
+          <Slider min={20000} max={200000} step={250} value={F} onChange={setF}/>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              CM ต่อ package = ({m1}×75) + ({m2}×200) = <Pop v={pkgCM} color={C.cyan}/><br/>
+              BE packages = {fmt(F)} ÷ {fmt(pkgCM)} = <span key={pkgsUp} className="pop" style={{fontSize:22, fontWeight:700, color:C.goldDark}}>{pkgCM>0?fmt(pkgsUp):'—'}</span> แพ็ก{pkgs !== pkgsUp && pkgCM>0 && <Text style={{color:C.text3}}> (คำนวณได้ {fmt1(pkgs)} → ปัดขึ้น)</Text>}<br/>
+              <Divider style={{margin:'8px 0'}}/>
+              → Mulching <Pop v={pkgsUp*m1} color={C.blue}/> คัน + Riding <Pop v={pkgsUp*m2} color={C.purple}/> คัน
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ค่าหนังสือ: mix 3:2, F $96,250 → CM แพ็ก $625 → 154 แพ็ก → 462 + 308 คัน (CS 4.7) · ลองเปลี่ยน mix เป็น 1:4 ดู BE เปลี่ยนทันที — นี่คือเหตุที่ต้องสมมติ mix คงที่"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const DOLLab = () => {
+  const [fixedShare, setFixedShare] = useState(45000);
+  const [dSales, setDSales] = useState(20);
+  const cmTotal = 75000;
+  const oi = cmTotal - fixedShare;
+  const dol = oi > 0 ? cmTotal/oi : Infinity;
+  const dProfit = isFinite(dol) ? dol * dSales : 0;
+  const newOI = oi * (1 + dProfit/100);
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🚀 Lab 4: Operating Leverage — คันเร่งกำไร (Whittier: CM รวม $75,000)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>ต้นทุนคงที่ F: $<Pop v={fixedShare} color={C.purple}/> (ลองลาก ดู DOL เปลี่ยน)</Text>
+          <Slider min={0} max={70000} step={1000} value={fixedShare} onChange={setFixedShare}/>
+          <Text style={{color:C.text2}}>ยอดขายเปลี่ยน: <Pop v={dSales} color={dSales>=0?C.green:C.red} suffix="%"/></Text>
+          <Slider min={-40} max={40} value={dSales} onChange={setDSales}/>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              กำไรปัจจุบัน = 75,000 − {fmt(fixedShare)} = <Pop v={oi} color={oi>0?C.green:C.red}/><br/>
+              DOL = 75,000 ÷ {fmt(oi)} = <span key={dol} className="pop" style={{fontSize:20, fontWeight:700, color:C.purple}}>{isFinite(dol)&&oi>0?fmt1(dol):'∞'}</span><br/>
+              <Divider style={{margin:'8px 0'}}/>
+              %Δกำไร = DOL × %Δยอดขาย = <span key={dProfit} className="pop" style={{fontSize:20, fontWeight:700, color:dProfit>=0?C.green:C.red}}>{oi>0?fmt1(dProfit):'—'}%</span><br/>
+              {oi>0 && <span>กำไรใหม่ ≈ $<Pop v={newOI} color={newOI>=oi?C.green:C.red}/></span>}
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ค่าหนังสือ: F = 45,000 → DOL 2.5 · ยอดขาย +20% → กำไร +50% เป็น $45,000 (CS 4.10–4.11) · ลาก F ขึ้นสูง ๆ แล้วลองยอดขาย −20% จะเห็นว่าบริษัท F สูง เจ็บหนักกว่ามาก"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const LabTab = () => (
+  <div>
+    <Alert type="success" style={{marginBottom:16}} message={<Text strong>🧪 ห้องทดลอง 4 สถานี: กราฟ CVP → target profit → หลายสินค้า → operating leverage — ค่าเริ่มต้นทุกสถานีตรงกับตัวอย่าง Whittier ในหนังสือ เช็คคำตอบกับ Cornerstone ได้เลย</Text>}/>
+    <GraphLab/>
+    <TargetLab/>
+    <MixLab/>
+    <DOLLab/>
+  </div>
+);
+
+/* ============================================================
+   TAB 3 — FLASHCARDS
+   ============================================================ */
+const flashcards = [
+  {q:'Break-even point คือจุดที่อะไรเกิดขึ้น?', a:'รายได้รวม = ต้นทุนรวม → กำไรดำเนินงาน = 0', d:'หรือมองอีกมุม: CM รวมพอดีเท่ากับต้นทุนคงที่พอดี', star:3, exam:true},
+  {q:'สูตร BE หน่วย และ BE ยอดขาย?', a:'F ÷ CM ต่อหน่วย | F ÷ CM ratio', d:'Whittier: 45,000÷75 = 600 คัน | 45,000÷0.1875 = $240,000', star:3, exam:true},
+  {q:'Contribution margin คืออะไร?', a:'ขาย − ต้นทุนผันแปร = เงินที่เหลือไว้จ่าย F และเป็นกำไร', d:'ต่อหน่วย: P−V = 400−325 = $75 — "contribute" ให้ต้นทุนคงที่ก่อน เหลือค่อยเป็นกำไร', star:3, exam:true},
+  {q:'โครง contribution margin income statement 5 บรรทัด?', a:'ขาย − VC = CM − F = Operating income', d:'ต่างจากงบปกติที่แยกตามหน้าที่ (COGS/S&A) — CVP ใช้โครงนี้เพราะแยกพฤติกรรมต้นทุนชัด', star:3, exam:true},
+  {q:'VC ratio + CM ratio = ?', a:'1 เสมอ (100%)', d:'Whittier: 81.25% + 18.75% = 100% ใช้เช็คคำตอบเร็วมาก', star:2, exam:true},
+  {q:'สูตรจำนวนหน่วยเพื่อกำไรเป้าหมาย?', a:'(F + Target income) ÷ CM ต่อหน่วย', d:'(45,000+37,500)÷75 = 1,100 คัน — target ทำตัวเหมือน F ก้อนพิเศษ', star:3, exam:true},
+  {q:'ยอดขายเพิ่ม $40,000 (F คงเดิม, CM ratio 18.75%) กำไรเพิ่มเท่าไร?', a:'$7,500', d:'ทางลัด: Δกำไร = CM ratio × Δยอดขาย = 0.1875 × 40,000 — ไม่ต้องทำงบใหม่', star:3, exam:true},
+  {q:'กราฟ Profit-Volume เริ่มต้นที่จุดไหน?', a:'(0, −F): ขายศูนย์หน่วย → ขาดทุนเท่าต้นทุนคงที่พอดี', d:'เส้นชันขึ้นทีละ CM ต่อหน่วย ตัดแกนนอนที่จุด BE', star:2, exam:true},
+  {q:'กราฟ CVP มี 2 เส้น คืออะไร ตัดกันที่ไหน?', a:'เส้นรายได้ (ชัน P) กับเส้นต้นทุนรวม (เริ่มที่ F ชัน V) ตัดกันที่ BE', d:'ซ้ายของจุดตัด = โซนขาดทุน ขวา = โซนกำไร', star:2, exam:true},
+  {q:'ข้อสมมติ CVP 4 ข้อ?', a:'เส้นตรงใน relevant range · mix รู้แน่ · ราคา/ต้นทุนรู้แน่ · ผลิตหมดขายหมด', d:'ออกสอบทฤษฎีบ่อยสุดของ LO-3 — จำว่า "ตรง-มิกซ์-แน่-หมด"', star:3, exam:true},
+  {q:'Package CM ของ mix 3 mulching (CM75) : 2 riding (CM200)?', a:'(3×75)+(2×200) = $625', d:'BE = 96,250÷625 = 154 แพ็ก → 462 + 308 คัน (CS 4.7)', star:3, exam:true},
+  {q:'Direct fixed ต่างจาก common fixed อย่างไร?', a:'Direct = ตามสายสินค้า เลิกขายแล้วหายไป | Common = ก้อนกลาง เลิกสายหนึ่งก็ยังอยู่', d:'ใช้ตอนวิเคราะห์ multi-product และการตัดสินใจเลิกผลิตภัณฑ์', star:2, exam:true},
+  {q:'สูตร Margin of Safety?', a:'ยอดขาย (จริง/แผน) − ยอดขาย ณ BE', d:'Whittier: 1,000−600 = 400 คัน = $160,000 = 40% — ยิ่งสูงยิ่งเสี่ยงต่ำ', star:3, exam:true},
+  {q:'สูตร Degree of Operating Leverage (DOL)?', a:'CM รวม ÷ Operating income', d:'75,000÷30,000 = 2.5 — วัดสัดส่วนต้นทุนคงที่ในโครงสร้าง ยิ่ง F มาก DOL ยิ่งสูง', star:3, exam:true},
+  {q:'DOL 2.5 ยอดขายเพิ่ม 20% กำไรเปลี่ยนเท่าไร?', a:'+50% (2.5 × 20%)', d:'กำไรจาก 30,000 → 45,000 (CS 4.11) — ใช้กลับทางได้: ยอดขายลด 20% → กำไรหาย 50%', star:3, exam:true},
+  {q:'บริษัท DOL สูง ดีหรือไม่ดี?', a:'ดาบสองคม: ขาขึ้นกำไรพุ่งแรง ขาลงเจ็บแรง', d:'สรุปสไลด์ 61: %กำไรเปลี่ยนแรงทั้งสองทิศ — เป็นเรื่อง "ความเสี่ยง" ไม่ใช่ดี/เลวในตัวเอง', star:2, exam:true},
+  {q:'ถ้า CM < F ผลคือ?', a:'ขาดทุน (operating income ติดลบ)', d:'สามกรณีของสไลด์ 23: CM=F คุ้มทุน, CM>F กำไร, CM<F ขาดทุน', star:2, exam:false},
+  {q:'ต้นทุนผันแปรของ Whittier $325 มาจากอะไรบ้าง?', a:'DM 180 + DL 100 + VOH 25 + คอมมิชชั่นขาย 20', d:'จุดสอน: VC รวมทั้งฝั่งผลิตและฝั่งขาย (เหมือนข้อ 2 ในการบ้าน)', star:2, exam:false},
+  {q:'เป้ากำไรหลังภาษี $70,000 ภาษี 30% ต้องใช้กำไรก่อนภาษีเท่าไร?', a:'70,000 ÷ (1−0.30) = $100,000', d:'แปลงก่อนเสมอ แล้วค่อยเข้า (F+Target)÷CM', star:2, exam:false},
+  {q:'ทำไมต้องสมมติ sales mix คงที่?', a:'เพราะ mix เปลี่ยน → package CM เปลี่ยน → BE เปลี่ยนทันที', d:'ลองใน Lab 3 ได้: เลื่อน mix จาก 3:2 เป็น 1:4 แล้วดู BE ขยับ', star:2, exam:false},
+  {q:'เครื่องมือรับมือความเสี่ยง/ความไม่แน่นอนใน CVP มีอะไรบ้าง?', a:'Sensitivity (what-if) analysis · Margin of Safety · Operating Leverage', d:'LO-5: ปรับตัวแปรทีละตัวดูผลกระทบ + วัดระยะห่างจาก BE + วัดความไวของกำไร', star:2, exam:true},
+  {q:'BE ยอดขายหาได้ 2 วิธี คือ?', a:'BE หน่วย × ราคา หรือ F ÷ CM ratio', d:'600×400 = 240,000 = 45,000÷0.1875 — สองทางต้องได้เท่ากันเสมอ ใช้ตรวจคำตอบ', star:2, exam:true},
+  {q:'ถ้า F เพิ่มขึ้น จุด BE และ MOS เปลี่ยนอย่างไร?', a:'BE สูงขึ้น และ MOS แคบลง (เสี่ยงขึ้น)', d:'F ขึ้น → ต้องขายมากขึ้นถึงคุ้มทุน → ระยะเผื่อจากยอดขายปัจจุบันหด', star:2, exam:false},
+  {q:'Operating income ใน CVP รวมดอกเบี้ย/ภาษีไหม?', a:'ไม่รวม — เป็นกำไรจากการดำเนินงานก่อนดอกเบี้ยและภาษี', d:'ถ้าโจทย์พูดถึง net income หลังภาษี ต้องแปลงก่อนเข้าสูตร', star:1, exam:false},
+];
+
+const FlashcardTab = () => {
+  const [filter, setFilter] = useState('all');
+  const [order, setOrder] = useState(flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [score, setScore] = useState({ok:0, ng:0});
+  const pool = order.map(i=>flashcards[i]).filter(c => filter==='all' ? true : filter==='exam' ? c.exam : c.star===3);
+  const card = pool[Math.min(idx, pool.length-1)];
+  const shuffle = () => { const a=[...Array(flashcards.length).keys()]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} setOrder(a); setIdx(0); setFlipped(false); setScore({ok:0,ng:0}); };
+  const nav = (d) => { setFlipped(false); setIdx(i => (i + d + pool.length) % pool.length); };
+  const mark = (good) => { setScore(s => good ? {...s, ok:s.ok+1} : {...s, ng:s.ng+1}); nav(1); };
+  const setF = (f) => { setFilter(f); setIdx(0); setFlipped(false); };
+  if (!card) return <Alert type="warning" message="ไม่มีการ์ดในโหมดนี้" />;
+  return (
+    <div>
+      <Flex justify="space-between" wrap="wrap" gap={8} style={{marginBottom:12}}>
+        <Space wrap>
+          <Button type={filter==='all'?'primary':'default'} onClick={()=>setF('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={filter==='exam'?'primary':'default'} onClick={()=>setF('exam')}>เฉพาะแนวข้อสอบ ({flashcards.filter(c=>c.exam).length})</Button>
+          <Button type={filter==='star3'?'primary':'default'} onClick={()=>setF('star3')}>⭐⭐⭐ ({flashcards.filter(c=>c.star===3).length})</Button>
+        </Space>
+        <Button onClick={shuffle}>🔀 สลับการ์ด</Button>
+      </Flex>
+      <Row gutter={16} style={{marginBottom:12}}>
+        <Col span={8}><Statistic title="การ์ดที่" value={`${idx+1} / ${pool.length}`} /></Col>
+        <Col span={8}><Statistic title="ตอบถูก" value={score.ok} valueStyle={{color:C.green}} /></Col>
+        <Col span={8}><Statistic title="ตอบผิด" value={score.ng} valueStyle={{color:C.red}} /></Col>
+      </Row>
+      <div className="fc-perspective" onClick={()=>setFlipped(f=>!f)}>
+        <div className={'fc-card' + (flipped ? ' flipped' : '')}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.borderDark}`}}>
+            <Space direction="vertical" align="center">
+              <Space>{card.exam && <Tag color="volcano">แนวข้อสอบ</Tag>}<Stars n={card.star} /></Space>
+              <Title level={4} style={{color:C.text, margin:0}}>{card.q}</Title>
+              <Text style={{color:C.text3}}>(คลิกเพื่อพลิกดูคำตอบ)</Text>
+            </Space>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.gold}`}}>
+            <Space direction="vertical" align="center">
+              <Title level={4} style={{color:C.goldDark, margin:0}}>{card.a}</Title>
+              <Text style={{color:C.text2}}>{card.d}</Text>
+            </Space>
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" gap={8} style={{marginTop:16}} wrap="wrap">
+        <Button onClick={()=>nav(-1)}>← ก่อนหน้า</Button>
+        <Button style={{background:C.greenBg, borderColor:C.green, color:C.green}} onClick={()=>mark(true)}>✓ ตอบถูก</Button>
+        <Button style={{background:C.redBg, borderColor:C.red, color:C.red}} onClick={()=>mark(false)}>✗ ตอบผิด</Button>
+        <Button onClick={()=>nav(1)}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+};
+
+/* ============================================================
+   TAB 4 — QUICK REFERENCE
+   ============================================================ */
+const quickSections = [
+  { divider: '🎯 สูตรหลัก — เขียนได้ใน 30 วินาที' },
+  { s:'BE u', t:'จุดคุ้มทุน (หน่วย)', b:'F ÷ CM ต่อหน่วย   |   45,000 ÷ 75 = 600 คัน', type:'formula' },
+  { s:'BE $', t:'จุดคุ้มทุน (ยอดขาย)', b:'F ÷ CM ratio   |   45,000 ÷ 0.1875 = $240,000 (หรือ 600 × $400)', type:'formula' },
+  { s:'Target', t:'กำไรเป้าหมาย', b:'(F + Target) ÷ CM หรือ ÷ CM ratio   |   82,500 ÷ 75 = 1,100 คัน', type:'formula' },
+  { s:'Δกำไร', t:'ทางลัดกำไรเปลี่ยน', b:'Δกำไร = CM ratio × Δยอดขาย (F คงเดิม)', type:'formula' },
+  { s:'MOS', t:'Margin of Safety', b:'ขายจริง − BE   |   1,000−600 = 400 คัน ($160,000 = 40%)', type:'formula' },
+  { s:'DOL', t:'Operating Leverage', b:'CM รวม ÷ OI = 2.5   |   %Δกำไร = DOL × %Δยอดขาย', type:'formula' },
+  { s:'Pkg', t:'หลายสินค้า', b:'BE แพ็ก = F ÷ CM ต่อแพ็ก แล้วคูณ mix กลับ   |   96,250÷625 = 154', type:'formula' },
+  { divider: '🧠 ตัวช่วยจำ' },
+  { s:'F/CM', t:'สูตรเดียวทั้งบท', b:'ทุกอย่างคือ F÷CM: ถามหน่วยใช้ CM/หน่วย · ถามเงินใช้ CM ratio · หลายสินค้าใช้ CM/แพ็ก · อยากได้กำไรก็บวกเข้ากับ F', type:'mnem' },
+  { s:'ตรง-มิกซ์-แน่-หมด', t:'ข้อสมมติ 4 ข้อ', b:'เส้นตรง · mix คงที่ · ราคา/ต้นทุนแน่นอน · ผลิตหมดขายหมด', type:'mnem' },
+  { s:'−F ก่อนเสมอ', t:'กราฟ P-V', b:'ขาย 0 หน่วย = ขาดทุนเท่า F → เส้นเริ่มใต้แกนแล้วไต่ขึ้นทีละ CM', type:'mnem' },
+  { divider: '⚡ ขั้นตอนทำโจทย์' },
+  { s:'Flow', t:'โจทย์ CVP ทุกข้อ', b:'1) แยก P, V, F → 2) หา CM และ CM ratio → 3) ดูว่าถามหน่วย/เงิน/target → 4) F÷CM เวอร์ชันที่ใช่ → 5) ตรวจ: CM รวม − F = กำไรที่โจทย์ให้', type:'flow' },
+  { s:'Flow', t:'โจทย์หลายสินค้า', b:'1) mix เป็นหน่วย → 2) CM ต่อแพ็ก = Σ(mix×CM) → 3) F÷CMแพ็ก (ปัดขึ้น) → 4) คูณ mix กระจายรายสินค้า', type:'flow' },
+  { s:'Flow', t:'โจทย์ DOL', b:'1) DOL = CM÷OI ที่ระดับขายปัจจุบัน → 2) %ΔOI = DOL × %Δขาย → 3) OI ใหม่ = เดิม × (1+%Δ)', type:'flow' },
+  { divider: '⚔️ คู่ที่ชอบสับสน' },
+  { s:'ratio ไหน?', t:'VC vs CM ratio', b:'หาร BE ด้วย CM ratio เสมอ — VC ratio ไว้เช็คว่า 1−CMratio ถูกไหม', type:'contrast' },
+  { s:'MOS vs DOL', t:'สองมาตรวัดเสี่ยง', b:'MOS = "ห่างจากเหว (BE) แค่ไหน" | DOL = "ถ้าถูกผลัก กำไรแกว่งแรงแค่ไหน"', type:'contrast' },
+  { s:'Direct vs Common', t:'fixed cost หลายสินค้า', b:'Direct หายไปถ้าเลิกสายนั้น | Common อยู่ต่อไม่ว่ายังไง', type:'contrast' },
+  { s:'OI vs NI', t:'กำไรตัวไหน?', b:'สูตร CVP ใช้ operating income (ก่อนภาษี) — โจทย์ให้หลังภาษีต้อง ÷(1−t) ก่อน', type:'contrast' },
+  { divider: '📌 ตัวเลข Whittier จำเป็นชุด (ใช้เช็คทุก Lab)' },
+  { s:'ชุดหลัก', t:'สินค้าเดียว', b:'P 400 · V 325 · CM 75 · F 45,000 · BE 600 คัน / $240,000 · แผนขาย 1,000 คัน → OI 30,000', type:'chunk' },
+  { s:'ชุดเป้า', t:'target', b:'เป้า 37,500 → 1,100 คัน / $440,000', type:'chunk' },
+  { s:'ชุดคู่', t:'multi-product', b:'mulching:riding = 3:2 · CM แพ็ก 625 · F 96,250 → 154 แพ็ก (462/308)', type:'chunk' },
+  { s:'ชุดเสี่ยง', t:'LO-5', b:'MOS 400 คัน (40%) · DOL 2.5 · ขาย +20% → กำไร +50%', type:'chunk' },
+];
+
+const typeStyle = {
+  mnem: { color:C.purple, bg:C.purpleBg },
+  flow: { color:C.cyan, bg:C.cyanBg },
+  contrast: { color:C.red, bg:C.redBg },
+  chunk: { color:C.blue, bg:C.blueBg },
+  formula: { color:C.goldDark, bg:'#F3EDDF' },
+};
+
+const QuickTab = () => (
+  <div>
+    {quickSections.map((it, i) => it.divider
+      ? <Divider key={i} orientation="left"><Text strong style={{color:C.text2}}>{it.divider}</Text></Divider>
+      : (() => { const st = typeStyle[it.type]; return (
+          <Card key={i} className="qc" size="small"
+            style={{marginBottom:10, background:st.bg, borderColor:st.color, borderLeft:`5px solid ${st.color}`}}>
+            <Space align="start">
+              <Tag style={{color:st.color, borderColor:st.color, background:'transparent', fontWeight:700}}>{it.s}</Tag>
+              <div>
+                <Text strong style={{color:C.text}}>{it.t}</Text><br/>
+                <Text style={{color:C.text2}}>{it.b}</Text>
+              </div>
+            </Space>
+          </Card>
+        );})()
+    )}
+  </div>
+);
+
+/* ============================================================ */
+const App = () => (
+  <ConfigProvider theme={{
+    algorithm: theme.defaultAlgorithm,
+    token: {
+      colorPrimary: C.gold, colorBgBase: C.bg, colorTextBase: C.text,
+      colorBgContainer: C.white, colorBorder: C.border, borderRadius: 10,
+      fontFamily: "'Noto Sans Thai', sans-serif",
+    },
+  }}>
+    <Layout style={{minHeight:'100vh', background:C.bg}}>
+      <Layout.Content style={{maxWidth:960, width:'100%', margin:'0 auto', padding:'32px 16px'}}>
+        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>📊 CVP Analysis — Chapter 4</Title>
+        <Paragraph style={{textAlign:'center', color:C.text3, marginBottom:24}}>
+          Cornerstones of Managerial Accounting, 5e · พื้นฐาน → สรุป → ทดลอง → ท่องจำ
+        </Paragraph>
+        <Tabs centered type="card" defaultActiveKey="basics" items={[
+          { key:'basics', label:'🌱 ปูพื้นก่อน', children:<BasicsTab/> },
+          { key:'sum', label:'📚 สรุปเนื้อหา', children:<SummaryTab/> },
+          { key:'lab', label:'🧪 ห้องทดลอง', children:<LabTab/> },
+          { key:'fc', label:'🎴 Flashcard', children:<FlashcardTab/> },
+          { key:'quick', label:'⚡ การ์ดจำด่วน', children:<QuickTab/> },
+        ]}/>
+        <Divider/>
+        <Text style={{display:'block', textAlign:'center', color:C.text3}}>
+          สร้างจากสไลด์ MA_5e_PPT_Ch04 · ตัวเลขตรงกับ Cornerstone 4.1–4.11 (Whittier Company) · ใช้คู่กับไฟล์เฉลยการบ้าน CVP_Ch4_Review.html
+        </Text>
+      </Layout.Content>
+    </Layout>
+  </ConfigProvider>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
