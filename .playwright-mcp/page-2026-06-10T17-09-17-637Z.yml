@@ -1,0 +1,95 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "← กลับสารบบ Enron" [ref=e3] [cursor=pointer]:
+      - /url: index.html
+    - button "🖨️ พิมพ์ / บันทึกเป็น PDF" [ref=e4] [cursor=pointer]
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: Accounting Scandal · Forensic Accounting · Case Study Brief
+      - heading "ENRON — การตกแต่งงบการเงินผ่านกิจการเฉพาะกิจ (SPE) และความล้มเหลวของการสอบบัญชี" [level=1] [ref=e8]
+      - generic [ref=e9]: "จัดทำโดย: 2600231302014 นภัสสร ลิมปกานนท์ · 2600231302018 GONG JIAJIA · 2600231302032 ศุภเกศ วงศ์คำภู"
+    - generic [ref=e10]: "ใจความหลัก: ธุรกิจของ Enron (ธนาคารก๊าซ/การเทรดพลังงาน) เก่งจริงและถูกกฎหมาย — การโกงเป็น \"ชั้นที่มาทับทีหลัง\" เพื่อให้กำไรทันความคาดหวังของตลาด · ท้ายที่สุดคือความล้มเหลวของจริยธรรม ธรรมาภิบาล การสอบบัญชี และความเชื่อมั่น"
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - heading "🔗 ห่วงโซ่ 8 ข้อต่อ" [level=2] [ref=e13]
+        - list [ref=e14]:
+          - listitem [ref=e15]: ธุรกิจดีจริง — Gas Bank / การเทรด นวัตกรรมถูกกฎหมาย
+          - listitem [ref=e16]: คน & วัฒนธรรม — แรงจูงใจ + rank-and-yank กดดันให้โกง
+          - listitem [ref=e17]: Mark-to-Market — ดึงกำไรอนาคตมาบันทึกวันนี้
+          - listitem [ref=e18]: SPE — ย้ายหนี้/ขาดทุนออกนอกงบ ค้ำด้วยหุ้นตัวเอง
+          - listitem [ref=e19]: Red Flags — งบทิ้งร่องรอย คนนอกอ่านออก (Chanos/McLean)
+          - listitem [ref=e20]: Arthur Andersen — ผู้สอบบัญชีขาดอิสระและความระแวง
+          - listitem [ref=e21]: การล่มสลาย — หุ้น $90.75 → $0.26 · เจ็บที่พนักงาน/รายย่อย
+          - listitem [ref=e22]: บทเรียน & SOX — กฎหมายปฏิรูปปี 2002 และบริบทไทย
+        - heading "📊 ตัวเลขสำคัญ" [level=2] [ref=e23]
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: $90.75 → $0.26
+            - text: ราคาหุ้นภายในไม่ถึงปี
+          - generic [ref=e27]:
+            - generic [ref=e28]: 16 ปี → สัปดาห์
+            - text: สร้างนาน · ล่มไม่กี่สัปดาห์
+          - generic [ref=e29]:
+            - generic [ref=e30]: ~$63.4B
+            - text: ล้มละลายใหญ่สุดในสหรัฐฯ ขณะนั้น
+          - generic [ref=e31]:
+            - generic [ref=e32]: ~$52M/ปี
+            - text: ค่าธรรมเนียม Andersen (สอบ+ที่ปรึกษา)
+      - generic [ref=e33]:
+        - heading "🧮 2 กลโกงหลัก — เห็นกับตัวเลข" [level=2] [ref=e34]
+        - generic [ref=e35]: ① Mark-to-Market (งบกำไรขาดทุน · ปีแรกของสัญญา 20 ปี)
+        - table [ref=e36]:
+          - rowgroup [ref=e37]:
+            - row "รายการ วิธีปกติ วิธี MTM" [ref=e38]:
+              - columnheader "รายการ" [ref=e39]
+              - columnheader "วิธีปกติ" [ref=e40]
+              - columnheader "วิธี MTM" [ref=e41]
+            - row "กำไรที่บันทึกปีนี้ $10M $200M" [ref=e42]:
+              - cell "กำไรที่บันทึกปีนี้" [ref=e43]
+              - cell "$10M" [ref=e44]
+              - cell "$200M" [ref=e45]
+            - row "เงินสดรับจริงปีนี้ $10M $10M" [ref=e46]:
+              - cell "เงินสดรับจริงปีนี้" [ref=e47]
+              - cell "$10M" [ref=e48]
+              - cell "$10M" [ref=e49]
+            - row "ช่องว่าง \"กำไรกระดาษ\" $0 $190M" [ref=e50]:
+              - cell "ช่องว่าง \"กำไรกระดาษ\"" [ref=e51]
+              - cell "$0" [ref=e52]
+              - cell "$190M" [ref=e53]
+        - generic [ref=e54]: ② SPE (งบดุล · ย้ายหนี้ออกนอกงบ)
+        - table [ref=e55]:
+          - rowgroup [ref=e56]:
+            - row "งบดุล Enron ก่อน หลังย้าย" [ref=e57]:
+              - columnheader "งบดุล Enron" [ref=e58]
+              - columnheader "ก่อน" [ref=e59]
+              - columnheader "หลังย้าย" [ref=e60]
+            - row "หนี้สินรวม $13,000M $10,000M" [ref=e61]:
+              - cell "หนี้สินรวม" [ref=e62]
+              - cell "$13,000M" [ref=e63]
+              - cell "$10,000M" [ref=e64]
+            - row "อัตราส่วนหนี้สิน/ทุน (D/E) 1.18 0.91" [ref=e65]:
+              - cell "อัตราส่วนหนี้สิน/ทุน (D/E)" [ref=e66]
+              - cell "1.18" [ref=e67]
+              - cell "0.91" [ref=e68]
+            - row "หนี้ที่ย้ายเข้า SPE — $3,000M" [ref=e69]:
+              - cell "หนี้ที่ย้ายเข้า SPE" [ref=e70]
+              - cell "—" [ref=e71]
+              - cell "$3,000M" [ref=e72]
+        - generic [ref=e73]: "* ตัวเลขเป็นภาพประกอบเชิงแนวคิด ไม่ใช่งบจริงของ Enron — หนี้ไม่หาย แค่ย้ายที่ และค้ำด้วยหุ้น Enron เอง"
+    - generic [ref=e74]:
+      - generic [ref=e75]:
+        - heading "🎓 บทเรียน & การปฏิรูป (SOX 2002)" [level=2] [ref=e76]
+        - generic [ref=e77]: ✓ กำไร ≠ เงินสด — ดูกระแสเงินสดจากการดำเนินงานเสมอ
+        - generic [ref=e78]: ✓ ความเป็นอิสระของผู้สอบบัญชีล้ำค่า → SOX ห้าม non-audit บางอย่าง + ตั้ง PCAOB
+        - generic [ref=e79]: ✓ ผู้บริหารต้องเซ็นรับรองงบ (SOX §302) · ประเมินการควบคุมภายใน (§404)
+        - generic [ref=e80]: ✓ ความระแวงเชิงวิชาชีพ & คุ้มครองผู้แจ้งเบาะแส
+      - generic [ref=e81]:
+        - heading "🇹🇭 บริบทไทย & มาตรฐานที่เกี่ยวข้อง" [level=2] [ref=e82]
+        - paragraph [ref=e83]: "กลไกไทย: ก.ล.ต. / ตลาดหลักทรัพย์ฯ · มาตรฐาน TFRS · คณะกรรมการตรวจสอบ & กรรมการอิสระ · สภาวิชาชีพบัญชี"
+        - paragraph [ref=e84]: "มาตรฐานอ้างอิง: รวมงบ/SPE → FIN 46/VIE · IFRS 10 | มูลค่ายุติธรรม → ASC 820 / IFRS 13 | สอบบัญชี → ISA/TSA 200 · 570 | ควบคุมภายใน → COSO"
+    - generic [ref=e85]:
+      - generic [ref=e86]: “Enron was not just a failure of accounting numbers — it was a failure of ethics, governance, auditing, and trust.”
+      - generic [ref=e87]:
+        - text: "สไลด์ฉบับเต็ม + แหล่งอ้างอิง:"
+        - link "enron-presentation-v2.html" [ref=e88] [cursor=pointer]:
+          - /url: enron-presentation-v2.html

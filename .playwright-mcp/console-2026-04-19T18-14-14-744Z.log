@@ -1,0 +1,15 @@
+[      45ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8765/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:0
+[     221ms] [LOG] 📱 App Mode: browser | PWA: false @ http://localhost:8765/index.html:4498
+[     221ms] [LOG] 💡 Tip: Run forceRefresh() in console to clear all caches @ http://localhost:8765/index.html:4722
+[     298ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:8765/index.html:0
+[     309ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8765/favicon.ico:0
+[     309ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:8765/index.html:0
+[     313ms] [LOG] ✅ Service Worker registered: http://localhost:8765/ @ http://localhost:8765/index.html:4635
+[     313ms] [LOG] 🆕 New Service Worker found @ http://localhost:8765/index.html:4649
+[     394ms] [LOG] 🔄 New Service Worker activated, reloading... @ http://localhost:8765/index.html:4662
+[     428ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8765/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:0
+[     496ms] [LOG] 📱 App Mode: browser | PWA: false @ http://localhost:8765/index.html:4498
+[     496ms] [LOG] 💡 Tip: Run forceRefresh() in console to clear all caches @ http://localhost:8765/index.html:4722
+[     526ms] [LOG] ✅ Service Worker registered: http://localhost:8765/ @ http://localhost:8765/index.html:4635
+[     526ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:8765/index.html:0
+[     537ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ http://localhost:8765/index.html:0

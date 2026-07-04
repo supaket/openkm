@@ -1,0 +1,3 @@
+[      23ms] ReferenceError: gtmYTplayers is not defined
+    at trackYTUnload (<anonymous>:5:40)
+[     109ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8735/favicon.ico:0

@@ -1,0 +1,194 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - list [ref=e4]:
+        - listitem [ref=e5]:
+          - link [ref=e6] [cursor=pointer]:
+            - /url: https://www.sec.gov
+        - listitem [ref=e7]:
+          - link "SEC.gov" [ref=e8] [cursor=pointer]:
+            - /url: https://www.sec.gov
+        - listitem [ref=e9]:
+          - link "EDGAR" [ref=e10] [cursor=pointer]:
+            - /url: //www.sec.gov/submit-filings/about-edgar
+      - list [ref=e11]:
+        - listitem [ref=e12]:
+          - link "Latest Filings" [ref=e13] [cursor=pointer]:
+            - /url: /cgi-bin/browse-edgar?action=getcurrent
+        - listitem [ref=e14]:
+          - link "Filings search tools" [ref=e15] [cursor=pointer]:
+            - /url: https://www.sec.gov/edgar/search-and-access
+    - heading "EDGAR Company Search Results" [level=1] [ref=e16]
+  - list [ref=e18]:
+    - listitem [ref=e19]:
+      - link "SEC Home" [ref=e20] [cursor=pointer]:
+        - /url: /index.htm
+      - text: »
+    - listitem [ref=e21]:
+      - link "Company Search" [ref=e22] [cursor=pointer]:
+        - /url: /edgar/searchedgar/companysearch.html
+      - text: »
+    - listitem [ref=e23]: Current Page
+  - generic [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - text: Mailing Address
+        - generic [ref=e27]: 1400 SMITH ST
+        - generic [ref=e28]: HOUSTON TX 77002-7369
+      - generic [ref=e29]:
+        - text: Business Address
+        - generic [ref=e30]: 1400 SMITH ST
+        - generic [ref=e31]: HOUSTON TX 77002-7369
+        - generic [ref=e32]: "7138536161"
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - text: "ENRON CORP/OR/ CIK#:"
+          - link "0001024401 (see all company filings)" [ref=e35] [cursor=pointer]:
+            - /url: /cgi-bin/browse-edgar?action=getcompany&CIK=0001024401&owner=include&count=40
+        - paragraph [ref=e36]:
+          - text: "SIC:"
+          - link "6200" [ref=e37] [cursor=pointer]:
+            - /url: /cgi-bin/browse-edgar?action=getcompany&SIC=6200&owner=include&count=40
+          - text: "- SECURITY & COMMODITY BROKERS, DEALERS, EXCHANGES & SERVICES"
+          - text: "State location:"
+          - link "TX" [ref=e38] [cursor=pointer]:
+            - /url: /cgi-bin/browse-edgar?action=getcompany&State=TX&owner=include&count=40
+          - text: "| State of Inc.:"
+          - strong [ref=e39]: OR
+          - text: "| Fiscal Year End: 1231"
+          - text: "formerly: ENRON OREGON CORP (filings through 1997-05-16)"
+    - table [ref=e42]:
+      - rowgroup [ref=e43]:
+        - row
+        - row "Filter Results Search Within Files" [ref=e44]:
+          - cell "Filter Results" [ref=e45]:
+            - strong [ref=e46]: Filter Results
+          - cell [ref=e47]
+          - cell "Search Within Files" [ref=e49]:
+            - strong [ref=e50]: Search Within Files
+            - img [ref=e51]
+        - 'row "Filing Type: 10-K Prior to: (YYYYMMDD) Ownership? include exclude only Limit Results Per Page 40 Entries Search Show All Enter keywords Search" [ref=e52]':
+          - 'cell "Filing Type: 10-K" [ref=e53]':
+            - generic [ref=e54]: "Filing Type:"
+            - textbox "Filing Type:" [ref=e55]: 10-K
+          - 'cell "Prior to: (YYYYMMDD)" [ref=e56]':
+            - generic [ref=e57]: "Prior to:"
+            - text: (YYYYMMDD)
+            - textbox "Prior to:" [ref=e58]
+          - cell "Ownership? include exclude only" [ref=e59]:
+            - text: Ownership?
+            - radio "include" [checked] [ref=e60]
+            - generic [ref=e61]: include
+            - radio "exclude" [ref=e62]
+            - generic [ref=e63]: exclude
+            - radio "only" [ref=e64]
+            - generic [ref=e65]: only
+          - cell "Limit Results Per Page 40 Entries" [ref=e66]:
+            - generic [ref=e67]: Limit Results Per Page
+            - combobox "Limit Results Per Page" [ref=e68]:
+              - option "10 Entries"
+              - option "20 Entries"
+              - option "40 Entries" [selected]
+              - option "80 Entries"
+              - option "100 Entries"
+          - cell "Search Show All" [ref=e69]:
+            - button "Search" [ref=e70] [cursor=pointer]
+            - button "Show All" [ref=e71] [cursor=pointer]
+          - cell "Enter keywords Search" [ref=e72]:
+            - text: Enter keywords
+            - textbox [ref=e73]
+            - button "Search" [ref=e74] [cursor=pointer]
+    - table [ref=e77]:
+      - rowgroup [ref=e78]:
+        - row "Items 1 - 5 0001024401 Filings RSS Feed" [ref=e79]:
+          - cell "Items 1 - 5 0001024401 Filings RSS Feed" [ref=e80]:
+            - text: Items 1 - 5
+            - link "0001024401 Filings RSS Feed" [ref=e81] [cursor=pointer]:
+              - /url: /cgi-bin/browse-edgar?action=getcompany&CIK=0001024401&type=10-K%25&dateb=&owner=include&start=0&count=40&output=atom
+              - img "0001024401 Filings" [ref=e82]
+              - text: RSS Feed
+    - table "Results" [ref=e84]:
+      - rowgroup [ref=e85]:
+        - row "Filings Format Description Filing Date File/Film Number" [ref=e86]:
+          - columnheader "Filings" [ref=e87]
+          - columnheader "Format" [ref=e88]
+          - columnheader "Description" [ref=e89]
+          - columnheader "Filing Date" [ref=e90]
+          - columnheader "File/Film Number" [ref=e91]
+        - 'row "10-K Documents Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-01-500010 Size: 712 KB 2001-04-02 001-13159 1588971" [ref=e92]':
+          - cell "10-K" [ref=e93]
+          - cell "Documents" [ref=e94]:
+            - link "Documents" [ref=e95] [cursor=pointer]:
+              - /url: /Archives/edgar/data/1024401/000102440101500010/0001024401-01-500010-index.htm
+          - 'cell "Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-01-500010 Size: 712 KB" [ref=e96]':
+            - text: Annual report [Section 13 and 15(d), not S-K Item 405]
+            - text: "Acc-no: 0001024401-01-500010 Size: 712 KB"
+          - cell "2001-04-02" [ref=e97]
+          - cell "001-13159 1588971" [ref=e98]:
+            - link "001-13159" [ref=e99] [cursor=pointer]:
+              - /url: /cgi-bin/browse-edgar?action=getcompany&filenum=001-13159&owner=include&count=40
+            - text: "1588971"
+        - 'row "10-K Documents Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-00-000002 Size: 644 KB 2000-03-30 001-13159 584637" [ref=e100]':
+          - cell "10-K" [ref=e101]
+          - cell "Documents" [ref=e102]:
+            - link "Documents" [ref=e103] [cursor=pointer]:
+              - /url: /Archives/edgar/data/1024401/0001024401-00-000002-index.html
+          - 'cell "Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-00-000002 Size: 644 KB" [ref=e104]':
+            - text: Annual report [Section 13 and 15(d), not S-K Item 405]
+            - text: "Acc-no: 0001024401-00-000002 Size: 644 KB"
+          - cell "2000-03-30" [ref=e105]
+          - cell "001-13159 584637" [ref=e106]:
+            - link "001-13159" [ref=e107] [cursor=pointer]:
+              - /url: /cgi-bin/browse-edgar?action=getcompany&filenum=001-13159&owner=include&count=40
+            - text: "584637"
+        - 'row "10-K Documents Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-99-000007 Size: 690 KB 1999-03-31 001-13159 99579740" [ref=e108]':
+          - cell "10-K" [ref=e109]
+          - cell "Documents" [ref=e110]:
+            - link "Documents" [ref=e111] [cursor=pointer]:
+              - /url: /Archives/edgar/data/1024401/0001024401-99-000007-index.html
+          - 'cell "Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-99-000007 Size: 690 KB" [ref=e112]':
+            - text: Annual report [Section 13 and 15(d), not S-K Item 405]
+            - text: "Acc-no: 0001024401-99-000007 Size: 690 KB"
+          - cell "1999-03-31" [ref=e113]
+          - cell "001-13159 99579740" [ref=e114]:
+            - link "001-13159" [ref=e115] [cursor=pointer]:
+              - /url: /cgi-bin/browse-edgar?action=getcompany&filenum=001-13159&owner=include&count=40
+            - text: "99579740"
+        - 'row "10-K Documents Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-98-000009 Size: 563 KB 1998-03-31 001-13159 98580205" [ref=e116]':
+          - cell "10-K" [ref=e117]
+          - cell "Documents" [ref=e118]:
+            - link "Documents" [ref=e119] [cursor=pointer]:
+              - /url: /Archives/edgar/data/1024401/0001024401-98-000009-index.html
+          - 'cell "Annual report [Section 13 and 15(d), not S-K Item 405] Acc-no: 0001024401-98-000009 Size: 563 KB" [ref=e120]':
+            - text: Annual report [Section 13 and 15(d), not S-K Item 405]
+            - text: "Acc-no: 0001024401-98-000009 Size: 563 KB"
+          - cell "1998-03-31" [ref=e121]
+          - cell "001-13159 98580205" [ref=e122]:
+            - link "001-13159" [ref=e123] [cursor=pointer]:
+              - /url: /cgi-bin/browse-edgar?action=getcompany&filenum=001-13159&owner=include&count=40
+            - text: "98580205"
+        - 'row "10-K405 Documents Annual report [Sections 13 and 15(d), S-K Item 405] Acc-no: 0000950129-97-001319 Size: 19 KB 1997-03-28 333-13791 97566953" [ref=e124]':
+          - cell "10-K405" [ref=e125]
+          - cell "Documents" [ref=e126]:
+            - link "Documents" [ref=e127] [cursor=pointer]:
+              - /url: /Archives/edgar/data/1024401/0000950129-97-001319-index.html
+          - 'cell "Annual report [Sections 13 and 15(d), S-K Item 405] Acc-no: 0000950129-97-001319 Size: 19 KB" [ref=e128]':
+            - text: Annual report [Sections 13 and 15(d), S-K Item 405]
+            - text: "Acc-no: 0000950129-97-001319 Size: 19 KB"
+          - cell "1997-03-28" [ref=e129]
+          - cell "333-13791 97566953" [ref=e130]:
+            - link "333-13791" [ref=e131] [cursor=pointer]:
+              - /url: /cgi-bin/browse-edgar?action=getcompany&filenum=333-13791&owner=include&count=40
+            - text: "97566953"
+  - generic [ref=e132]:
+    - generic [ref=e133]: https://www.sec.gov/cgi-bin/browse-edgar
+    - generic [ref=e134]:
+      - link "Home" [ref=e135] [cursor=pointer]:
+        - /url: /index.htm
+      - text: "|"
+      - link "Search the Next-Generation EDGAR System" [ref=e136] [cursor=pointer]:
+        - /url: /edgar/searchedgar/webusers.htm
+      - text: "|"
+      - link "Previous Page" [ref=e137] [cursor=pointer]:
+        - /url: javascript:history.back()
+    - generic [ref=e138]: Modified 07/18/2014

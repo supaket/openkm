@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profit Planning (Budgeting) — Chapter 9 Review</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai', sans-serif; margin:0; }
+.fc-perspective { perspective:1200px; }
+.fc-card { position:relative; width:100%; height:320px; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+.fc-card.flipped { transform:rotateY(180deg); }
+.fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:12px; padding:28px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; overflow-y:auto; }
+.fc-back { transform:rotateY(180deg); }
+.qc { transition:all .2s; }
+.qc:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(61,50,41,.12); }
+::-webkit-scrollbar { width:10px; height:10px; }
+::-webkit-scrollbar-track { background:#EDE8DF; }
+::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:5px; }
+::selection { background:#DDD3C1; color:#3D3229; }
+.ant-table-cell { line-height:1.9 !important; }
+.fadein { animation: fadeInUp .6s ease both; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:translateY(0);} }
+.pop { display:inline-block; animation: pop .45s ease; }
+@keyframes pop { 0% { transform:scale(1.25); color:#8B7355; } 100% { transform:scale(1); } }
+.node { transition: all .45s ease; opacity:.4; border-radius:10px; padding:8px 10px; text-align:center; border:2px solid #DDD3C1; background:#FAF7F2; font-size:13px; font-weight:600; color:#3D3229; }
+.node.active { opacity:1; transform:scale(1.08); border-color:#A8906C; background:#F3EDDF; box-shadow:0 4px 14px rgba(139,115,85,.35); }
+.node.done { opacity:.95; border-color:#5D8A66; background:#EFF5F0; }
+.arrow-flow { animation: dash 1s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -14; } }
+.flowbox { transition: all .5s ease; }
+.pulse { animation: pulse 1.6s ease infinite; }
+@keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(168,144,108,.45);} 50% { box-shadow:0 0 0 10px rgba(168,144,108,0);} }
+.tank { transition: height .6s ease; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Slider, InputNumber } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef } = React;
+
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  amber: '#B5986A', amberDark: '#7A6548',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+const fmt = (n) => Math.round(n).toLocaleString('en-US');
+const Stars = ({n}) => <span>{'⭐'.repeat(n)}</span>;
+const Pop = ({v, color, prefix}) => <span key={v} className="pop" style={{fontWeight:700, color: color||C.goldDark}}>{prefix||''}{fmt(v)}</span>;
+
+/* ============================================================
+   TAB 0 — พื้นฐานสำหรับคนไม่มีพื้น
+   ============================================================ */
+const vocab = [
+  {key:1, w:'Budget (งบประมาณ)', m:'"แผนการเงินล่วงหน้า" เขียนเป็นตัวเลขว่าปีหน้าจะขาย/ผลิต/จ่ายเงินเท่าไร'},
+  {key:2, w:'Inventory (สินค้าคงเหลือ)', m:'ของที่ค้างอยู่ในโกดัง — ต้นงวด (BI) = ของที่มีตอนเริ่ม, ปลายงวด (EI) = ของที่อยากเหลือตอนจบ'},
+  {key:3, w:'DM / DL / OH', m:'ส่วนผสมของต้นทุนการผลิต: วัตถุดิบทางตรง (Direct Materials), ค่าแรงทางตรง (Direct Labor), โสหุ้ยการผลิต (Overhead เช่น ค่าไฟโรงงาน ค่าเสื่อมเครื่องจักร)'},
+  {key:4, w:'COGS (ต้นทุนขาย)', m:'ต้นทุนของสินค้า "เฉพาะชิ้นที่ขายออกไป" ในงวดนั้น'},
+  {key:5, w:'ขายเชื่อ / A/R', m:'ขายของแล้วยังไม่ได้เงินทันที ลูกค้าติดหนี้เราไว้ = ลูกหนี้การค้า (Accounts Receivable)'},
+  {key:6, w:'ซื้อเชื่อ / A/P', m:'ซื้อของแล้วยังไม่จ่ายเงินทันที เราติดหนี้ผู้ขาย = เจ้าหนี้การค้า (Accounts Payable)'},
+  {key:7, w:'Depreciation (ค่าเสื่อมราคา)', m:'การทยอยรับรู้ต้นทุนเครื่องจักร/อาคารเป็นค่าใช้จ่ายรายงวด — เป็นค่าใช้จ่ายแต่ "ไม่มีเงินสดออกจริง"'},
+  {key:8, w:'Fixed / Variable cost', m:'ต้นทุนคงที่ไม่เปลี่ยนตามปริมาณ (ค่าเช่า) vs ต้นทุนผันแปรเพิ่มตามจำนวนที่ผลิต/ขาย (ค่าผ้าต่อตัว) — พื้นเดียวกับบท CVP ที่ทำไปแล้ว'},
+  {key:9, w:'Pro forma', m:'คำเรียกงบการเงิน "ฉบับประมาณการล่วงหน้า" เช่น pro forma income statement = งบกำไรขาดทุนที่คาดว่าจะเกิด'},
+  {key:10, w:'Fiscal year (ปีงบประมาณ)', m:'รอบ 12 เดือนที่บริษัทใช้ปิดบัญชี ไม่จำเป็นต้องตรงปีปฏิทิน'},
+];
+
+const TankVisual = () => {
+  const [bi, setBi] = useState(180);
+  const [inQ, setInQ] = useState(1060);
+  const [out, setOut] = useState(1000);
+  const ei = bi + inQ - out;
+  const max = 1600;
+  const H = 140;
+  const bar = (v, color) => <div style={{width:54, display:'flex', flexDirection:'column', justifyContent:'flex-end', height:H, background:C.surface2, borderRadius:8, overflow:'hidden', border:`1px solid ${C.border}`}}>
+    <div className="tank" style={{height: Math.max(4, Math.min(H, v/max*H)), background:color}}/></div>;
+  return (
+    <Card size="small" style={{background:C.white, borderColor:C.borderDark}} title={<Text strong style={{color:C.text}}>🫙 ลองเลื่อนดู: สมการ "ถังสินค้า" — ต้นงวด + เข้า − ออก = ปลายงวด</Text>}>
+      <Row gutter={16} align="middle">
+        <Col xs={24} md={10}>
+          <Text style={{color:C.text2}}>ของต้นงวด (BI): <Pop v={bi}/></Text>
+          <Slider min={0} max={800} value={bi} onChange={setBi}/>
+          <Text style={{color:C.text2}}>ผลิตเข้าถัง: <Pop v={inQ} color={C.green}/></Text>
+          <Slider min={0} max={1600} value={inQ} onChange={setInQ}/>
+          <Text style={{color:C.text2}}>ขายออกจากถัง: <Pop v={out} color={C.red}/></Text>
+          <Slider min={0} max={1600} value={out} onChange={setOut}/>
+        </Col>
+        <Col xs={24} md={14}>
+          <Flex gap={18} justify="center" align="end">
+            <div style={{textAlign:'center'}}>{bar(bi, C.goldLight)}<Text style={{color:C.text3}}>ต้นงวด</Text></div>
+            <Title level={4} style={{color:C.text3}}>+</Title>
+            <div style={{textAlign:'center'}}>{bar(inQ, C.green)}<Text style={{color:C.text3}}>ผลิต</Text></div>
+            <Title level={4} style={{color:C.text3}}>−</Title>
+            <div style={{textAlign:'center'}}>{bar(out, C.red)}<Text style={{color:C.text3}}>ขาย</Text></div>
+            <Title level={4} style={{color:C.text3}}>=</Title>
+            <div style={{textAlign:'center'}}>{bar(Math.max(ei,0), ei<0?C.red:C.blue)}<Text strong style={{color: ei<0?C.red:C.blue}}>เหลือ {fmt(ei)}</Text></div>
+          </Flex>
+          {ei < 0 && <Alert style={{marginTop:8}} type="error" message="ของไม่พอขาย! ต้องผลิตเพิ่มหรือขายน้อยลง — นี่คือเหตุผลที่ต้องทำ production budget ล่วงหน้า"/>}
+        </Col>
+      </Row>
+      <Alert style={{marginTop:12}} type="info" message={<span>พลิกสมการนี้ = สูตรหลักของบท: <Text strong>ต้องผลิต = ขาย + ปลายงวดที่อยากได้ − ต้นงวดที่มีอยู่</Text> (ใช้ทั้งกับสินค้าและวัตถุดิบ)</span>}/>
+    </Card>
+  );
+};
+
+const BasicsTab = () => (
+  <div>
+    <Card className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border}}
+      title={<Text strong style={{color:C.text}}>🏭 เข้าใจธุรกิจผลิตใน 1 นาที (เรื่องราวของ Texas Rex)</Text>}>
+      <Paragraph style={{color:C.text}}>
+        หนังสือใช้บริษัทสมมติ <strong>Texas Rex</strong> ขายเสื้อยืดสกรีนลาย ตัวละ $10 ทั้งบทคือการวางแผนล่วงหน้า 1 ปีของธุรกิจนี้:
+      </Paragraph>
+      <Flex gap={8} wrap="wrap" justify="center">
+        {['1️⃣ คาดว่าจะขายได้กี่ตัว','2️⃣ ต้องผลิตกี่ตัว','3️⃣ ต้องซื้อผ้า/จ้างคน/จ่ายค่าโรงงานเท่าไร','4️⃣ กำไรที่คาดหวังเท่าไร','5️⃣ เงินสดจะพอหมุนไหม'].map((t,i)=>(
+          <Card key={i} size="small" className="fadein" style={{background:C.surface3, borderColor:C.borderDark, animationDelay:`${i*0.15}s`}}>
+            <Text strong style={{color:C.text2}}>{t}</Text>
+          </Card>
+        ))}
+      </Flex>
+      <Paragraph style={{color:C.text, marginTop:12}}>
+        คำถาม 5 ข้อนี้ = โครงของ <strong>Master Budget</strong> ทั้งบทนั่นเอง ถ้าเข้าใจ 5 ข้อนี้ ที่เหลือคือรายละเอียด
+      </Paragraph>
+    </Card>
+
+    <Card className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border}}
+      title={<Text strong style={{color:C.text}}>📖 ศัพท์ที่ต้องรู้ก่อนอ่านบทนี้ (10 คำ)</Text>}>
+      <Table size="small" pagination={false} columns={[
+        {title:'คำศัพท์', dataIndex:'w', key:'w', width:220, render:t=><Text strong style={{color:C.goldDark}}>{t}</Text>},
+        {title:'ความหมายแบบบ้าน ๆ', dataIndex:'m', key:'m'},
+      ]} dataSource={vocab}/>
+    </Card>
+
+    <div className="fadein"><TankVisual/></div>
+
+    <Card className="fadein" style={{marginTop:16, background:C.white, borderColor:C.border}}
+      title={<Text strong style={{color:C.text}}>💡 แนวคิดสำคัญ: ทำไม "กำไร" ไม่เท่ากับ "เงินสด"</Text>}>
+      <Row gutter={12}>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.greenBg, borderColor:C.green, height:'100%'}}>
+            <Text strong style={{color:C.green}}>กำไร (ทางบัญชี)</Text><br/>
+            <Text style={{color:C.text}}>รับรู้ตอน "ขายได้" แม้ยังไม่ได้เงิน และหักค่าเสื่อมที่ไม่มีเงินออกจริง</Text>
+          </Card>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>เงินสด</Text><br/>
+            <Text style={{color:C.text}}>นับตอน "เงินเข้า-ออกจริง" ลูกค้าจ่ายช้า = กำไรมีแต่เงินไม่มี → เจ๊งได้ทั้งที่กำไรดี</Text>
+          </Card>
+        </Col>
+      </Row>
+      <Alert style={{marginTop:12}} type="warning" message={<span>เพราะเหตุนี้บทนี้จึงต้องมีทั้ง <Text strong>งบกำไรขาดทุนล่วงหน้า</Text> (operating budget) และ <Text strong>งบเงินสด</Text> (cash budget) แยกกัน — สไลด์เน้นว่า "ธุรกิจจำนวนมากขายดีแต่ล้มเพราะจังหวะเงินสด"</span>}/>
+    </Card>
+  </div>
+);
+
+/* ============================================================
+   TAB 1 — สรุปเนื้อหา + FLOW ANIMATION
+   ============================================================ */
+const flowNodes = [
+  {t:'Sales Budget', d:'จุดเริ่มต้นของทุกอย่าง: คาดยอดขาย (หน่วย × ราคา) — ต้องแม่นที่สุดเพราะงบอื่นทั้งหมดพิงตัวนี้', icon:'🛒'},
+  {t:'Production Budget', d:'ต้องผลิตกี่หน่วย = ขาย + EI ที่อยากได้ − BI ที่มีอยู่', icon:'🏭'},
+  {t:'DM Purchases', d:'ซื้อวัตถุดิบ = ที่ใช้ผลิต + EI วัตถุดิบ − BI วัตถุดิบ (× ราคาต่อหน่วย)', icon:'🧵'},
+  {t:'Direct Labor', d:'ชั่วโมงแรงงาน = หน่วยผลิต × ชม./หน่วย × ค่าแรง/ชม.', icon:'👷'},
+  {t:'Overhead', d:'VOH ตามชั่วโมงแรงงาน + FOH คงที่ (มีค่าเสื่อมซ่อนอยู่)', icon:'⚙️'},
+  {t:'Ending FG + COGS', d:'คิดต้นทุนต่อหน่วย → มูลค่าสต็อกปลายงวด และต้นทุนขาย', icon:'📦'},
+  {t:'S&A Expenses', d:'ค่าใช้จ่ายขาย/บริหาร (แยกผันแปร-คงที่เหมือนเดิม)', icon:'🗂️'},
+  {t:'Budgeted Income Statement', d:'ปลายทางของ Operating Budget: กำไรที่คาดหวัง', icon:'📈'},
+  {t:'Cash Budget', d:'เริ่ม Financial Budget: เงินรับ − เงินจ่าย ± กู้/คืนเงิน', icon:'💵'},
+  {t:'Budgeted Balance Sheet', d:'ฐานะการเงินปลายงวดที่คาดหวัง — จบ Master Budget', icon:'🧾'},
+];
+
+const FlowAnimation = () => {
+  const [step, setStep] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const timer = useRef(null);
+  useEffect(() => {
+    if (playing) {
+      timer.current = setInterval(() => {
+        setStep(s => {
+          if (s >= flowNodes.length - 1) { setPlaying(false); return s; }
+          return s + 1;
+        });
+      }, 1400);
+    }
+    return () => clearInterval(timer.current);
+  }, [playing]);
+  const start = () => { setStep(0); setPlaying(true); };
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🎬 Master Budget ต่อกันเป็นสายพานอย่างไร (กด Play ดูทีละขั้น)</Text>}>
+      <Flex gap={8} style={{marginBottom:12}}>
+        <Button type="primary" className={playing?'':'pulse'} onClick={start} disabled={playing}>▶ Play ลำดับการทำงบ</Button>
+        <Button onClick={()=>{setPlaying(false); setStep(-1);}}>รีเซ็ต</Button>
+        <Button onClick={()=>{setPlaying(false); setStep(flowNodes.length-1);}}>แสดงทั้งหมด</Button>
+      </Flex>
+      <Row gutter={[8,8]}>
+        {flowNodes.map((n,i)=>(
+          <Col xs={12} md={i<8?6:12} key={i}>
+            <div className={'node' + (i===step?' active':'') + (i<step||( !playing && step===flowNodes.length-1 && i<=step)?' done':'')}>
+              <div style={{fontSize:20}}>{n.icon}</div>{i+1}. {n.t}
+            </div>
+          </Col>
+        ))}
+      </Row>
+      <div style={{minHeight:64, marginTop:12}}>
+        {step>=0 && <Alert type="info" message={<span><Text strong>{flowNodes[step].icon} {flowNodes[step].t}: </Text>{flowNodes[step].d}</span>}/>}
+        {step<0 && <Alert type="warning" message='ข้อสอบชอบถาม "งบไหนต้องทำก่อน" — ลำดับคือหัวใจ: เริ่มที่ Sales เสมอ และ Operating ก่อน Financial'/>}
+      </div>
+    </Card>
+  );
+};
+
+const texasCols = [
+  {title:'', dataIndex:'r', key:'r'},
+  {title:'Q1', dataIndex:'q1', key:'q1', align:'right'},
+  {title:'Q2', dataIndex:'q2', key:'q2', align:'right'},
+  {title:'Q3', dataIndex:'q3', key:'q3', align:'right'},
+  {title:'Q4', dataIndex:'q4', key:'q4', align:'right'},
+  {title:'ทั้งปี', dataIndex:'y', key:'y', align:'right', render:t=><Text strong>{t}</Text>},
+];
+
+const summaryData = [
+  {
+    key:'lo1', title:'📋 LO-1: Budget คืออะไร ทำไมต้องทำ', tags:[['ทฤษฎีออกบ่อย','volcano']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>Planning (มองไปข้างหน้า)</Text><br/>
+            <Text style={{color:C.text}}>กำหนดเป้าหมายและการกระทำที่จะไปให้ถึง — budget คือ "แผนการเงิน" ของ planning</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>Control (มองย้อนกลับ)</Text><br/>
+            <Text style={{color:C.text}}>เทียบ "ของจริง vs งบ" เพื่อหาจุดผิดปกติแล้วแก้ไข</Text>
+          </Card></Col>
+        </Row>
+        <Paragraph style={{color:C.text, marginTop:12}}>
+          ก่อนทำ budget ต้องมี <strong>strategic plan</strong> (ทิศทางระยะยาว ≥ 5 ปี) ก่อน แล้ว master budget จะเป็นแผน 1 ปี
+          แตกย่อยเป็นรายไตรมาส/เดือน บางบริษัทใช้ <strong>continuous budget</strong> = งบหมุน 12 เดือนตลอดเวลา (หมดเดือนหนึ่ง เติมเดือนใหม่)
+        </Paragraph>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark}}>
+          <Text strong style={{color:C.text2}}>ผู้เกี่ยวข้อง: </Text>
+          <Text style={{color:C.text}}>Budget committee (ทบทวน/อนุมัติ/ไกล่เกลี่ย) และ Budget director (มักเป็น controller) เป็นผู้ประสานงานทั้งกระบวนการ</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'lo2', title:'🏭 LO-2: Operating Budget — จากยอดขายถึงกำไรที่คาด', tags:[['ออกทุกครั้ง','volcano'],['คำนวณ','blue']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>ตัวอย่างจริงจากหนังสือ (Texas Rex ขายเสื้อ $10/ตัว) — ตามลำดับ Cornerstone 9.1 → 9.9:</Paragraph>
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, marginBottom:8}}>
+          <Text strong style={{color:C.cyan}}>1) Sales Budget (CS 9.1)</Text>
+          <Table size="small" pagination={false} columns={texasCols} dataSource={[
+            {key:1, r:'หน่วยขาย', q1:'1,000', q2:'1,200', q3:'1,500', q4:'2,000', y:'5,700'},
+            {key:2, r:'× ราคา $10', q1:'$10,000', q2:'$12,000', q3:'$15,000', q4:'$20,000', y:'$57,000'},
+          ]}/>
+        </Card>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text strong style={{color:C.green}}>2) Production Budget (CS 9.2) — EI = 20% ของยอดขายไตรมาสถัดไป</Text>
+          <Table size="small" pagination={false} columns={texasCols} dataSource={[
+            {key:1, r:'ขาย', q1:'1,000', q2:'1,200', q3:'1,500', q4:'2,000', y:'5,700'},
+            {key:2, r:'+ EI ที่ต้องการ', q1:'240', q2:'300', q3:'400', q4:'200', y:'200'},
+            {key:3, r:'− BI', q1:'(180)', q2:'(240)', q3:'(300)', q4:'(400)', y:'(180)'},
+            {key:4, r:'= ต้องผลิต', q1:'1,060', q2:'1,260', q3:'1,600', q4:'1,800', y:'5,720'},
+          ]}/>
+          <Text style={{color:C.text3}}>สังเกต: BI ของไตรมาสนี้ = EI ของไตรมาสก่อนเสมอ และคอลัมน์ "ทั้งปี" ใช้ EI ปลายปี/BI ต้นปีเท่านั้น (ห้ามเอา 4 ไตรมาสบวกกัน)</Text>
+        </Card>
+        <Card size="small" style={{background:C.blueBg, borderColor:C.blue, marginBottom:8}}>
+          <Text strong style={{color:C.blue}}>3) DM → 4) DL → 5) OH (CS 9.3–9.5)</Text>
+          <ul style={{margin:'4px 0'}}>
+            <li><Text style={{color:C.text}}><strong>DM ซื้อ</strong> = ใช้ผลิต + EI − BI แล้วคูณราคา (เสื้อเปล่า 1 ตัว × $3, หมึก 5 oz × $0.20 ต่อเสื้อ 1 ตัว; EI = 10% ของความต้องการไตรมาสหน้า)</Text></li>
+            <li><Text style={{color:C.text}}><strong>DL</strong> = หน่วยผลิต × 0.12 ชม. × $10/ชม. (เช่น Q1: 1,060 × 0.12 = 127.2 ชม. × $10 = $1,272)</Text></li>
+            <li><Text style={{color:C.text}}><strong>OH</strong> = VOH $5/ชม.แรงงาน + FOH $1,645/ไตรมาส (ในนี้มีค่าเสื่อม $540 ซ่อนอยู่ — จำจุดนี้ไว้ใช้ตอน cash budget!)</Text></li>
+          </ul>
+        </Card>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple, marginBottom:8}}>
+          <Text strong style={{color:C.purple}}>6) ต้นทุนต่อหน่วย → Ending FG → COGS (CS 9.6–9.7)</Text><br/>
+          <Text style={{color:C.text}}>ต้นทุน/ตัว = เสื้อ $3.00 + หมึก $1.00 + DL $1.20 (0.12×10) + VOH $0.60 (0.12×5) + FOH $1.15 = <strong>$6.95</strong></Text><br/>
+          <Text style={{color:C.text}}>Ending FG = 200 ตัว × 6.95 = <strong>$1,390</strong> | COGS ปี = <strong>$39,617</strong> (จาก BI FG $1,251 + ต้นทุนผลิต − EI FG)</Text>
+        </Card>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark}}>
+          <Text strong style={{color:C.text2}}>7) S&A $8,650 → 8) Budgeted Income Statement (CS 9.9):</Text>
+          <Table size="small" pagination={false} showHeader={false} columns={[{dataIndex:'a',key:'a'},{dataIndex:'b',key:'b',align:'right'}]} dataSource={[
+            {key:1,a:'Sales',b:'$57,000'},
+            {key:2,a:'− COGS',b:'(39,617)'},
+            {key:3,a:'Gross margin',b:'$17,383'},
+            {key:4,a:'− S&A',b:'(8,650)'},
+            {key:5,a:'Operating income',b:'$8,733'},
+            {key:6,a:'− ดอกเบี้ย (จาก cash budget)',b:'(60)'},
+            {key:7,a:'− ภาษี 40%',b:'(3,469)'},
+            {key:8,a:'Net income',b:'$5,204'},
+          ]}/>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'lo3', title:'💵 LO-3: Financial Budget — งบเงินสดคือพระเอก', tags:[['ออกทุกครั้ง','volcano'],['คำนวณ','blue']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>Financial budget = <strong>cash budget + budgeted balance sheet + งบลงทุน (capital expenditures)</strong> โครงงบเงินสด 5 ชั้น:</Paragraph>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginBottom:8}}>
+          <Text style={{color:C.text}}>เงินสดต้นงวด + เงินรับ = <strong>เงินสดที่มีให้ใช้</strong> → หัก เงินจ่าย → <strong>เกิน/ขาด (excess/deficiency)</strong> → เทียบเงินสดขั้นต่ำที่นโยบายกำหนด → <strong>กู้เมื่อขาด / คืนเงินกู้+ดอกเบี้ยเมื่อเกิน</strong> → เงินสดปลายงวด</Text>
+        </Card>
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, marginBottom:8}}>
+          <Text strong style={{color:C.cyan}}>เงินรับ (CS 9.10): Texas Rex ขายสด 25% ขายเชื่อ 75% — ลูกหนี้เก็บได้ 90% ในไตรมาสที่ขาย, 10% ไตรมาสถัดไป</Text><br/>
+          <Text style={{color:C.text}}>เช่นเงินรับ Q2 = ขายสด Q2 (12,000×0.25 = 3,000) + เก็บจากลูกหนี้ Q2 (12,000×0.75×0.9 = 8,100) + ค้างจาก Q1 (10,000×0.75×0.1 = 750) = <strong>$11,850</strong></Text>
+        </Card>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple, marginBottom:8}}>
+          <Text strong style={{color:C.purple}}>เงินจ่าย (CS 9.11): ซื้อเชื่อวัตถุดิบ จ่าย 80% ในไตรมาสที่ซื้อ, 20% ไตรมาสถัดไป</Text><br/>
+          <Text style={{color:C.text}}>เช่น Q1: จ่ายหนี้เก่ายกมา $1,000 + ซื้อ Q1 ($4,492×0.80 = 3,594) = <strong>$4,594</strong></Text>
+        </Card>
+        <Alert type="error" style={{marginBottom:8}} message={<span><Text strong>กฎเหล็กที่ข้อสอบชอบหลอก: ค่าเสื่อมราคา "ห้าม" อยู่ในงบเงินสด</Text> — OH ต่อไตรมาส $2,281 แต่จ่ายเงินจริงแค่ $1,741 (หักค่าเสื่อม $540 ออก)</span>}/>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green}}>
+          <Text strong style={{color:C.green}}>ผลลัพธ์ (CS 9.12):</Text>
+          <Table size="small" pagination={false} columns={texasCols} dataSource={[
+            {key:1, r:'เงินต้นงวด', q1:'$5,200', q2:'$1,023', q3:'$1,611', q4:'$3,762', y:'$5,200'},
+            {key:2, r:'+ เงินรับ', q1:'10,600', q2:'11,850', q3:'14,775', q4:'19,625', y:'56,850'},
+            {key:3, r:'− เงินจ่ายรวม', q1:'(15,777)', q2:'(10,202)', q3:'(12,624)', q4:'(16,803)', y:'(55,406)'},
+            {key:4, r:'กู้ / (คืน+ดอกเบี้ย)', q1:'1,000', q2:'(1,060)', q3:'—', q4:'—', y:'(60)'},
+            {key:5, r:'= เงินปลายงวด', q1:'$1,023', q2:'$1,611', q3:'$3,762', q4:'$6,584', y:'$6,584'},
+          ]}/>
+          <Text style={{color:C.text3}}>Q1 ซื้อเครื่องจักร $6,500 ทำให้เงินขาด → กู้ $1,000 แล้วคืนใน Q2 พร้อมดอกเบี้ย $60 — ดอกเบี้ยตัวนี้ไปโผล่ในงบกำไรขาดทุน</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'lo4', title:'🧠 LO-4: มิติพฤติกรรมของงบประมาณ (ทฤษฎีล้วน ท่องให้แม่น)', tags:[['ทฤษฎีออกบ่อย','volcano']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>
+          งบถูกใช้ประเมินผลงาน (โบนัส เงินเดือน โปรโมท) → ถ้าออกแบบดี ได้ <strong>goal congruence</strong> (เป้าคนตรงกับเป้าองค์กร)
+          ถ้าออกแบบแย่ ได้ <strong>dysfunctional behavior</strong> (พฤติกรรมขัดเป้าองค์กร)
+        </Paragraph>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text strong style={{color:C.green}}>6 ตัวช่วยให้เกิดพฤติกรรมบวก:</Text>
+          <Text style={{color:C.text}}> feedback สม่ำเสมอ · แรงจูงใจเงิน+ไม่ใช่เงิน · participative budgeting · มาตรฐานสมจริง (flexible budget, ฤดูกาล, ภาวะเศรษฐกิจ) · วัดเฉพาะต้นทุนที่คุมได้ (controllable costs) · วัดผลหลายมิติ</Text>
+        </Card>
+        <Card size="small" style={{background:C.redBg, borderColor:C.red}}>
+          <Text strong style={{color:C.red}}>3 หลุมพรางของ participative budgeting (ออกสอบบ่อยมาก):</Text>
+          <ol style={{margin:'4px 0'}}>
+            <li><Text style={{color:C.text}}><strong>ตั้งมาตรฐานสูง/ต่ำเกินไป</strong> — เป้าที่ดีต้อง "สูงแต่เอื้อมถึง"</Text></li>
+            <li><Text style={{color:C.text}}><strong>Budgetary slack (padding)</strong> — จงใจกดรายได้/โปะต้นทุนให้เป้าง่าย → ผิดจรรยาบรรณ (credibility standard)</Text></li>
+            <li><Text style={{color:C.text}}><strong>Pseudoparticipation</strong> — ผู้บริหารทำเป็นให้มีส่วนร่วมแต่จริง ๆ สั่งมาแล้ว แค่ขอลายเซ็น</Text></li>
+          </ol>
+        </Card>
+        <Alert style={{marginTop:8}} type="warning" message={<span><Text strong>Myopia / Milking the firm: </Text>ถ้าวัดแค่ตัวเลขงบตัวเดียว ผู้จัดการจะเชือดอนาคตเพื่อตัวเลขวันนี้ (ตัดงบซ่อมบำรุง เลื่อนการฝึกอบรม) — จึงต้องวัดหลายมิติ</span>}/>
+      </div>
+    )
+  },
+];
+
+const SummaryTab = () => (
+  <div>
+    <FlowAnimation/>
+    {summaryData.map((s,i) => (
+      <Card key={s.key} className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border, animationDelay:`${i*0.1}s`}}
+        title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text>{s.tags.map((t,j)=><Tag key={j} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+        {s.content()}
+      </Card>
+    ))}
+  </div>
+);
+
+/* ============================================================
+   TAB 2 — ห้องทดลอง (Interactive Lab)
+   ============================================================ */
+const ProdLab = () => {
+  const [sales, setSales] = useState(1000);
+  const [nextSales, setNextSales] = useState(1200);
+  const [eiPct, setEiPct] = useState(20);
+  const [bi, setBi] = useState(180);
+  const ei = Math.round(nextSales * eiPct / 100);
+  const prod = sales + ei - bi;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🏭 Lab 1: Production Budget — ต้องผลิตกี่ตัว?</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>ยอดขายไตรมาสนี้: <Pop v={sales}/> ตัว</Text>
+          <Slider min={0} max={3000} step={50} value={sales} onChange={setSales}/>
+          <Text style={{color:C.text2}}>ยอดขายไตรมาสหน้า: <Pop v={nextSales}/> ตัว</Text>
+          <Slider min={0} max={3000} step={50} value={nextSales} onChange={setNextSales}/>
+          <Text style={{color:C.text2}}>นโยบาย EI = <Pop v={eiPct}/>% ของยอดขายไตรมาสหน้า</Text>
+          <Slider min={0} max={50} value={eiPct} onChange={setEiPct}/>
+          <Text style={{color:C.text2}}>ของต้นงวด (BI): <Pop v={bi}/> ตัว</Text>
+          <Slider min={0} max={1000} step={10} value={bi} onChange={setBi}/>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              ขาย <Pop v={sales}/> ตัว<br/>
+              + EI ที่อยากได้ ({eiPct}% × {fmt(nextSales)}) = <Pop v={ei} color={C.green}/><br/>
+              − BI ที่มีแล้ว = <Pop v={bi} color={C.red}/><br/>
+              <Divider style={{margin:'8px 0'}}/>
+              <Text strong style={{fontSize:20, color:C.goldDark}}>ต้องผลิต = </Text><span key={prod} className="pop" style={{fontSize:26, fontWeight:700, color: prod<0?C.red:C.goldDark}}>{fmt(prod)}</span><Text strong style={{fontSize:18, color:C.goldDark}}> ตัว</Text>
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ลองตั้งค่าตามหนังสือ: ขาย 1,000 / หน้า 1,200 / EI 20% / BI 180 → ต้องได้ 1,060 ตรงกับ Cornerstone 9.2"/>
+          {prod<0 && <Alert style={{marginTop:8}} type="error" message="ติดลบ = ของเก่าล้นสต็อกจนไม่ต้องผลิตเลย (ในทางปฏิบัติคือ 0)"/>}
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const CollectLab = () => {
+  const [cashPct, setCashPct] = useState(25);
+  const [nowPct, setNowPct] = useState(90);
+  const [s1, setS1] = useState(10000);
+  const [s2, setS2] = useState(12000);
+  const credit1 = s1 * (100-cashPct)/100, credit2 = s2 * (100-cashPct)/100;
+  const q2cash = s2 * cashPct/100;
+  const q2own = credit2 * nowPct/100;
+  const q2prev = credit1 * (100-nowPct)/100;
+  const total = q2cash + q2own + q2prev;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>💵 Lab 2: Cash Collections — ไตรมาส 2 จะเก็บเงินได้เท่าไร?</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>ยอดขาย Q1: $<Pop v={s1}/></Text>
+          <Slider min={0} max={30000} step={500} value={s1} onChange={setS1}/>
+          <Text style={{color:C.text2}}>ยอดขาย Q2: $<Pop v={s2}/></Text>
+          <Slider min={0} max={30000} step={500} value={s2} onChange={setS2}/>
+          <Text style={{color:C.text2}}>สัดส่วนขายสด: <Pop v={cashPct}/>%</Text>
+          <Slider min={0} max={100} value={cashPct} onChange={setCashPct}/>
+          <Text style={{color:C.text2}}>ลูกหนี้จ่ายในไตรมาสที่ขาย: <Pop v={nowPct}/>% (ที่เหลือจ่ายไตรมาสถัดไป)</Text>
+          <Slider min={0} max={100} value={nowPct} onChange={setNowPct}/>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              ขายสด Q2 ({cashPct}% × {fmt(s2)}) = <Pop v={q2cash} color={C.green}/><br/>
+              เก็บลูกหนี้ Q2 เอง ({nowPct}% × {fmt(credit2)}) = <Pop v={q2own} color={C.blue}/><br/>
+              เก็บค้างจาก Q1 ({100-nowPct}% × {fmt(credit1)}) = <Pop v={q2prev} color={C.purple}/><br/>
+              <Divider style={{margin:'8px 0'}}/>
+              <Text strong style={{fontSize:18, color:C.goldDark}}>เงินรับ Q2 = $</Text><span key={total} className="pop" style={{fontSize:26, fontWeight:700, color:C.goldDark}}>{fmt(total)}</span>
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ค่าตามหนังสือ: ขายสด 25%, เก็บทันงวด 90% → เงินรับ Q2 = $11,850 ตรงกับ Cornerstone 9.10 · ลองลด % เก็บทันงวดดู จะเห็นว่าขายเท่าเดิมแต่เงินสดหด!"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const CashLab = () => {
+  const [begin, setBegin] = useState(5200);
+  const [receipts, setReceipts] = useState(10600);
+  const [disb, setDisb] = useState(15777);
+  const [minCash, setMinCash] = useState(1000);
+  const avail = begin + receipts;
+  const excess = avail - disb;
+  const borrow = excess < minCash ? (minCash - excess) : 0;
+  const ending = excess + borrow;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🏦 Lab 3: Cash Budget — ต้องกู้ไหม?</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>เงินสดต้นงวด: $<Pop v={begin}/></Text>
+          <Slider min={0} max={20000} step={100} value={begin} onChange={setBegin}/>
+          <Text style={{color:C.text2}}>เงินรับรวม: $<Pop v={receipts} color={C.green}/></Text>
+          <Slider min={0} max={40000} step={100} value={receipts} onChange={setReceipts}/>
+          <Text style={{color:C.text2}}>เงินจ่ายรวม: $<Pop v={disb} color={C.red}/></Text>
+          <Slider min={0} max={40000} step={100} value={disb} onChange={setDisb}/>
+          <Text style={{color:C.text2}}>เงินสดขั้นต่ำตามนโยบาย: $<Pop v={minCash}/></Text>
+          <Slider min={0} max={5000} step={100} value={minCash} onChange={setMinCash}/>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              เงินสดที่มีให้ใช้ = {fmt(begin)} + {fmt(receipts)} = <Pop v={avail}/><br/>
+              − เงินจ่าย = <Pop v={disb} color={C.red}/><br/>
+              = เกิน/(ขาด) : <span key={excess} className="pop" style={{fontWeight:700, color: excess<minCash?C.red:C.green}}>{fmt(excess)}</span> (ขั้นต่ำต้องมี {fmt(minCash)})<br/>
+              {borrow>0 ? <span>→ <Text strong style={{color:C.red}}>ต้องกู้ ${fmt(borrow)}</Text><br/></span> : <span>→ <Text strong style={{color:C.green}}>ไม่ต้องกู้ (เงินเกินเอาไปคืนหนี้/ลงทุนชั่วคราว)</Text><br/></span>}
+              <Divider style={{margin:'8px 0'}}/>
+              <Text strong style={{fontSize:18, color:C.goldDark}}>เงินสดปลายงวด = $</Text><span key={ending} className="pop" style={{fontSize:26, fontWeight:700, color:C.goldDark}}>{fmt(ending)}</span>
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ค่าเริ่มต้นคือ Q1 ของ Texas Rex: เงินขาดเหลือแค่ $23 ทั้งที่ขายดี (เพราะซื้อเครื่องจักร $6,500) → ต้องกู้ $1,000 — ธุรกิจกำไรดีแต่เงินสดขาดได้จริง"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const LabTab = () => (
+  <div>
+    <Alert type="success" style={{marginBottom:16}} message={<Text strong>🧪 ห้องทดลอง: เลื่อน slider แล้วดูตัวเลขขยับ — ตั้งค่าตามโจทย์หนังสือเพื่อเช็คว่าเข้าใจสูตร แล้วลอง "แกล้งตัวแปร" เพื่อดูผลกระทบ</Text>}/>
+    <ProdLab/>
+    <CollectLab/>
+    <CashLab/>
+  </div>
+);
+
+/* ============================================================
+   TAB 3 — FLASHCARDS
+   ============================================================ */
+const flashcards = [
+  {q:'งบไหนต้องจัดทำเป็น "อันดับแรก" ของ master budget?', a:'Sales budget', d:'เพราะงบอื่นทุกตัว (ผลิต วัตถุดิบ แรงงาน เงินสด) พิงยอดขายทั้งหมด เริ่มจาก sales forecast แล้วให้ budget committee ปรับ', star:3, exam:true},
+  {q:'สูตร Production Budget คือ?', a:'ผลิต = ขาย + EI ที่ต้องการ − BI', d:'Texas Rex Q1: 1,000 + 240 − 180 = 1,060 ตัว — สมการถังสินค้า: ของเข้าต้องพอดีกับของออกและที่อยากเหลือ', star:3, exam:true},
+  {q:'สูตร Direct Materials Purchases คือ?', a:'ซื้อ = วัตถุดิบที่ใช้ผลิต + EI วัตถุดิบ − BI วัตถุดิบ', d:'โครงเดียวกับ production budget แต่เปลี่ยนจากสินค้าสำเร็จรูปเป็นวัตถุดิบ แล้วคูณราคาต่อหน่วยตอนท้าย', star:3, exam:true},
+  {q:'Master budget แบ่งเป็น 2 ส่วนใหญ่ อะไรบ้าง?', a:'Operating budget และ Financial budget', d:'Operating = กิจกรรมสร้างรายได้ จบที่ budgeted income statement | Financial = เงินสดเข้าออก+ฐานะการเงิน (cash budget, budgeted balance sheet, capital expenditures)', star:3, exam:true},
+  {q:'ทำไมต้องทำ operating budget ก่อน financial budget?', a:'เพราะกิจกรรมการเงิน (กู้/จ่าย) จะรู้ได้ก็ต่อเมื่อรู้แผนดำเนินงานก่อน', d:'เช่น จะรู้ว่าเงินขาดต้องกู้เท่าไร ก็ต้องรู้ยอดซื้อวัตถุดิบและค่าแรงก่อน', star:2, exam:true},
+  {q:'รายการไหนอยู่ในงบ OH แต่ "ห้าม" อยู่ใน cash budget?', a:'ค่าเสื่อมราคา (depreciation)', d:'เป็นค่าใช้จ่ายที่ไม่มีเงินสดออกจริง — Texas Rex: OH $2,281 แต่จ่ายจริง $1,741 (หัก $540)', star:3, exam:true},
+  {q:'โครงสร้าง cash budget 5 ส่วนคือ?', a:'ต้นงวด+รับ → จ่าย → เกิน/ขาด → กู้/คืน → ปลายงวด', d:'Cash available − disbursements = excess/deficiency เทียบ minimum balance แล้วจึง financing ปิดท้ายด้วย ending cash', star:3, exam:true},
+  {q:'ขาย $12,000 (สด 25% เชื่อ 75%) ลูกหนี้เก็บ 90% ทันงวด — เงินรับจากยอดขายงวดนี้?', a:'3,000 + 8,100 = $11,100', d:'สด 12,000×0.25 = 3,000 | เชื่อ 12,000×0.75×0.9 = 8,100 (อีก 10% ของลูกหนี้ไปโผล่งวดหน้า)', star:3, exam:true},
+  {q:'Continuous budget คืออะไร?', a:'งบหมุน 12 เดือน — หมดหนึ่งเดือน เติมอีกหนึ่งเดือนข้างหน้า', d:'บังคับให้ผู้จัดการวางแผนล่วงหน้าตลอดเวลา ไม่ใช่ปีละครั้ง', star:2, exam:false},
+  {q:'ใครคือ budget director โดยทั่วไป?', a:'Controller', d:'เป็นผู้ประสานงานกระบวนการงบทั้งองค์กร ภายใต้ budget committee ที่ทบทวน อนุมัติ และไกล่เกลี่ยข้อขัดแย้ง', star:1, exam:false},
+  {q:'Strategic plan ต่างจาก master budget อย่างไร?', a:'Strategic plan = ทิศทาง ≥5 ปี | Master budget = แผนการเงิน 1 ปี', d:'ต้องมี strategic plan ก่อน แล้วแปลงเป็นงบรายปี แตกย่อยรายไตรมาส/เดือน', star:2, exam:true},
+  {q:'BI ของไตรมาส 2 มาจากไหน?', a:'เท่ากับ EI ของไตรมาส 1', d:'ของที่เหลือปลายงวดก่อน คือของต้นงวดถัดไปเสมอ — จุดต่อที่ทำผิดกันบ่อยในตาราง 4 ไตรมาส', star:3, exam:true},
+  {q:'คอลัมน์ "ทั้งปี" ของ production budget ใช้ EI/BI ตัวไหน?', a:'EI ปลายปี (Q4) และ BI ต้นปี (Q1) เท่านั้น', d:'ห้ามบวก EI ทั้ง 4 ไตรมาส! ทั้งปี: 5,700 + 200 − 180 = 5,720', star:3, exam:true},
+  {q:'Goal congruence คืออะไร?', a:'เป้าหมายของผู้จัดการสอดคล้องกับเป้าหมายองค์กร', d:'ตรงข้ามคือ dysfunctional behavior — พฤติกรรมที่ขัดกับเป้าองค์กร เกิดเมื่อระบบงบถูกใช้ผิด', star:2, exam:true},
+  {q:'Budgetary slack (padding the budget) คือ?', a:'จงใจประเมินรายได้ต่ำไป/ต้นทุนสูงไป เพื่อให้เป้าง่าย', d:'ลดความเสี่ยงของผู้จัดการเอง แต่ผิดจรรยาบรรณ (ละเมิด credibility standard ของ IMA)', star:3, exam:true},
+  {q:'Pseudoparticipation คือ?', a:'การมีส่วนร่วมแบบหลอก ๆ — ผู้บริหารตัดสินใจแล้ว แค่ขอตรายาง', d:'หนึ่งใน 3 ปัญหาของ participative budgeting (คู่กับ slack และการตั้งมาตรฐานสูง/ต่ำเกิน)', star:2, exam:true},
+  {q:'6 ปัจจัยที่ทำให้คนตอบสนองงบในทางบวก?', a:'feedback บ่อย · แรงจูงใจเงิน/ไม่ใช่เงิน · มีส่วนร่วม · มาตรฐานสมจริง · ต้นทุนที่คุมได้ · วัดหลายมิติ', d:'ท่องเป็นชุด — ข้อสอบชอบให้เลือกว่าข้อไหน "ไม่ใช่"', star:2, exam:true},
+  {q:'Controllable costs คืออะไร ทำไมสำคัญ?', a:'ต้นทุนที่ผู้จัดการมีอิทธิพลต่อระดับของมัน — ควรประเมินผู้จัดการจากต้นทุนกลุ่มนี้เท่านั้น', d:'ถ้าจะใส่ต้นทุนที่คุมไม่ได้ในรายงาน ต้องแยกและติดป้าย noncontrollable', star:2, exam:false},
+  {q:'Milking the firm / myopia คือ?', a:'เชือดผลระยะยาวเพื่อตัวเลขงบระยะสั้น', d:'เช่น ตัดค่าซ่อมบำรุง เลื่อนอบรมพนักงาน — ป้องกันโดยวัดผลหลายมิติ ไม่ใช่แค่ตัวเลขงบ', star:2, exam:true},
+  {q:'ต้นทุนต่อหน่วยของเสื้อ Texas Rex $6.95 ประกอบด้วย?', a:'เสื้อ 3.00 + หมึก 1.00 + DL 1.20 + VOH 0.60 + FOH 1.15', d:'DL = 0.12ชม.×$10, VOH = 0.12×$5 — ใช้คำนวณ Ending FG (200×6.95 = $1,390) และ COGS', star:2, exam:false},
+  {q:'เงินสดขั้นต่ำ (minimum cash balance) ใช้ทำอะไรใน cash budget?', a:'เป็นเกณฑ์ตัดสินใจกู้: ถ้า excess/deficiency ต่ำกว่าขั้นต่ำ → กู้ระยะสั้น', d:'ถ้าเกินขั้นต่ำมาก → เอาไปคืนเงินกู้หรือลงทุนชั่วคราว', star:2, exam:true},
+  {q:'ดอกเบี้ยเงินกู้ใน cash budget ไปโผล่ที่งบไหนอีก?', a:'Budgeted income statement (บรรทัด interest expense)', d:'Texas Rex: กู้ 1,000 ใน Q1 คืน Q2 พร้อมดอกเบี้ย $60 → income statement หัก $60 ก่อนคำนวณภาษี', star:2, exam:false},
+  {q:'งบไหนบ้างเป็นแหล่งข้อมูลของ budgeted balance sheet?', a:'งบดุลปัจจุบัน + งบอื่นทุกตัวใน master budget', d:'เช่น ลูกหนี้ปลายงวดจาก schedule เก็บเงิน, สินค้าคงเหลือจาก FG budget, เงินสดจาก cash budget', star:1, exam:false},
+  {q:'ทำไมยอดขายที่พยากรณ์ (sales forecast) ≠ sales budget?', a:'Forecast เป็นแค่ประมาณการตั้งต้น — budget คือตัวเลขที่ committee ปรับและอนุมัติแล้ว', d:'Budget อาจต่างจาก forecast ตามนโยบาย เช่น ระมัดระวังกว่า หรือผูกกับแผนการตลาด', star:2, exam:false},
+  {q:'Flexible budget ถูกพูดถึงใน LO-4 ว่าช่วยเรื่องอะไร?', a:'ทำให้เทียบต้นทุนกับ "ระดับกิจกรรมจริง" ได้อย่างยุติธรรม', d:'หนึ่งใน "มาตรฐานสมจริง" — เทียบงบที่ปรับตามปริมาณจริง ไม่ใช่งบนิ่งที่ตั้งไว้ตอนต้นปี', star:1, exam:false},
+];
+
+const FlashcardTab = () => {
+  const [filter, setFilter] = useState('all');
+  const [order, setOrder] = useState(flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [score, setScore] = useState({ok:0, ng:0});
+  const pool = order.map(i=>flashcards[i]).filter(c => filter==='all' ? true : filter==='exam' ? c.exam : c.star===3);
+  const card = pool[Math.min(idx, pool.length-1)];
+  const shuffle = () => { const a=[...Array(flashcards.length).keys()]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} setOrder(a); setIdx(0); setFlipped(false); setScore({ok:0,ng:0}); };
+  const nav = (d) => { setFlipped(false); setIdx(i => (i + d + pool.length) % pool.length); };
+  const mark = (good) => { setScore(s => good ? {...s, ok:s.ok+1} : {...s, ng:s.ng+1}); nav(1); };
+  const setF = (f) => { setFilter(f); setIdx(0); setFlipped(false); };
+  if (!card) return <Alert type="warning" message="ไม่มีการ์ดในโหมดนี้" />;
+  return (
+    <div>
+      <Flex justify="space-between" wrap="wrap" gap={8} style={{marginBottom:12}}>
+        <Space wrap>
+          <Button type={filter==='all'?'primary':'default'} onClick={()=>setF('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={filter==='exam'?'primary':'default'} onClick={()=>setF('exam')}>เฉพาะแนวข้อสอบ ({flashcards.filter(c=>c.exam).length})</Button>
+          <Button type={filter==='star3'?'primary':'default'} onClick={()=>setF('star3')}>⭐⭐⭐ ({flashcards.filter(c=>c.star===3).length})</Button>
+        </Space>
+        <Button onClick={shuffle}>🔀 สลับการ์ด</Button>
+      </Flex>
+      <Row gutter={16} style={{marginBottom:12}}>
+        <Col span={8}><Statistic title="การ์ดที่" value={`${idx+1} / ${pool.length}`} /></Col>
+        <Col span={8}><Statistic title="ตอบถูก" value={score.ok} valueStyle={{color:C.green}} /></Col>
+        <Col span={8}><Statistic title="ตอบผิด" value={score.ng} valueStyle={{color:C.red}} /></Col>
+      </Row>
+      <div className="fc-perspective" onClick={()=>setFlipped(f=>!f)}>
+        <div className={'fc-card' + (flipped ? ' flipped' : '')}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.borderDark}`}}>
+            <Space direction="vertical" align="center">
+              <Space>{card.exam && <Tag color="volcano">แนวข้อสอบ</Tag>}<Stars n={card.star} /></Space>
+              <Title level={4} style={{color:C.text, margin:0}}>{card.q}</Title>
+              <Text style={{color:C.text3}}>(คลิกเพื่อพลิกดูคำตอบ)</Text>
+            </Space>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.gold}`}}>
+            <Space direction="vertical" align="center">
+              <Title level={4} style={{color:C.goldDark, margin:0}}>{card.a}</Title>
+              <Text style={{color:C.text2}}>{card.d}</Text>
+            </Space>
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" gap={8} style={{marginTop:16}} wrap="wrap">
+        <Button onClick={()=>nav(-1)}>← ก่อนหน้า</Button>
+        <Button style={{background:C.greenBg, borderColor:C.green, color:C.green}} onClick={()=>mark(true)}>✓ ตอบถูก</Button>
+        <Button style={{background:C.redBg, borderColor:C.red, color:C.red}} onClick={()=>mark(false)}>✗ ตอบผิด</Button>
+        <Button onClick={()=>nav(1)}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+};
+
+/* ============================================================
+   TAB 4 — QUICK REFERENCE
+   ============================================================ */
+const quickSections = [
+  { divider: '🎯 สูตรหลัก — ต้องเขียนได้ใน 30 วินาที' },
+  { s:'ผลิต', t:'Production Budget', b:'ผลิต = ขาย + EI − BI   |   Texas Rex Q1: 1,000 + 240 − 180 = 1,060', type:'formula' },
+  { s:'ซื้อ DM', t:'DM Purchases', b:'ซื้อ = (ผลิต × DM/หน่วย) + EI − BI แล้ว × ราคา   |   โครงเดียวกับสูตรผลิต', type:'formula' },
+  { s:'DL', t:'Direct Labor', b:'หน่วยผลิต × ชม./หน่วย × ค่าแรง/ชม.   |   1,060 × 0.12 × $10 = $1,272', type:'formula' },
+  { s:'OH', t:'Overhead', b:'(ชม.DL × VOH rate) + FOH คงที่   |   จำ: FOH มีค่าเสื่อมซ่อนอยู่', type:'formula' },
+  { s:'เงินสด', t:'Cash Budget', b:'ต้นงวด + รับ − จ่าย = เกิน/ขาด → เทียบขั้นต่ำ → กู้/คืน → ปลายงวด', type:'formula' },
+  { divider: '🧠 ตัวช่วยจำ' },
+  { s:'ขาย-ปลาย-ลบ-ต้น', t:'ท่องสูตรผลิต', b:'"ขาย บวก ปลาย ลบ ต้น" ใช้ได้ทั้งสินค้าสำเร็จรูปและวัตถุดิบ — สูตรเดียวใช้ 2 งบ', type:'mnem' },
+  { s:'S→P→3M→FG→IS', t:'ลำดับ operating budget', b:'Sales → Production → (DM, DL, OH) → FG/COGS + S&A → Income Statement — sales มาก่อนเสมอ', type:'mnem' },
+  { s:'เสื่อมไม่ใช่เงิน', t:'depreciation', b:'อยู่ในงบ OH และ income statement ได้ แต่ "ไม่มีวันอยู่ใน cash budget"', type:'mnem' },
+  { divider: '⚡ ขั้นตอนทำโจทย์' },
+  { s:'Flow', t:'โจทย์ตาราง 4 ไตรมาส', b:'1) เขียน EI = %×ขายงวดหน้า → 2) BI งวดนี้ = EI งวดก่อน → 3) เข้าสูตร ขาย+ปลาย−ต้น → 4) คอลัมน์ปี ใช้ EI ท้ายปี/BI ต้นปีเท่านั้น', type:'flow' },
+  { s:'Flow', t:'โจทย์เก็บเงินลูกหนี้', b:'1) แยกขายสด/เชื่อ → 2) เชื่อคูณ % เก็บทันงวด → 3) อย่าลืมยอดค้างจากงวดก่อน → 4) รวม 3 ก้อนเป็นเงินรับ', type:'flow' },
+  { s:'Flow', t:'โจทย์ cash budget', b:'1) เงินต้นงวด + รับ → 2) หักจ่าย (ตัดค่าเสื่อมทิ้ง!) → 3) เทียบขั้นต่ำ → 4) กู้เมื่อขาด/คืน+ดอกเบี้ยเมื่อเกิน → 5) ปลายงวด', type:'flow' },
+  { divider: '⚔️ คู่ที่ชอบสับสน' },
+  { s:'Op vs Fin', t:'สองซีกของ master budget', b:'Operating จบที่งบกำไรขาดทุน | Financial = cash budget + budgeted BS + งบลงทุน', type:'contrast' },
+  { s:'Plan vs Control', t:'มองหน้า vs มองหลัง', b:'Planning มองไปข้างหน้า | Control มองย้อนเทียบจริงกับงบ — budget เป็นตัวเชื่อมสองอย่าง', type:'contrast' },
+  { s:'Slack vs Pseudo', t:'สองปัญหาการมีส่วนร่วม', b:'Slack = ลูกน้องโกงเป้าให้ง่าย (ผิดจรรยาบรรณ) | Pseudo = หัวหน้าแกล้งให้มีส่วนร่วม', type:'contrast' },
+  { s:'Forecast vs Budget', t:'ต่างกันตรงไหน', b:'Forecast = ประมาณการตั้งต้น | Budget = ตัวเลขที่ committee ปรับและอนุมัติแล้ว', type:'contrast' },
+  { divider: '📌 ทฤษฎี LO-4 ท่องเป็นชุด' },
+  { s:'6 ข้อ', t:'พฤติกรรมบวก', b:'feedback บ่อย · จูงใจเงิน+ไม่ใช่เงิน · participative · มาตรฐานสมจริง · ต้นทุนคุมได้ · หลายมิติ', type:'chunk' },
+  { s:'3 หลุม', t:'participative budgeting', b:'เป้าสูง/ต่ำไป · budgetary slack · pseudoparticipation', type:'chunk' },
+  { s:'4 จริง', t:'มาตรฐานสมจริง', b:'ระดับกิจกรรมจริง (flexible) · ฤดูกาล · efficiency ไม่ใช่ตัดแบบเหมารวม · แนวโน้มเศรษฐกิจ', type:'chunk' },
+  { s:'ระวัง', t:'วัดมิติเดียว', b:'เกิด myopia / milking the firm — เชือดอนาคตแลกตัวเลขวันนี้', type:'chunk' },
+];
+
+const typeStyle = {
+  mnem: { color:C.purple, bg:C.purpleBg },
+  flow: { color:C.cyan, bg:C.cyanBg },
+  contrast: { color:C.red, bg:C.redBg },
+  chunk: { color:C.blue, bg:C.blueBg },
+  formula: { color:C.goldDark, bg:'#F3EDDF' },
+};
+
+const QuickTab = () => (
+  <div>
+    {quickSections.map((it, i) => it.divider
+      ? <Divider key={i} orientation="left"><Text strong style={{color:C.text2}}>{it.divider}</Text></Divider>
+      : (() => { const st = typeStyle[it.type]; return (
+          <Card key={i} className="qc" size="small"
+            style={{marginBottom:10, background:st.bg, borderColor:st.color, borderLeft:`5px solid ${st.color}`}}>
+            <Space align="start">
+              <Tag style={{color:st.color, borderColor:st.color, background:'transparent', fontWeight:700}}>{it.s}</Tag>
+              <div>
+                <Text strong style={{color:C.text}}>{it.t}</Text><br/>
+                <Text style={{color:C.text2}}>{it.b}</Text>
+              </div>
+            </Space>
+          </Card>
+        );})()
+    )}
+  </div>
+);
+
+/* ============================================================ */
+const App = () => (
+  <ConfigProvider theme={{
+    algorithm: theme.defaultAlgorithm,
+    token: {
+      colorPrimary: C.gold, colorBgBase: C.bg, colorTextBase: C.text,
+      colorBgContainer: C.white, colorBorder: C.border, borderRadius: 10,
+      fontFamily: "'Noto Sans Thai', sans-serif",
+    },
+  }}>
+    <Layout style={{minHeight:'100vh', background:C.bg}}>
+      <Layout.Content style={{maxWidth:960, width:'100%', margin:'0 auto', padding:'32px 16px'}}>
+        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>💰 Profit Planning (Budgeting) — Chapter 9</Title>
+        <Paragraph style={{textAlign:'center', color:C.text3, marginBottom:24}}>
+          Cornerstones of Managerial Accounting, 5e · พื้นฐาน → สรุป → ทดลอง → ท่องจำ
+        </Paragraph>
+        <Tabs centered type="card" defaultActiveKey="basics" items={[
+          { key:'basics', label:'🌱 ปูพื้นก่อน', children:<BasicsTab/> },
+          { key:'sum', label:'📚 สรุปเนื้อหา', children:<SummaryTab/> },
+          { key:'lab', label:'🧪 ห้องทดลอง', children:<LabTab/> },
+          { key:'fc', label:'🎴 Flashcard', children:<FlashcardTab/> },
+          { key:'quick', label:'⚡ การ์ดจำด่วน', children:<QuickTab/> },
+        ]}/>
+        <Divider/>
+        <Text style={{display:'block', textAlign:'center', color:C.text3}}>
+          สร้างจากสไลด์ MA_5e_PPT_Ch09 · ตัวเลขตัวอย่างทั้งหมดตรงกับ Cornerstone 9.1–9.12 (Texas Rex Inc.)
+        </Text>
+      </Layout.Content>
+    </Layout>
+  </ConfigProvider>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

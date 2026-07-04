@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - generic:
+    - generic: Case File 2001-ENR
+    - generic: Opening
+  - generic [ref=e4]:
+    - generic [ref=e5]: Accounting Scandal · Forensic Accounting · Auditing
+    - generic [ref=e6]: ENRON
+    - heading "การตกแต่งบัญชีผ่าน Special Purpose Entities และความล้มเหลวของผู้สอบบัญชี" [level=2] [ref=e7]:
+      - text: การตกแต่งบัญชีผ่าน Special Purpose Entities
+      - text: และความล้มเหลวของผู้สอบบัญชี
+    - paragraph [ref=e8]: กรณีศึกษาฉบับสมบูรณ์ · ร้อยเรียงจากซีรีส์ 8 ตอน · ฉบับนำเสนอ v2
+    - generic [ref=e9]:
+      - generic [ref=e10]: จัดทำโดย
+      - generic [ref=e11]: 2600231302014นภัสสร ลิมปกานนท์
+      - generic [ref=e12]: 2600231302018GONG JIAJIA
+      - generic [ref=e13]: 2600231302032ศุภเกศ วงศ์คำภู
+  - generic: ใช้ ← → หรือปัดซ้าย-ขวา · กด F เต็มจอ
+  - generic [ref=e14]:
+    - button "← ก่อนหน้า" [disabled] [ref=e15]
+    - generic [ref=e16]: 1 / 48
+    - button "ถัดไป →" [ref=e17] [cursor=pointer]

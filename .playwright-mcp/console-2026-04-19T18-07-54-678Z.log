@@ -1,0 +1,8 @@
+[     440ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://supaket.github.io/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:0
+[     592ms] [LOG] 📱 App Mode: browser | PWA: false @ https://supaket.github.io/Thai-Buddhist-Chanting/:4454
+[     593ms] [LOG] 💡 Tip: Run forceRefresh() in console to clear all caches @ https://supaket.github.io/Thai-Buddhist-Chanting/:4678
+[     707ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://supaket.github.io/favicon.ico:0
+[     757ms] [ERROR] A bad HTTP response code (404) was received when fetching the script. @ :0
+[     757ms] [ERROR] ❌ Service Worker registration failed: TypeError: Failed to register a ServiceWorker for scope ('https://supaket.github.io/') with script ('https://supaket.github.io/sw.js'): A bad HTTP response code (404) was received when fetching the script. @ https://supaket.github.io/Thai-Buddhist-Chanting/:4623
+[     768ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://supaket.github.io/Thai-Buddhist-Chanting/:0
+[     770ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ https://supaket.github.io/Thai-Buddhist-Chanting/:0

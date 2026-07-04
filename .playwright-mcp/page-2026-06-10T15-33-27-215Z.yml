@@ -1,0 +1,8 @@
+- generic [ref=e3]:
+  - link [ref=e9] [cursor=pointer]:
+    - /url: https://www.royaloffice.th/25/10/2025/พระราชประวัติ-12-08-2566/
+  - generic [ref=e11]:
+    - link [ref=e12] [cursor=pointer]:
+      - /url: https://www.sec.or.th/TH/Pages/Home.aspx
+    - link [ref=e13] [cursor=pointer]:
+      - /url: https://www.sec.or.th/EN/Pages/Home.aspx

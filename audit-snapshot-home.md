@@ -1,0 +1,90 @@
+- generic [active] [ref=e1]:
+  - generic:
+    - img:
+      - generic: ~ พุทธกาล ~
+  - generic [ref=e2]:
+    - img "พระพุทธรูป" [ref=e3]
+    - generic [ref=e5]:
+      - heading "บทสวดมนต์" [level=1] [ref=e6]
+      - paragraph [ref=e7]: ธรรมะจากสมัยพุทธกาล
+    - button "🙏" [ref=e9] [cursor=pointer]:
+      - generic [ref=e10]: 🙏
+    - button "📲" [ref=e11] [cursor=pointer]:
+      - generic [ref=e12]: 📲
+  - generic [ref=e13]:
+    - paragraph [ref=e14]: 🎨 สีมงคลวันจันทร์ (วันนี้)
+    - generic [ref=e15]:
+      - button "วันอาทิตย์ - สีแดง" [ref=e16] [cursor=pointer]
+      - button "วันจันทร์ - สีเหลือง" [ref=e17] [cursor=pointer]
+      - button "วันอังคาร - สีชมพู" [ref=e18] [cursor=pointer]
+      - button "วันพุธ - สีเขียว" [ref=e19] [cursor=pointer]
+      - button "วันพฤหัสบดี - สีส้ม" [ref=e20] [cursor=pointer]
+      - button "วันศุกร์ - สีฟ้า" [ref=e21] [cursor=pointer]
+      - button "วันเสาร์ - สีม่วง" [ref=e22] [cursor=pointer]
+  - generic [ref=e23] [cursor=pointer]:
+    - generic [ref=e24]: ⚙️ ตั้งค่าการใช้งาน
+    - generic [ref=e25]: ▼
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - paragraph [ref=e28]: 📿 เลือกรูปแบบการสวด
+      - generic [ref=e29]
+    - generic [ref=e32]:
+      - generic [ref=e33]
+      - generic [ref=e46]
+  - navigation [ref=e55]:
+    - list [ref=e56]:
+      - listitem [ref=e57]
+      - listitem [ref=e59]
+      - listitem [ref=e61]
+      - listitem [ref=e63]
+      - listitem [ref=e65]
+      - listitem [ref=e67]
+  - generic [ref=e70]: ☘️
+  - main [ref=e71]:
+    - generic [ref=e72]:
+      - generic [ref=e73]
+      - generic [ref=e80]
+      - generic [ref=e85]
+    - generic [ref=e106]:
+      - generic [ref=e107]
+      - generic [ref=e114]
+      - generic [ref=e119]
+    - generic [ref=e133]:
+      - generic [ref=e134]
+      - generic [ref=e141]
+      - generic [ref=e146]
+    - generic [ref=e169]:
+      - generic [ref=e170]
+      - generic [ref=e177]
+      - generic [ref=e182]
+    - text: ~ ✦ ✦ ✦ ✦ ~ ~ ~ ✦ ✦ ✦ ✦ ~ ✦ ✦ ✦ ✦
+    - generic [ref=e208]:
+      - generic [ref=e209]
+      - generic [ref=e216]
+      - generic [ref=e221]
+    - generic [ref=e283]:
+      - generic [ref=e284]
+      - generic [ref=e291]
+      - generic [ref=e296]
+    - generic [ref=e314]:
+      - generic [ref=e315]
+      - generic [ref=e319]
+    - generic [ref=e398]:
+      - generic [ref=e399]: 📿
+      - generic [ref=e400]: บทสวดมนต์เพิ่มเติม
+    - generic [ref=e402]:
+      - generic [ref=e403]
+      - generic [ref=e409]
+      - generic [ref=e414]
+  - contentinfo [ref=e428]:
+    - generic [ref=e429]: 🌳
+    - paragraph [ref=e430]: ขออานิสงส์แห่งการสวดมนต์
+    - paragraph [ref=e431]: จงเป็นพลวปัจจัยให้ท่านถึงซึ่งความสุข ความเจริญ
+    - paragraph [ref=e432]: สาธุ • สาธุ • สาธุ
+    - generic [ref=e433]:
+      - paragraph [ref=e434]
+      - paragraph [ref=e436]: มีเนื้อหาหรือสิ่งใดให้ปรับปรุง สามารถติดต่อได้ที่
+      - link "📧 supaket@enersys.co.th" [ref=e437] [cursor=pointer]:
+        - /url: mailto:supaket@enersys.co.th
+      - paragraph [ref=e438]: Version 1.5-20251215
+  - generic: 👆 ปัดซ้าย/ขวา เปลี่ยนบท

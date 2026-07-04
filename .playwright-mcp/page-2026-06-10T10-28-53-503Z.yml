@@ -1,0 +1,20 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]: ENRON · Case Study
+  - generic [ref=e23]:
+    - generic [ref=e24]: Accounting Scandal · Forensic Accounting · Auditing
+    - generic [ref=e25]: ENRON
+    - generic [ref=e26]:
+      - text: การตกแต่งบัญชีผ่าน Special Purpose Entities
+      - text: และบทบาทความล้มเหลวของผู้สอบบัญชี
+    - generic [ref=e28]:
+      - text: งานนำเสนอกลุ่ม · วิชาการบัญชี / การสอบบัญชี · เวลานำเสนอ 10 นาที
+      - generic [ref=e29]:
+        - generic [ref=e30]: จัดทำโดย
+        - generic [ref=e31]: 2600231302014นภัสสร ลิมปกานนท์
+        - generic [ref=e32]: 2600231302018GONG JIAJIA
+        - generic [ref=e33]: 2600231302032ศุภเกศ วงศ์คำภู
+  - generic [ref=e34]: ใช้ปุ่ม ← → หรือคลิก Next/Prev เพื่อเปลี่ยนสไลด์
+  - generic [ref=e35]:
+    - button "← ก่อนหน้า" [disabled] [ref=e36]
+    - generic [ref=e37]: 1 / 17
+    - button "ถัดไป →" [ref=e38] [cursor=pointer]
