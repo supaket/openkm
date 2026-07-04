@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA509 อ่านงบการเงิน — ทบทวนฉบับเริ่มจากศูนย์</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f7f2e7; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#5c4a32,#8a6d3b); border-radius:14px; padding:22px 26px; color:#fff8ec; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#fff8ec; }
+  .hero p { margin:0; opacity:.92; }
+  .sec-card { background:#fffdf6; border:1px solid #e3d9c2; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(90,70,40,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#6b5322; font-size:17px; }
+  .tag-step { display:inline-block; background:#8a6d3b; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#efe6cf; color:#5c4a32; padding:6px 8px; border:1px solid #ddd0b0; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #e6dcc2; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin td.neg { text-align:right; color:#a8071a; }
+  table.fin tr.total td { background:#f6efdc; font-weight:700; }
+  table.fin tr.head td { background:#faf5e6; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#f2ecd9; border-left:4px solid #8a6d3b; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf6; border:2px solid #c9b98f; color:#4a3b22; font-weight:600; font-size:15.5px; }
+  .flip-back { background:#5c4a32; color:#fff8ec; transform:rotateY(180deg); font-size:13.5px; line-height:1.55; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+  .je { background:#fbf8ef; border:1px dashed #b9a678; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#6b5322; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Divider, Statistic, Steps } = antd;
+const { useState } = React;
+
+/* ---------- helpers ---------- */
+const n = (x)=> x.toLocaleString('en-US');
+const Num = ({v})=> <td className={v<0?'neg':'num'}>{v<0?`(${n(-v)})`:n(v)}</td>;
+
+/* ============ TAB 1 : สรุปปูพื้นจากศูนย์ ============ */
+function SummaryTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 0</span>บัญชีคืออะไร ทำไมต้องมี</h3>
+      <p>บัญชีคือกระบวนการ <b>เก็บรวบรวม → จดบันทึก → จำแนก → สรุปผล → วิเคราะห์และแปลความหมาย</b> ข้อมูลทางการเงิน เพื่อ "สื่อสารข้อมูล" ให้คนตัดสินใจได้ (นิยาม AAA: identifying, measuring, communicating)</p>
+      <div className="analogy">🍜 เปรียบเทียบ: ร้านก๋วยเตี๋ยวของคุณ — อยากรู้ว่า "เดือนนี้กำไรไหม" "เงินสดพอจ่ายค่าเช่าไหม" "ควรกู้เพิ่มไหม" คำตอบทั้งหมดอยู่ในงบการเงิน 3 ตัว</div>
+      <table className="fin">
+        <thead><tr><th></th><th>บัญชีการเงิน (Financial)</th><th>บัญชีบริหาร (Management)</th></tr></thead>
+        <tbody>
+          <tr><td>ผู้ใช้หลัก</td><td>คนนอกกิจการ (นักลงทุน เจ้าหนี้ รัฐ)</td><td>ผู้บริหารภายใน</td></tr>
+          <tr><td>รูปแบบ</td><td>General purpose ภาพรวมกว้าง</td><td>Specific purpose ละเอียดมาก</td></tr>
+          <tr><td>กฎเกณฑ์</td><td>ต้องทำตามมาตรฐานบัญชี</td><td>ไม่มีข้อบังคับ</td></tr>
+          <tr><td>ความถี่</td><td>รายปี/รายไตรมาส</td><td>บ่อยเท่าที่ต้องการ</td></tr>
+          <tr><td>มุมมองเวลา</td><td>อดีต (ข้อมูลตรวจสอบได้)</td><td>อนาคต (ประมาณการ)</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">📏 <b>มาตรฐานบัญชี:</b> สากล — IASB ออก IAS/IFRS | ไทย — สภาวิชาชีพบัญชีฯ ออก TAS/TFRS<br/>กิจการมีส่วนได้เสียสาธารณะ (PAEs) ใช้ TFRS เต็มรูป | กิจการไม่มีส่วนได้เสียสาธารณะ (NPAEs) ใช้ TFRS for NPAEs</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 1</span>งบการเงิน 3 ตัวหลัก — จำด้วยภาพ</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={8}><Card size="small" style={{background:'#eef3fa',height:'100%'}} title="📷 งบแสดงฐานะการเงิน (งบดุล)">
+          "ภาพถ่าย" ณ วันใดวันหนึ่ง — มั่งคั่งแค่ไหน<br/><b>สินทรัพย์ = หนี้สิน + ส่วนของเจ้าของ</b><br/>หัวงบ: "ณ วันที่ 31 ธ.ค. ..."</Card></Col>
+        <Col xs={24} md={8}><Card size="small" style={{background:'#f0f7ee',height:'100%'}} title="🎬 งบกำไรขาดทุน">
+          "วิดีโอ" ตลอดงวด — ทำกำไรได้เท่าไร<br/><b>กำไร = รายได้ − ค่าใช้จ่าย</b><br/>หัวงบ: "สำหรับปี ..."</Card></Col>
+        <Col xs={24} md={8}><Card size="small" style={{background:'#fbf3ec',height:'100%'}} title="💧 งบกระแสเงินสด">
+          เงินสดเข้า−ออกจริงตลอดงวด<br/><b>3 กิจกรรม: ดำเนินงาน / ลงทุน / จัดหาเงิน</b><br/>Cash is King!</Card></Col>
+      </Row>
+      <div className="kbox">📚 ชุดงบการเงินสมบูรณ์ตาม IAS 1 มี <b>5 รายการ</b>: (1) งบแสดงฐานะการเงิน (2) งบกำไรขาดทุน+กำไรขาดทุนเบ็ดเสร็จ (3) งบแสดงการเปลี่ยนแปลงส่วนของผู้ถือหุ้น (4) งบกระแสเงินสด (5) หมายเหตุประกอบงบการเงิน</div>
+      <h3 style={{marginTop:14}}>ความสัมพันธ์ของ 3 งบ</h3>
+      <svg viewBox="0 0 760 190" style={{width:'100%',maxWidth:760}}>
+        <rect x="10" y="55" width="150" height="80" rx="10" fill="#dbe7f5" stroke="#7a9cc4"/>
+        <text x="85" y="88" textAnchor="middle" fontSize="13" fill="#2d4a6b">งบฐานะการเงิน</text>
+        <text x="85" y="108" textAnchor="middle" fontSize="12" fill="#2d4a6b">ต้นงวด (1 ม.ค.)</text>
+        <rect x="600" y="55" width="150" height="80" rx="10" fill="#dbe7f5" stroke="#7a9cc4"/>
+        <text x="675" y="88" textAnchor="middle" fontSize="13" fill="#2d4a6b">งบฐานะการเงิน</text>
+        <text x="675" y="108" textAnchor="middle" fontSize="12" fill="#2d4a6b">สิ้นงวด (31 ธ.ค.)</text>
+        <rect x="220" y="12" width="320" height="60" rx="10" fill="#e4f0e2" stroke="#6d9c68"/>
+        <text x="380" y="36" textAnchor="middle" fontSize="12.5" fill="#33582f">งบกำไรขาดทุน: อธิบายการเปลี่ยนแปลงของ</text>
+        <text x="380" y="56" textAnchor="middle" fontSize="12.5" fill="#33582f">"ส่วนของเจ้าของ" (ผ่านกำไรสะสม)</text>
+        <rect x="220" y="118" width="320" height="60" rx="10" fill="#f7ecdd" stroke="#c09a5e"/>
+        <text x="380" y="142" textAnchor="middle" fontSize="12.5" fill="#7a5a20">งบกระแสเงินสด: อธิบายการเปลี่ยนแปลงของ</text>
+        <text x="380" y="162" textAnchor="middle" fontSize="12.5" fill="#7a5a20">"เงินสด"</text>
+        <line x1="160" y1="95" x2="600" y2="95" stroke="#8a6d3b" strokeWidth="2" strokeDasharray="6 4"/>
+        <polygon points="600,95 588,89 588,101" fill="#8a6d3b"/>
+      </svg>
+      <div className="kbox">🔗 งบฐานะการเงิน = "จุด" สองจุด (ต้นงวด/สิ้นงวด) ส่วนงบกำไรขาดทุนและงบกระแสเงินสด = "เส้นทาง" ที่อธิบายว่าเดินจากจุดแรกมาจุดหลังได้อย่างไร</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 2</span>สมการบัญชี — หัวใจของทุกอย่าง</h3>
+      <div style={{textAlign:'center',fontSize:18,fontWeight:700,color:'#5c4a32',margin:'8px 0'}}>สินทรัพย์ (A) = หนี้สิน (L) + ส่วนของเจ้าของ (E)</div>
+      <p>ขยายได้เรื่อยๆ จนเห็นทั้งระบบบัญชี 5 หมวด:</p>
+      <div className="je">A = L + E<br/>A = L + ทุน + กำไรสะสม<br/>A = L + ทุน + กำไรสะสมต้นงวด + <span className="hl">กำไรสุทธิปีนี้</span> − เงินปันผล<br/>A = L + ทุน + กำไรสะสมต้นงวด + <span className="hl">รายได้ − ค่าใช้จ่าย</span> − เงินปันผล</div>
+      <p>→ 5 หมวดบัญชี: <Tag color="blue">สินทรัพย์</Tag><Tag color="red">หนี้สิน</Tag><Tag color="gold">ทุน</Tag><Tag color="green">รายได้</Tag><Tag color="orange">ค่าใช้จ่าย</Tag></p>
+      <Collapse items={[
+        {key:'a',label:'🔵 สินทรัพย์ (Assets) — ทรัพยากรที่ให้ประโยชน์ในอนาคต',children:<div>
+          <b>หมุนเวียน (Current)</b> — ได้ประโยชน์ภายใน 1 ปี: เงินสด ลูกหนี้การค้า สินค้าคงเหลือ เงินลงทุนระยะสั้น<br/>
+          <b>ไม่หมุนเวียน (Non-current)</b> — ใช้เกิน 1 ปี: ที่ดิน อาคาร อุปกรณ์</div>},
+        {key:'l',label:'🔴 หนี้สิน (Liabilities) — ภาระผูกพันที่ต้องจ่ายคืน',children:<div>
+          <b>หมุนเวียน</b> — ครบกำหนดใน 1 ปี: เจ้าหนี้การค้า ค่าใช้จ่ายค้างจ่าย เงินกู้ระยะยาวส่วนที่ถึงกำหนดใน 1 ปี<br/>
+          <b>ไม่หมุนเวียน</b> — เกิน 1 ปี: เงินกู้ระยะยาว หุ้นกู้</div>},
+        {key:'e',label:'🟡 ส่วนของเจ้าของ (Equity) — สินทรัพย์สุทธิ (A − L)',children:<div>
+          <b>ทุน (Capital)</b> — เงินที่เจ้าของลงไว้<br/>
+          <b>กำไรสะสม (Retained Earnings)</b> — กำไรที่สะสมไว้ยังไม่แบ่งคืนเจ้าของ<br/>
+          วนลูปทุกปี: กำไรสะสมต้นงวด + กำไร(ขาดทุน)ปีนี้ − ปันผล = กำไรสะสมปลายงวด</div>},
+      ]}/>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 3</span>อ่านงบกำไรขาดทุน — บันได 5 ขั้นของกำไร</h3>
+      <table className="fin">
+        <tbody>
+          <tr><td>รายได้จากการขาย</td><td className="num">1,500,000</td><td rowSpan={2} style={{background:'#f0f7ee'}}>ขายได้ − ต้นทุนของที่ขาย</td></tr>
+          <tr><td>หัก ต้นทุนขาย (COGS)</td><td className="neg">(800,000)</td></tr>
+          <tr className="total"><td>① กำไรขั้นต้น (Gross Profit)</td><td className="num">700,000</td><td>วัดว่า "ขายของ" กำไรดีไหม</td></tr>
+          <tr><td>หัก ค่าใช้จ่ายบริหาร (เงินเดือน 150,000 + ค่าเช่า 120,000 + ค่าเสื่อม 240,000)</td><td className="neg">(510,000)</td><td>ค่าใช้จ่ายในการดำเนินงาน</td></tr>
+          <tr className="total"><td>② กำไรก่อนดอกเบี้ยและภาษี (EBIT)</td><td className="num">190,000</td><td>วัดผลการดำเนินธุรกิจล้วนๆ</td></tr>
+          <tr><td>หัก ดอกเบี้ยจ่าย</td><td className="neg">(60,000)</td><td>ต้นทุนการกู้เงิน</td></tr>
+          <tr className="total"><td>③ กำไรก่อนภาษี (EBT)</td><td className="num">130,000</td><td></td></tr>
+          <tr><td>หัก ภาษีเงินได้ (20%)</td><td className="neg">(26,000)</td><td></td></tr>
+          <tr className="total"><td>④ กำไรสุทธิ (Net Profit)</td><td className="num">104,000</td><td>→ เข้ากำไรสะสมในงบฐานะการเงิน</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">⑤ <b>EBITDA</b> = EBIT + ค่าเสื่อมราคา = 190,000 + 240,000 = 430,000 (กำไรก่อนดอกเบี้ย ภาษี ค่าเสื่อม — ใกล้เคียงเงินสดจากธุรกิจ)</div>
+      <div className="kbox">🎯 <b>Matching Concept:</b> ค่าใช้จ่ายต้องบันทึกงวดเดียวกับรายได้ที่เกี่ยวข้อง เช่น ต้นทุนขายบันทึกพร้อมกับรายได้ขาย ไม่ใช่ตอนซื้อของเข้าร้าน</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 4</span>เกณฑ์คงค้าง (Accrual Basis) — กำไร ≠ เงินสด</h3>
+      <p>รับรู้รายได้/ค่าใช้จ่าย <b>เมื่อธุรกรรมเกิดขึ้น</b> ไม่ใช่เมื่อรับ/จ่ายเงินสด — งบฐานะการเงินและงบกำไรขาดทุนใช้เกณฑ์นี้</p>
+      <table className="fin">
+        <thead><tr><th>ธุรกรรม</th><th>ผลต่อกำไร</th><th>ผลต่อเงินสด</th></tr></thead>
+        <tbody>
+          <tr><td>ขายสินค้าเป็นเงินเชื่อ</td><td style={{textAlign:'center',color:'#237804'}}>เพิ่มขึ้น</td><td style={{textAlign:'center'}}>ไม่กระทบ</td></tr>
+          <tr><td>กู้ยืมเงินจากธนาคาร</td><td style={{textAlign:'center'}}>ไม่กระทบ</td><td style={{textAlign:'center',color:'#237804'}}>เพิ่มขึ้น</td></tr>
+          <tr><td>ออกหุ้นเพิ่มทุนเป็นเงินสด</td><td style={{textAlign:'center'}}>ไม่กระทบ</td><td style={{textAlign:'center',color:'#237804'}}>เพิ่มขึ้น</td></tr>
+          <tr><td>ลูกหนี้นำเงินมาชำระค่าสินค้า</td><td style={{textAlign:'center'}}>ไม่กระทบ</td><td style={{textAlign:'center',color:'#237804'}}>เพิ่มขึ้น</td></tr>
+          <tr><td>จ่ายชำระหนี้ค่าสินค้า</td><td style={{textAlign:'center'}}>ไม่กระทบ</td><td style={{textAlign:'center',color:'#a8071a'}}>ลดลง</td></tr>
+          <tr><td>ซื้ออุปกรณ์อายุใช้งาน 5 ปี</td><td style={{textAlign:'center',color:'#a8071a'}}>ลดปีละ 1/5 (ค่าเสื่อม)</td><td style={{textAlign:'center',color:'#a8071a'}}>ลดทันทีเต็มจำนวน</td></tr>
+        </tbody>
+      </table>
+      <div className="warn">⚠️ กับดักข้อสอบ: "ขายเชื่อ" มีกำไรแต่ยังไม่มีเงินสด | "รับชำระจากลูกหนี้" มีเงินสดแต่ไม่มีกำไรเพิ่ม (กำไรรับรู้ไปแล้วตอนขาย) | "ค่าเสื่อมราคา" เป็นค่าใช้จ่ายแต่ไม่มีเงินสดออก</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 5</span>งบกระแสเงินสด — 3 กิจกรรม (ด-ล-จ)</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={8}><Card size="small" title="🏪 ดำเนินงาน (Operating)" style={{height:'100%'}}>
+          เงินสดจากการค้าขายปกติ: รับจากลูกค้า จ่ายเจ้าหนี้ค่าสินค้า จ่ายเงินเดือน ค่าเช่า ดอกเบี้ย ภาษี<br/><Tag color="green">ตัวบ่งชี้สำคัญ: ธุรกิจสร้างเงินสดเองได้ไหม</Tag></Card></Col>
+        <Col xs={24} md={8}><Card size="small" title="🏗️ ลงทุน (Investing)" style={{height:'100%'}}>
+          ซื้อ/ขายสินทรัพย์ระยะยาว: ซื้อที่ดิน อาคาร อุปกรณ์ เครื่องจักร ขายเครื่องจักรเก่า</Card></Col>
+        <Col xs={24} md={8}><Card size="small" title="🏦 จัดหาเงิน (Financing)" style={{height:'100%'}}>
+          รับ/คืนแหล่งเงินทุน: รับจากออกหุ้น รับจากกู้ยืม จ่ายคืนเงินกู้ จ่ายเงินปันผล ซื้อหุ้นทุนคืน</Card></Col>
+      </Row>
+      <div className="kbox">✅ เช็คยอดเสมอ: กระแสเงินสดสุทธิ (ด + ล + จ) + เงินสดต้นงวด = <b>เงินสดสิ้นงวด</b> ซึ่งต้องตรงกับ "เงินสด" ในงบฐานะการเงิน</div>
+      <div className="warn">⚠️ ดอกเบี้ยจ่าย อยู่กิจกรรม<b>ดำเนินงาน</b> (ตามแนวสไลด์) แต่ จ่ายคืนเงินต้น อยู่กิจกรรม<b>จัดหาเงิน</b> — แยกให้ออก!</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">STEP 6</span>วงจรบัญชีและ Double Entry (เบื้องต้น)</h3>
+      <Steps size="small" current={-1} items={[{title:'บันทึกรายการค้า',description:'สมุดรายวัน → แยกประเภท'},{title:'รายการปรับปรุง',description:'สิ้นงวด: ค่าเสื่อม ค้างจ่าย ตามเกณฑ์คงค้าง'},{title:'จัดทำงบการเงิน',description:'งบกำไรขาดทุน → งบฐานะการเงิน → งบกระแสเงินสด'}]}/>
+      <div className="kbox" style={{marginTop:10}}>✍️ <b>ระบบบัญชีคู่ (Double Entry):</b> ทุกรายการบันทึก 2 ด้านเสมอ — เดบิต (Dr) = ด้านซ้าย, เครดิต (Cr) = ด้านขวา และ <b>Dr ต้องเท่ากับ Cr เสมอ</b> (นี่คือเหตุผลที่สมการบัญชีสมดุลตลอด)</div>
+      <table className="fin">
+        <thead><tr><th>ประเภทบัญชี</th><th>หมวด</th><th>ลักษณะ</th></tr></thead>
+        <tbody>
+          <tr><td><b>Permanent (ถาวร)</b></td><td>สินทรัพย์ หนี้สิน ส่วนของเจ้าของ</td><td>ยอดยกไปงวดถัดไป (อยู่ในงบฐานะการเงิน)</td></tr>
+          <tr><td><b>Temporary (ชั่วคราว)</b></td><td>รายได้ ค่าใช้จ่าย เงินปันผล</td><td>ปิดเข้ากำไรสะสมทุกสิ้นปี (เริ่มปีใหม่ที่ 0)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : เคสแสนดี ============ */
+function SaendeeTab(){
+  const rows = [
+    {no:'(1ก)',desc:'เจ้าของลงทุนเงินสด 2,000,000',cash:2000000,ar:0,inv:0,eq:0,ap:0,acc:0,loan:0,cap:2000000,pf:0,note:'A↑ = E↑'},
+    {no:'(1ข)',desc:'กู้ธนาคาร 1,000,000 (ดอกเบี้ย 6%/ปี)',cash:1000000,ar:0,inv:0,eq:0,ap:0,acc:0,loan:1000000,cap:0,pf:0,note:'A↑ = L↑'},
+    {no:'(2)',desc:'ซื้ออุปกรณ์เงินสด 1,200,000 (อายุ 5 ปี)',cash:-1200000,ar:0,inv:0,eq:1200000,ap:0,acc:0,loan:0,cap:0,pf:0,note:'A สลับตัว รวมเท่าเดิม'},
+    {no:'(3ก)',desc:'ซื้อสินค้าเงินเชื่อ 1,000,000',cash:0,ar:0,inv:1000000,eq:0,ap:1000000,acc:0,loan:0,cap:0,pf:0,note:'A↑ = L↑'},
+    {no:'(3ข)',desc:'จ่ายชำระเจ้าหนี้ระหว่างปี 500,000',cash:-500000,ar:0,inv:0,eq:0,ap:-500000,acc:0,loan:0,cap:0,pf:0,note:'A↓ = L↓'},
+    {no:'(4ก)',desc:'ขายเชื่อ 1,500,000',cash:0,ar:1500000,inv:0,eq:0,ap:0,acc:0,loan:0,cap:0,pf:1500000,note:'A↑ = E↑ (รายได้)'},
+    {no:'(4ข)',desc:'ต้นทุนขาย 800,000',cash:0,ar:0,inv:-800000,eq:0,ap:0,acc:0,loan:0,cap:0,pf:-800000,note:'A↓ = E↓ (คชจ.)'},
+    {no:'(5)',desc:'รับชำระจากลูกหนี้ 700,000',cash:700000,ar:-700000,inv:0,eq:0,ap:0,acc:0,loan:0,cap:0,pf:0,note:'A สลับตัว'},
+    {no:'(6ก)',desc:'จ่ายเงินเดือน 150,000',cash:-150000,ar:0,inv:0,eq:0,ap:0,acc:0,loan:0,cap:0,pf:-150000,note:'A↓ = E↓'},
+    {no:'(6ข)',desc:'จ่ายค่าเช่า 120,000',cash:-120000,ar:0,inv:0,eq:0,ap:0,acc:0,loan:0,cap:0,pf:-120000,note:'A↓ = E↓'},
+    {no:'(7ก)',desc:'จ่ายดอกเบี้ย 1,000,000×6% = 60,000',cash:-60000,ar:0,inv:0,eq:0,ap:0,acc:0,loan:0,cap:0,pf:-60000,note:'A↓ = E↓'},
+    {no:'(7ข)',desc:'ค่าเสื่อมราคา 1,200,000÷5 = 240,000',cash:0,ar:0,inv:0,eq:-240000,ap:0,acc:0,loan:0,cap:0,pf:-240000,note:'A↓ = E↓ (ไม่ใช้เงินสด)'},
+    {no:'(8)',desc:'ภาษี 20% ค้างจ่าย 26,000',cash:0,ar:0,inv:0,eq:0,ap:0,acc:26000,loan:0,cap:0,pf:-26000,note:'L↑ = E↓'},
+  ];
+  const sum=(k)=>rows.reduce((a,r)=>a+r[k],0);
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เคสแสนดี (จากสไลด์ Lecture 1-2) — โจทย์ต้นแบบของการบ้านสมใจ" description="บริษัท แสนดี จำกัด เริ่มกิจการ ม.ค. 25X1: ลงทุน 2,000,000 + กู้ 1,000,000 (6%) ซื้ออุปกรณ์ 1,200,000 (5 ปี) ซื้อสินค้าเชื่อ 1,000,000 จ่ายแล้ว 500,000 ขายเชื่อ 1,500,000 (ทุน 800,000) รับชำระ 700,000 เงินเดือน 150,000 ค่าเช่า 120,000 ภาษี 26,000 ค้างจ่าย"/>
+    <div className="sec-card">
+      <h3>ขั้นที่ 1: ลงตารางสมการบัญชี</h3>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th></th><th style={{minWidth:170}}>รายการ</th><th>เงินสด</th><th>ลูกหนี้</th><th>สินค้า</th><th>อุปกรณ์</th><th>เจ้าหนี้</th><th>ค้างจ่าย</th><th>เงินกู้</th><th>ทุน</th><th>กำไร</th><th>สมการ</th></tr></thead>
+        <tbody>
+          {rows.map((r,i)=><tr key={i}><td>{r.no}</td><td>{r.desc}</td>
+            {['cash','ar','inv','eq','ap','acc','loan','cap','pf'].map(k=> r[k]===0?<td key={k}></td>:<Num key={k} v={r[k]}/>)}
+            <td style={{fontSize:12}}>{r.note}</td></tr>)}
+          <tr className="total"><td></td><td>ณ วันสิ้นงวด</td>
+            {['cash','ar','inv','eq','ap','acc','loan','cap','pf'].map(k=><Num key={k} v={sum(k)}/>)}
+            <td>สมดุล ✓</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div className="kbox">✅ พิสูจน์: A = 1,670,000 + 800,000 + 200,000 + 960,000 = <b>3,630,000</b> | L + E = (500,000 + 26,000 + 1,000,000) + (2,000,000 + 104,000) = <b>3,630,000</b> ✓</div>
+    </div>
+    <Row gutter={[10,10]}>
+      <Col xs={24} lg={12}>
+        <div className="sec-card">
+          <h3>ขั้นที่ 2: งบกำไรขาดทุน (จากคอลัมน์ "กำไร")</h3>
+          <table className="fin"><tbody>
+            <tr><td>รายได้จากการขาย</td><td className="num">1,500,000</td></tr>
+            <tr><td>หัก ต้นทุนขาย</td><td className="neg">(800,000)</td></tr>
+            <tr className="total"><td>กำไรขั้นต้น</td><td className="num">700,000</td></tr>
+            <tr><td>หัก เงินเดือน 150,000 + ค่าเช่า 120,000 + ค่าเสื่อม 240,000</td><td className="neg">(510,000)</td></tr>
+            <tr className="total"><td>กำไรก่อนดอกเบี้ยและภาษี (EBIT)</td><td className="num">190,000</td></tr>
+            <tr><td>หัก ดอกเบี้ยจ่าย</td><td className="neg">(60,000)</td></tr>
+            <tr className="total"><td>กำไรก่อนภาษี</td><td className="num">130,000</td></tr>
+            <tr><td>หัก ภาษีเงินได้ 20%</td><td className="neg">(26,000)</td></tr>
+            <tr className="total"><td>กำไรสุทธิ</td><td className="num">104,000</td></tr>
+          </tbody></table>
+        </div>
+        <div className="sec-card">
+          <h3>ขั้นที่ 4: งบกระแสเงินสด (จากคอลัมน์ "เงินสด")</h3>
+          <table className="fin"><tbody>
+            <tr className="head"><td colSpan={2}>กิจกรรมดำเนินงาน</td></tr>
+            <tr><td>รับจากลูกค้า</td><td className="num">700,000</td></tr>
+            <tr><td>จ่ายเจ้าหนี้ค่าสินค้า</td><td className="neg">(500,000)</td></tr>
+            <tr><td>จ่ายเงินเดือน / ค่าเช่า / ดอกเบี้ย</td><td className="neg">(330,000)</td></tr>
+            <tr className="total"><td>รวมดำเนินงาน</td><td className="neg">(130,000)</td></tr>
+            <tr className="head"><td colSpan={2}>กิจกรรมลงทุน</td></tr>
+            <tr className="total"><td>ซื้ออุปกรณ์</td><td className="neg">(1,200,000)</td></tr>
+            <tr className="head"><td colSpan={2}>กิจกรรมจัดหาเงิน</td></tr>
+            <tr><td>รับจากออกหุ้นทุน</td><td className="num">2,000,000</td></tr>
+            <tr><td>รับจากกู้ยืมระยะยาว</td><td className="num">1,000,000</td></tr>
+            <tr className="total"><td>รวมจัดหาเงิน</td><td className="num">3,000,000</td></tr>
+            <tr className="total"><td>กระแสเงินสดสุทธิ (−130,000 −1,200,000 +3,000,000)</td><td className="num">1,670,000</td></tr>
+            <tr><td>+ เงินสดต้นงวด</td><td className="num">0</td></tr>
+            <tr className="total"><td>= เงินสดสิ้นงวด (ตรงกับงบฐานะการเงิน ✓)</td><td className="num">1,670,000</td></tr>
+          </tbody></table>
+        </div>
+      </Col>
+      <Col xs={24} lg={12}>
+        <div className="sec-card">
+          <h3>ขั้นที่ 3: งบแสดงฐานะการเงิน (จากแถว "สิ้นงวด")</h3>
+          <table className="fin"><tbody>
+            <tr className="head"><td colSpan={2}>สินทรัพย์หมุนเวียน</td></tr>
+            <tr><td>เงินสด</td><td className="num">1,670,000</td></tr>
+            <tr><td>ลูกหนี้การค้า (1,500,000 − 700,000)</td><td className="num">800,000</td></tr>
+            <tr><td>สินค้าคงเหลือ (1,000,000 − 800,000)</td><td className="num">200,000</td></tr>
+            <tr className="total"><td>รวมสินทรัพย์หมุนเวียน</td><td className="num">2,670,000</td></tr>
+            <tr className="head"><td colSpan={2}>สินทรัพย์ไม่หมุนเวียน</td></tr>
+            <tr><td>อุปกรณ์ (1,200,000 − ค่าเสื่อมสะสม 240,000)</td><td className="num">960,000</td></tr>
+            <tr className="total"><td>รวมสินทรัพย์</td><td className="num">3,630,000</td></tr>
+            <tr className="head"><td colSpan={2}>หนี้สินระยะสั้น</td></tr>
+            <tr><td>เจ้าหนี้การค้า (1,000,000 − 500,000)</td><td className="num">500,000</td></tr>
+            <tr><td>ภาษีค้างจ่าย</td><td className="num">26,000</td></tr>
+            <tr><td>เงินกู้ระยะยาวถึงกำหนดใน 1 ปี</td><td className="num">200,000</td></tr>
+            <tr className="total"><td>รวมหนี้สินระยะสั้น</td><td className="num">726,000</td></tr>
+            <tr className="head"><td colSpan={2}>หนี้สินระยะยาว</td></tr>
+            <tr><td>เงินกู้ยืมระยะยาว (1,000,000 − 200,000)</td><td className="num">800,000</td></tr>
+            <tr className="head"><td colSpan={2}>ส่วนของเจ้าของ</td></tr>
+            <tr><td>ทุน</td><td className="num">2,000,000</td></tr>
+            <tr><td>กำไรสะสม (0 + 104,000 − 0)</td><td className="num">104,000</td></tr>
+            <tr className="total"><td>รวมหนี้สินและส่วนของเจ้าของ</td><td className="num">3,630,000</td></tr>
+          </tbody></table>
+          <div className="warn">⚠️ จุดที่พลาดบ่อย: เงินกู้ 1,000,000 ต้องแยกส่วนที่ถึงกำหนดชำระใน 1 ปี (200,000) ไปเป็น "หนี้สินระยะสั้น" เหลือ 800,000 เป็นระยะยาว</div>
+        </div>
+        <div className="kbox">🔍 <b>ดูให้เห็น:</b> กำไรสุทธิ 104,000 แต่กระแสเงินสดดำเนินงาน −130,000 — กำไรกับเงินสดคนละเรื่องกัน! เพราะขายเชื่อยังเก็บเงินไม่ครบ (ค้าง 800,000) แต่ต้องจ่ายค่าสินค้า/ค่าใช้จ่ายไปก่อน นี่คือเหตุผลที่ธุรกิจกำไรดีก็เจ๊งได้ถ้าเงินสดหมด (ขาดสภาพคล่อง)</div>
+      </Col>
+    </Row>
+  </div>;
+}
+
+/* ============ TAB 3 : เคสสมใจ (การบ้านของเรา) ============ */
+function SomjaiTab(){
+  return <div>
+    <Alert type="success" showIcon style={{marginBottom:10}} message="เคสสมใจ = การบ้าน GA509 ที่คุณทำแล้ว (ตรงเฉลย 100%)" description="ใช้โครงเดียวกับแสนดีเป๊ะ ต่างแค่ตัวเลข: ลงทุน 1,000,000 + กู้ 1,000,000 (5%) อุปกรณ์ 800,000 (5 ปี) ซื้อเชื่อ 1,000,000 จ่ายแล้ว 700,000 ขายเชื่อ 1,500,000 (ทุน 800,000) รับชำระ 1,000,000 เงินเดือน 150,000 ค่าเช่า 120,000"/>
+    <Row gutter={[10,10]}>
+      <Col xs={24} lg={8}>
+        <div className="sec-card">
+          <h3>งบกำไรขาดทุน ปี 25X1</h3>
+          <table className="fin"><tbody>
+            <tr><td>รายได้จากการขาย</td><td className="num">1,500,000</td></tr>
+            <tr><td>หัก ต้นทุนขาย</td><td className="neg">(800,000)</td></tr>
+            <tr className="total"><td>กำไรขั้นต้น</td><td className="num">700,000</td></tr>
+            <tr><td>เงินเดือน</td><td className="neg">(150,000)</td></tr>
+            <tr><td>ค่าเช่า</td><td className="neg">(120,000)</td></tr>
+            <tr><td>ค่าเสื่อมราคา (800,000÷5)</td><td className="neg">(160,000)</td></tr>
+            <tr className="total"><td>EBIT</td><td className="num">270,000</td></tr>
+            <tr><td>ดอกเบี้ยจ่าย (1,000,000×5%)</td><td className="neg">(50,000)</td></tr>
+            <tr className="total"><td>กำไรก่อนภาษี</td><td className="num">220,000</td></tr>
+            <tr><td>ภาษี 20%</td><td className="neg">(44,000)</td></tr>
+            <tr className="total"><td>กำไรสุทธิ</td><td className="num">176,000</td></tr>
+          </tbody></table>
+        </div>
+      </Col>
+      <Col xs={24} lg={8}>
+        <div className="sec-card">
+          <h3>งบฐานะการเงิน ณ 31 ธ.ค. 25X1</h3>
+          <table className="fin"><tbody>
+            <tr><td>เงินสด</td><td className="num">1,180,000</td></tr>
+            <tr><td>ลูกหนี้การค้า</td><td className="num">500,000</td></tr>
+            <tr><td>สินค้าคงเหลือ</td><td className="num">200,000</td></tr>
+            <tr><td>อุปกรณ์ (สุทธิ)</td><td className="num">640,000</td></tr>
+            <tr className="total"><td>รวมสินทรัพย์</td><td className="num">2,520,000</td></tr>
+            <tr><td>เจ้าหนี้การค้า</td><td className="num">300,000</td></tr>
+            <tr><td>ภาษีค้างจ่าย</td><td className="num">44,000</td></tr>
+            <tr><td>เงินกู้ระยะยาว</td><td className="num">1,000,000</td></tr>
+            <tr><td>ทุนหุ้นสามัญ</td><td className="num">1,000,000</td></tr>
+            <tr><td>กำไรสะสม</td><td className="num">176,000</td></tr>
+            <tr className="total"><td>รวมหนี้สิน+ส่วนของเจ้าของ</td><td className="num">2,520,000</td></tr>
+          </tbody></table>
+        </div>
+      </Col>
+      <Col xs={24} lg={8}>
+        <div className="sec-card">
+          <h3>งบกระแสเงินสด ปี 25X1</h3>
+          <table className="fin"><tbody>
+            <tr className="head"><td colSpan={2}>ดำเนินงาน</td></tr>
+            <tr><td>รับจากลูกค้า</td><td className="num">1,000,000</td></tr>
+            <tr><td>จ่ายเจ้าหนี้</td><td className="neg">(700,000)</td></tr>
+            <tr><td>เงินเดือน/ค่าเช่า/ดอกเบี้ย</td><td className="neg">(320,000)</td></tr>
+            <tr className="total"><td>รวม</td><td className="neg">(20,000)</td></tr>
+            <tr className="head"><td colSpan={2}>ลงทุน</td></tr>
+            <tr className="total"><td>ซื้ออุปกรณ์</td><td className="neg">(800,000)</td></tr>
+            <tr className="head"><td colSpan={2}>จัดหาเงิน</td></tr>
+            <tr><td>ออกหุ้น + กู้ยืม</td><td className="num">2,000,000</td></tr>
+            <tr className="total"><td>เงินสดสุทธิ</td><td className="num">1,180,000</td></tr>
+            <tr className="total"><td>เงินสดสิ้นงวด ✓</td><td className="num">1,180,000</td></tr>
+          </tbody></table>
+        </div>
+      </Col>
+    </Row>
+    <div className="sec-card">
+      <h3>🔍 อ่านให้เป็น: 5 คำถามที่งบชุดนี้ตอบได้</h3>
+      <Collapse items={[
+        {key:'1',label:'① บริษัทมั่งคั่งแค่ไหน?',children:<div>สินทรัพย์ 2,520,000 หนี้สิน 1,344,000 → สินทรัพย์สุทธิ (ส่วนของเจ้าของ) 1,176,000 — เกินครึ่งของสินทรัพย์เป็นของเจ้าของ ฐานะยังแข็งแรง</div>},
+        {key:'2',label:'② ปีนี้ทำกำไรดีไหม?',children:<div>กำไรสุทธิ 176,000 จากยอดขาย 1,500,000 → อัตรากำไรสุทธิ 11.7% และกำไรขั้นต้น 46.7% — ขายของได้กำไรดี แต่ค่าใช้จ่ายดำเนินงาน (430,000) กินไปมาก</div>},
+        {key:'3',label:'③ ทำไมกำไร 176,000 แต่เงินสดจากดำเนินงานติดลบ 20,000?',children:<div>ขายเชื่อ 1,500,000 เก็บเงินได้แค่ 1,000,000 (ค้าง 500,000) + มีสินค้าจมสต๊อก 200,000 + ค่าเสื่อม 160,000 กับภาษี 44,000 เป็นค่าใช้จ่ายที่ยังไม่จ่ายเงินสด — เกณฑ์คงค้างทำให้กำไรกับเงินสดต่างกัน</div>},
+        {key:'4',label:'④ เงินสด 1,180,000 มาจากไหน?',children:<div>เกือบทั้งหมดมาจากกิจกรรมจัดหาเงิน (+2,000,000) ไม่ใช่จากธุรกิจ (−20,000) — ปีแรกแบบนี้ปกติ แต่ถ้าหลายปีติดกันแบบนี้ = ธุรกิจเลี้ยงตัวเองไม่ได้</div>},
+        {key:'5',label:'⑤ กู้มากไปไหม?',children:<div>หนี้สิน 1,344,000 ต่อส่วนของเจ้าของ 1,176,000 → D/E ≈ 1.14 เท่า และมีภาระดอกเบี้ยปีละ 50,000 ขณะที่ EBIT 270,000 → จ่ายดอกเบี้ยได้สบาย (5.4 เท่า)</div>},
+      ]}/>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : ส่วนของผู้ถือหุ้น ============ */
+function EquityTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>ส่วนของเจ้าของ เรียกต่างกันตามประเภทกิจการ</h3>
+      <table className="fin">
+        <thead><tr><th>ประเภทกิจการ</th><th>ชื่อเรียก</th></tr></thead>
+        <tbody>
+          <tr><td>เจ้าของคนเดียว</td><td>ส่วนของเจ้าของ (Owner's Equity)</td></tr>
+          <tr><td>ห้างหุ้นส่วน</td><td>ส่วนของผู้เป็นหุ้นส่วน (Partners' Equity)</td></tr>
+          <tr><td>บริษัทจำกัด</td><td><span className="hl">ส่วนของผู้ถือหุ้น (Stockholders' Equity)</span></td></tr>
+        </tbody>
+      </table>
+      <table className="fin" style={{marginTop:10}}>
+        <thead><tr><th>บริษัทจำกัด (บจก.)</th><th>บริษัทมหาชนจำกัด (บมจ.)</th></tr></thead>
+        <tbody>
+          <tr><td>ตั้งตามประมวลกฎหมายแพ่งและพาณิชย์</td><td>ตั้งตาม พรบ.บริษัทมหาชนฯ พ.ศ. 2535</td></tr>
+          <tr><td>ผู้ร่วมจัดตั้ง 2 คนขึ้นไป</td><td>ผู้ถือหุ้น 15 คนขึ้นไป</td></tr>
+          <tr><td>ห้ามเสนอขายหุ้นต่อประชาชนทั่วไป</td><td>เสนอขายหุ้นต่อประชาชนได้ (IPO)</td></tr>
+          <tr><td>ชำระค่าหุ้นเป็นงวดได้ งวดแรกไม่น้อยกว่า 25%</td><td>ต้องชำระค่าหุ้นเต็มมูลค่าครั้งเดียว</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>หุ้นสามัญ vs หุ้นบุริมสิทธิ</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="หุ้นสามัญ (Common Shares)" style={{height:'100%',background:'#eef3fa'}}>
+          หุ้นหลักที่ต้องมี — เจ้าของบริษัทตัวจริง<br/>① มีสิทธิออกเสียงเลือกกรรมการ<br/>② ได้เงินปันผลเมื่อประกาศจ่าย<br/>③ ส่วนได้เสีย<b>อันดับสุดท้าย</b> (เลิกกิจการได้เงินคืนหลังสุด)<br/>④ มีสิทธิซื้อหุ้นออกใหม่เมื่อเพิ่มทุน</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="หุ้นบุริมสิทธิ (Preferred Shares)" style={{height:'100%',background:'#fbf3ec'}}>
+          มีสิทธิพิเศษแต่ไม่ได้บริหาร<br/>① <b>ไม่มีสิทธิออกเสียง</b> (หรือน้อยกว่า)<br/>② ได้ปันผล<b>ก่อน</b>หุ้นสามัญ (ตามอัตรากำหนด เช่น 8%)<br/>③ เลิกกิจการได้คืนทุน<b>ก่อน</b>หุ้นสามัญ<br/>④ อาจแปลงเป็นหุ้นสามัญได้ถ้าระบุไว้</Card></Col>
+      </Row>
+      <div className="kbox">🧠 จำง่ายๆ: สามัญ = "เสียงดังแต่คิวท้าย" | บุริมสิทธิ = "เงียบแต่คิวหน้า"</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.3</span>การออกจำหน่ายหุ้น — 3 กรณี</h3>
+      <p>บันทึก "ทุนหุ้น" ด้วย<b>ราคาตามมูลค่า (Par)</b> เสมอ ส่วนต่างแยกบันทึก:</p>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={8}><div className="je"><b>① ขายเท่า Par</b><br/>Dr เงินสด XX<br/>&nbsp;&nbsp;Cr ทุนหุ้น XX</div></Col>
+        <Col xs={24} md={8}><div className="je"><b>② ขายสูงกว่า Par</b><br/>Dr เงินสด XX<br/>&nbsp;&nbsp;Cr ทุนหุ้น (par)<br/>&nbsp;&nbsp;Cr <span className="hl">ส่วนเกินมูลค่าหุ้น</span></div></Col>
+        <Col xs={24} md={8}><div className="je"><b>③ ขายต่ำกว่า Par</b><br/>Dr เงินสด XX<br/>Dr <span className="hl">ส่วนลดมูลค่าหุ้น</span><br/>&nbsp;&nbsp;Cr ทุนหุ้น (par)</div></Col>
+      </Row>
+      <div className="kbox">📌 <b>ตัวอย่างรุ่งเจริญ:</b> หุ้นสามัญ 10,000 หุ้น par 100 ขาย 150 → ทุนหุ้นสามัญ 1,000,000 + ส่วนเกินมูลค่าหุ้นสามัญ 500,000 | หุ้นบุริมสิทธิ 2,000 หุ้น par 100 ขาย 120 → ทุนหุ้นบุริมสิทธิ 200,000 + ส่วนเกิน 40,000</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.4</span>กำไรสะสมและการจ่ายเงินปันผล</h3>
+      <p><b>กำไรสะสม</b> จัดสรรได้ 2 ทาง: ① กันสำรอง (สำรองตามกฎหมาย ฯลฯ — ห้ามเอาไปจ่ายปันผล) ② จ่ายปันผลให้ผู้ถือหุ้น</p>
+      <div className="warn">⚖️ หลักเกณฑ์จ่ายปันผล: ต้องผ่านมติที่ประชุมใหญ่ผู้ถือหุ้น | จ่ายจาก<b>กำไรสะสมเท่านั้น</b> — มีขาดทุนสะสมห้ามจ่าย | ต้องกันสำรองตามกฎหมายก่อน | จ่ายระหว่างกาลได้ถ้ากำไรพอ</div>
+      <h4 style={{color:'#6b5322'}}>💵 ปันผลเงินสด — 2 วันสำคัญ</h4>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><div className="je"><b>วันประกาศจ่าย</b> (เกิดหนี้สินทันที)<br/>Dr กำไรสะสม XX<br/>&nbsp;&nbsp;Cr เงินปันผลค้างจ่าย XX</div></Col>
+        <Col xs={24} md={12}><div className="je"><b>วันจ่ายเงิน</b> (ล้างหนี้)<br/>Dr เงินปันผลค้างจ่าย XX<br/>&nbsp;&nbsp;Cr เงินสด XX</div></Col>
+      </Row>
+      <div className="kbox">📌 <b>ตัวอย่างเทเวศน์:</b> ประกาศจ่าย 300,000 มีหุ้นบุริมสิทธิ 8% (1,000,000) → บุริมสิทธิได้ก่อน 8% × 1,000,000 = <b>80,000</b> เหลือให้หุ้นสามัญ 300,000 − 80,000 = <b>220,000</b></div>
+      <h4 style={{color:'#6b5322'}}>📄 ปันผลเป็นหุ้น (Stock Dividends)</h4>
+      <p>ออกหุ้นเพิ่มให้ผู้ถือหุ้นแทนเงินสด — บันทึกด้วย <b>par value</b> เป็นการ "โอนกำไรสะสมขึ้นเป็นทุน" <span className="hl">ส่วนของผู้ถือหุ้นรวมไม่เปลี่ยน</span> และสัดส่วนถือหุ้นของแต่ละคนไม่เปลี่ยน</p>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><div className="je"><b>วันประกาศ</b><br/>Dr กำไรสะสม XX<br/>&nbsp;&nbsp;Cr หุ้นปันผลรอการจ่าย XX</div></Col>
+        <Col xs={24} md={12}><div className="je"><b>วันออกหุ้น</b><br/>Dr หุ้นปันผลรอการจ่าย XX<br/>&nbsp;&nbsp;Cr ทุนหุ้นสามัญ XX</div></Col>
+      </Row>
+      <div className="kbox">📌 <b>ตัวอย่างอัมรินทร์:</b> หุ้นชำระแล้ว 150,000 หุ้น par 10 ประกาศหุ้นปันผล 10% → ออกหุ้น 15,000 หุ้น × 10 = <b>150,000 บาท</b> โอนจากกำไรสะสม → ทุน | รวมส่วนของผู้ถือหุ้น <b>2,300,000 เท่าเดิม</b> (ทุนเพิ่มเป็น 1,650,000 กำไรสะสมยังไม่จัดสรรลดเหลือ 300,000)</div>
+      <div className="warn">⚠️ ข้อสอบชอบถาม: ปันผลเงินสด → สินทรัพย์ลด + ส่วนของผู้ถือหุ้นลด | หุ้นปันผล → <b>ไม่มีอะไรลด</b> แค่ย้ายช่องภายในส่วนของผู้ถือหุ้น (กำไรสะสม → ทุน)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.5</span>โครงสร้าง "ส่วนของผู้ถือหุ้น" ในงบฐานะการเงิน</h3>
+      <table className="fin"><tbody>
+        <tr className="head"><td colSpan={2}>ทุนเรือนหุ้น</td></tr>
+        <tr><td>&nbsp;&nbsp;ทุนจดทะเบียน (บอกไว้เฉยๆ ไม่รวมยอด)</td><td className="num">XX</td></tr>
+        <tr><td>&nbsp;&nbsp;ทุนที่ออกและเรียกชำระแล้ว (นับยอดจริง)</td><td className="num">XX</td></tr>
+        <tr><td>ส่วนเกิน (ส่วนต่ำ) มูลค่าหุ้น</td><td className="num">XX</td></tr>
+        <tr className="head"><td colSpan={2}>กำไรสะสม</td></tr>
+        <tr><td>&nbsp;&nbsp;จัดสรรแล้ว — สำรองตามกฎหมาย</td><td className="num">XX</td></tr>
+        <tr><td>&nbsp;&nbsp;ยังไม่ได้จัดสรร</td><td className="num">XX</td></tr>
+        <tr><td>องค์ประกอบอื่น (กำไรขาดทุนเบ็ดเสร็จอื่น OCI)</td><td className="num">XX</td></tr>
+        <tr className="total"><td>รวมส่วนของผู้ถือหุ้น</td><td className="num">XX</td></tr>
+      </tbody></table>
+      <div className="kbox">📊 <b>งบแสดงการเปลี่ยนแปลงส่วนของผู้ถือหุ้น</b>: สะพานเชื่อมส่วนของผู้ถือหุ้นต้นปี → ปลายปี แสดง ออกหุ้นเพิ่ม + กำไรสุทธิ − ปันผล ± OCI ± สำรองตามกฎหมาย ของแต่ละคอลัมน์ (ทุน / ส่วนเกิน / สำรอง / กำไรสะสม / OCI)</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : สูตร & แทนค่า ============ */
+function FormulaTab(){
+  const F = ({t,f,s})=> <div className="sec-card"><h3>{t}</h3><div className="je"><b>สูตร:</b> {f}</div><div className="kbox"><b>แทนค่า:</b> {s}</div></div>;
+  return <div>
+    <F t="① สมการบัญชี" f="สินทรัพย์ = หนี้สิน + ส่วนของเจ้าของ" s="สมใจ: 2,520,000 = 1,344,000 + 1,176,000 ✓ | แสนดี: 3,630,000 = 1,526,000 + 2,104,000 ✓"/>
+    <F t="② กำไรสะสมปลายงวด" f="กำไรสะสมต้นงวด + กำไรสุทธิ − เงินปันผล" s="สมใจปีแรก: 0 + 176,000 − 0 = 176,000 | แสนดี: 0 + 104,000 − 0 = 104,000"/>
+    <F t="③ บันไดกำไร" f="ขาย − COGS = GP → − คชจ.ดำเนินงาน = EBIT → − ดอกเบี้ย = EBT → − ภาษี = NP" s="สมใจ: 1,500,000 − 800,000 = 700,000 → − 430,000 = 270,000 → − 50,000 = 220,000 → − 44,000 = 176,000"/>
+    <F t="④ EBITDA" f="EBIT + ค่าเสื่อมราคาและค่าตัดจำหน่าย" s="สมใจ: 270,000 + 160,000 = 430,000 | แสนดี: 190,000 + 240,000 = 430,000 (บังเอิญเท่ากัน!)"/>
+    <F t="⑤ ค่าเสื่อมราคา (เส้นตรง)" f="ราคาทุน ÷ อายุการใช้งาน" s="สมใจ: 800,000 ÷ 5 = 160,000/ปี | แสนดี: 1,200,000 ÷ 5 = 240,000/ปี"/>
+    <F t="⑥ ดอกเบี้ยจ่ายต่อปี" f="เงินต้น × อัตราดอกเบี้ย" s="สมใจ: 1,000,000 × 5% = 50,000 | แสนดี: 1,000,000 × 6% = 60,000"/>
+    <F t="⑦ ภาษีเงินได้นิติบุคคล" f="กำไรก่อนภาษี × อัตราภาษี (20%)" s="สมใจ: 220,000 × 20% = 44,000 | แสนดี: 130,000 × 20% = 26,000"/>
+    <F t="⑧ เงินสดสิ้นงวด (งบกระแสเงินสด)" f="CF ดำเนินงาน + CF ลงทุน + CF จัดหาเงิน + เงินสดต้นงวด" s="สมใจ: (−20,000) + (−800,000) + 2,000,000 + 0 = 1,180,000 ✓ตรงงบฐานะ"/>
+    <F t="⑨ ปันผลหุ้นบุริมสิทธิ" f="อัตราบุริมสิทธิ × ทุนหุ้นบุริมสิทธิชำระแล้ว (ที่เหลือเป็นของหุ้นสามัญ)" s="เทเวศน์: 8% × 1,000,000 = 80,000 → หุ้นสามัญได้ 300,000 − 80,000 = 220,000"/>
+    <F t="⑩ หุ้นปันผล" f="จำนวนหุ้นชำระแล้ว × อัตราหุ้นปันผล × par" s="อัมรินทร์: 150,000 หุ้น × 10% × 10 บาท = 150,000 (โอนกำไรสะสม→ทุน รวมไม่เปลี่ยน)"/>
+    <F t="⑪ ลูกหนี้การค้าปลายงวด" f="ลูกหนี้ต้นงวด + ขายเชื่อ − เงินที่เก็บได้" s="สมใจ: 0 + 1,500,000 − 1,000,000 = 500,000"/>
+    <F t="⑫ สินค้าคงเหลือปลายงวด" f="สินค้าต้นงวด + ซื้อ − ต้นทุนขาย" s="สมใจ: 0 + 1,000,000 − 800,000 = 200,000"/>
+  </div>;
+}
+
+/* ============ TAB 6 : Flashcards ============ */
+const CARDS = [
+  {q:'งบแสดงฐานะการเงิน บอกอะไร?',a:'ฐานะการเงิน ณ วันใดวันหนึ่ง ("ภาพถ่าย") — สินทรัพย์ = หนี้สิน + ส่วนของเจ้าของ'},
+  {q:'งบกำไรขาดทุน บอกอะไร?',a:'ผลการดำเนินงานตลอดงวด ("วิดีโอ") — กำไร = รายได้ − ค่าใช้จ่าย'},
+  {q:'งบกระแสเงินสด แบ่งเป็นกี่กิจกรรม อะไรบ้าง?',a:'3 กิจกรรม: ดำเนินงาน (ค้าขายปกติ) / ลงทุน (ซื้อขายสินทรัพย์ระยะยาว) / จัดหาเงิน (หุ้น เงินกู้ ปันผล)'},
+  {q:'ชุดงบการเงินสมบูรณ์ตาม IAS 1 มีอะไรบ้าง?',a:'5 รายการ: งบฐานะการเงิน, งบกำไรขาดทุน(เบ็ดเสร็จ), งบแสดงการเปลี่ยนแปลงส่วนของผู้ถือหุ้น, งบกระแสเงินสด, หมายเหตุประกอบงบ'},
+  {q:'สินทรัพย์หมุนเวียน ต่างจากไม่หมุนเวียนอย่างไร?',a:'หมุนเวียน = ได้ประโยชน์ภายใน 1 ปี (เงินสด ลูกหนี้ สินค้า) | ไม่หมุนเวียน = เกิน 1 ปี (ที่ดิน อาคาร อุปกรณ์)'},
+  {q:'เกณฑ์คงค้าง (Accrual Basis) คืออะไร?',a:'รับรู้รายได้/ค่าใช้จ่ายเมื่อธุรกรรมเกิดขึ้น ไม่ใช่เมื่อรับ-จ่ายเงินสด — ใช้กับงบฐานะการเงินและงบกำไรขาดทุน'},
+  {q:'ขายสินค้าเป็นเงินเชื่อ กระทบกำไรและเงินสดอย่างไร?',a:'กำไรเพิ่ม (รับรู้รายได้แล้ว) แต่เงินสดไม่กระทบ (ยังไม่ได้เงิน) — บันทึกเป็นลูกหนี้การค้า'},
+  {q:'ค่าเสื่อมราคา ใช้เงินสดไหม?',a:'ไม่ใช้! เป็นค่าใช้จ่ายทางบัญชีที่ทยอยตัดต้นทุนอุปกรณ์ตามอายุใช้งาน เงินสดจ่ายไปแล้วตอนซื้อ'},
+  {q:'Matching Concept คืออะไร?',a:'ค่าใช้จ่ายต้องบันทึกงวดเดียวกับรายได้ที่เกี่ยวข้อง เช่น ต้นทุนขายบันทึกพร้อมรายได้ขาย'},
+  {q:'กำไรขั้นต้น (GP) คำนวณอย่างไร?',a:'รายได้จากการขาย − ต้นทุนขาย (COGS) — วัดว่าขายของกำไรดีแค่ไหน'},
+  {q:'EBIT คืออะไร?',a:'กำไรก่อนดอกเบี้ยและภาษี = GP − ค่าใช้จ่ายดำเนินงาน — วัดผลธุรกิจล้วนๆ ไม่รวมโครงสร้างเงินทุน'},
+  {q:'EBITDA คำนวณอย่างไร?',a:'EBIT + ค่าเสื่อมราคาและค่าตัดจำหน่าย — ประมาณเงินสดที่ธุรกิจสร้างได้'},
+  {q:'กำไรสะสม (Retained Earnings) คืออะไร?',a:'กำไรที่สะสมในกิจการหลังหักปันผล: ต้นงวด + กำไรปีนี้ − ปันผล = ปลายงวด'},
+  {q:'สมการบัญชีขยายเต็มรูปคือ?',a:'A = L + ทุน + กำไรสะสมต้นงวด + รายได้ − ค่าใช้จ่าย − เงินปันผล (ครบ 5 หมวดบัญชี)'},
+  {q:'Permanent vs Temporary accounts?',a:'Permanent: สินทรัพย์ หนี้สิน ทุน — ยกยอดไปปีหน้า | Temporary: รายได้ ค่าใช้จ่าย ปันผล — ปิดเข้ากำไรสะสมทุกสิ้นปี'},
+  {q:'เดบิต เครดิต อยู่ด้านไหน?',a:'เดบิต (Dr) = ซ้าย | เครดิต (Cr) = ขวา และ Dr = Cr เสมอ (ระบบบัญชีคู่)'},
+  {q:'ดอกเบี้ยจ่าย อยู่กิจกรรมไหนของงบกระแสเงินสด?',a:'ดำเนินงาน (Operating) — แต่จ่ายคืนเงินต้นเงินกู้อยู่กิจกรรมจัดหาเงิน'},
+  {q:'ซื้ออุปกรณ์เงินสด อยู่กิจกรรมไหน?',a:'ลงทุน (Investing)'},
+  {q:'รับเงินจากการออกหุ้น/กู้ยืม อยู่กิจกรรมไหน?',a:'จัดหาเงิน (Financing)'},
+  {q:'งบไหนอธิบายการเปลี่ยนแปลง "เงินสด" ระหว่างสองงบดุล?',a:'งบกระแสเงินสด | ส่วนงบกำไรขาดทุนอธิบายการเปลี่ยนแปลง "ส่วนของเจ้าของ" (ผ่านกำไรสะสม)'},
+  {q:'ส่วนของเจ้าของ เรียกว่าอะไรในบริษัทจำกัด?',a:'ส่วนของผู้ถือหุ้น (Stockholders’ Equity) — ห้างหุ้นส่วนเรียก Partners’ Equity'},
+  {q:'บจก. กับ บมจ. ต่างกันเรื่องการขายหุ้นอย่างไร?',a:'บจก. ห้ามขายหุ้นต่อประชาชน (ผู้ก่อตั้ง 2+ คน) | บมจ. ขายต่อประชาชนได้ (ผู้ถือหุ้น 15+ คน) ตาม พรบ.มหาชน 2535'},
+  {q:'สิทธิของผู้ถือหุ้นสามัญ 4 ข้อ?',a:'① ออกเสียงเลือกกรรมการ ② รับปันผลเมื่อประกาศ ③ ส่วนได้เสียอันดับสุดท้าย ④ สิทธิซื้อหุ้นออกใหม่'},
+  {q:'หุ้นบุริมสิทธิได้อะไร "ก่อน" หุ้นสามัญ?',a:'ได้เงินปันผลก่อน และได้คืนทุนก่อนเมื่อเลิกกิจการ — แต่ไม่มีสิทธิออกเสียงบริหาร'},
+  {q:'ขายหุ้นสูงกว่า par บันทึกส่วนต่างว่าอะไร?',a:'"ส่วนเกินมูลค่าหุ้น" (Additional Paid-in Capital) — ทุนหุ้นบันทึกที่ par เสมอ'},
+  {q:'วันประกาศจ่ายปันผลเงินสด บันทึกอย่างไร?',a:'Dr กำไรสะสม / Cr เงินปันผลค้างจ่าย (เกิดหนี้สินทันทีตั้งแต่ประกาศ)'},
+  {q:'จ่ายปันผลได้จากแหล่งไหนเท่านั้น?',a:'กำไรสะสมเท่านั้น — ถ้ามีขาดทุนสะสมห้ามจ่าย ต้องล้างขาดทุนก่อน และต้องกันสำรองตามกฎหมายก่อน'},
+  {q:'หุ้นปันผล ทำให้ส่วนของผู้ถือหุ้นรวมเปลี่ยนไหม?',a:'ไม่เปลี่ยน! แค่โอนกำไรสะสม → ทุนหุ้น (บันทึกด้วย par) จำนวนหุ้นเพิ่มแต่สัดส่วนถือหุ้นเท่าเดิม'},
+  {q:'เงินปันผลหุ้นบุริมสิทธิ 8% ทุน 1,000,000 ประกาศจ่ายรวม 300,000 — สามัญได้เท่าไร?',a:'บุริมสิทธิ: 80,000 (8%×1,000,000) → สามัญ: 220,000'},
+  {q:'สำรองตามกฎหมาย เอาไปจ่ายปันผลได้ไหม?',a:'ไม่ได้ — เป็นกำไรสะสมที่จัดสรรแล้ว กันไว้ตามวัตถุประสงค์ ห้ามนำมาจ่ายปันผล'},
+];
+function FlashTab(){
+  const [order,setOrder] = useState(CARDS.map((_,i)=>i));
+  const [flipped,setFlipped] = useState({});
+  const [score,setScore] = useState({know:0,dunno:0});
+  const shuffle=()=>{ setOrder([...order].sort(()=>Math.random()-.5)); setFlipped({}); setScore({know:0,dunno:0}); };
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#8a6d3b'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#8a6d3b"/>
+      <span style={{fontSize:12.5,color:'#7a6a4a'}}>แตะการ์ดเพื่อพลิกดูคำตอบ</span>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅ รู้แล้ว</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌ ทวนอีก</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ TAB 7 : การ์ดจำด่วน ============ */
+function QuickTab(){
+  const cards = [
+    {c:'#5c4a32',t:'📷🎬💧 สามงบสามภาพ',d:'งบฐานะ = ภาพถ่าย (ณ วันที่...) | งบกำไรขาดทุน = วิดีโอ (สำหรับปี...) | งบกระแสเงินสด = สมุดเงินเข้าออก — เจอคำว่า "ณ วันที่" = งบฐานะเท่านั้น!'},
+    {c:'#4a7c46',t:'🪜 บันไดกำไร "ขาย-ทุน-บริหาร-ดอก-ภาษี"',d:'ขาย − COGS = GP | − คชจ.บริหาร = EBIT | − ดอกเบี้ย = EBT | − ภาษี = NP … EBITDA = EBIT + ค่าเสื่อม (D มาจาก Depreciation)'},
+    {c:'#356487',t:'💧 ด-ล-จ (จำ 3 กิจกรรม)',d:'ดำเนินงาน = ค้าขาย+จ่ายดอกเบี้ย+ภาษี | ลงทุน = ซื้อขายเครื่องจักร/ที่ดิน | จัดหาเงิน = หุ้น+เงินกู้(เงินต้น)+ปันผลจ่าย'},
+    {c:'#8a5a2b',t:'⚖️ กำไร ≠ เงินสด',d:'ขายเชื่อ: กำไร↑ เงินสด− | เก็บหนี้: กำไร− เงินสด↑ | ค่าเสื่อม: กำไร↓ เงินสด− | กู้เงิน: กำไร− เงินสด↑ — เกณฑ์คงค้างคือต้นเหตุ'},
+    {c:'#7a4a68',t:'🔗 สะพานเชื่อมงบ',d:'กำไรสุทธิ (งบกำไรขาดทุน) → เข้ากำไรสะสม (งบฐานะ) | เงินสดสิ้นงวด (งบกระแสเงินสด) = เงินสด (งบฐานะ) | สองตัวนี้ต้องตรงกันเสมอ ใช้เช็คคำตอบ!'},
+    {c:'#356e6a',t:'👑 สามัญ vs บุริมสิทธิ',d:'สามัญ = เสียงดัง คิวท้าย (โหวตได้ รับเงินหลังสุด) | บุริมสิทธิ = เงียบ คิวหน้า (โหวตไม่ได้ ปันผล+คืนทุนก่อน) — ปันผล: จ่ายบุริมสิทธิตามอัตราก่อน เหลือค่อยให้สามัญ'},
+    {c:'#9c3d3d',t:'💸 ปันผล 2 แบบ',d:'เงินสด: สินทรัพย์↓ ส่วนผู้ถือหุ้น↓ (Dr กำไรสะสม/Cr ปันผลค้างจ่าย → จ่ายจริงค่อยล้าง) | หุ้นปันผล: รวมไม่เปลี่ยน! โอนกำไรสะสม→ทุนด้วย par'},
+    {c:'#5a5a7a',t:'🏛️ ทุนหุ้นบันทึกที่ Par เสมอ',d:'ขายแพงกว่า par → ส่วนเกินมูลค่าหุ้น | ถูกกว่า → ส่วนลดมูลค่าหุ้น | จำ: "ทุน = par, ส่วนต่างแยกบัญชี"'},
+    {c:'#6b7a3a',t:'🔒 เงื่อนไขปันผล',d:'① มติที่ประชุมผู้ถือหุ้น ② จ่ายจากกำไรสะสมเท่านั้น ③ มีขาดทุนสะสม = ห้ามจ่าย ④ กันสำรองตามกฎหมายก่อน — สำรองฯ ห้ามเอาไปจ่ายปันผล'},
+    {c:'#3a6b7a',t:'📐 สมการต้องสมดุลทุกบรรทัด',d:'ทุกรายการแตะอย่างน้อย 2 ช่องเสมอ: A↑=L↑ (กู้/ซื้อเชื่อ) | A↑=E↑ (ลงทุน/ขาย) | A↓=E↓ (จ่ายคชจ.) | A สลับใน A (เก็บหนี้/ซื้ออุปกรณ์สด) | L↑=E↓ (ภาษีค้างจ่าย)'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ TAB 8 : เฉลยข้อสอบ GA510 (สยามรีเทล) ============ */
+function ExamTab(){
+  const Step = ({no,title,children})=> <div className="sec-card"><h3><span className="tag-step">STEP {no}</span>{title}</h3>{children}</div>;
+  return <div>
+    <Alert type="warning" showIcon style={{marginBottom:10}} message="ข้อสอบปลายภาค GA510 ภาคฤดูร้อน 2569 (20 คะแนน) — บริษัท สยามรีเทล จำกัด" description="กิจการซื้อมาขายไป ดำเนินมาหลายปี (มียอดยกมา!) ให้ 1) วิเคราะห์รายการปี 25X4 ด้วยสมการบัญชี 2) ทำงบฐานะการเงิน + งบกำไรขาดทุน 3) อธิบายฐานะการเงินและผลการดำเนินงาน"/>
+
+    <Step no="0" title="ตั้งหลักก่อน: อ่านยอดยกมาให้ขาด (จุดต่างจากเคสแสนดี/สมใจ!)">
+      <p>แสนดีและสมใจเป็นกิจการ "ปีแรก" ทุกบัญชีเริ่มที่ 0 แต่สยามรีเทล<b>ดำเนินมาหลายปี</b> จึงมียอดยกมา ณ 31 ธ.ค. 25X3 ต้องเอามาตั้งต้นเป็นบรรทัดแรกของตาราง:</p>
+      <table className="fin">
+        <thead><tr><th>สินทรัพย์</th><th>จำนวน</th><th>หนี้สิน + ส่วนของผู้ถือหุ้น</th><th>จำนวน</th></tr></thead>
+        <tbody>
+          <tr><td>เงินสด</td><td className="num">400,000</td><td>เจ้าหนี้การค้า</td><td className="num">100,000</td></tr>
+          <tr><td>ลูกหนี้การค้า</td><td className="num">80,000</td><td>ทุนหุ้นสามัญ</td><td className="num">1,000,000</td></tr>
+          <tr><td>สินค้าคงเหลือ</td><td className="num">120,000</td><td>กำไรสะสม</td><td className="num">100,000</td></tr>
+          <tr><td>อุปกรณ์ (สุทธิ)</td><td className="num">600,000</td><td></td><td></td></tr>
+          <tr className="total"><td>รวม A</td><td className="num">1,200,000</td><td>รวม L + E</td><td className="num">1,200,000</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">🔍 <b>ถอดรหัสอุปกรณ์ 600,000:</b> โจทย์บอกซื้อ 1 ม.ค. 25X3 ราคาทุน 750,000 อายุ 5 ปี → ค่าเสื่อมปีละ 750,000 ÷ 5 = 150,000 → ผ่านมา 1 ปี (ปี 25X3) เหลือมูลค่าตามบัญชี 750,000 − 150,000 = 600,000 ✓ ตรงยอดยกมา — และบอกใบ้ว่า<b>ปี 25X4 ต้องคิดค่าเสื่อมเครื่องนี้ต่ออีก 150,000</b></div>
+      <div className="warn">⚠️ เช็คสมการก่อนเริ่มเสมอ: 1,200,000 = 1,200,000 ถ้ายอดยกมาไม่ดุล แปลว่าอ่านโจทย์ตกไปแล้วหนึ่งบัญชี</div>
+    </Step>
+
+    <Step no="1" title="วิเคราะห์ทีละรายการ (ข้อ 1) — คิดทีละขั้น">
+      <Collapse accordion items={[
+        {key:'1',label:'(1) ออกหุ้นเพิ่ม 10,000 หุ้น par 100 ขายหุ้นละ 120 — ระวังส่วนเกินมูลค่าหุ้น!',children:<div>
+          <p><b>คิดขั้นที่ 1:</b> เงินสดรับจริง = 10,000 × 120 = <span className="hl">1,200,000</span></p>
+          <p><b>คิดขั้นที่ 2:</b> หลักจาก Class 3 — "ทุนหุ้นบันทึกที่ par เสมอ ส่วนต่างแยกบัญชี" → ทุนหุ้นสามัญ = 10,000 × 100 = 1,000,000 | ส่วนเกินมูลค่าหุ้น = 10,000 × (120−100) = 200,000</p>
+          <div className="je">เงินสด (A) +1,200,000 = ทุนหุ้นสามัญ (E) +1,000,000 + ส่วนเกินมูลค่าหุ้น (E) +200,000</div>
+          <div className="warn">กับดัก: ถ้าลงทุนหุ้นสามัญ 1,200,000 ทั้งก้อน = ผิด (ลืมแยก premium)</div></div>},
+        {key:'2',label:'(2) ซื้ออุปกรณ์เงินสด 500,000 อายุ 5 ปี',children:<div>
+          <p>สินทรัพย์สลับตัวกัน รวม A ไม่เปลี่ยน — <b>ยังไม่เป็นค่าใช้จ่าย!</b> (จะทยอยเป็นค่าเสื่อมปีละ 500,000 ÷ 5 = 100,000 ในรายการ 7)</p>
+          <div className="je">อุปกรณ์ (A) +500,000 | เงินสด (A) −500,000</div></div>},
+        {key:'3',label:'(3) กู้ 1,000,000 วันที่ 1 เม.ย. ดอกเบี้ย 5% — วันที่คือกุญแจ!',children:<div>
+          <p><b>ตอนกู้:</b> เงินสด (A) +1,000,000 = เงินกู้ยืม (L) +1,000,000 (การกู้ไม่ใช่รายได้!)</p>
+          <p><b>จุดสำคัญที่สุดของข้อสอบชุดนี้:</b> กู้ 1 เม.ย. ไม่ใช่ต้นปี → ปีนี้มีดอกเบี้ยแค่ เม.ย.–ธ.ค. = <span className="hl">9 เดือน</span></p>
+          <div className="je">ดอกเบี้ยปี 25X4 = 1,000,000 × 5% × 9/12 = <b>37,500</b> (ไม่ใช่ 50,000!)</div>
+          <p>ข้อมูล "ชำระคืนงวดแรก 200,000 ในปี 25X5" ยังไม่บันทึกตอนนี้ แต่<b>เก็บไว้ใช้จัดหมวดงบฐานะการเงิน</b> (แยกเป็นหนี้สินระยะสั้น)</p></div>},
+        {key:'4',label:'(4) ซื้อสินค้าเชื่อ 1,200,000 / จ่ายเจ้าหนี้ 800,000 — สองรายการแยกกัน',children:<div>
+          <div className="je">(4ก) สินค้าคงเหลือ (A) +1,200,000 = เจ้าหนี้การค้า (L) +1,200,000<br/>(4ข) เงินสด (A) −800,000 = เจ้าหนี้การค้า (L) −800,000</div>
+          <p><b>เดินยอดเจ้าหนี้:</b> ยกมา 100,000 + ซื้อเชื่อ 1,200,000 − จ่าย 800,000 = <span className="hl">500,000</span> (อย่าลืมยอดยกมา!)</p></div>},
+        {key:'5',label:'(5) ขายเชื่อ 2,000,000 ทุน 1,000,000 เก็บเงินได้ 1,700,000 — สามรายการ',children:<div>
+          <div className="je">(5ก) ลูกหนี้ (A) +2,000,000 = กำไร (E) +2,000,000 — รับรู้รายได้เมื่อส่งมอบ (เกณฑ์คงค้าง)<br/>(5ข) สินค้า (A) −1,000,000 = กำไร (E) −1,000,000 — ต้นทุนขายคู่รายได้ (Matching)<br/>(5ค) เงินสด (A) +1,700,000 | ลูกหนี้ (A) −1,700,000 — เก็บหนี้ไม่กระทบกำไร</div>
+          <p><b>เดินยอดลูกหนี้:</b> 80,000 + 2,000,000 − 1,700,000 = <span className="hl">380,000</span><br/><b>เดินยอดสินค้า:</b> 120,000 + 1,200,000 − 1,000,000 = <span className="hl">320,000</span></p></div>},
+        {key:'6',label:'(6) จ่ายเงินเดือน 240,000 ค่าเช่า 180,000 ค่าน้ำไฟ 50,000',children:<div>
+          <div className="je">เงินสด (A) −470,000 = กำไร (E) −470,000 (ค่าใช้จ่ายดำเนินงาน จ่ายสดทั้งหมด)</div></div>},
+        {key:'7',label:'(7) ดอกเบี้ย + ค่าเสื่อมราคา — ค่าเสื่อมมีสองก้อน!',children:<div>
+          <p><b>ดอกเบี้ย (จ่ายสดทุกสิ้นเดือน):</b> 37,500 ตามที่คิดในข้อ (3)</p>
+          <p><b>ค่าเสื่อมราคา ต้องนับเครื่องให้ครบ:</b></p>
+          <table className="fin"><tbody>
+            <tr><td>เครื่องเก่า (ซื้อปี 25X3)</td><td className="num">750,000 ÷ 5 = 150,000</td></tr>
+            <tr><td>เครื่องใหม่ (ซื้อ 1 ม.ค. 25X4 ใช้เต็มปี)</td><td className="num">500,000 ÷ 5 = 100,000</td></tr>
+            <tr className="total"><td>รวมค่าเสื่อมปี 25X4</td><td className="num">250,000</td></tr>
+          </tbody></table>
+          <div className="je">เงินสด (A) −37,500 = กำไร (E) −37,500<br/>อุปกรณ์สุทธิ (A) −250,000 = กำไร (E) −250,000 (ไม่ใช้เงินสด)</div>
+          <p><b>เดินยอดอุปกรณ์:</b> 600,000 + 500,000 − 250,000 = <span className="hl">850,000</span></p></div>},
+        {key:'8',label:'(8) บิลค่าน้ำไฟ ธ.ค. 5,000 ยังไม่จ่าย — เกณฑ์คงค้างล้วนๆ',children:<div>
+          <p>ค่าใช้จ่าย<b>เกิดแล้ว</b>ในปี 25X4 (ใช้ไฟเดือน ธ.ค.) แม้จ่ายเงิน ม.ค. 25X5 → ต้องบันทึกปีนี้</p>
+          <div className="je">ค่าใช้จ่ายค้างจ่าย (L) +5,000 = กำไร (E) −5,000</div>
+          <p>→ ค่าสาธารณูปโภคทั้งปีในงบกำไรขาดทุน = 50,000 + 5,000 = <span className="hl">55,000</span></p></div>},
+        {key:'9',label:'(9) ภาษี 20% — ต้องปิดกำไรก่อนภาษีให้ได้ก่อน',children:<div>
+          <p><b>ไล่บันไดกำไรทีละขั้น:</b></p>
+          <table className="fin"><tbody>
+            <tr><td>รายได้จากการขาย</td><td className="num">2,000,000</td></tr>
+            <tr><td>หัก ต้นทุนขาย</td><td className="neg">(1,000,000)</td></tr>
+            <tr className="total"><td>กำไรขั้นต้น</td><td className="num">1,000,000</td></tr>
+            <tr><td>หัก เงินเดือน 240,000 + ค่าเช่า 180,000 + ค่าน้ำไฟ 55,000 + ค่าเสื่อม 250,000</td><td className="neg">(725,000)</td></tr>
+            <tr className="total"><td>EBIT</td><td className="num">275,000</td></tr>
+            <tr><td>หัก ดอกเบี้ยจ่าย</td><td className="neg">(37,500)</td></tr>
+            <tr className="total"><td>กำไรก่อนภาษี</td><td className="num">237,500</td></tr>
+          </tbody></table>
+          <div className="je">ภาษี = 237,500 × 20% = <b>47,500</b> "กำหนดชำระปีถัดไป" → ยังไม่จ่ายเงินสด → ภาษีค้างจ่าย (L) +47,500 = กำไร (E) −47,500<br/>→ กำไรสุทธิ = 237,500 − 47,500 = <b>190,000</b></div></div>},
+        {key:'10',label:'(10) ประกาศปันผล 50% ของกำไรสุทธิ — ไม่ใช่ค่าใช้จ่าย!',children:<div>
+          <p>เงินปันผล = 50% × 190,000 = <span className="hl">95,000</span> จ่ายจริง ก.พ. 25X5</p>
+          <p><b>หลักจาก Class 3:</b> วันประกาศเกิดหนี้สินทันที (Dr กำไรสะสม / Cr เงินปันผลค้างจ่าย) — ปันผลลด<b>กำไรสะสม</b> ไม่ผ่านงบกำไรขาดทุน</p>
+          <div className="je">เงินปันผลค้างจ่าย (L) +95,000 = กำไรสะสม (E) −95,000</div>
+          <div className="warn">กับดัก 2 ชั้น: ① เอาปันผลไปหักเป็นค่าใช้จ่ายก่อนคิดภาษี = ผิด ② ลืมตั้งเงินปันผลค้างจ่ายในงบฐานะการเงิน = ผิด (ประกาศแล้วแม้ยังไม่จ่ายก็เป็นหนี้สิน)</div></div>},
+      ]}/>
+    </Step>
+
+    <Step no="2" title="ปิดยอดทุกบัญชี (เดินยอดจากยกมา + เข้า − ออก)">
+      <table className="fin">
+        <thead><tr><th>บัญชี</th><th>วิธีเดินยอด</th><th>ยอดสิ้นงวด</th></tr></thead>
+        <tbody>
+          <tr><td>เงินสด</td><td>400,000 +1,200,000 −500,000 +1,000,000 −800,000 +1,700,000 −470,000 −37,500</td><td className="num">2,492,500</td></tr>
+          <tr><td>ลูกหนี้การค้า</td><td>80,000 + 2,000,000 − 1,700,000</td><td className="num">380,000</td></tr>
+          <tr><td>สินค้าคงเหลือ</td><td>120,000 + 1,200,000 − 1,000,000</td><td className="num">320,000</td></tr>
+          <tr><td>อุปกรณ์ (สุทธิ)</td><td>600,000 + 500,000 − 250,000</td><td className="num">850,000</td></tr>
+          <tr className="total"><td>รวมสินทรัพย์</td><td></td><td className="num">4,042,500</td></tr>
+          <tr><td>เจ้าหนี้การค้า</td><td>100,000 + 1,200,000 − 800,000</td><td className="num">500,000</td></tr>
+          <tr><td>ค่าใช้จ่ายค้างจ่าย</td><td>ค่าน้ำไฟ 5,000 + ภาษี 47,500</td><td className="num">52,500</td></tr>
+          <tr><td>เงินปันผลค้างจ่าย</td><td>ประกาศแล้วยังไม่จ่าย</td><td className="num">95,000</td></tr>
+          <tr><td>เงินกู้ยืม</td><td>กู้ระหว่างปี</td><td className="num">1,000,000</td></tr>
+          <tr className="total"><td>รวมหนี้สิน</td><td></td><td className="num">1,647,500</td></tr>
+          <tr><td>ทุนหุ้นสามัญ</td><td>1,000,000 + 1,000,000 (ออกหุ้นเพิ่ม)</td><td className="num">2,000,000</td></tr>
+          <tr><td>ส่วนเกินมูลค่าหุ้น</td><td>10,000 หุ้น × 20</td><td className="num">200,000</td></tr>
+          <tr><td>กำไรสะสม</td><td>100,000 + กำไรสุทธิ 190,000 − ปันผล 95,000</td><td className="num">195,000</td></tr>
+          <tr className="total"><td>รวมส่วนของผู้ถือหุ้น</td><td></td><td className="num">2,395,000</td></tr>
+          <tr className="total"><td colSpan={2}>พิสูจน์: A 4,042,500 = L 1,647,500 + E 2,395,000</td><td className="num">สมดุล ✓</td></tr>
+        </tbody>
+      </table>
+    </Step>
+
+    <Step no="3" title="ประกอบงบฐานะการเงิน (ข้อ 2ก) — จุดชี้ขาดคือการจัดหมวด">
+      <Row gutter={[10,10]}>
+        <Col xs={24} lg={12}>
+          <table className="fin"><tbody>
+            <tr className="head"><td colSpan={2}>สินทรัพย์หมุนเวียน</td></tr>
+            <tr><td>เงินสด</td><td className="num">2,492,500</td></tr>
+            <tr><td>ลูกหนี้การค้า</td><td className="num">380,000</td></tr>
+            <tr><td>สินค้าคงเหลือ</td><td className="num">320,000</td></tr>
+            <tr className="total"><td>รวมสินทรัพย์หมุนเวียน</td><td className="num">3,192,500</td></tr>
+            <tr className="head"><td colSpan={2}>สินทรัพย์ไม่หมุนเวียน</td></tr>
+            <tr><td>อุปกรณ์ (ทุน 1,250,000 − ค่าเสื่อมสะสม 400,000)</td><td className="num">850,000</td></tr>
+            <tr className="total"><td>รวมสินทรัพย์</td><td className="num">4,042,500</td></tr>
+          </tbody></table>
+        </Col>
+        <Col xs={24} lg={12}>
+          <table className="fin"><tbody>
+            <tr className="head"><td colSpan={2}>หนี้สินระยะสั้น</td></tr>
+            <tr><td>เจ้าหนี้การค้า</td><td className="num">500,000</td></tr>
+            <tr><td>ค่าสาธารณูปโภคค้างจ่าย</td><td className="num">5,000</td></tr>
+            <tr><td>ภาษีเงินได้ค้างจ่าย</td><td className="num">47,500</td></tr>
+            <tr><td>เงินปันผลค้างจ่าย</td><td className="num">95,000</td></tr>
+            <tr><td><span className="hl">เงินกู้ระยะยาวถึงกำหนดใน 1 ปี</span></td><td className="num">200,000</td></tr>
+            <tr className="total"><td>รวมหนี้สินระยะสั้น</td><td className="num">847,500</td></tr>
+            <tr><td>เงินกู้ยืมระยะยาว (1,000,000 − 200,000)</td><td className="num">800,000</td></tr>
+            <tr className="head"><td colSpan={2}>ส่วนของผู้ถือหุ้น</td></tr>
+            <tr><td>ทุนหุ้นสามัญ</td><td className="num">2,000,000</td></tr>
+            <tr><td>ส่วนเกินมูลค่าหุ้นสามัญ</td><td className="num">200,000</td></tr>
+            <tr><td>กำไรสะสม</td><td className="num">195,000</td></tr>
+            <tr className="total"><td>รวมหนี้สินและส่วนของผู้ถือหุ้น</td><td className="num">4,042,500</td></tr>
+          </tbody></table>
+        </Col>
+      </Row>
+      <div className="warn">⚠️ 3 จุดเก็บคะแนนจัดหมวด: ① แยกเงินกู้ส่วนถึงกำหนด 1 ปี (200,000) มาไว้หนี้สินระยะสั้น ② เงินปันผลค้างจ่าย 95,000 เป็นหนี้สินระยะสั้น ③ อุปกรณ์แสดงสุทธิจากค่าเสื่อมสะสม (150,000 ปีก่อน + 250,000 ปีนี้ = 400,000)</div>
+    </Step>
+
+    <Step no="4" title="งบกำไรขาดทุน (ข้อ 2ข) — เรียงตามบันไดกำไรเสมอ">
+      <table className="fin"><tbody>
+        <tr><td>รายได้จากการขาย</td><td className="num">2,000,000</td><td>จาก (5ก) ขายเชื่อทั้งจำนวน — ไม่ใช่ 1,700,000 ที่เก็บเงินได้!</td></tr>
+        <tr><td>หัก ต้นทุนขาย</td><td className="neg">(1,000,000)</td><td>จาก (5ข)</td></tr>
+        <tr className="total"><td>กำไรขั้นต้น</td><td className="num">1,000,000</td><td>อัตรากำไรขั้นต้น 50%</td></tr>
+        <tr><td>เงินเดือน / ค่าเช่า / ค่าน้ำไฟ / ค่าเสื่อม</td><td className="neg">(725,000)</td><td>240,000+180,000+55,000+250,000</td></tr>
+        <tr className="total"><td>EBIT</td><td className="num">275,000</td><td></td></tr>
+        <tr><td>หัก ดอกเบี้ยจ่าย</td><td className="neg">(37,500)</td><td>9 เดือนเท่านั้น</td></tr>
+        <tr className="total"><td>กำไรก่อนภาษี</td><td className="num">237,500</td><td></td></tr>
+        <tr><td>หัก ภาษีเงินได้ 20%</td><td className="neg">(47,500)</td><td></td></tr>
+        <tr className="total"><td>กำไรสุทธิ</td><td className="num">190,000</td><td>อัตรากำไรสุทธิ 9.5%</td></tr>
+      </tbody></table>
+      <div className="kbox">🔗 เช็คความเชื่อมโยง: กำไรสุทธิ 190,000 → กำไรสะสม = 100,000 + 190,000 − ปันผล 95,000 = 195,000 ตรงกับงบฐานะการเงิน ✓ (ถ้าไม่ตรง แปลว่าคำนวณพลาดที่ไหนสักแห่ง)</div>
+    </Step>
+
+    <Step no="5" title="ข้อ 3: อธิบายฐานะการเงินและผลการดำเนินงาน (วิธีเขียนให้ได้คะแนน)">
+      <p>โครงการเขียน: <b>ตัวเลข → อัตราส่วน → แปลความ</b> อย่าเขียนลอยๆ ว่า "ดี" ต้องมีเลขรองรับ</p>
+      <table className="fin">
+        <thead><tr><th>ประเด็น</th><th>คำนวณ</th><th>แปลความ</th></tr></thead>
+        <tbody>
+          <tr><td>สภาพคล่อง</td><td className="num">CA 3,192,500 ÷ CL 847,500 = 3.77 เท่า</td><td>จ่ายหนี้ระยะสั้นได้สบาย เงินสดอย่างเดียวก็เกิน CL แล้ว</td></tr>
+          <tr><td>โครงสร้างหนี้</td><td className="num">D/E = 1,647,500 ÷ 2,395,000 = 0.69 เท่า</td><td>พึ่งทุนมากกว่าหนี้ ความเสี่ยงการเงินต่ำ</td></tr>
+          <tr><td>การทำกำไร</td><td className="num">GP 50% | NP 9.5%</td><td>ขายได้กำไรต่อหน่วยดี แต่ค่าใช้จ่ายบริหาร 725,000 กินกำไรมาก</td></tr>
+          <tr><td>ภาระดอกเบี้ย</td><td className="num">EBIT ÷ ดอกเบี้ย = 275,000 ÷ 37,500 = 7.3 เท่า</td><td>กำไรพอจ่ายดอกเบี้ยหลายเท่าตัว ไม่มีปัญหา</td></tr>
+          <tr><td>การเติบโต</td><td className="num">สินทรัพย์ 1,200,000 → 4,042,500</td><td>โตจากเพิ่มทุน 1,200,000 + กู้ 1,000,000 + กำไรสะสมเพิ่ม</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">✍️ ปิดท้ายด้วยข้อสังเกตเกณฑ์คงค้างเพื่อคะแนนเต็ม: กำไร 190,000 แต่ลูกหนี้ค้างเก็บ 380,000 + สินค้าจมสต๊อก 320,000 → กำไรไม่เท่าเงินสด อย่างไรก็ตามกิจการถือเงินสดสูงถึง 2,492,500 (61% ของสินทรัพย์) สภาพคล่องไม่ใช่ปัญหา</div>
+    </Step>
+
+    <div className="sec-card">
+      <h3>🎯 สรุปกับดัก 6 จุดของข้อสอบชุดนี้</h3>
+      <table className="fin">
+        <thead><tr><th>#</th><th>กับดัก</th><th>ทางถูก</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>ลืมยอดยกมา (เริ่มจาก 0 แบบเคสในห้อง)</td><td>ตั้งบรรทัดยกมาก่อน แล้วค่อยบวกรายการปีนี้</td></tr>
+          <tr><td>2</td><td>ลงทุนหุ้น 1,200,000 ก้อนเดียว</td><td>ทุน (par) 1,000,000 + ส่วนเกินมูลค่าหุ้น 200,000</td></tr>
+          <tr><td>3</td><td>ดอกเบี้ย 50,000 เต็มปี</td><td>กู้ 1 เม.ย. → 9 เดือน = 37,500</td></tr>
+          <tr><td>4</td><td>ค่าเสื่อมเครื่องใหม่อย่างเดียว 100,000</td><td>เก่า 150,000 + ใหม่ 100,000 = 250,000</td></tr>
+          <tr><td>5</td><td>ลืมค่าน้ำไฟค้างจ่าย 5,000</td><td>เกณฑ์คงค้าง: เกิดปีไหนลงปีนั้น → ค่าน้ำไฟรวม 55,000</td></tr>
+          <tr><td>6</td><td>ปันผลเป็นค่าใช้จ่าย / ลืมตั้งหนี้</td><td>ปันผลลดกำไรสะสม + ตั้งเงินปันผลค้างจ่าย 95,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>📖 อ่านงบการเงิน — GA509 Financial Accounting</h1>
+      <p>ทบทวนจากศูนย์: 3 งบหลัก → เคสแสนดี → เคสสมใจ (การบ้านของเรา) → ส่วนของผู้ถือหุ้น | อิงสไลด์ Lecture 1, 2 และ Class 3 ของ ผศ.ดร.จิตรัตน์</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'📚 สรุปปูพื้น',children:<SummaryTab/>},
+      {key:'2',label:'🏭 เคสแสนดี',children:<SaendeeTab/>},
+      {key:'3',label:'🏢 เคสสมใจ (HW)',children:<SomjaiTab/>},
+      {key:'4',label:'👥 ส่วนของผู้ถือหุ้น',children:<EquityTab/>},
+      {key:'8',label:'📝 เฉลยข้อสอบ GA510',children:<ExamTab/>},
+      {key:'5',label:'🧮 สูตร & แทนค่า',children:<FormulaTab/>},
+      {key:'6',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'7',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
