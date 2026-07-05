@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 การสอบบัญชี — ความเห็น & หลักฐาน (Class 2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f2f4f8; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#3d5a80,#5b7aa8); border-radius:14px; padding:22px 26px; color:#f0f5fb; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#f0f5fb; }
+  .hero p { margin:0; opacity:.94; }
+  .sec-card { background:#fffdf9; border:1px solid #dde3ec; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(40,60,90,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#3d5a80; font-size:17px; }
+  .tag-step { display:inline-block; background:#3d5a80; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#dde6f1; color:#2c3f5c; padding:6px 8px; border:1px solid #c4d3e5; text-align:center; }
+  table.fin td { padding:6px 8px; border:1px solid #dde5ee; vertical-align:top; }
+  table.fin tr.total td { background:#e8eef6; font-weight:700; }
+  table.fin tr.head td { background:#f1f5fa; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#e8eef6; border-left:4px solid #3d5a80; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#f7f8fb; border:1px dashed #9aabc4; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#3d5a80; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf9; border:2px solid #a7b8d1; color:#2c3f5c; font-weight:600; font-size:15px; }
+  .flip-back { background:#3d5a80; color:#f0f5fb; transform:rotateY(180deg); font-size:13px; line-height:1.5; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+  .pill { display:inline-block; border-radius:16px; padding:2px 10px; font-size:12.5px; font-weight:600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Radio, Divider } = antd;
+const { useState } = React;
+
+const OPN = {
+  unqualified:{th:'ไม่มีเงื่อนไข',en:'Unqualified',color:'#237804',bg:'#eaf6ea'},
+  qualified:{th:'มีเงื่อนไข',en:'Qualified',color:'#ad6800',bg:'#fff7e6'},
+  adverse:{th:'งบไม่ถูกต้อง',en:'Adverse',color:'#a8071a',bg:'#fff1f0'},
+  disclaimer:{th:'ไม่แสดงความเห็น',en:'Disclaimer',color:'#391085',bg:'#f4eeff'},
+};
+
+/* ============ TAB 1 : ความเห็น 4 แบบ + matrix ============ */
+function OpinionTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>ความเห็นของผู้สอบบัญชี 4 แบบ</h3>
+      <Row gutter={[10,10]}>
+        {Object.entries(OPN).map(([k,o])=><Col xs={12} md={6} key={k}>
+          <Card size="small" style={{height:'100%',background:o.bg,borderColor:o.color}}>
+            <div style={{fontWeight:700,color:o.color,fontSize:15}}>{o.th}</div>
+            <div style={{fontSize:12.5,color:'#555'}}>{o.en} opinion</div>
+          </Card></Col>)}
+      </Row>
+      <div className="kbox">📌 ความเห็นแบบไม่มีเงื่อนไข <b>อาจมีวรรคเน้นข้อมูลและเหตุการณ์ (Emphasis of Matter)</b> ได้ โดยไม่ทำให้ความเห็นเปลี่ยนเป็นแบบมีเงื่อนไข</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>ตารางตัดสินใจ — หัวใจของบทนี้</h3>
+      <p>ความเห็นที่เปลี่ยนแปลงไปขึ้นกับ 2 แกน: <b>ธรรมชาติของเรื่อง</b> (รู้ว่างบผิด vs หลักฐานไม่พอ) และ <b>ระดับผลกระทบ</b> (มีสาระสำคัญแต่ไม่แผ่กระจาย vs มีสาระสำคัญและแผ่กระจาย)</p>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th style={{minWidth:180}}>ธรรมชาติของเรื่อง</th><th>มีสาระสำคัญ<br/>แต่ไม่แผ่กระจาย</th><th>มีสาระสำคัญ<br/>และแผ่กระจาย</th></tr></thead>
+        <tbody>
+          <tr><td><b>หลักฐานเพียงพอ แต่รู้ว่างบผิด</b><br/>(Misstatement / งบไม่เป็นไปตามมาตรฐาน)</td>
+            <td style={{background:OPN.qualified.bg,textAlign:'center',fontWeight:700,color:OPN.qualified.color}}>มีเงื่อนไข<br/>Qualified</td>
+            <td style={{background:OPN.adverse.bg,textAlign:'center',fontWeight:700,color:OPN.adverse.color}}>งบไม่ถูกต้อง<br/>Adverse</td></tr>
+          <tr><td><b>หลักฐานไม่เพียงพอ</b><br/>(ถูกจำกัดขอบเขต / Scope limitation)</td>
+            <td style={{background:OPN.qualified.bg,textAlign:'center',fontWeight:700,color:OPN.qualified.color}}>มีเงื่อนไข<br/>Qualified</td>
+            <td style={{background:OPN.disclaimer.bg,textAlign:'center',fontWeight:700,color:OPN.disclaimer.color}}>ไม่แสดงความเห็น<br/>Disclaimer</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div className="analogy">🧠 จำเป็นภาพ: <b>ไม่แผ่กระจาย = ยังให้ "มีเงื่อนไข" ได้ทั้งสองแถว</b> | พอ <b>แผ่กระจาย</b> ต้องแยก: รู้ว่าผิด→<b>Adverse</b> / หลักฐานไม่พอ→<b>Disclaimer</b></div>
+      <div className="warn">⚠️ ถ้าเรื่องนั้น <b>ไม่มีสาระสำคัญ</b> (immaterial) → ความเห็นยังเป็น <b>ไม่มีเงื่อนไข</b> เสมอ (ไม่เข้าตารางนี้)</div>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" มุมขวาล่าง → <b>เครื่องมือตัดสินความเห็น</b> เลือก 2 คำถามแล้วดูคำตอบ + ช่องที่ไฮไลต์ในตารางทันที</div>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>เข้าใจแต่ละแบบ (เงื่อนไขที่ทำให้เกิด)</h3>
+      <Collapse items={[
+        {key:'u',label:'✅ ไม่มีเงื่อนไข (Unqualified) — งบดีทุกอย่าง',children:<div>รวบรวมหลักฐาน<b>เพียงพอและเหมาะสม</b> และสรุปได้ว่างบการเงิน<b>ไม่มีข้อมูลที่ขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญ</b></div>},
+        {key:'q',label:'⚠️ มีเงื่อนไข (Qualified) — "ผิดบางส่วน!"',children:<div>เกิดได้ 2 ทาง: ① ได้หลักฐานเพียงพอ แต่พบรายการที่<b>ขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญ แต่ไม่แผ่กระจาย</b> | ② ได้หลักฐาน<b>ไม่เพียงพอ</b> และคาดว่าอาจมีข้อมูลขัดต่อข้อเท็จจริงที่เป็นสาระสำคัญ แต่ไม่แผ่กระจาย</div>},
+        {key:'a',label:'❌ งบไม่ถูกต้อง (Adverse) — งบผิดหนัก',children:<div>ได้รับหลักฐานที่เหมาะสมอย่างเพียงพอ และสรุปได้ว่ารายการหรือผลรวมหลายรายการแสดงข้อมูลที่ขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญ <b>และแผ่กระจาย</b>ไปยังงบการเงิน</div>},
+        {key:'d',label:'🚫 ไม่แสดงความเห็น (Disclaimer) — หลักฐานไม่พอจนสรุปไม่ได้',children:<div>ได้หลักฐาน<b>ไม่เพียงพอ</b> และคาดว่ามีข้อมูลขัดต่อข้อเท็จจริงที่ส่งผลกระทบอันเป็นสาระสำคัญ<b>และแผ่กระจาย</b> หรือมีความไม่แน่นอนหลายเรื่องที่อาจสัมพันธ์กันจนกระทบงบการเงินโดยรวม</div>},
+      ]}/>
+    </div>
+
+    <div className="sec-card">
+      <h3><span className="tag-step">1.4</span>"แผ่กระจาย" (Pervasive) คืออะไร</h3>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>ผลกระทบ<b>ไม่จำกัดเฉพาะ</b>องค์ประกอบ บัญชี หรือรายการใดรายการหนึ่งของงบการเงิน</td></tr>
+        <tr><td>②</td><td>ถ้าจำกัดเฉพาะบางส่วน แต่ส่วนนั้น<b>เป็นสัดส่วนที่สำคัญอย่างมาก</b>ต่องบการเงิน</td></tr>
+        <tr><td>③</td><td>เกี่ยวกับการเปิดเผยข้อมูลซึ่งเป็น<b>ข้อมูลพื้นฐาน</b>ที่ผู้ใช้ต้องมีเพื่อเข้าใจงบการเงิน</td></tr>
+      </tbody></table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : ก่อนแสดงความเห็น + Going Concern ============ */
+function BeforeTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.1</span>ก่อนแสดงความเห็น ต้องประเมิน 6 เรื่อง</h3>
+      <table className="fin"><tbody>
+        <tr><td>1</td><td>การเปิดเผยเกี่ยวกับ<b>นโยบายการบัญชี</b>ที่เลือกและนำไปปฏิบัติอย่างถูกต้อง</td></tr>
+        <tr><td>2</td><td>นโยบายบัญชี<b>สอดคล้องกับแม่บทการรายงานทางการเงิน</b>หรือไม่</td></tr>
+        <tr><td>3</td><td><b>ประมาณการทางบัญชี</b>สมเหตุสมผลหรือไม่</td></tr>
+        <tr><td>4</td><td>ข้อมูล<b>เกี่ยวข้องกัน เชื่อถือได้ เปรียบเทียบกันได้ และเข้าใจได้</b>หรือไม่</td></tr>
+        <tr><td>5</td><td>งบการเงินมีการ<b>เปิดเผยข้อมูลอย่างเพียงพอ</b>หรือไม่</td></tr>
+        <tr><td>6</td><td><b>คำศัพท์</b>ที่ใช้ รวมถึง<b>ชื่อของงบการเงิน</b>แต่ละงบมีความเหมาะสมหรือไม่</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.2</span>การดำเนินงานต่อเนื่อง (Going Concern)</h3>
+      <p>ผู้สอบบัญชีมีความรับผิดชอบในการได้มาซึ่งหลักฐานที่เหมาะสมอย่างเพียงพอ เกี่ยวกับ<b>ความเหมาะสมของการใช้เกณฑ์การดำเนินงานต่อเนื่อง</b>ของผู้บริหารในการจัดทำงบการเงิน</p>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'ใช้เกณฑ์ going concern ไม่เหมาะสม',description:'→ แสดงความเห็นว่างบการเงินไม่ถูกต้อง (Adverse)'},
+        {title:'เกณฑ์เหมาะสม + เปิดเผยข้อมูลเพียงพอ',description:'→ เพิ่มวรรค "ความไม่แน่นอนที่มีสาระสำคัญที่เกี่ยวข้องกับการดำเนินงานต่อเนื่อง" (ยังไม่มีเงื่อนไข)'},
+        {title:'เปิดเผยข้อมูลไม่เพียงพอ',description:'→ แสดงความเห็นแบบมีเงื่อนไข (Qualified) หรือว่างบไม่ถูกต้อง (Adverse)'},
+      ]}/>
+      <div className="analogy">🧭 จับหลัก: <b>เกณฑ์ผิด → Adverse</b> | <b>เกณฑ์ถูกแต่เปิดเผยไม่พอ → Qualified/Adverse</b> | <b>เกณฑ์ถูก เปิดเผยพอ → เพิ่มวรรคเตือน (ไม่มีเงื่อนไข)</b></div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : ส่วนประกอบรายงาน ============ */
+function ReportTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>ส่วนประกอบของรายงานผู้สอบบัญชี (เรียงตามลำดับ)</h3>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'หัวเรื่องและผู้รับ',description:'เป็นลายลักษณ์อักษร | ระบุชัดว่าเป็นรายงานของผู้สอบบัญชีรับอนุญาต | ระบุผู้รับรายงาน'},
+        {title:'ความเห็น (Opinion) — อยู่ส่วนแรก',description:'ต้องมีหัวข้อ "ความเห็น" | ระบุกิจการ ว่างบได้รับการตรวจสอบแล้ว ชื่อของงบแต่ละงบ อ้างอิงหมายเหตุประกอบ ระบุวันที่/รอบระยะเวลา'},
+        {title:'เกณฑ์ในการแสดงความเห็น (Basis for Opinion)',description:'ต่อจากความเห็น | ระบุว่าตรวจตามมาตรฐานการสอบบัญชี | ความเป็นอิสระ จรรยาบรรณ | รวบรวมหลักฐานเพียงพอก่อนแสดงความเห็น'},
+        {title:'การดำเนินงานต่อเนื่อง (ถ้ามี)',description:'วรรคความไม่แน่นอนที่มีสาระสำคัญ (ถ้ามี)'},
+        {title:'เรื่องสำคัญในการตรวจสอบ (Key Audit Matters) + ข้อมูลอื่น (Other Information)'},
+        {title:'ความรับผิดชอบของผู้บริหารต่องบการเงิน',description:'จัดทำงบตามแม่บทการรายงานทางการเงิน + รับผิดชอบการควบคุมภายใน + ประเมินความสามารถในการดำเนินงานต่อเนื่อง'},
+        {title:'ความรับผิดชอบของผู้สอบบัญชีต่อการตรวจสอบ',description:'วัตถุประสงค์: (1) ได้ความเชื่อมั่นอย่างสมเหตุสมผลว่างบโดยรวมปราศจากการแสดงข้อมูลขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญ ไม่ว่าจากทุจริตหรือข้อผิดพลาด (2) เสนอรายงานที่รวมความเห็น'},
+        {title:'ชื่อ/ลายมือชื่อ/ที่อยู่ ผู้สอบบัญชี และวันที่ในรายงาน'},
+      ]}/>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>ประเด็นที่ต้องจำเรื่อง "ความเชื่อมั่นอย่างสมเหตุสมผล"</h3>
+      <div className="kbox">🎯 <b>Reasonable assurance = ความเชื่อมั่นระดับสูง แต่ไม่ใช่การรับประกัน</b> ว่าการตรวจสอบตามมาตรฐานจะตรวจพบข้อมูลที่ขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญที่มีอยู่ได้เสมอไป</div>
+      <p>ผู้สอบบัญชีใช้<b>ดุลยพินิจ</b> และ<b>การสังเกตและสงสัยเยี่ยงผู้ประกอบวิชาชีพ</b> (professional skepticism) ตลอดการตรวจสอบ ครอบคลุม: ประเมินความเสี่ยง ประเมินระบบควบคุมภายใน ประเมินความเหมาะสมของนโยบายบัญชีและประมาณการ สรุปเรื่องเกณฑ์ going concern และประเมินการนำเสนอ โครงสร้าง เนื้อหาของงบโดยรวม</p>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.3</span>วันที่ในรายงาน — จุดที่ข้อสอบชอบถาม</h3>
+      <div className="warn">📅 รายงานของผู้สอบบัญชี<b>ต้องไม่ลงวันที่ก่อน</b>วันที่ผู้สอบบัญชีได้รับหลักฐานที่เหมาะสมอย่างเพียงพอเพื่อใช้เป็นเกณฑ์แสดงความเห็น รวมถึงหลักฐานว่า ① จัดทำงบทุกงบและการเปิดเผยข้อมูลครบ และ ② ผู้มีอำนาจรับรองว่ารับผิดชอบต่องบแล้ว (ดูวันที่ใน <b>letter of representation</b> ประกอบ)</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : หลักฐาน 8 ประเภท ============ */
+const EVID = [
+  {n:1,en:'Physical Examination',th:'การตรวจสอบสินทรัพย์ที่มีตัวตน',d:'ตรวจหรือนับสินทรัพย์ที่มีตัวตนโดยผู้สอบ เช่น นับสินค้าคงเหลือ นับเงินสดย่อย ตรวจสินทรัพย์ถาวร',k:'ให้หลักฐานเรื่อง "การมีอยู่จริง (existence)" ได้ดี แต่ไม่จำเป็นบอก "สิทธิ/ภาระผูกพัน" หรือ "มูลค่า" ของสินทรัพย์'},
+  {n:2,en:'Inspection',th:'การตรวจสอบเอกสาร',d:'ตรวจบันทึกหรือเอกสาร (ภายในหรือภายนอก) ทั้งกระดาษ อิเล็กทรอนิกส์ หรือสื่ออื่น เพื่อยืนยันข้อมูลที่อยู่ (หรือควรอยู่) ในงบ',k:'ความน่าเชื่อถือขึ้นกับลักษณะและแหล่งข้อมูล และประสิทธิภาพการควบคุม | เอกสารภายใน (internal) vs เอกสารภายนอก (external) — ภายนอกน่าเชื่อถือกว่า'},
+  {n:3,en:'Observation',th:'การสังเกตการณ์',d:'ดูกระบวนการหรือขั้นตอนที่ผู้อื่นกระทำ เช่น สังเกตการนับสินค้าที่พนักงานทำ หรือสังเกตการปฏิบัติตามการควบคุม',k:'จำกัดเฉพาะ ณ ช่วงเวลาที่สังเกตเท่านั้น และคนที่ถูกสังเกตอาจทำต่างจากปกติ (พฤติกรรมเปลี่ยน)'},
+  {n:4,en:'External Confirmation',th:'การขอคำยืนยันจากบุคคลภายนอก',d:'คำตอบเป็นลายลักษณ์อักษรจากบุคคลที่สามถึงผู้สอบโดยตรง มักใช้ตรวจยอดคงเหลือทางบัญชี และยืนยันการขาดหายของเงื่อนไข (เช่น side agreement)',k:'Positive (ผู้รับต้องตอบ) = น่าเชื่อถือสุด แต่อัตราตอบกลับต่ำ | Negative (ตอบเฉพาะเมื่อข้อมูลผิด) = น่าเชื่อถือน้อยสุด ใช้เมื่อการควบคุมภายในดีเท่านั้น'},
+  {n:5,en:'Recalculation',th:'การทดสอบการคำนวณ',d:'ตรวจความถูกต้องเชิงเลขคณิตของเอกสารและบันทึกต่างๆ ทำด้วยมือหรืออิเล็กทรอนิกส์',k:'ตรวจ "ความแม่นยำของตัวเลข" เท่านั้น'},
+  {n:6,en:'Re-performance',th:'การทดสอบโดยการปฏิบัติซ้ำ',d:'ผู้สอบปฏิบัติตามขั้นตอนหรือการควบคุมภายในของกิจการ<b>เองโดยอิสระ</b> เพื่อดูว่าให้ผลตรงกันไหม',k:'ต่างจาก recalculation: ปฏิบัติซ้ำทั้งขั้นตอน/การควบคุม ไม่ใช่แค่ตัวเลข'},
+  {n:7,en:'Analytical Procedures',th:'การวิเคราะห์เปรียบเทียบ',d:'ประเมินข้อมูลทางการเงินโดยวิเคราะห์ความสัมพันธ์ที่มีเหตุผลระหว่างข้อมูลการเงินและไม่ใช่การเงิน และสอบสวนความผันผวน/ความสัมพันธ์ที่ผิดปกติ',k:'วัตถุประสงค์: เข้าใจธุรกิจและอุตสาหกรรม | ประเมิน going concern | ชี้จุดที่อาจมีการแสดงข้อมูลผิด | ลดการทดสอบรายละเอียด'},
+  {n:8,en:'Inquiry',th:'การสอบถาม',d:'สอบถามผู้รู้ทั้งในและนอกกิจการ ใช้อย่างกว้างขวางตลอดการตรวจสอบควบคู่วิธีอื่น ตั้งแต่สอบถามเป็นทางการเป็นลายลักษณ์อักษรถึงสอบถามด้วยวาจา',k:'บางเรื่องต้องขอ "หนังสือรับรอง (written representation)" จากผู้บริหารเพื่อยืนยันคำตอบด้วยวาจา'},
+];
+function EvidenceTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>หลักฐานการสอบบัญชีคืออะไร</h3>
+      <p><b>หลักฐานการสอบบัญชี</b> = ข้อมูลที่ผู้สอบบัญชีใช้เพื่อให้ได้ข้อสรุปในการแสดงความเห็น รวมถึง<b>บันทึกทางบัญชี</b>ที่ใช้จัดทำงบ และข้อมูลจาก<b>แหล่งอื่น</b></p>
+      <div className="kbox">📒 <b>บันทึกทางบัญชี</b> เช่น การบันทึกรายการครั้งแรกและเอกสารสนับสนุน (เช็ค การโอนเงินอิเล็กทรอนิกส์ ใบแจ้งหนี้ สัญญา บัญชีแยกประเภททั่วไปและบัญชีย่อย รายการในสมุดรายวันและรายการปรับปรุง) รวมถึงกระดาษทำการ การจัดสรรต้นทุน การคำนวณ การกระทบยอด และการเปิดเผยข้อมูล</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>ประเภทของหลักฐาน 8 ประเภท</h3>
+      <div className="analogy">🧠 จำด้วยกลุ่ม: <b>ดู/นับของ</b> (Physical) · <b>ดูเอกสาร</b> (Inspection) · <b>ดูคนทำ</b> (Observation) · <b>ถามคนนอก</b> (Confirmation) · <b>คิดเลขซ้ำ</b> (Recalculation) · <b>ทำงานซ้ำ</b> (Re-performance) · <b>วิเคราะห์ตัวเลข</b> (Analytical) · <b>ถามคนใน</b> (Inquiry)</div>
+      <Collapse items={EVID.map(e=>({key:String(e.n),label:`${e.n}. ${e.th} (${e.en})`,children:<div>
+        <p style={{margin:'0 0 6px'}}>{e.d}</p>
+        <div className="kbox" style={{margin:0,fontSize:13}} dangerouslySetInnerHTML={{__html:'💡 '+e.k}}/>
+      </div>}))}/>
+      <div className="warn">⚠️ คู่ที่สับสนบ่อย: <b>Recalculation</b> = ตรวจเฉพาะตัวเลข | <b>Re-performance</b> = ทำซ้ำทั้งขั้นตอน/การควบคุม | และ <b>Physical examination</b> พิสูจน์ "มีอยู่จริง" แต่ไม่ยืนยัน "เป็นเจ้าของ/มูลค่า"</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : เพียงพอ & เหมาะสม ============ */
+function SufficiencyTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.1</span>ความเพียงพอ (Sufficiency) vs ความเหมาะสม (Appropriateness)</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="📊 ความเพียงพอ = ปริมาณ" style={{height:'100%',background:'#eef3fa'}}>
+          วัด<b>ปริมาณ</b>ของหลักฐาน ขึ้นกับ:<br/>① <b>ความเสี่ยงที่ประเมินได้</b> — เสี่ยงยิ่งสูง ยิ่งต้องการหลักฐานมากขึ้น<br/>② <b>คุณภาพของหลักฐาน</b> — คุณภาพยิ่งสูง อาจต้องการปริมาณน้อยลง</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="💎 ความเหมาะสม = คุณภาพ" style={{height:'100%',background:'#eef7ee'}}>
+          วัด<b>คุณภาพ</b>ของหลักฐาน = <b>ความเกี่ยวข้อง (relevance)</b> + <b>ความน่าเชื่อถือ (reliability)</b> ที่ใช้สนับสนุนข้อสรุปในการแสดงความเห็น</Card></Col>
+      </Row>
+      <div className="warn">⚠️ กับดักสำคัญ: การได้หลักฐาน<b>ปริมาณมากขึ้น ทดแทนคุณภาพต่ำไม่ได้</b> — ปริมาณเยอะแต่ห่วย ก็ยังไม่พอ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.2</span>ปัจจัยที่กระทบความน่าเชื่อถือของหลักฐาน 6 ข้อ</h3>
+      <table className="fin"><tbody>
+        <tr><td>1</td><td><b>ความเป็นอิสระของผู้ให้ข้อมูล</b> — มาจากภายนอกที่เป็นอิสระ น่าเชื่อถือกว่ามาจากภายในกิจการ</td></tr>
+        <tr><td>2</td><td><b>ประสิทธิภาพของการควบคุมภายใน</b>ของลูกค้า — ควบคุมภายในดี หลักฐานที่ผลิตขึ้นน่าเชื่อถือกว่า</td></tr>
+        <tr><td>3</td><td><b>การได้มาซึ่งหลักฐานโดยตรงของผู้สอบ</b> (direct knowledge) — ผู้สอบหาเอง น่าเชื่อถือกว่าได้มาทางอ้อม</td></tr>
+        <tr><td>4</td><td><b>คุณสมบัติของผู้ให้ข้อมูล</b> — ผู้ให้ข้อมูลมีความรู้/ความสามารถ ยิ่งน่าเชื่อถือ</td></tr>
+        <tr><td>5</td><td><b>ระดับความเป็นภววิสัย (objectivity)</b> — เป็นกลาง วัดได้ น่าเชื่อถือกว่าอัตวิสัย</td></tr>
+        <tr><td>6</td><td><b>ความทันเวลา (timeliness)</b> — ยิ่งทันเวลา/ใกล้วันที่ในงบ ยิ่งน่าเชื่อถือ</td></tr>
+      </tbody></table>
+      <div className="kbox">🧭 จำลำดับความน่าเชื่อถือ (สูง→ต่ำ): หลักฐานผู้สอบหาเอง &gt; แหล่งภายนอกอิสระ &gt; ที่ผลิตในกิจการที่ควบคุมภายในดี &gt; คำบอกเล่าด้วยวาจาจากภายใน</div>
+    </div>
+  </div>;
+}
+
+/* ============ CASE DATA ============ */
+const CASES = [
+  {name:'One Company (สินค้าคงเหลือ)',scenario:'ลูกค้าไม่อนุญาตให้สังเกตการณ์นับสินค้าคงเหลือ ณ สิ้นปี และหาวิธีตรวจสอบอื่นไม่ได้ คาดว่าสินค้าอาจสูงเกินจริง สินค้าคงเหลือ = 50% ของสินทรัพย์รวม',ans:'disclaimer',
+    why:'หลักฐาน<b>ไม่เพียงพอ</b> (ถูกจำกัดขอบเขต) + ผลกระทบ 50% ของสินทรัพย์ = <b>แผ่กระจาย</b> → ไม่แสดงความเห็น (Disclaimer)'},
+  {name:'Two Company (ค่าใช้จ่ายจ่ายล่วงหน้า)',scenario:'สรุปได้ว่าค่าใช้จ่ายจ่ายล่วงหน้าสูงเกินจริง 8,000 บาท เป็นบัญชีเดียวที่ผิด สินทรัพย์รวม 20 ล้านบาท',ans:'unqualified',
+    why:'8,000 เทียบ 20,000,000 = ราว 0.04% <b>ไม่มีสาระสำคัญ</b> (immaterial) → ยังคงเป็นความเห็นแบบไม่มีเงื่อนไข (Unqualified)'},
+  {name:'Auto Delivery (เปลี่ยนนโยบายเป็นสัญญาเช่า)',scenario:'เดิมซื้อรถบรรทุกทั้งหมด ปีนี้เปลี่ยนมาเช่าและบันทึกแบบ lease capitalization การเปลี่ยนนโยบายเปิดเผยครบถ้วนในหมายเหตุ',ans:'unqualified',
+    why:'เป็นการเปลี่ยนวิธีบันทึกที่มีเหตุผลและ<b>เปิดเผยครบถ้วน</b> ไม่ใช่ข้อผิดพลาด → ไม่มีเงื่อนไข (Unqualified)'},
+  {name:'High Fashion (ไม่ตัดจำหน่ายสินค้าล้าสมัย)',scenario:'ขายกระเป๋าต่ำกว่าต้นทุนมาก ฝ่ายบริหารปฏิเสธที่จะตัดจำหน่ายหรือเพิ่มเงินสำรองสินค้าล้าสมัย จำนวนเงินมีสาระสำคัญแต่ไม่แผ่กระจาย',ans:'qualified',
+    why:'ได้หลักฐานเพียงพอและ<b>รู้ว่างบผิด</b> (ไม่ตัดจำหน่ายตามมาตรฐาน) + <b>มีสาระสำคัญแต่ไม่แผ่กระจาย</b> → มีเงื่อนไข (Qualified)'},
+  {name:'Oil Refining (ธุรกิจขุดเจาะเสี่ยง)',scenario:'เข้าธุรกิจขุดเจาะน้ำมันที่เสี่ยงมาก ขุด 3 หลุมไม่พบน้ำมัน เปิดเผยข้อเท็จจริงนี้อย่างเพียงพอในหมายเหตุ',ans:'unqualified',
+    why:'ไม่มีการแสดงข้อมูลผิด เป็นเพียงความเสี่ยง/ความไม่แน่นอนที่<b>เปิดเผยเพียงพอ</b>แล้ว → ไม่มีเงื่อนไข (Unqualified) (อาจมีวรรคเน้นได้)'},
+  {name:'Top Sales (รับรู้รายได้ผิดเวลา)',scenario:'บันทึกยอดขายเป็นรายได้ตั้งแต่ตอนสั่งซื้อ จำนวนเงินมีสาระสำคัญและแผ่กระจาย ลูกค้ายินดีแก้ไข',ans:'adverse',
+    why:'รู้ว่างบผิด (รับรู้รายได้ผิดหลักการ) + <b>มีสาระสำคัญและแผ่กระจาย</b> → งบไม่ถูกต้อง (Adverse) | หมายเหตุ: ถ้าลูกค้าแก้ไขจริง ก็จะกลับเป็นไม่มีเงื่อนไข'},
+];
+function CaseTab(){
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="ตัวอย่างเคสจากสไลด์ 6 เคส (โหมดเฉลย)" description="อยากลองทำเองแบบจับเวลา/นับคะแนน กดปุ่มลอย 'ทดลอง' → แท็บ 'ฝึกเคส'"/>
+    {CASES.map((c,i)=>{const o=OPN[c.ans];return <div className="sec-card" key={i}>
+      <h3 style={{marginBottom:6}}>เคส {i+1}: {c.name}</h3>
+      <p style={{margin:'0 0 8px'}}>{c.scenario}</p>
+      <div style={{marginBottom:6}}><span className="pill" style={{background:o.bg,color:o.color}}>ตอบ: {o.th} ({o.en})</span></div>
+      <div className="kbox" style={{margin:0}} dangerouslySetInnerHTML={{__html:'💡 '+c.why}}/>
+    </div>;})}
+  </div>;
+}
+
+/* ============ FLASHCARDS ============ */
+const CARDS = [
+  {q:'ความเห็นผู้สอบบัญชีมีกี่แบบ อะไรบ้าง?',a:'4 แบบ: ไม่มีเงื่อนไข (Unqualified), มีเงื่อนไข (Qualified), งบไม่ถูกต้อง (Adverse), ไม่แสดงความเห็น (Disclaimer)'},
+  {q:'2 แกนที่ใช้ตัดสินความเห็นที่เปลี่ยนแปลงไป?',a:'① ธรรมชาติของเรื่อง: รู้ว่างบผิด (หลักฐานพอ) vs หลักฐานไม่พอ (จำกัดขอบเขต) ② ระดับผลกระทบ: มีสาระสำคัญแต่ไม่แผ่กระจาย vs มีสาระสำคัญและแผ่กระจาย'},
+  {q:'รู้ว่างบผิด + มีสาระสำคัญ "แต่ไม่แผ่กระจาย" → ความเห็นอะไร?',a:'มีเงื่อนไข (Qualified)'},
+  {q:'รู้ว่างบผิด + มีสาระสำคัญ "และแผ่กระจาย" → ?',a:'งบไม่ถูกต้อง (Adverse)'},
+  {q:'หลักฐานไม่พอ + มีสาระสำคัญ "และแผ่กระจาย" → ?',a:'ไม่แสดงความเห็น (Disclaimer)'},
+  {q:'หลักฐานไม่พอ + มีสาระสำคัญ "แต่ไม่แผ่กระจาย" → ?',a:'มีเงื่อนไข (Qualified)'},
+  {q:'ถ้าเรื่องนั้นไม่มีสาระสำคัญ (immaterial) → ?',a:'ยังคงเป็น ไม่มีเงื่อนไข (Unqualified) เสมอ'},
+  {q:'"แผ่กระจาย" (pervasive) หมายถึงอะไร?',a:'ผลกระทบไม่จำกัดเฉพาะบัญชีใด หรือถ้าจำกัดก็เป็นสัดส่วนสำคัญมากต่องบ หรือเกี่ยวกับการเปิดเผยข้อมูลพื้นฐานที่ผู้ใช้ต้องมี'},
+  {q:'ความเห็นไม่มีเงื่อนไข ใส่วรรคเน้นได้ไหม?',a:'ได้ — อาจมีวรรคเน้นข้อมูลและเหตุการณ์ (Emphasis of Matter) โดยไม่ทำให้ความเห็นเปลี่ยนแบบ'},
+  {q:'Going concern: ใช้เกณฑ์ไม่เหมาะสม → ?',a:'แสดงความเห็นว่างบไม่ถูกต้อง (Adverse)'},
+  {q:'Going concern: เกณฑ์เหมาะสม + เปิดเผยเพียงพอ → ?',a:'เพิ่มวรรค "ความไม่แน่นอนที่มีสาระสำคัญเกี่ยวกับการดำเนินงานต่อเนื่อง" (ยังไม่มีเงื่อนไข)'},
+  {q:'Going concern: เกณฑ์เหมาะสม แต่เปิดเผยไม่เพียงพอ → ?',a:'มีเงื่อนไข (Qualified) หรือ งบไม่ถูกต้อง (Adverse)'},
+  {q:'ส่วนแรกของรายงานผู้สอบบัญชีคือส่วนอะไร?',a:'ส่วน "ความเห็น" (Opinion) ตามด้วย "เกณฑ์ในการแสดงความเห็น" (Basis for Opinion)'},
+  {q:'"เกณฑ์ในการแสดงความเห็น" ระบุอะไรบ้าง?',a:'ตรวจตามมาตรฐานการสอบบัญชี, ความเป็นอิสระและจรรยาบรรณ, ได้รวบรวมหลักฐานเพียงพอก่อนแสดงความเห็น'},
+  {q:'Reasonable assurance คืออะไร?',a:'ความเชื่อมั่นระดับสูง แต่ไม่ใช่การรับประกันว่าจะตรวจพบข้อมูลที่ขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญได้เสมอไป'},
+  {q:'รายงานผู้สอบบัญชีลงวันที่ก่อนได้หลักฐานพอได้ไหม?',a:'ไม่ได้ — ต้องไม่ลงวันที่ก่อนได้รับหลักฐานที่เหมาะสมเพียงพอ และก่อนผู้มีอำนาจรับรองรับผิดชอบต่องบ (ดู letter of representation)'},
+  {q:'หลักฐานการสอบบัญชีคืออะไร?',a:'ข้อมูลที่ผู้สอบใช้เพื่อให้ได้ข้อสรุปในการแสดงความเห็น รวมถึงบันทึกทางบัญชีและข้อมูลจากแหล่งอื่น'},
+  {q:'หลักฐาน 8 ประเภทมีอะไรบ้าง?',a:'Physical examination, Inspection, Observation, External confirmation, Recalculation, Re-performance, Analytical procedures, Inquiry'},
+  {q:'Physical examination พิสูจน์อะไรได้/ไม่ได้?',a:'พิสูจน์ "การมีอยู่จริง (existence)" ได้ แต่ไม่จำเป็นบอกสิทธิ/ภาระผูกพัน หรือมูลค่าของสินทรัพย์'},
+  {q:'Recalculation ต่างจาก Re-performance อย่างไร?',a:'Recalculation = ตรวจความถูกต้องของตัวเลขเท่านั้น | Re-performance = ผู้สอบทำซ้ำทั้งขั้นตอน/การควบคุมเองโดยอิสระ'},
+  {q:'External confirmation: positive vs negative แบบไหนน่าเชื่อถือกว่า?',a:'Positive น่าเชื่อถือสุด (แต่อัตราตอบกลับต่ำ) | Negative น่าเชื่อถือน้อยสุด ใช้เมื่อการควบคุมภายในดีเท่านั้น'},
+  {q:'Observation มีข้อจำกัดอะไร?',a:'ให้หลักฐานเฉพาะ ณ ช่วงเวลาที่สังเกตเท่านั้น และคนที่ถูกสังเกตอาจทำต่างจากปกติ'},
+  {q:'วัตถุประสงค์ของ Analytical procedures?',a:'เข้าใจธุรกิจ/อุตสาหกรรม, ประเมิน going concern, ชี้จุดที่อาจมีการแสดงข้อมูลผิด, ลดการทดสอบรายละเอียด'},
+  {q:'ความเพียงพอ vs ความเหมาะสม ของหลักฐาน?',a:'เพียงพอ = ปริมาณ (ขึ้นกับความเสี่ยงและคุณภาพ) | เหมาะสม = คุณภาพ = ความเกี่ยวข้อง + ความน่าเชื่อถือ'},
+  {q:'ปริมาณหลักฐานมากทดแทนคุณภาพต่ำได้ไหม?',a:'ไม่ได้ — หลักฐานคุณภาพต่ำ แม้ปริมาณมากก็ทดแทนไม่ได้'},
+  {q:'ปัจจัยที่ทำให้หลักฐานน่าเชื่อถือ (ยกตัวอย่าง)?',a:'ความเป็นอิสระของผู้ให้ข้อมูล, การควบคุมภายในที่ดี, ผู้สอบได้มาโดยตรง, คุณสมบัติผู้ให้ข้อมูล, ความเป็นภววิสัย, ความทันเวลา'},
+];
+function FlashTab(){
+  const [order,setOrder]=useState(CARDS.map((_,i)=>i));
+  const [flipped,setFlipped]=useState({});
+  const [score,setScore]=useState({know:0,dunno:0});
+  const shuffle=()=>{setOrder([...order].sort(()=>Math.random()-.5));setFlipped({});setScore({know:0,dunno:0});};
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#3d5a80'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#3d5a80"/>
+      <span style={{fontSize:12.5,color:'#5a6478'}}>แตะการ์ดเพื่อพลิกดูคำตอบ</span>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅ รู้แล้ว</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌ ทวนอีก</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ การ์ดจำด่วน ============ */
+function QuickTab(){
+  const cards=[
+    {c:'#3d5a80',t:'🧭 ตาราง 2×2 ของความเห็น',d:'ไม่แผ่กระจาย → Qualified ทั้งสองแถว | แผ่กระจาย: รู้ว่าผิด→Adverse / หลักฐานไม่พอ→Disclaimer | ไม่มีสาระสำคัญ→Unqualified'},
+    {c:'#237804',t:'✅ Unqualified = งบดี + หลักฐานพอ',d:'ใส่วรรคเน้น (Emphasis of Matter) ได้โดยไม่เปลี่ยนแบบ | เคสเปิดเผยครบ/ความเสี่ยงที่เปิดเผยพอ = ยังไม่มีเงื่อนไข'},
+    {c:'#ad6800',t:'⚠️ Qualified = "ผิดบางส่วน!"',d:'เกิดได้ 2 ทาง: งบผิดแบบไม่แผ่กระจาย หรือ หลักฐานไม่พอแบบไม่แผ่กระจาย — คำว่า "ไม่แผ่กระจาย" คือกุญแจ'},
+    {c:'#a8071a',t:'❌ Adverse vs 🚫 Disclaimer',d:'ทั้งคู่ "แผ่กระจาย" | ต่างที่: Adverse = รู้ชัดว่างบผิด | Disclaimer = หลักฐานไม่พอจนสรุปไม่ได้'},
+    {c:'#391085',t:'🏢 Going Concern 3 ทาง',d:'เกณฑ์ผิด→Adverse | เกณฑ์ถูก+เปิดเผยพอ→วรรคเตือน (ไม่มีเงื่อนไข) | เกณฑ์ถูก+เปิดเผยไม่พอ→Qualified/Adverse'},
+    {c:'#356e6a',t:'🔍 หลักฐาน 8 ประเภท',d:'นับของ·ดูเอกสาร·ดูคนทำ·ถามคนนอก·คิดเลขซ้ำ·ทำงานซ้ำ·วิเคราะห์·ถามคนใน | Physical = มีอยู่จริง ไม่ใช่มูลค่า/สิทธิ'},
+    {c:'#8a5a2b',t:'📞 Confirmation: Positive สูง Negative ต่ำ',d:'Positive น่าเชื่อถือสุด (ตอบกลับน้อย) | Negative น่าเชื่อถือน้อยสุด ใช้เมื่อ IC ดี | เอกสารภายนอก > ภายใน'},
+    {c:'#5a5a7a',t:'♻️ Recalculation ≠ Re-performance',d:'Recalculation = ตรวจตัวเลข | Re-performance = ทำซ้ำทั้งขั้นตอน/การควบคุมเอง'},
+    {c:'#3a6b7a',t:'⚖️ เพียงพอ (ปริมาณ) vs เหมาะสม (คุณภาพ)',d:'ปริมาณขึ้นกับความเสี่ยง+คุณภาพ | คุณภาพ = เกี่ยวข้อง + น่าเชื่อถือ | ปริมาณมากทดแทนคุณภาพต่ำไม่ได้'},
+    {c:'#6b7a3a',t:'📅 วันที่ในรายงาน',d:'ห้ามลงวันก่อนได้หลักฐานพอ + ก่อนผู้บริหารรับรองรับผิดชอบงบ (ดู letter of representation)'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ LAB 1 : Opinion Decision Tool ============ */
+function DecisionLab(){
+  const [nature,setNature]=useState('misstatement'); // misstatement | scope
+  const [impact,setImpact]=useState('material_np');  // immaterial | material_np | material_pervasive
+  let key;
+  if(impact==='immaterial') key='unqualified';
+  else if(nature==='misstatement') key = impact==='material_np'?'qualified':'adverse';
+  else key = impact==='material_np'?'qualified':'disclaimer';
+  const o=OPN[key];
+  const cell=(nat,imp)=> nat===nature && imp===impact && impact!=='immaterial';
+  const cellStyle=(k,active)=>({textAlign:'center',fontWeight:700,color:OPN[k].color,background:active?OPN[k].color:OPN[k].bg,...(active?{color:'#fff'}:{})});
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:12}} message="ตอบ 2 คำถาม แล้วดูความเห็นที่ถูกต้อง + ช่องที่ไฮไลต์" />
+    <div style={{fontSize:13.5,marginBottom:4}}><b>คำถามที่ 1 — ธรรมชาติของเรื่อง</b></div>
+    <Radio.Group value={nature} onChange={e=>setNature(e.target.value)} optionType="button" buttonStyle="solid" style={{marginBottom:12,flexWrap:'wrap'}}
+      options={[{label:'รู้ว่างบผิด (หลักฐานพอ)',value:'misstatement'},{label:'หลักฐานไม่พอ (จำกัดขอบเขต)',value:'scope'}]}/>
+    <div style={{fontSize:13.5,marginBottom:4}}><b>คำถามที่ 2 — ระดับผลกระทบ</b></div>
+    <Radio.Group value={impact} onChange={e=>setImpact(e.target.value)} optionType="button" buttonStyle="solid" style={{marginBottom:14,flexWrap:'wrap'}}
+      options={[{label:'ไม่มีสาระสำคัญ',value:'immaterial'},{label:'มีสาระสำคัญ ไม่แผ่กระจาย',value:'material_np'},{label:'มีสาระสำคัญ และแผ่กระจาย',value:'material_pervasive'}]}/>
+    <div style={{padding:'14px',borderRadius:10,background:o.bg,border:'2px solid '+o.color,textAlign:'center',marginBottom:14}}>
+      <div style={{fontSize:13,color:'#555'}}>ความเห็นที่ถูกต้อง</div>
+      <div style={{fontSize:22,fontWeight:800,color:o.color}}>{o.th}</div>
+      <div style={{fontSize:13,color:o.color}}>{o.en} opinion</div>
+    </div>
+    {impact==='immaterial'
+      ? <div className="analogy" style={{fontSize:13}}>ℹ️ ไม่มีสาระสำคัญ → ไม่กระทบความเห็น ยังคงเป็น "ไม่มีเงื่อนไข" ไม่ต้องดูตาราง</div>
+      : <table className="fin">
+          <thead><tr><th>ธรรมชาติ / ผลกระทบ</th><th>ไม่แผ่กระจาย</th><th>แผ่กระจาย</th></tr></thead>
+          <tbody>
+            <tr><td><b>รู้ว่างบผิด</b></td>
+              <td style={cellStyle('qualified',cell('misstatement','material_np'))}>Qualified</td>
+              <td style={cellStyle('adverse',cell('misstatement','material_pervasive'))}>Adverse</td></tr>
+            <tr><td><b>หลักฐานไม่พอ</b></td>
+              <td style={cellStyle('qualified',cell('scope','material_np'))}>Qualified</td>
+              <td style={cellStyle('disclaimer',cell('scope','material_pervasive'))}>Disclaimer</td></tr>
+          </tbody>
+        </table>}
+  </div>;
+}
+
+/* ============ LAB 2 : Case Quiz ============ */
+function CaseQuizLab(){
+  const [i,setI]=useState(0);
+  const [picked,setPicked]=useState(null);
+  const [score,setScore]=useState(0);
+  const [done,setDone]=useState(false);
+  const c=CASES[i];
+  const choose=(k)=>{ if(picked)return; setPicked(k); if(k===c.ans)setScore(score+1); };
+  const next=()=>{ if(i+1<CASES.length){setI(i+1);setPicked(null);} else setDone(true); };
+  if(done) return <div style={{textAlign:'center',padding:20}}>
+    <div style={{fontSize:40}}>🎉</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {CASES.length} คะแนน</div>
+    <Button type="primary" style={{background:'#3d5a80'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button>
+  </div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+      <Tag color="blue">เคส {i+1} / {CASES.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <div className="sec-card" style={{marginBottom:10}}>
+      <div style={{fontWeight:700,marginBottom:4}}>{c.name}</div>
+      <div style={{fontSize:13.5}}>{c.scenario}</div>
+    </div>
+    <Row gutter={[8,8]}>
+      {Object.entries(OPN).map(([k,o])=>{
+        let border='#d9d9d9',bg='#fff';
+        if(picked){ if(k===c.ans){border=o.color;bg=o.bg;} else if(k===picked){border='#c0564a';bg='#fff1f0';} }
+        return <Col xs={12} key={k}>
+          <div onClick={()=>choose(k)} style={{cursor:picked?'default':'pointer',padding:'10px',borderRadius:8,border:'2px solid '+border,background:bg,textAlign:'center',fontWeight:600,fontSize:13.5,color:o.color}}>
+            {o.th}<div style={{fontSize:11,color:'#888'}}>{o.en}</div></div>
+        </Col>;})}
+    </Row>
+    {picked && <div className={picked===c.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700,marginBottom:4}}>{picked===c.ans?'✅ ถูกต้อง!':'❌ ยังไม่ใช่ — คำตอบคือ '+OPN[c.ans].th}</div>
+      <div dangerouslySetInnerHTML={{__html:c.why}}/>
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#3d5a80'}} onClick={next}>{i+1<CASES.length?'เคสถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ LAB 3 : Evidence Matcher ============ */
+const EMATCH=[
+  {s:'ผู้สอบไปนับสินค้าคงเหลือในคลังด้วยตนเอง',ans:1},
+  {s:'ส่งหนังสือให้ธนาคารยืนยันยอดเงินฝากโดยตอบกลับถึงผู้สอบโดยตรง',ans:4},
+  {s:'ผู้สอบตรวจใบแจ้งหนี้และสัญญาที่สนับสนุนรายการในงบ',ans:2},
+  {s:'ผู้สอบยืนดูพนักงานคลังนับสินค้าตามขั้นตอน',ans:3},
+  {s:'ผู้สอบบวกเลขในใบคำนวณค่าเสื่อมราคาใหม่เพื่อเช็คความถูกต้อง',ans:5},
+  {s:'ผู้สอบทำขั้นตอนการควบคุมภายในซ้ำเองเพื่อดูว่าให้ผลตรงกัน',ans:6},
+  {s:'เปรียบเทียบอัตรากำไรขั้นต้นปีนี้กับปีก่อนเพื่อหาความผิดปกติ',ans:7},
+  {s:'สอบถามผู้จัดการฝ่ายบัญชีเรื่องนโยบายการตัดจำหน่ายหนี้สูญ',ans:8},
+];
+function EvidenceMatchLab(){
+  const [i,setI]=useState(0);
+  const [picked,setPicked]=useState(null);
+  const [score,setScore]=useState(0);
+  const [done,setDone]=useState(false);
+  const q=EMATCH[i];
+  const choose=(n)=>{ if(picked)return; setPicked(n); if(n===q.ans)setScore(score+1); };
+  const next=()=>{ if(i+1<EMATCH.length){setI(i+1);setPicked(null);} else setDone(true); };
+  if(done) return <div style={{textAlign:'center',padding:20}}>
+    <div style={{fontSize:40}}>🎯</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {EMATCH.length} คะแนน</div>
+    <Button type="primary" style={{background:'#3d5a80'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button>
+  </div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+      <Tag color="blue">ข้อ {i+1} / {EMATCH.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="สถานการณ์นี้ใช้หลักฐานประเภทไหน?" description={q.s}/>
+    <Row gutter={[6,6]}>
+      {EVID.map(e=>{
+        let border='#d9d9d9',bg='#fff';
+        if(picked){ if(e.n===q.ans){border='#237804';bg='#eaf6ea';} else if(e.n===picked){border='#c0564a';bg='#fff1f0';} }
+        return <Col xs={12} md={6} key={e.n}>
+          <div onClick={()=>choose(e.n)} style={{cursor:picked?'default':'pointer',padding:'8px 6px',borderRadius:8,border:'2px solid '+border,background:bg,textAlign:'center',fontSize:12,fontWeight:600,minHeight:52,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            {e.th}</div></Col>;})}
+    </Row>
+    {picked && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700}}>{picked===q.ans?'✅ ถูกต้อง':'❌ คำตอบคือ '+EVID[q.ans-1].th+' ('+EVID[q.ans-1].en+')'}</div>
+      <div style={{marginTop:6}}><Button type="primary" size="small" style={{background:'#3d5a80'}} onClick={next}>{i+1<EMATCH.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ FLOATING TOOL ============ */
+function FloatingLab(){
+  const [open,setOpen]=useState(false);
+  const [seg,setSeg]=useState('decide');
+  const w = typeof window!=='undefined'? Math.min(560, window.innerWidth-16) : 560;
+  return <React.Fragment>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square"
+      style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ" styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}}
+        options={[{label:'🧭 ตัดสินความเห็น',value:'decide'},{label:'🎯 ฝึกเคส',value:'quiz'},{label:'🔍 จับคู่หลักฐาน',value:'evid'}]}/>
+      {seg==='decide' && <DecisionLab/>}
+      {seg==='quiz' && <CaseQuizLab/>}
+      {seg==='evid' && <EvidenceMatchLab/>}
+    </Drawer>
+  </React.Fragment>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>🕵️ GA511 การสอบบัญชี — ความเห็น &amp; หลักฐาน</h1>
+      <p>Class 2: ความเห็นผู้สอบบัญชี 4 แบบ → ตารางตัดสินใจ → รายงานผู้สอบบัญชี → หลักฐาน 8 ประเภท → ความเพียงพอและเหมาะสม | อิงสไลด์ อ.Wasinee และมาตรฐานการสอบบัญชี (TSA)</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 กดปุ่มลอย <b>"ทดลอง"</b> มุมขวาล่าง — เครื่องมือตัดสินความเห็น / ฝึกเคส / จับคู่หลักฐาน</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'🧭 ความเห็น 4 แบบ',children:<OpinionTab/>},
+      {key:'2',label:'✅ ก่อนแสดง & Going Concern',children:<BeforeTab/>},
+      {key:'3',label:'📋 ส่วนประกอบรายงาน',children:<ReportTab/>},
+      {key:'4',label:'🔍 หลักฐาน 8 ประเภท',children:<EvidenceTab/>},
+      {key:'5',label:'⚖️ เพียงพอ & เหมาะสม',children:<SufficiencyTab/>},
+      {key:'6',label:'🎯 ตัวอย่างเคส',children:<CaseTab/>},
+      {key:'7',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'8',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>
