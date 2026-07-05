@@ -562,6 +562,126 @@ function BadDebtLab(){
   </div>;
 }
 
+/* ============ TAB 8 : เฉลยแบบทดสอบ 15 ข้อ ============ */
+function QuizTab(){
+  const Q = ({no,q,ans,children})=> <div className="sec-card">
+    <h3><span className="tag-step">ข้อ {no}</span>{q}</h3>
+    <div style={{margin:'6px 0'}}><Tag color="green" style={{fontSize:14,padding:'2px 10px'}}>ตอบ: {ans}</Tag></div>
+    {children}
+  </div>;
+  return <div>
+    <Alert type="success" showIcon style={{marginBottom:10}} message="เฉลยแบบทดสอบ 15 ข้อ พร้อมวิธีคิดและหลักการอ้างอิง" description="ทุกข้อโยงกลับเนื้อหาในแท็บ 1-4 ของไฟล์นี้"/>
+
+    <Q no="1" q="Kirk, Inc. — ยอดเงินสดที่ถูกต้อง ณ 30 เม.ย. 2025?" ans="€38,940">
+      <p><b>หลักการ:</b> เริ่มจากยอด bank statement ปรับเฉพาะรายการที่<b>ธนาคารยังไม่รู้</b> ("ใครยังไม่รู้ ปรับฝั่งคนนั้น" — แท็บ 1.3)</p>
+      <table className="fin"><tbody>
+        <tr><td>ยอดตาม bank statement</td><td className="num">39,140</td></tr>
+        <tr><td>+ เงินฝากระหว่างทาง (ธนาคารยังไม่บันทึก)</td><td className="num">5,000</td></tr>
+        <tr><td>− เช็คค้างจ่าย (ยังไม่มีใครนำไปขึ้นเงิน)</td><td className="neg">(5,200)</td></tr>
+        <tr className="total"><td>ยอดเงินสดที่ถูกต้อง</td><td className="num">38,940</td></tr>
+      </tbody></table>
+      <div className="warn">⚠️ ตัวหลอก: NSF 450 และค่าธรรมเนียม 20 เป็นรายการปรับ<b>ฝั่งบัญชีกิจการ</b> (ธนาคารหักไปแล้ว) — ใครเอาไปหักซ้ำจะได้ 38,470 ซึ่งเป็นตัวเลือกหลอกพอดี</div>
+    </Q>
+
+    <Q no="2" q="Wellington — ยอดค่าเผื่อหนี้สงสัยจะสูญหลังปรับปรุง (วิธี % ของยอดขายเชื่อ)?" ans="€122,000">
+      <p><b>หลักการ (แท็บ 2.3 วิธี ①):</b> % ของยอดขายเชื่อ → ตัวเลขที่ได้คือ "ค่าใช้จ่าย" ทั้งก้อน ไม่สนค่าเผื่อเดิม แต่<b>ยอดคงเหลือปลายปี</b>ต้องรวมค่าเผื่อเดิมด้วย</p>
+      <div className="je">Bad Debt Expense = 1% × 12,800,000 = 128,000<br/>ค่าเผื่อเดิมเป็น<b>เดบิต</b> 6,000 → ยอดปลายปี = 128,000 − 6,000 = <b>122,000 เครดิต</b></div>
+      <div className="warn">⚠️ ตัวหลอก: 134,000 = คนบวก 6,000 (ลืมว่าเดบิตต้องหักล้างกับเครดิต) | 25,400 = คนคิด 1% ของลูกหนี้ 2.54M (ผิดวิธี)</div>
+    </Q>
+
+    <Q no="3" q="Vivian — มูลค่าที่คาดว่าจะเก็บได้ (cash realizable value)?" ans="€122,500">
+      <p><b>หลักการ (แท็บ 2.3 วิธี ②):</b> % ของลูกหนี้ → ได้ "ยอดค่าเผื่อเป้าหมาย" และ CRV = ลูกหนี้ − ค่าเผื่อเป้าหมาย</p>
+      <div className="je">ค่าเผื่อที่ควรมี = 2% × 125,000 = 2,500 → CRV = 125,000 − 2,500 = <b>122,500</b></div>
+      <div className="kbox">💡 ค่าเผื่อเดิมเดบิต 1,200 กระทบเฉพาะ "ค่าใช้จ่าย" (2,500 + 1,200 = 3,700) ไม่กระทบ CRV เพราะยอดค่าเผื่อปลายงวดต้องจบที่ 2,500 อยู่ดี | ยอดขาย 700,000 เป็นตัวหลอก ไม่ได้ใช้</div>
+    </Q>
+
+    <Q no="4" q="ยอดเงินสดที่ถูกต้อง (เริ่มจากยอดตามบัญชี 45,000)?" ans="$45,548">
+      <p><b>หลักการ:</b> โจทย์เริ่มจากยอด book → ปรับเฉพาะสิ่งที่<b>กิจการยังไม่รู้/บันทึกผิด</b> ส่วนเงินฝากระหว่างทาง 2,300 เป็นเรื่องฝั่งธนาคาร ไม่เกี่ยว</p>
+      <table className="fin"><tbody>
+        <tr><td>ยอดตามบัญชีกิจการ</td><td className="num">45,000</td></tr>
+        <tr><td>+ ธนาคารเก็บเงินให้ (collection)</td><td className="num">940</td></tr>
+        <tr><td>− เช็ค NSF</td><td className="neg">(320)</td></tr>
+        <tr><td>− แก้เช็ครับ: บันทึก 540 ของจริง 450 (รับเกินไว้ 90)</td><td className="neg">(90)</td></tr>
+        <tr><td>+ แก้เช็คจ่าย: บันทึก 97 ของจริง 79 (จ่ายเกินไว้ 18)</td><td className="num">18</td></tr>
+        <tr className="total"><td>ยอดเงินสดที่ถูกต้อง</td><td className="num">45,548</td></tr>
+      </tbody></table>
+    </Q>
+
+    <Q no="5" q="ของระหว่างทางแบบ FOB shipping point อยู่ใน inventory ของใคร?" ans="ผู้ซื้อ (included in the inventory of the buyer)">
+      <p><b>หลักการ (แท็บ 3.3):</b> FOB shipping point = กรรมสิทธิ์โอนทันทีที่ของขึ้นยานพาหนะ → ระหว่างทางเป็นของผู้ซื้อแล้ว (เคส UTCC-ภูเก็ตในสไลด์)</p>
+    </Q>
+
+    <Q no="6" q="ข้อใดเป็น product cost ของสินค้าคงเหลือ?" ans="Raw materials (วัตถุดิบ)">
+      <p><b>หลักการ (แท็บ 3.4):</b> Product cost = ต้นทุนที่ทำให้ได้สินค้ามาพร้อมขาย | Selling costs = period cost | Interest = ต้นทุนการเงิน | ของเสียเกินปกติ = ค่าใช้จ่ายงวด ไม่เข้าสินค้า</p>
+    </Q>
+
+    <Q no="7" q="Elkins (perpetual) จ่ายเงิน 9 มี.ค. ควรเครดิตอะไร?" ans="Inventory $180">
+      <p><b>วิธีคิด:</b> ค้างจ่าย = 10,000 − ส่งคืน 1,000 = 9,000 | จ่ายใน 10 วัน → ส่วนลด 2% × 9,000 = 180</p>
+      <div className="je">Dr เจ้าหนี้ 9,000 / Cr เงินสด 8,820 + Cr <b>สินค้าคงเหลือ 180</b></div>
+      <div className="warn">⚠️ จุดชี้ขาด: ระบบ <b>perpetual</b> ส่วนลดซื้อลดเข้า "Inventory" โดยตรง (แท็บ 3.2/3.5 — สไลด์เขียน "Purchase Discounts / Inventory") | "Purchase discounts" ใช้กับ periodic | ฐานคิดคือ 9,000 หลังหักของคืน (ตัวหลอก $200 มาจากลืมหักของคืน)</div>
+    </Q>
+
+    <Q no="8" q="June Corp. — COGS วิธี FIFO?" ans="$900">
+      <div className="je">ทุกล็อตต้นทุน $20 เท่ากันหมด → COGS = 45 × 20 = <b>900</b></div>
+      <div className="kbox">💡 ราคาขาย $43 คือตัวหลอก (45 × 43 = 1,935 โผล่เป็นตัวเลือกท้ายพอดี) — COGS ใช้ต้นทุน ไม่ใช่ราคาขาย</div>
+    </Q>
+
+    <Q no="9" q="Chess Top (periodic, average) — สินค้าปลายงวด?" ans="$10,131">
+      <table className="fin"><tbody>
+        <tr><td>มีไว้ขาย: 200×65 + 300×68 + 150×70</td><td className="num">43,900 (650 หน่วย)</td></tr>
+        <tr><td>ถัวเฉลี่ย = 43,900 ÷ 650</td><td className="num">67.5385 /หน่วย</td></tr>
+        <tr><td>ปลายงวด = (650 − 500) × 67.5385</td><td className="num">10,130.77 ≈ 10,131</td></tr>
+      </tbody></table>
+      <div className="kbox">✅ เช็คแบบแท็บ 4: COGS 33,769 + ปลายงวด 10,131 = 43,900 พอดี | ตัวหลอก 33,770 คือ COGS ไม่ใช่ปลายงวด</div>
+    </Q>
+
+    <Q no="10" q="Cash equivalents = อายุเดิมไม่เกิน 6 เดือน?" ans="False">
+      <p><b>หลักการ (แท็บ 1.2):</b> เกณฑ์คือ <b>3 เดือนหรือน้อยกว่า</b> (original maturities of three months or less)</p>
+    </Q>
+
+    <Q no="11" q="ตั้งค่าเผื่อ 10% ของลูกหนี้ — จำนวนที่ปรับปรุง?" ans="€3,540">
+      <p><b>หลักการ (แท็บ 2.3 วิธี ② แบบเดียวกับ Weir):</b> ได้ยอดเป้าหมายแล้วต้องหักค่าเผื่อเดิมฝั่งเครดิต</p>
+      <div className="je">เป้าหมาย = 10% × 43,000 = 4,300 → ปรับปรุง = 4,300 − 760 = <b>3,540</b></div>
+      <div className="warn">⚠️ ตัวหลอก: 4,300 = ลืมหักค่าเผื่อเดิม | 5,060 = บวกแทนหัก | Sales 425,000 / returns 14,000 ไม่ได้ใช้เลย (โจทย์ให้ใช้ % ของลูกหนี้)</div>
+    </Q>
+
+    <Q no="12" q="Lawson — inventories ในงบฐานะการเงิน?" ans="$178,000">
+      <p><b>หลักการ (แท็บ 3.1):</b> กิจการผลิตมี inventory 3 บัญชี: วัตถุดิบ + งานระหว่างทำ + สำเร็จรูป</p>
+      <div className="je">27,000 + 59,000 + 92,000 = <b>178,000</b></div>
+      <div className="kbox">💡 Supplies 4,000 กับ Prepaid insurance 6,000 เป็นสินทรัพย์หมุนเวียนตัวอื่น ไม่ใช่ inventories (รวมหมดจะได้ 182,000 ติดกับดัก)</div>
+    </Q>
+
+    <Q no="13" q="ค่าขนส่ง $24,000 ที่ผู้ขายจ่ายตอนขายของ ปฏิบัติอย่างไร?" ans="ผู้ขายลงเป็น operating expenses ในงบกำไรขาดทุน">
+      <p><b>หลักการ (แท็บ 3.4):</b> ค่าขนส่ง<b>ออก</b> (freight-out) เกิดจากการ<b>ขาย</b> = selling expense = period cost | เฉพาะ freight-<b>in</b> (ขนของเข้าตอนซื้อ) เท่านั้นที่เป็น product cost รวมเข้าสินค้า | ผู้ซื้อ (Sandcastles) ไม่เกี่ยวกับเงินก้อนนี้</p>
+    </Q>
+
+    <Q no="14" q="ของระหว่างทางที่เพิ่งซื้อแบบ FOB destination แสดงที่ไหนในงบผู้ซื้อ?" ans="ไม่แสดงในงบ (Not on the statement of financial position)">
+      <p><b>หลักการ (แท็บ 3.3):</b> FOB destination = กรรมสิทธิ์ยังอยู่กับ<b>ผู้ขาย</b>จนของถึงมือ → ผู้ซื้อยังไม่มีทั้งสินค้าและเจ้าหนี้ ยังไม่บันทึกอะไรเลย</p>
+    </Q>
+
+    <Q no="15" q="เงินฝากออมทรัพย์จัดเป็นเงินสดในงบฐานะการเงิน?" ans="True">
+      <p><b>หลักการ (แท็บ 1.2):</b> เงินสดรวมเงินฝากธนาคารที่เบิกใช้ได้ทันที — ออมทรัพย์ถอนได้เมื่อต้องการ จึงจัดเป็นเงินสด (ต่างจากฝากประจำที่ติดเงื่อนไขเวลา)</p>
+    </Q>
+
+    <div className="sec-card">
+      <h3>📊 สรุปคำตอบทั้ง 15 ข้อ</h3>
+      <table className="fin">
+        <thead><tr><th>ข้อ</th><th>ตอบ</th><th>เรื่อง</th><th>ข้อ</th><th>ตอบ</th><th>เรื่อง</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>€38,940</td><td>Bank rec ฝั่งธนาคาร</td><td>9</td><td>$10,131</td><td>WA periodic</td></tr>
+          <tr><td>2</td><td>€122,000</td><td>% ขายเชื่อ + ค่าเผื่อเดบิต</td><td>10</td><td>False</td><td>กฎ 3 เดือน</td></tr>
+          <tr><td>3</td><td>€122,500</td><td>CRV วิธี % ลูกหนี้</td><td>11</td><td>€3,540</td><td>% ลูกหนี้ − ค่าเผื่อเดิม</td></tr>
+          <tr><td>4</td><td>$45,548</td><td>Bank rec ฝั่งบัญชี + แก้ error</td><td>12</td><td>$178,000</td><td>Inventory 3 บัญชีผู้ผลิต</td></tr>
+          <tr><td>5</td><td>ของผู้ซื้อ</td><td>FOB shipping point</td><td>13</td><td>Opex ผู้ขาย</td><td>Freight-out = period cost</td></tr>
+          <tr><td>6</td><td>Raw materials</td><td>Product cost</td><td>14</td><td>ไม่ขึ้นงบ</td><td>FOB destination</td></tr>
+          <tr><td>7</td><td>Inventory $180</td><td>Perpetual + หักของคืนก่อน</td><td>15</td><td>True</td><td>ออมทรัพย์ = เงินสด</td></tr>
+          <tr><td>8</td><td>$900</td><td>FIFO (ราคาขายคือตัวหลอก)</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>;
+}
+
 /* ============ FLOATING TOGGLE TOOL ============ */
 function FloatingLab(){
   const [open,setOpen]=useState(false);
@@ -596,6 +716,7 @@ function App(){
       {key:'4',label:'🔢 Cost Flow',children:<FlowTab/>},
       {key:'5',label:'🧮 สูตร & แทนค่า',children:<FormulaTab/>},
       {key:'6',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'8',label:'📝 เฉลยแบบทดสอบ',children:<QuizTab/>},
       {key:'7',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
     ]}/>
   </div>;
