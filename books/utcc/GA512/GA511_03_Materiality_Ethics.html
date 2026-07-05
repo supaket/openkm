@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 — ความมีสาระสำคัญ, เหตุการณ์ภายหลัง & จรรยาบรรณ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f4f2f7; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#5b4b8a,#7d6bb0); border-radius:14px; padding:22px 26px; color:#f3f0fa; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:23px; color:#f3f0fa; }
+  .hero p { margin:0; opacity:.94; }
+  .sec-card { background:#fffdf9; border:1px solid #e2ddec; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(60,40,90,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#5b4b8a; font-size:17px; }
+  .tag-step { display:inline-block; background:#5b4b8a; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#e6e0f0; color:#463a6b; padding:6px 8px; border:1px solid #d3c9e5; text-align:center; }
+  table.fin td { padding:6px 8px; border:1px solid #e4ddee; vertical-align:top; }
+  table.fin tr.total td { background:#eee9f6; font-weight:700; }
+  table.fin tr.head td { background:#f3eff9; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#eee9f6; border-left:4px solid #5b4b8a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#f8f6fb; border:1px dashed #a99bc8; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#5b4b8a; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf9; border:2px solid #b6a9d6; color:#463a6b; font-weight:600; font-size:15px; }
+  .flip-back { background:#5b4b8a; color:#f3f0fa; transform:rotateY(180deg); font-size:13px; line-height:1.5; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Radio, InputNumber } = antd;
+const { useState } = React;
+
+/* ============ TAB 1 : Materiality ============ */
+function MaterialityTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>ความมีสาระสำคัญคืออะไร</h3>
+      <p><b>ความมีสาระสำคัญ (Materiality)</b> = รายการหรือเหตุการณ์ทางบัญชี ซึ่งหากผู้ใช้งบการเงินไม่ได้ทราบ อาจตัดสินใจผิดไปจากถ้าทราบ</p>
+      <div className="analogy">💡 จำสั้นๆ: <b>"ถ้ารู้ จะเปลี่ยนใจ"</b> — ข้อมูลที่ถ้าเปิดเผยแล้วทำให้ผู้ใช้ตัดสินใจต่างออกไป = มีสาระสำคัญ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>ระดับความมีสาระสำคัญ 3 ระดับ</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={8}><Card size="small" title="① งบการเงินโดยรวม" style={{height:'100%',background:'#f0edf8'}}>
+          Materiality for the financial statements as a whole — ระดับภาพรวมทั้งงบ</Card></Col>
+        <Col xs={24} md={8}><Card size="small" title="② รายการ/ยอด/การเปิดเผยเฉพาะ" style={{height:'100%',background:'#f0edf8'}}>
+          สำหรับประเภทรายการ ยอดคงเหลือ หรือการเปิดเผยข้อมูลเฉพาะบางรายการที่ผู้ใช้คาดหวังเป็นพิเศษ</Card></Col>
+        <Col xs={24} md={8}><Card size="small" title="③ ในการปฏิบัติงาน" style={{height:'100%',background:'#f0edf8'}}>
+          Performance materiality — กำหนดให้<b>ต่ำกว่า</b>ระดับงบโดยรวม</Card></Col>
+      </Row>
+      <div className="kbox">🎯 <b>Performance materiality (ในการปฏิบัติงาน):</b> กำหนดให้ต่ำกว่า materiality ของงบโดยรวม เพื่อ<b>ลดโอกาส</b>ที่ผลรวมของการแสดงข้อมูลที่ขัดต่อข้อเท็จจริงที่<b>ยังไม่ถูกแก้ไขและยังตรวจไม่พบ</b> จะรวมกันสูงเกินระดับความมีสาระสำคัญ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>การกำหนดระดับ (ใช้ดุลยพินิจ + benchmark)</h3>
+      <p>ผู้สอบใช้<b>ดุลยพินิจเยี่ยงผู้ประกอบวิชาชีพ</b> โดยมักใช้<b>อัตราส่วนร้อยละ</b>เป็นข้อมูลอ้างอิงเริ่มต้น (benchmark) ปัจจัยที่กระทบการเลือก benchmark:</p>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td><b>องค์ประกอบของงบการเงิน</b> (สินทรัพย์ หนี้สิน ส่วนของเจ้าของ รายได้ ค่าใช้จ่าย)</td></tr>
+        <tr><td>②</td><td><b>รายการที่ผู้ใช้สนใจเป็นพิเศษ</b> — เช่น เพื่อประเมินผลการดำเนินงาน อาจเน้นที่กำไร รายได้ หรือสินทรัพย์สุทธิ</td></tr>
+        <tr><td>③</td><td><b>ลักษณะกิจการ</b> ช่วงเวลาของวงจรธุรกิจ สภาพอุตสาหกรรมและเศรษฐกิจ</td></tr>
+        <tr><td>④</td><td><b>โครงสร้างเจ้าของและวิธีจัดหาเงินทุน</b> — เช่น ถ้าจัดหาทุนด้วยการกู้ยืมอย่างเดียว ผู้ใช้อาจให้ความสำคัญกับสินทรัพย์และสิทธิเรียกร้องเหนือสินทรัพย์มากกว่ากำไร</td></tr>
+        <tr><td>⑤</td><td><b>ความผันผวนของ benchmark</b> ที่เกี่ยวข้อง</td></tr>
+      </tbody></table>
+      <div className="warn">⚠️ หมายเหตุ: สไลด์ระบุว่า "อัตราส่วนร้อยละใช้เป็นจุดเริ่มต้น" แต่<b>ไม่ได้กำหนดตัวเลข % ตายตัว</b> เพราะขึ้นกับดุลยพินิจและ benchmark ที่เลือก (ไฟล์นี้จึงไม่ใส่ % ที่สไลด์ไม่ได้ระบุ)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.4</span>เมื่อไรต้องกำหนดระดับเฉพาะรายการ</h3>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>กฎหมาย/ข้อบังคับ/แม่บทฯ กระทบการคาดการณ์ของผู้ใช้เกี่ยวกับการวัดมูลค่า/การเปิดเผย เช่น <b>รายการบุคคลหรือกิจการที่เกี่ยวข้องกัน</b>, <b>ค่าตอบแทนผู้บริหารและผู้กำกับดูแล</b>, การวิเคราะห์ความอ่อนไหวของมูลค่ายุติธรรมของประมาณการที่มีความไม่แน่นอนสูง</td></tr>
+        <tr><td>②</td><td>การเปิดเผยข้อมูลสำคัญที่สัมพันธ์กับอุตสาหกรรม เช่น <b>ต้นทุนวิจัยและพัฒนา (R&D) ของบริษัทยา</b></td></tr>
+        <tr><td>③</td><td>ด้านที่เน้นเป็นพิเศษซึ่งเปิดเผยแยกต่างหาก เช่น <b>ข้อมูลส่วนงาน (segment)</b> หรือ<b>การรวมธุรกิจ</b>ที่สำคัญ</td></tr>
+      </tbody></table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : Subsequent Events ============ */
+function SubsequentTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.1</span>3 วันสำคัญ (ไทม์ไลน์)</h3>
+      <svg viewBox="0 0 720 130" style={{width:'100%',maxWidth:720}}>
+        <line x1="40" y1="70" x2="690" y2="70" stroke="#8a7ab5" strokeWidth="2"/>
+        {[{x:110,t:'วันที่ในงบการเงิน',s:'Date of FS',u:'วันสิ้นรอบล่าสุด'},{x:370,t:'วันที่ในรายงานผู้สอบ',s:"Auditor's report",u:'วันที่ลงในรายงาน'},{x:630,t:'วันที่เผยแพร่งบ',s:'FS issued',u:'พร้อมเผยแพร่ต่อบุคคลภายนอก'}].map((p,i)=><g key={i}>
+          <circle cx={p.x} cy="70" r="7" fill="#5b4b8a"/>
+          <text x={p.x} y="40" textAnchor="middle" fontSize="13" fontWeight="700" fill="#463a6b">{p.t}</text>
+          <text x={p.x} y="92" textAnchor="middle" fontSize="11" fill="#7a6ea0">{p.s}</text>
+          <text x={p.x} y="108" textAnchor="middle" fontSize="10.5" fill="#8a7fa8">{p.u}</text>
+        </g>)}
+      </svg>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>ไทม์ไลน์เหตุการณ์ภายหลัง</b> เพื่อดูหน้าที่ของผู้สอบในแต่ละช่วงเวลาแบบโต้ตอบ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.2</span>เหตุการณ์กระทบงบได้ 2 ทาง</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="① สภาพมีอยู่แล้ว ณ วันที่ในงบ" style={{height:'100%',background:'#eef7ee'}}>
+          เหตุการณ์ที่มีหลักฐานยืนยันว่า<b>สภาพนั้นมีอยู่แล้ว ณ วันที่ในงบการเงิน</b> → ตามหลักการควร<b>ปรับปรุงตัวเลข</b>ในงบ (adjusting)</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="② สภาพเกิดขึ้นหลังวันที่ในงบ" style={{height:'100%',background:'#fbf3ec'}}>
+          เหตุการณ์ที่มีหลักฐานยืนยันว่า<b>เกิดขึ้นภายหลังวันที่ในงบการเงิน</b> → ตามหลักการควร<b>เปิดเผยข้อมูล</b> (non-adjusting)</Card></Col>
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.3</span>3 ประเภทตามช่วงเวลาที่ผู้สอบทราบ + หน้าที่</h3>
+      <Collapse items={[
+        {key:'1',label:'① ระหว่างวันที่ในงบ ถึง วันที่ในรายงานผู้สอบ',children:<div>
+          <p>ผู้สอบ<b>ต้องใช้วิธีการตรวจสอบ</b>เพื่อให้ได้หลักฐานเพียงพอว่าเหตุการณ์ที่ต้องปรับปรุง/เปิดเผยถูกระบุครบ (แต่ไม่ต้องตรวจซ้ำสิ่งที่สรุปแล้ว)</p>
+          <p><b>วิธีตรวจ:</b> เข้าใจ/สอบถามวิธีที่ฝ่ายบริหารระบุเหตุการณ์ภายหลัง | อ่านรายงานการประชุมผู้ถือหุ้น/ฝ่ายบริหาร/ผู้กำกับดูแล | อ่านงบการเงินระหว่างกาลล่าสุด | ทำ cutoff ตรวจรับ-จ่ายเงินหลังวันสิ้นงวด | ขอ written representations | ขอข้อมูลจากฝ่ายกฎหมายเรื่องคดีความ</p>
+          <p><b>ถามผู้บริหารเรื่อง:</b> ข้อตกลง/กู้ยืม/ค้ำประกันใหม่ | ซื้อ-ขายสินทรัพย์ | เพิ่มทุน/ออกหุ้นกู้/ควบรวม/เลิกกิจการ | สินทรัพย์ถูกยึดหรือเสียหาย (ไฟไหม้ น้ำท่วม) | ความคืบหน้าหนี้สินที่อาจเกิดขึ้น | การปรับปรุงบัญชีผิดปกติ | เหตุการณ์กระทบความเหมาะสมของนโยบายบัญชี/going concern | กระทบประมาณการ | กระทบการเก็บหนี้</p></div>},
+        {key:'2',label:'② หลังวันที่ในรายงาน แต่ก่อนเผยแพร่งบ',children:<div>
+          <p>ผู้สอบ<b>ไม่มีหน้าที่ตรวจสอบต่อ</b> แต่ถ้าทราบข้อเท็จจริงที่หากพบ ณ วันที่รายงานอาจทำให้ต้องเปลี่ยนรายงาน → ผู้สอบต้อง:</p>
+          <table className="fin"><tbody>
+            <tr><td>1</td><td>หารือกับผู้บริหาร (และผู้กำกับดูแลหากเหมาะสม)</td></tr>
+            <tr><td>2</td><td>พิจารณาว่าต้องแก้ไขงบหรือไม่ และถ้าต้องแก้ ถามผู้บริหารว่าจะดำเนินการอย่างไร</td></tr>
+            <tr><td>3</td><td>ถ้าแก้งบ → ใช้วิธีตรวจที่จำเป็น + <b>ขยายวิธีตรวจถึงวันที่ในรายงานฉบับใหม่</b> + ออกรายงานฉบับใหม่ (ไม่ลงวันก่อนวันที่งบแก้ไขได้รับอนุมัติ)</td></tr>
+          </tbody></table></div>},
+        {key:'3',label:'③ หลังเผยแพร่งบไปแล้ว',children:<div>
+          <p>ผู้สอบ<b>ไม่มีหน้าที่</b> แต่ถ้าทราบข้อเท็จจริงที่มีอยู่ ณ วันที่รายงาน ซึ่งอาจทำให้ต้องเปลี่ยนรายงาน → หารือ/พิจารณาแก้/ถามผู้บริหาร เช่นเดียวกับข้อ ② และถ้าแก้งบใหม่:</p>
+          <table className="fin"><tbody>
+            <tr><td>1</td><td>ใช้วิธีตรวจที่จำเป็น + สอบทานว่าผู้ที่เคยได้รับงบเดิมได้รับแจ้งสถานการณ์แล้ว</td></tr>
+            <tr><td>2</td><td>ขยายวิธีตรวจถึงวันที่รายงานฉบับใหม่ (ไม่ลงวันก่อนอนุมัติงบแก้ไข) + ออกรายงานฉบับใหม่</td></tr>
+            <tr><td>3</td><td>เพิ่ม<b>วรรคเน้นหรือวรรคอธิบายอื่น</b> อ้างถึงหมายเหตุที่อธิบายเหตุผลของการแก้ไข</td></tr>
+            <tr><td>4</td><td>ถ้าผู้บริหารไม่ดำเนินการแจ้ง/ไม่แก้ทั้งที่จำเป็น → ผู้สอบต้องดำเนินการเพื่อ<b>ป้องกันไม่ให้ผู้อื่นใช้รายงาน</b>ในอนาคต</td></tr>
+          </tbody></table></div>},
+      ]}/>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : Written Representations ============ */
+function WrittenRepTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>หนังสือรับรอง (Written Representations) คืออะไร</h3>
+      <p>คำรับรอง<b>เป็นลายลักษณ์อักษร</b>จากผู้บริหารให้ผู้สอบบัญชี เพื่อ<b>ยืนยันเรื่องบางอย่าง</b>หรือ<b>สนับสนุนหลักฐานอื่น</b> — ไม่รวมตัวงบการเงิน สิ่งที่ผู้บริหารรับรอง (assertions) หรือสมุดบัญชี/เอกสารสนับสนุน</p>
+      <div className="warn">⚠️ จุดสำคัญ: หนังสือรับรอง<b>เป็นหลักฐาน</b> (เหมือนคำตอบจากการสอบถาม) แต่ <b>ไม่เพียงพอด้วยตัวเองลำพัง</b> (necessary but not sufficient alone) — ต้องมีหลักฐานอื่นประกอบ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>ยืนยันว่าผู้บริหารได้ปฏิบัติหน้าที่</h3>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>จัดทำงบการเงินตามแม่บทการรายงานทางการเงินที่ใช้ รวมถึงการนำเสนอโดยถูกต้องตามที่ควร</td></tr>
+        <tr><td>②</td><td>ให้ข้อมูลและการเข้าถึงที่เกี่ยวข้องทั้งหมดตามที่ตกลงในเงื่อนไขการรับงาน</td></tr>
+        <tr><td>③</td><td>รับรองว่ารายการทั้งหมดได้ถูกบันทึกและสะท้อนในงบการเงิน</td></tr>
+      </tbody></table>
+      <div className="kbox">📌 นอกจากเหตุการณ์ภายหลัง ยังต้องขอ written representations ในเรื่อง: <b>การทุจริตและการแสดงข้อมูลที่ขัดต่อข้อเท็จจริง</b>, <b>รายการ/ยอดบุคคลที่เกี่ยวข้องกัน</b>, <b>ข้อสมมติการดำเนินงานต่อเนื่อง</b>, <b>ข้อมูลเปรียบเทียบ</b> รวมถึงอาจขอให้รับรองว่าได้แจ้ง<b>จุดอ่อนของการควบคุมภายใน</b>ที่ทราบทั้งหมด</div>
+      <p>อาจให้ผู้เชี่ยวชาญร่วมรับรอง เช่น <b>นักคณิตศาสตร์ประกันภัย (actuary)</b>, <b>วิศวกร</b> (ภาระผูกพันสิ่งแวดล้อม), <b>ที่ปรึกษากฎหมายภายใน</b> (ประมาณการคดีความ)</p>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.3</span>เมื่อไรต้อง "ไม่แสดงความเห็น" (Disclaimer)</h3>
+      <div className="warn">🚫 ผู้สอบ<b>ต้องไม่แสดงความเห็น (disclaim)</b> เมื่อ:<br/>
+        (I) สรุปว่ามีข้อสงสัยเพียงพอเกี่ยวกับ<b>ความซื่อสัตย์ของผู้บริหาร</b> จนหนังสือรับรองเรื่องความรับผิดชอบ (จัดทำงบถูกต้อง/ให้ข้อมูลครบ/บันทึกทุกรายการ) <b>ไม่น่าเชื่อถือ</b><br/>
+        (II) ผู้บริหาร<b>ไม่ให้</b>หนังสือรับรองเรื่องความรับผิดชอบข้างต้น</div>
+      <p>ถ้าหนังสือรับรองไม่น่าเชื่อถือ หรือผู้บริหารไม่ให้บางเรื่องที่ขอ ผู้สอบต้องพิจารณาผลกระทบที่อาจมีต่อความเห็นในรายงาน</p>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : Ethics 5 principles ============ */
+const PRIN = [
+  {n:1,en:'Integrity',th:'ความซื่อสัตย์สุจริต',d:'ตรงไปตรงมาทั้งทางวิชาชีพและธุรกิจ ปฏิบัติต่อกันอย่างยุติธรรม มีจุดยืนมั่นคงแม้เผชิญแรงกดดัน',x:'ต้องไม่รู้เห็น/เกี่ยวข้องกับรายงานหรือข้อมูลที่ (ก) ผิดอย่างเป็นสาระสำคัญหรือทำให้เข้าใจผิด (ข) จัดทำโดยไม่ไตร่ตรองรอบคอบ (ค) ละเว้น/ปิดบังข้อมูลที่จำเป็นจนทำให้เข้าใจผิด'},
+  {n:2,en:'Objectivity & Independence',th:'ความเที่ยงธรรมและความเป็นอิสระ',d:'ไม่มีความขัดแย้งทางผลประโยชน์ ไม่มีอคติ ไม่อยู่ใต้อิทธิพลหรือพึ่งพิงบุคคล/องค์กร/เทคโนโลยีอย่างเกินควร',x:'ความเป็นอิสระมี 2 ด้าน: อิสระด้านจิตใจ (of mind) และอิสระอันเป็นที่ประจักษ์ (in appearance) — ต้องไม่รับงานถ้าตกอยู่ในสถานการณ์ที่ก่อความลำเอียง'},
+  {n:3,en:'Professional Competence & Due Care',th:'ความรู้ความสามารถ ความเอาใจใส่ และรักษามาตรฐาน',d:'รักษาความรู้ความสามารถทางวิชาชีพในระดับที่กำหนด และปฏิบัติงานด้วยความขยันหมั่นเพียรตามมาตรฐาน',x:'ความขยันหมั่นเพียร = ระมัดระวัง ละเอียดรอบคอบ ทันเวลา | ต้องดูแลให้ผู้ช่วยได้รับการฝึกอบรม/กำกับดูแลเหมาะสม | แจ้งข้อจำกัดในการให้บริการแก่ลูกค้า'},
+  {n:4,en:'Confidentiality',th:'การรักษาความลับ',d:'ห้ามเปิดเผยข้อมูลลับที่ได้จากความสัมพันธ์ทางวิชาชีพ/ธุรกิจ โดยไม่ได้รับอนุมัติ และห้ามใช้ข้อมูลลับเพื่อประโยชน์ตนหรือบุคคลที่สาม',x:'ยกเว้นเมื่อมีสิทธิ/หน้าที่ตามกฎหมายหรือวิชาชีพให้เปิดเผย — จำง่ายๆ "ห้ามบอก และห้ามเอาไปใช้"'},
+  {n:5,en:'Professional Behavior',th:'พฤติกรรมทางวิชาชีพ',d:'ปฏิบัติตามกฎหมายและข้อกำหนด หลีกเลี่ยงการกระทำที่ทำให้วิชาชีพเสื่อมเสีย',x:'การตลาด/ส่งเสริมตนเองต้องอยู่บนความจริง ห้าม (ก) โอ้อวดเกินจริงในบริการ/คุณสมบัติ/ประสบการณ์ (ข) ดูหมิ่นหรือเปรียบเทียบงานกับผู้อื่นโดยไม่อยู่บนความจริง'},
+];
+function EthicsTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>จรรยาบรรณคืออะไร ทำไมต้องมี</h3>
+      <p><b>จรรยาบรรณของผู้ประกอบวิชาชีพบัญชี</b> = สิ่งที่กำหนดความประพฤติและวิธีปฏิบัติงานที่ต้องยึดถือ โดยมีวัตถุประสงค์เพื่อดำรงไว้ซึ่ง:</p>
+      <Row gutter={[8,8]}>
+        {['ความเชื่อมั่นจากผู้รับบริการ','ความเชื่อถือได้ในผลงาน','ความเป็นมืออาชีพ','คุณภาพของงานบริการ'].map((t,i)=>
+          <Col xs={12} md={6} key={i}><Card size="small" style={{textAlign:'center',background:'#f0edf8'}}>{t}</Card></Col>)}
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>หลักการพื้นฐาน 5 ข้อ</h3>
+      <div className="analogy">🧠 จำ 5 ข้อ: <b>ซื่อสัตย์ (Integrity) · เที่ยงธรรม-อิสระ (Objectivity) · รู้จริง-เอาใจใส่ (Competence) · รักษาความลับ (Confidentiality) · พฤติกรรมดี (Professional behavior)</b></div>
+      <Collapse items={PRIN.map(p=>({key:String(p.n),label:`${p.n}. ${p.th} (${p.en})`,children:<div>
+        <p style={{margin:'0 0 6px'}}>{p.d}</p>
+        <div className="kbox" style={{margin:0,fontSize:13}}>💡 {p.x}</div>
+      </div>}))}/>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : Fee & Threats ============ */
+const THREATS=[
+  {en:'Self-interest',th:'ผลประโยชน์ส่วนตน',d:'ผลประโยชน์ทางการเงินหรืออื่นๆ ของผู้สอบมีอิทธิพลต่อดุลยพินิจ เช่น ถือหุ้นในลูกค้า, ค่าธรรมเนียมขึ้นกับผลงาน (contingent fee), รับสิ่งจูงใจ, พึ่งพิงค่าธรรมเนียมจากลูกค้ารายเดียวมากเกินไป'},
+  {en:'Self-review',th:'สอบทานผลงานตนเอง',d:'ผู้สอบต้องประเมินงานที่ตัวเอง (หรือสำนักงาน) เคยทำไว้ก่อน เช่น สอบบัญชีงบที่สำนักงานตัวเองเป็นผู้ทำบัญชีให้'},
+  {en:'Advocacy',th:'เป็นผู้ให้การสนับสนุน',d:'ผู้สอบส่งเสริม/เป็นตัวแทนจุดยืนของลูกค้าจนกระทบความเที่ยงธรรม เช่น เป็นตัวแทนลูกค้าในการเจรจา หรือส่งเสริมขายหุ้นของลูกค้า'},
+  {en:'Familiarity',th:'ความคุ้นเคยสนิทสนม',d:'ความสัมพันธ์ใกล้ชิด/นานเกินไปทำให้เห็นใจลูกค้ามากเกินไป เช่น ญาติสนิททำงานตำแหน่งสำคัญในลูกค้า หรือเป็นผู้สอบรายเดิมนานมาก'},
+  {en:'Intimidation',th:'ถูกข่มขู่คุกคาม',d:'ผู้สอบถูกกดดัน/ข่มขู่ (จริงหรือรับรู้ได้) จนไม่กล้าใช้ดุลยพินิจอย่างเป็นกลาง เช่น ลูกค้าขู่จะเปลี่ยนผู้สอบถ้าไม่ยอมตามที่ต้องการ'},
+];
+function ThreatsTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.1</span>ค่าสอบบัญชีกับความเป็นอิสระ (การพึ่งพิงค่าธรรมเนียม)</h3>
+      <table className="fin">
+        <thead><tr><th>ประเภทลูกค้า</th><th>เกณฑ์</th><th>สิ่งที่ต้องทำ</th></tr></thead>
+        <tbody>
+          <tr><td rowSpan={2}><b>มีส่วนได้เสียสาธารณะ (PIE)</b></td>
+            <td>ค่าธรรมเนียม &gt; <b>15%</b> ของค่าธรรมเนียมทั้งหมดของสำนักงาน ต่อเนื่อง <b>2 ปี</b></td>
+            <td>ต้องจัดให้มี<b>การสอบทานคุณภาพงาน</b>โดยผู้ประกอบวิชาชีพที่<b>ไม่ใช่สมาชิกสำนักงาน</b> ก่อนแสดงความเห็นในปีที่ 2</td></tr>
+          <tr><td>เกิน 15% ต่อเนื่อง <b>5 ปี</b></td>
+            <td>สำนักงาน<b>ต้องยุติการเป็นผู้สอบบัญชี</b>หลังจากแสดงความเห็นในปีที่ 5</td></tr>
+          <tr><td><b>ไม่มีส่วนได้เสียสาธารณะ (NPAE)</b></td>
+            <td>ค่าธรรมเนียม &gt; <b>30%</b> ต่อเนื่อง <b>5 ปี</b></td>
+            <td>ต้องจัดให้มี<b>ผู้สอบทานจากภายนอกสำนักงาน</b>ในปีที่ 5</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">📢 กรณี PIE ต้อง<b>เปิดเผยค่าธรรมเนียม</b>ต่อผู้มีหน้าที่กำกับดูแล (ค่าสอบบัญชี ค่าบริการอื่น ค่าที่พึ่งพิง ค่าคงค้าง) ถ้าลูกค้าไม่เปิดเผย ผู้สอบต้องเปิดเผยข้อมูลที่มีสาระสำคัญต่อสาธารณะโดยวิธีอื่น</div>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>ตรวจการพึ่งพิงค่าธรรมเนียม</b> ใส่ประเภทลูกค้า % และจำนวนปี ดูว่าต้องทำอะไร</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.2</span>ภัยคุกคามต่อจรรยาบรรณ 5 ประเภท</h3>
+      <div className="analogy">🧠 จำ 5 ภัย: <b>ส่วนตน (Self-interest) · สอบทานตัวเอง (Self-review) · สนับสนุน (Advocacy) · คุ้นเคย (Familiarity) · ถูกข่มขู่ (Intimidation)</b></div>
+      <Collapse items={THREATS.map((t,i)=>({key:String(i),label:`${i+1}. ${t.th} (${t.en} threat)`,children:<div style={{fontSize:13.5}}>{t.d}</div>}))}/>
+      <div className="kbox">📌 <b>สิ่งจูงใจ (inducements)</b> เช่น ของขวัญ การต้อนรับ นันทนาการ การบริจาค โอกาสจ้างงาน สิทธิพิเศษ → อาจก่อ<b>ภัยจากผลประโยชน์ส่วนตน</b> | การ<b>ถือครองทรัพย์สินลูกค้า</b>ก็อาจก่อภัยเช่นกัน</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 6 : Ethics Cases ============ */
+const CASES=[
+  {t:'ฟ้า/เขียว — เขียวช่วยตรวจแทนตอนฟ้าไปเที่ยว',s:'ฟ้ารับงานสอบบัญชีบริษัทสุโขสโมสร แล้วไปเที่ยวญี่ปุ่น ให้เขียว (CPA อีกคน) ช่วยตรวจบัญชีเงินฝาก จากนั้นบริษัทให้เขียวตรวจลูกหนี้/เจ้าหนี้/สินทรัพย์ถาวรต่อ เขียวรับงาน',
+    a:'ประเด็นหลักคือ<b>ความรับผิดชอบของผู้สอบบัญชีผู้รับงาน</b> (ฟ้า) และการเข้ามาทำงานสอบบัญชีของบุคคลที่ไม่ได้เป็นผู้รับงาน/ไม่ได้อยู่ในทีมอย่างเป็นทางการ ควรพิจารณาเรื่องการกำกับดูแลงานและใครเป็นผู้รับผิดชอบเซ็นรายงาน (สไลด์ตั้งเป็นคำถามให้อภิปราย)'},
+  {t:'สมสิริ/ศิริพร — สำนักงานทำบัญชีและสอบบัญชี',s:'สำนักงาน S&S ทำบัญชีให้บริษัท Blue และสอบบัญชีให้บริษัท Green โดยสมสิริคุมงานทำบัญชี Blue ส่วนศิริพรคุมงานสอบบัญชี Green (คนละบริษัท คนละคน)',
+    a:'ภัยที่ต้องพิจารณา: <b>Self-review</b> จะเกิดถ้าสำนักงานเดียว "ทำบัญชี" และ "สอบบัญชี" ให้<b>บริษัทเดียวกัน</b> — แต่ในเคสนี้เป็นคนละบริษัท (Blue vs Green) จึงต้องวิเคราะห์ว่ามี self-review threat ต่อบริษัทเดียวกันหรือไม่ (สไลด์ตั้งเป็นคำถาม)'},
+  {t:'ชาลี — ถือบัตรเครดิตธนาคารที่ตนสอบบัญชี',s:'ชาลีสอบบัญชีให้ธนาคารไทยพาณิชย์ และถือบัตรเครดิตของธนาคารนั้น มียอดค้างชำระ 3,000 บาท',
+    a:'พิจารณา <b>Self-interest threat</b> จากความสัมพันธ์ทางการเงินกับลูกค้า จุดที่ต้องชั่งคือ ยอดนี้เป็น<b>เงื่อนไขการค้าปกติ</b>และ<b>จำนวนเล็ก</b>หรือไม่ (โดยทั่วไปยอดบัตรเครดิตปกติที่ชำระตามกำหนดมักไม่กระทบความเป็นอิสระอย่างมีสาระสำคัญ)'},
+  {t:'สกาวเดือน/จันทร์เพ็ญ — ซื้อของจากลูกค้าได้ส่วนลด',s:'ซื้อ laptop จำนวนมากจาก Power Buy (ลูกค้า) ได้ส่วนลด 5% เพราะซื้อจำนวนมาก',
+    a:'พิจารณา <b>Self-interest threat</b> จากสิ่งจูงใจ/ผลประโยชน์ จุดชี้ขาดคือส่วนลดนี้เป็น<b>ส่วนลดการค้าปกติ</b>ที่ให้ลูกค้าทั่วไปในเงื่อนไขเดียวกันหรือไม่ (ถ้าเป็นเงื่อนไขปกติทางการค้า มักไม่ถือเป็นสิ่งจูงใจที่มีปัญหา)'},
+  {t:'BHJ — ภรรยาหุ้นส่วนเป็น CFO ลูกค้า',s:'Bill สอบบัญชี Malinda ที่ภรรยาของ Harry (หุ้นส่วน) เป็น CFO, Jane สอบทานกระดาษทำการ, Harry ไม่เกี่ยวข้องกับงานนี้',
+    a:'<b>Familiarity threat</b> (และอาจ self-interest) จากความสัมพันธ์ใกล้ชิด — ภรรยาของหุ้นส่วนดำรงตำแหน่งสำคัญ (CFO) ในลูกค้า ต้องประเมินว่าการที่ Harry ไม่ร่วมงาน + Jane สอบทาน เพียงพอเป็นมาตรการป้องกันหรือไม่'},
+  {t:'BHJ — แยกแผนกบัญชีและสอบบัญชี',s:'BHJ ตั้งแผนกบริการบัญชี (คนละทีม คนละจังหวัด) มีลูกค้า 10 รายที่จ้างทั้งบริการทำบัญชีและสอบบัญชี',
+    a:'<b>Self-review threat</b> — สำนักงานเดียวทำบัญชีและสอบบัญชีให้ลูกค้ารายเดียวกัน (10 ราย) แม้แยกทีม/สถานที่ ก็ยังต้องประเมินและมีมาตรการป้องกัน'},
+  {t:'Blue Computer — ค่าสอบขึ้นกับการอนุมัติเงินกู้',s:'ค่าสอบบัญชีขึ้นอยู่กับว่างบการเงินทำให้ธนาคารอนุมัติเงินกู้ให้ลูกค้าหรือไม่',
+    a:'<b>Self-interest threat จากค่าธรรมเนียมตามเงื่อนไข (contingent fee)</b> — ค่าตอบแทนผูกกับผลลัพธ์ของงาน กระทบความเป็นอิสระอย่างชัดเจน (เป็นกรณีที่โดยทั่วไปไม่ควรทำ)'},
+  {t:'BHJ — โฆษณาโอ้อวด / คิดค่าถูก / คิดตามสินทรัพย์',s:'โฆษณารับสมัครว่า "most prestigious CPA office", คิดค่าสอบถูกกว่าผู้สอบรายเดิมมาก, คิดค่าสอบตามยอดสินทรัพย์รวมของลูกค้า',
+    a:'<b>Professional behavior</b> — โฆษณาโอ้อวดเกินจริงกระทบพฤติกรรมทางวิชาชีพ | คิดค่าต่ำมาก (lowballing) อาจกระทบ<b>ความรู้ความสามารถและความเอาใจใส่</b> (ทำงานได้มาตรฐานพอไหม) | ค่าธรรมเนียมตามยอดสินทรัพย์ต้องพิจารณาว่ากลายเป็นลักษณะ contingent หรือไม่'},
+];
+function CaseTab(){
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เคสจรรยาบรรณจากสไลด์ (โหมดอภิปราย)" description="สไลด์ตั้งเคสเหล่านี้เป็นคำถามให้วิเคราะห์ตามกรอบ 5 ภัยคุกคาม — ด้านล่างคือการวิเคราะห์ว่าเกี่ยวกับภัยประเภทใดและจุดที่ต้องชั่งน้ำหนัก (ไม่ใช่คำเฉลยตายตัว เพราะบางเคสขึ้นกับดุลยพินิจ)"/>
+    {CASES.map((c,i)=><div className="sec-card" key={i}>
+      <h3 style={{marginBottom:6}}>{c.t}</h3>
+      <p style={{margin:'0 0 8px',fontSize:13.5}}>{c.s}</p>
+      <div className="kbox" style={{margin:0}} dangerouslySetInnerHTML={{__html:'🔎 '+c.a}}/>
+    </div>)}
+  </div>;
+}
+
+/* ============ FLASHCARDS ============ */
+const CARDS=[
+  {q:'ความมีสาระสำคัญ (materiality) นิยามสั้นๆ?',a:'รายการ/เหตุการณ์ที่หากผู้ใช้งบไม่ทราบ อาจตัดสินใจผิดไปจากถ้าทราบ ("ถ้ารู้ จะเปลี่ยนใจ")'},
+  {q:'ระดับความมีสาระสำคัญมีกี่ระดับ?',a:'3 ระดับ: (1) งบการเงินโดยรวม (2) ประเภทรายการ/ยอดคงเหลือ/การเปิดเผยเฉพาะ (3) ในการปฏิบัติงาน (performance materiality)'},
+  {q:'Performance materiality กำหนดไว้เพื่ออะไร?',a:'กำหนดให้ต่ำกว่างบโดยรวม เพื่อลดโอกาสที่ผลรวมของ misstatement ที่ยังไม่แก้และยังตรวจไม่พบ จะรวมกันเกินระดับความมีสาระสำคัญ'},
+  {q:'ปัจจัยเลือก benchmark ของ materiality (ยกตัวอย่าง)?',a:'องค์ประกอบของงบ, รายการที่ผู้ใช้สนใจ (กำไร/รายได้/สินทรัพย์สุทธิ), ลักษณะกิจการ/อุตสาหกรรม, โครงสร้างเจ้าของและการจัดหาเงินทุน, ความผันผวนของ benchmark'},
+  {q:'3 วันสำคัญของเหตุการณ์ภายหลัง?',a:'วันที่ในงบการเงิน → วันที่ในรายงานผู้สอบบัญชี → วันที่เผยแพร่งบการเงิน'},
+  {q:'เหตุการณ์ภายหลังกระทบงบ 2 ทางอะไร?',a:'(1) มีหลักฐานว่าสภาพมีอยู่แล้ว ณ วันที่ในงบ → ปรับปรุงตัวเลข (adjusting) (2) เกิดขึ้นหลังวันที่ในงบ → เปิดเผยข้อมูล (non-adjusting)'},
+  {q:'ช่วง "ระหว่างวันที่ในงบถึงวันที่ในรายงาน" ผู้สอบมีหน้าที่อะไร?',a:'ต้องใช้วิธีตรวจสอบเชิงรุกเพื่อให้ได้หลักฐานว่าเหตุการณ์ที่ต้องปรับปรุง/เปิดเผยถูกระบุครบ (อ่านรายงานการประชุม, cutoff, written rep, ถามฝ่ายกฎหมาย ฯลฯ)'},
+  {q:'ช่วง "หลังวันที่ในรายงาน แต่ก่อนเผยแพร่งบ" ถ้าพบข้อเท็จจริงใหม่?',a:'ไม่มีหน้าที่ตรวจต่อ แต่ถ้าทราบสิ่งที่อาจเปลี่ยนรายงาน → หารือ/พิจารณาแก้ ถ้าแก้ต้องขยายวิธีตรวจถึงวันที่รายงานใหม่ + ออกรายงานใหม่'},
+  {q:'ช่วง "หลังเผยแพร่งบ" ถ้าผู้บริหารไม่ยอมแก้ทั้งที่จำเป็น?',a:'ผู้สอบต้องดำเนินการเพื่อป้องกันไม่ให้ผู้อื่นใช้รายงานของผู้สอบในอนาคต'},
+  {q:'หนังสือรับรอง (written representations) เป็นหลักฐานที่เพียงพอในตัวเองไหม?',a:'ไม่ — เป็นหลักฐานที่จำเป็นแต่ไม่เพียงพอด้วยตัวเองลำพัง ต้องมีหลักฐานอื่นประกอบ'},
+  {q:'เมื่อไรผู้สอบต้อง disclaim เพราะเรื่อง written representations?',a:'(I) สงสัยความซื่อสัตย์ผู้บริหารจนคำรับรองไม่น่าเชื่อถือ หรือ (II) ผู้บริหารไม่ให้คำรับรองเรื่องความรับผิดชอบ'},
+  {q:'ตัวอย่างเรื่องที่ต้องขอ written representations?',a:'จัดทำงบตามแม่บท, ให้ข้อมูลครบ, บันทึกทุกรายการ, การทุจริต, รายการบุคคลที่เกี่ยวข้องกัน, going concern, ข้อมูลเปรียบเทียบ, จุดอ่อนการควบคุมภายใน'},
+  {q:'หลักการพื้นฐานจรรยาบรรณ 5 ข้อ?',a:'Integrity, Objectivity & Independence, Professional competence & due care, Confidentiality, Professional behavior'},
+  {q:'ความเป็นอิสระมีกี่ด้าน?',a:'2 ด้าน: อิสระด้านจิตใจ (of mind) และอิสระอันเป็นที่ประจักษ์ (in appearance)'},
+  {q:'Confidentiality มีข้อยกเว้นไหม?',a:'ห้ามเปิดเผย/ใช้ข้อมูลลับ ยกเว้นมีสิทธิหรือหน้าที่ตามกฎหมาย/วิชาชีพให้เปิดเผย'},
+  {q:'ภัยคุกคามต่อจรรยาบรรณ 5 ประเภท?',a:'Self-interest (ส่วนตน), Self-review (สอบทานตัวเอง), Advocacy (สนับสนุน), Familiarity (คุ้นเคย), Intimidation (ถูกข่มขู่)'},
+  {q:'ค่าธรรมเนียมตามเงื่อนไข (contingent fee) เป็นภัยประเภทใด?',a:'Self-interest threat — ค่าตอบแทนผูกกับผลลัพธ์ของงาน กระทบความเป็นอิสระ'},
+  {q:'สอบบัญชีงบที่สำนักงานตัวเองทำบัญชีให้ = ภัยประเภทใด?',a:'Self-review threat (สอบทานผลงานตนเอง)'},
+  {q:'PIE: ค่าธรรมเนียมเกิน 15% ต่อเนื่อง 2 ปี ต้องทำอะไร?',a:'ต้องจัดให้มีการสอบทานคุณภาพงานโดยผู้ที่ไม่ใช่สมาชิกสำนักงาน ก่อนแสดงความเห็นในปีที่ 2'},
+  {q:'PIE: ค่าธรรมเนียมเกิน 15% ต่อเนื่อง 5 ปี ต้องทำอะไร?',a:'สำนักงานต้องยุติการเป็นผู้สอบบัญชีหลังจากแสดงความเห็นในปีที่ 5'},
+  {q:'NPAE: ค่าธรรมเนียมเกิน 30% ต่อเนื่อง 5 ปี ต้องทำอะไร?',a:'ต้องจัดให้มีผู้สอบทานจากภายนอกสำนักงานในปีที่ 5'},
+  {q:'สิ่งจูงใจ (inducements) ก่อภัยประเภทใด?',a:'ผลประโยชน์ส่วนตน (self-interest threat) — เช่น ของขวัญ การต้อนรับ นันทนาการ สิทธิพิเศษ'},
+  {q:'Integrity ห้ามเกี่ยวข้องกับข้อมูลแบบใด?',a:'ข้อมูลที่ (ก) ผิดอย่างเป็นสาระสำคัญ/ทำให้เข้าใจผิด (ข) จัดทำโดยไม่ไตร่ตรองรอบคอบ (ค) ละเว้น/ปิดบังข้อมูลจำเป็นจนทำให้เข้าใจผิด'},
+  {q:'Professional behavior ในการโฆษณาห้ามทำอะไร?',a:'ห้ามโอ้อวดเกินจริงในบริการ/คุณสมบัติ/ประสบการณ์ และห้ามดูหมิ่นหรือเปรียบเทียบงานกับผู้อื่นโดยไม่อยู่บนความจริง'},
+];
+function FlashTab(){
+  const [order,setOrder]=useState(CARDS.map((_,i)=>i));
+  const [flipped,setFlipped]=useState({});
+  const [score,setScore]=useState({know:0,dunno:0});
+  const shuffle=()=>{setOrder([...order].sort(()=>Math.random()-.5));setFlipped({});setScore({know:0,dunno:0});};
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#5b4b8a'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#5b4b8a"/>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ QUICK ============ */
+function QuickTab(){
+  const cards=[
+    {c:'#5b4b8a',t:'📏 Materiality = "ถ้ารู้ จะเปลี่ยนใจ"',d:'3 ระดับ: งบรวม / รายการเฉพาะ / ในการปฏิบัติงาน | performance materiality ตั้งต่ำกว่าเสมอ เพื่อกันผลรวม misstatement ทะลุเพดาน'},
+    {c:'#4a7c46',t:'📅 3 วัน: งบ → รายงาน → เผยแพร่',d:'ก่อนวันรายงาน = ตรวจเชิงรุก | หลังรายงานก่อนเผยแพร่ = ไม่มีหน้าที่ แต่ถ้ารู้ต้องจัดการ | หลังเผยแพร่ = ถ้าไม่แก้ต้องกันคนใช้รายงาน'},
+    {c:'#8a5a2b',t:'🔧 2 ทางของเหตุการณ์ภายหลัง',d:'สภาพมีอยู่แล้ว ณ วันงบ → ปรับปรุงตัวเลข | เกิดใหม่หลังวันงบ → เปิดเผย'},
+    {c:'#356e6a',t:'✍️ Written rep = หลักฐาน แต่ไม่พอลำพัง',d:'ยืนยันความรับผิดชอบผู้บริหาร | ถ้าสงสัยความซื่อสัตย์ หรือผู้บริหารไม่ให้ → disclaim'},
+    {c:'#7a4f6d',t:'⚖️ 5 หลักการ: ซื่อ-เที่ยง-รู้-ลับ-ดี',d:'Integrity · Objectivity/Independence · Competence & Due care · Confidentiality · Professional behavior'},
+    {c:'#9c3d3d',t:'🎯 5 ภัย: ตน-ตัวเอง-สนับสนุน-คุ้น-ขู่',d:'Self-interest · Self-review · Advocacy · Familiarity · Intimidation'},
+    {c:'#3a6b7a',t:'💰 พึ่งพิงค่าธรรมเนียม',d:'PIE เกิน 15%: 2 ปี→สอบทานคุณภาพ, 5 ปี→ต้องลาออก | NPAE เกิน 30% 5 ปี→มีผู้สอบทานภายนอก'},
+    {c:'#6b7a3a',t:'🚩 contingent fee = ผิดชัด',d:'ค่าสอบขึ้นกับผลงาน (เช่น อนุมัติเงินกู้ได้) = self-interest threat กระทบอิสระ'},
+    {c:'#5a5a7a',t:'📣 โฆษณา/lowballing',d:'โอ้อวดเกินจริง = professional behavior | คิดค่าต่ำผิดปกติ = เสี่ยงกระทบ competence & due care'},
+    {c:'#8a6d3b',t:'🔒 Confidentiality',d:'ห้ามบอก + ห้ามใช้เพื่อประโยชน์ตน/ผู้อื่น ยกเว้นมีสิทธิ/หน้าที่ตามกฎหมาย'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ LAB 1 : Subsequent Events timeline ============ */
+function SubEventLab(){
+  const [p,setP]=useState(1);
+  const info={
+    1:{title:'① ระหว่างวันที่ในงบ → วันที่ในรายงาน',color:'#237804',duty:'ผู้สอบมีหน้าที่เชิงรุก — ต้องใช้วิธีตรวจสอบเพื่อให้ได้หลักฐานว่าเหตุการณ์ที่ต้องปรับปรุง/เปิดเผยถูกระบุครบ',how:'อ่านรายงานการประชุม · อ่านงบระหว่างกาลล่าสุด · ทำ cutoff ตรวจรับ-จ่ายเงิน · ขอ written representations · ถามฝ่ายกฎหมายเรื่องคดีความ · สอบถามผู้บริหารเรื่องกู้ยืม/ซื้อขายสินทรัพย์/เพิ่มทุน/สินทรัพย์เสียหาย'},
+    2:{title:'② หลังวันที่ในรายงาน → ก่อนเผยแพร่งบ',color:'#ad6800',duty:'ไม่มีหน้าที่ตรวจสอบต่อ แต่ถ้าทราบข้อเท็จจริงที่อาจทำให้ต้องเปลี่ยนรายงาน ต้องจัดการ',how:'หารือผู้บริหาร → พิจารณาแก้งบ → ถ้าแก้: ตรวจเพิ่ม + ขยายวิธีตรวจถึงวันที่รายงานฉบับใหม่ + ออกรายงานฉบับใหม่ (ไม่ลงวันก่อนงบแก้ไขได้รับอนุมัติ)'},
+    3:{title:'③ หลังเผยแพร่งบไปแล้ว',color:'#391085',duty:'ไม่มีหน้าที่ แต่ถ้าทราบข้อเท็จจริงที่มีอยู่ ณ วันที่รายงาน ซึ่งอาจเปลี่ยนรายงาน ต้องจัดการ',how:'หารือ/พิจารณาแก้ → ถ้าแก้: ตรวจเพิ่ม + สอบทานว่าผู้ที่ได้งบเดิมได้รับแจ้ง + ออกรายงานใหม่พร้อมวรรคเน้นอ้างหมายเหตุ | ถ้าผู้บริหารไม่ยอมแก้/ไม่แจ้ง → ผู้สอบต้องดำเนินการกันไม่ให้ผู้อื่นใช้รายงาน'},
+  };
+  const c=info[p];
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:12}} message="เลือกช่วงเวลาที่ผู้สอบทราบเหตุการณ์ แล้วดูหน้าที่"/>
+    <svg viewBox="0 0 520 90" style={{width:'100%',marginBottom:10}}>
+      <line x1="30" y1="55" x2="490" y2="55" stroke="#c3b9dd" strokeWidth="2"/>
+      {[{x:90,l:'วันงบ'},{x:260,l:'วันรายงาน'},{x:430,l:'วันเผยแพร่'}].map((m,i)=><g key={i}>
+        <circle cx={m.x} cy="55" r="6" fill="#5b4b8a"/><text x={m.x} y="78" textAnchor="middle" fontSize="11" fill="#5b4b8a">{m.l}</text></g>)}
+      {[{x:175,p:1},{x:345,p:2},{x:470,p:3}].map(z=><g key={z.p} onClick={()=>setP(z.p)} style={{cursor:'pointer'}}>
+        <rect x={z.x-28} y="18" width="56" height="22" rx="11" fill={p===z.p?info[z.p].color:'#e5def2'}/>
+        <text x={z.x} y="33" textAnchor="middle" fontSize="12" fontWeight="700" fill={p===z.p?'#fff':'#5b4b8a'}>ช่วง {z.p}</text></g>)}
+    </svg>
+    <Radio.Group value={p} onChange={e=>setP(e.target.value)} optionType="button" buttonStyle="solid" style={{marginBottom:12}}
+      options={[{label:'ช่วง 1',value:1},{label:'ช่วง 2',value:2},{label:'ช่วง 3',value:3}]}/>
+    <div style={{padding:'14px',borderRadius:10,background:'#f0edf8',border:'2px solid '+c.color}}>
+      <div style={{fontSize:15,fontWeight:700,color:c.color,marginBottom:6}}>{c.title}</div>
+      <div style={{fontSize:13.5,marginBottom:8}}><b>หน้าที่:</b> {c.duty}</div>
+      <div style={{fontSize:13}}><b>ทำอย่างไร:</b> {c.how}</div>
+    </div>
+  </div>;
+}
+
+/* ============ LAB 2 : Fee dependency ============ */
+function FeeLab(){
+  const [pie,setPie]=useState('PIE');
+  const [fee,setFee]=useState(20);
+  const [years,setYears]=useState(2);
+  let result,color;
+  if(pie==='PIE'){
+    if(fee>15 && years>=5){result='เกิน 15% ต่อเนื่องถึง 5 ปี → สำนักงานต้อง "ยุติการเป็นผู้สอบบัญชี" หลังแสดงความเห็นในปีที่ 5 (และต้องมีการสอบทานคุณภาพงานมาตั้งแต่ปีที่ 2)';color:'#a8071a';}
+    else if(fee>15 && years>=2){result='เกิน 15% ต่อเนื่อง 2 ปี → ต้องจัดให้มี "การสอบทานคุณภาพงาน" โดยผู้ที่ไม่ใช่สมาชิกสำนักงาน ก่อนแสดงความเห็นในปีที่ 2';color:'#ad6800';}
+    else if(fee>15){result='เกิน 15% แต่ยังปีแรก → ยังไม่ถึงเกณฑ์บังคับ แต่ต้องเฝ้าระวัง ถ้าเกินต่อเนื่องถึงปีที่ 2 ต้องจัดสอบทานคุณภาพงาน';color:'#237804';}
+    else result='ไม่เกิน 15% → ยังไม่เข้าเงื่อนไขบังคับเรื่องการพึ่งพิงค่าธรรมเนียม';
+  } else {
+    if(fee>30 && years>=5){result='เกิน 30% ต่อเนื่องถึง 5 ปี → ต้องจัดให้มี "ผู้สอบทานจากภายนอกสำนักงาน" ในปีที่ 5';color:'#a8071a';}
+    else if(fee>30){result='เกิน 30% แต่ยังไม่ครบ 5 ปีต่อเนื่อง → เฝ้าระวัง ถ้าเกินต่อเนื่องถึงปีที่ 5 ต้องมีผู้สอบทานภายนอก';color:'#ad6800';}
+    else result='ไม่เกิน 30% → ยังไม่เข้าเงื่อนไขบังคับ (เกณฑ์ NPAE คือ 30%)';
+  }
+  if(!color) color='#237804';
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:12}} message="ตรวจการพึ่งพิงค่าธรรมเนียม (ตามเกณฑ์ในสไลด์)" description="PIE เพดาน 15% · NPAE เพดาน 30%"/>
+    <Radio.Group value={pie} onChange={e=>setPie(e.target.value)} optionType="button" buttonStyle="solid" style={{marginBottom:12}}
+      options={[{label:'ลูกค้า PIE (มีส่วนได้เสียสาธารณะ)',value:'PIE'},{label:'ลูกค้า NPAE (ไม่มี)',value:'NPAE'}]}/>
+    <Row gutter={[10,10]} style={{marginBottom:12}}>
+      <Col span={12}><div style={{fontSize:13}}>ค่าธรรมเนียม (% ของทั้งสำนักงาน)</div><InputNumber style={{width:'100%'}} value={fee} min={0} max={100} onChange={v=>setFee(v||0)} formatter={v=>v+'%'}/></Col>
+      <Col span={12}><div style={{fontSize:13}}>จำนวนปีที่เกินเพดานต่อเนื่อง</div><InputNumber style={{width:'100%'}} value={years} min={1} max={10} onChange={v=>setYears(v||1)}/></Col>
+    </Row>
+    <div style={{padding:'14px',borderRadius:10,background:'#f0edf8',border:'2px solid '+color}}>
+      <div style={{fontSize:13,color:'#666',marginBottom:4}}>เพดานของ {pie} = {pie==='PIE'?'15%':'30%'}</div>
+      <div style={{fontSize:14.5,fontWeight:600,color:color}}>{result}</div>
+    </div>
+  </div>;
+}
+
+/* ============ LAB 3 : Threat matcher ============ */
+const TQUIZ=[
+  {s:'ผู้สอบบัญชีถือหุ้นอยู่ในบริษัทที่ตนตรวจสอบ',ans:0},
+  {s:'ค่าสอบบัญชีขึ้นอยู่กับว่างบทำให้ธนาคารอนุมัติเงินกู้ให้ลูกค้าหรือไม่',ans:0},
+  {s:'สำนักงานสอบบัญชีงบการเงินที่สำนักงานตัวเองเป็นผู้จัดทำบัญชีให้',ans:1},
+  {s:'ผู้สอบเป็นตัวแทนลูกค้าในการเจรจากับบุคคลภายนอก/ส่งเสริมการขายหุ้นของลูกค้า',ans:2},
+  {s:'ญาติสนิทของผู้สอบดำรงตำแหน่งสำคัญ (เช่น CFO) ในบริษัทลูกค้า',ans:3},
+  {s:'เป็นผู้สอบบัญชีให้ลูกค้ารายเดิมต่อเนื่องเป็นเวลานานมากจนสนิทสนม',ans:3},
+  {s:'ลูกค้าขู่ว่าจะเปลี่ยนผู้สอบบัญชีถ้าผู้สอบไม่ยอมตามที่ลูกค้าต้องการ',ans:4},
+];
+function ThreatLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=TQUIZ[i];
+  const choose=(n)=>{if(picked!==null)return;setPicked(n);if(n===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<TQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>🎯</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {TQUIZ.length}</div>
+    <Button type="primary" style={{background:'#5b4b8a'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="purple">ข้อ {i+1}/{TQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="สถานการณ์นี้เป็นภัยคุกคามประเภทใด?" description={q.s}/>
+    <Row gutter={[6,6]}>
+      {THREATS.map((t,n)=>{let b='#d9d9d9',bg='#fff';if(picked!==null){if(n===q.ans){b='#237804';bg='#eaf6ea';}else if(n===picked){b='#c0564a';bg='#fff1f0';}}
+        return <Col xs={12} md={8} key={n}><div onClick={()=>choose(n)} style={{cursor:picked!==null?'default':'pointer',padding:'8px 6px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontSize:12.5,fontWeight:600,minHeight:46,display:'flex',alignItems:'center',justifyContent:'center'}}>{t.th}</div></Col>;})}
+    </Row>
+    {picked!==null && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700}}>{picked===q.ans?'✅ ถูกต้อง — '+THREATS[q.ans].th:'❌ คำตอบคือ '+THREATS[q.ans].th+' ('+THREATS[q.ans].en+')'}</div>
+      <div style={{marginTop:6}}><Button type="primary" size="small" style={{background:'#5b4b8a'}} onClick={next}>{i+1<TQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ FLOATING ============ */
+function FloatingLab(){
+  const [open,setOpen]=useState(false);const [seg,setSeg]=useState('sub');
+  const w=typeof window!=='undefined'?Math.min(560,window.innerWidth-16):560;
+  return <React.Fragment>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square" style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ" styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}} options={[{label:'📅 เหตุการณ์ภายหลัง',value:'sub'},{label:'💰 พึ่งพิงค่าธรรมเนียม',value:'fee'},{label:'⚖️ จับภัยคุกคาม',value:'threat'}]}/>
+      {seg==='sub'&&<SubEventLab/>}
+      {seg==='fee'&&<FeeLab/>}
+      {seg==='threat'&&<ThreatLab/>}
+    </Drawer>
+  </React.Fragment>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>📐 GA511 — ความมีสาระสำคัญ · เหตุการณ์ภายหลัง · จรรยาบรรณ</h1>
+      <p>Note 3: Materiality → Subsequent Events → Written Representations → Code of Ethics (5 หลักการ + 5 ภัยคุกคาม) | อิงสไลด์ GA511 และมาตรฐานการสอบบัญชี</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 ปุ่มลอย "ทดลอง" มุมขวาล่าง — เหตุการณ์ภายหลัง / พึ่งพิงค่าธรรมเนียม / จับภัยคุกคาม</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'📏 ความมีสาระสำคัญ',children:<MaterialityTab/>},
+      {key:'2',label:'📅 เหตุการณ์ภายหลัง',children:<SubsequentTab/>},
+      {key:'3',label:'✍️ หนังสือรับรอง',children:<WrittenRepTab/>},
+      {key:'4',label:'⚖️ จรรยาบรรณ 5 หลักการ',children:<EthicsTab/>},
+      {key:'5',label:'💰 ค่าสอบบัญชี & ภัยคุกคาม',children:<ThreatsTab/>},
+      {key:'6',label:'🎯 เคสจรรยาบรรณ',children:<CaseTab/>},
+      {key:'7',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'8',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 — การเลือกตัวอย่างในงานสอบบัญชี (Audit Sampling)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#eef5f6; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#2b7a8c,#3f9fb0); border-radius:14px; padding:22px 26px; color:#effafc; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:23px; color:#effafc; }
+  .hero p { margin:0; opacity:.94; }
+  .sec-card { background:#fffdf9; border:1px solid #d5e6e8; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(30,80,90,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#2b7a8c; font-size:17px; }
+  .tag-step { display:inline-block; background:#2b7a8c; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#d5e9ec; color:#1f5560; padding:6px 8px; border:1px solid #bcdadd; text-align:center; }
+  table.fin td { padding:6px 8px; border:1px solid #d8e7e9; vertical-align:top; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin tr.total td { background:#e4f1f2; font-weight:700; }
+  table.fin tr.head td { background:#eef6f7; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#e4f1f2; border-left:4px solid #2b7a8c; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#f5fafb; border:1px dashed #92bcc2; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#2b7a8c; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf9; border:2px solid #a0cace; color:#1f5560; font-weight:600; font-size:15px; }
+  .flip-back { background:#2b7a8c; color:#effafc; transform:rotateY(180deg); font-size:13px; line-height:1.5; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Radio, InputNumber } = antd;
+const { useState } = React;
+const money=(x)=>x.toLocaleString('en-US',{maximumFractionDigits:0});
+
+/* ============ TAB 1 : พื้นฐาน ============ */
+function BasicTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>การเลือกตัวอย่างคืออะไร</h3>
+      <p><b>การเลือกตัวอย่างในการสอบบัญชี</b> = การใช้วิธีตรวจสอบ<b>น้อยกว่า 100%</b> ของประชากรทั้งหมด โดย<b>ทุกหน่วยตัวอย่างมีโอกาสถูกเลือก</b> เพื่อให้ผู้สอบได้เกณฑ์ที่สมเหตุสมผลในการสรุปเกี่ยวกับประชากรทั้งหมด</p>
+      <div className="kbox">📦 <b>ประชากร (Population)</b> = กลุ่มข้อมูลทั้งหมดที่นำมาเลือกตัวอย่าง ซึ่งผู้สอบต้องการได้ข้อสรุปเกี่ยวกับประชากรนั้น</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>ต้องรู้ "วัตถุประสงค์" ก่อน แล้วจึงระบุประชากร</h3>
+      <p>ต้องระบุก่อนว่ากำลังตรวจสิ่งที่ผู้บริหารรับรอง (assertion) ข้อไหน แล้วจึงเลือกประชากรให้ตรงกับทิศทางการทดสอบ</p>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="ทดสอบ Occurrence (เกิดขึ้นจริง) ของรายได้ขาย" style={{height:'100%',background:'#eef7ee'}}>
+          ประชากร = <b>รายการขายทั้งหมดที่บันทึกบัญชี (All sales transactions)</b><br/><span style={{fontSize:12.5,color:'#666'}}>เริ่มจากรายการที่<b>บันทึกแล้ว</b> → ย้อนไปหาเอกสาร (vouching) ว่าเกิดขึ้นจริงไหม</span></Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="ทดสอบ Completeness (ครบถ้วน) ของรายได้ขาย" style={{height:'100%',background:'#fbf3ec'}}>
+          ประชากร = <b>ใบส่งของทั้งหมด (All goods delivery notes)</b><br/><span style={{fontSize:12.5,color:'#666'}}>เริ่มจากเอกสารต้นทาง (ส่งของแล้ว) → ตามไปว่าบันทึกขายครบไหม (tracing)</span></Card></Col>
+      </Row>
+      <div className="warn">⚠️ กับดักคลาสสิก: Occurrence กับ Completeness ใช้ประชากร<b>คนละทิศ</b> — Occurrence เริ่มจากบัญชี (กันบันทึกเกิน/ผี) | Completeness เริ่มจากเอกสารต้นทาง (กันบันทึกขาด)</div>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>จับคู่ assertion กับประชากร/วิธี</b> เพื่อฝึก</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>เลือกแล้ว "อย่าเปลี่ยนใจ"</h3>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'ต้องตรวจแต่ละรายการที่เลือกด้วยวิธีที่เหมาะกับวัตถุประสงค์'},
+        {title:'ถ้าวิธีตรวจใช้กับรายการที่เลือกไม่ได้ → ใช้กับรายการที่เลือกขึ้นมา "แทน"'},
+        {title:'ถ้าใช้วิธีที่ออกแบบไว้หรือวิธีอื่นที่เหมาะสมไม่ได้เลย → ถือว่ารายการนั้นเป็น "การเบี่ยงเบน" (กรณีทดสอบการควบคุม) หรือ "การแสดงข้อมูลที่ขัดต่อข้อเท็จจริง" (กรณีทดสอบรายละเอียด)'},
+      ]}/>
+      <div className="analogy">🧠 ห้ามหลบรายการที่เลือกยาก! ถ้าตรวจไม่ได้ ให้ถือว่า "ผิด/เบี่ยงเบน" ไปเลย — ไม่ใช่ข้ามไปเลือกตัวใหม่ที่ตรวจง่ายกว่า</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : ข้อสรุปผิด ============ */
+function ErrorTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.1</span>ข้อสรุปที่ผิดพลาด 2 ประเภท (จากการเลือกตัวอย่าง)</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="🔴 False Negative — พลาดของที่ผิด" style={{height:'100%',background:'#fff1f0',borderColor:'#c0564a'}}>
+          สรุปว่าการควบคุมภายในมีประสิทธิผล<b>สูงกว่า</b>ที่เป็นจริง | หรือสรุปว่า<b>ไม่มี</b>การแสดงข้อมูลที่ขัดต่อข้อเท็จจริงอันเป็นสาระสำคัญ <b>ทั้งที่จริงมี</b>
+          <div style={{marginTop:6}}><Tag color="red">กระทบประสิทธิผล (effectiveness) — อันตรายกว่า</Tag></div></Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🟠 False Positive — ตื่นตูมทั้งที่ไม่ผิด" style={{height:'100%',background:'#fff7e6',borderColor:'#ad6800'}}>
+          สรุปว่าการควบคุมภายในมีประสิทธิผล<b>ต่ำกว่า</b>ที่เป็นจริง | หรือสรุปว่า<b>มี</b>การแสดงข้อมูลที่ขัดต่อข้อเท็จจริง <b>ทั้งที่จริงไม่มี</b>
+          <div style={{marginTop:6}}><Tag color="orange">กระทบประสิทธิภาพ (efficiency) — ทำงานเกินจำเป็น</Tag></div></Card></Col>
+      </Row>
+      <div className="kbox">🧠 จำ: <b>False Negative = "มองข้ามของจริงที่ผิด"</b> (ร้ายแรงต่อคุณภาพงานสอบ เพราะให้ความเห็นผิด) | <b>False Positive = "ตกใจของที่ไม่ผิด"</b> (แค่เสียเวลาตรวจเพิ่ม)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.2</span>พิจารณาลักษณะและสาเหตุของสิ่งที่พบ</h3>
+      <p>เมื่อพบการเบี่ยงเบน/misstatement ต้องวิเคราะห์<b>ลักษณะและสาเหตุ (nature and cause)</b>:</p>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>หลายรายการอาจมี<b>ลักษณะคล้ายกัน</b> เช่น ประเภทเดียวกัน สถานที่เดียวกัน สายผลิตภัณฑ์เดียวกัน หรือช่วงเวลาเดียวกัน → อาจระบุทุกรายการที่คล้ายกันแล้ว<b>ขยายการตรวจ</b></td></tr>
+        <tr><td>②</td><td>ถ้าเกิด<b>โดยเจตนา</b> → อาจบ่งชี้โอกาสที่จะเกิด<b>การทุจริต</b></td></tr>
+      </tbody></table>
+      <div className="kbox">📌 <b>Anomaly (การแสดงข้อมูลที่ขัดต่อข้อเท็จจริงเฉพาะกรณี):</b> ถ้าพิสูจน์ได้ว่าเป็นกรณีเฉพาะ (ไม่เป็นตัวแทนประชากร) อาจไม่นำไปรวมในการประมาณของประชากร แต่ผลกระทบถ้าไม่แก้ไข ต้องนำไปพิจารณารวมด้วย</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : วิธีเลือก ============ */
+const METHODS=[
+  {en:'Random Selection',th:'การเลือกแบบสุ่ม',d:'ใช้ตารางเลขสุ่มหรือคอมพิวเตอร์สุ่ม (สำนักงานบัญชีมักมีโปรแกรมสุ่มตัวอย่าง)',stat:true},
+  {en:'Systematic Selection',th:'การเลือกแบบมีระบบ',d:'แบบเส้นตรง (Linear): ช่วงห่าง = จำนวนประชากร ÷ จำนวนตัวอย่างที่ต้องการ | จุดเริ่มต้นควรใช้การสุ่ม',stat:true},
+  {en:'Monetary Unit Sampling (MUS)',th:'การเลือกตามจำนวนเงิน',d:'รายการที่จำนวนเงินสูงมีโอกาสถูกเลือกมากกว่ารายการเงินต่ำ | ช่วง = ยอดรวมมูลค่าประชากร ÷ จำนวนตัวอย่าง | เหมาะสุดสำหรับทดสอบรายละเอียดในการตรวจเนื้อหาสาระ',stat:true},
+  {en:'Haphazard Selection',th:'การเลือกไม่มีรูปแบบ',d:'เลือกโดยไม่มีรูปแบบตายตัว แต่ต้อง "ไม่มี bias" (ไม่มีอคติ)',stat:false},
+  {en:'Block Selection',th:'การเลือกแบบกลุ่ม',d:'เลือกกลุ่มรายการที่ติดกันในประชากร — โดยปกติ "ไม่เหมาะ" กับงานสอบบัญชี เพราะรายการที่เรียงติดกันมักคล้ายกันเอง แต่ต่างจากรายการอื่นในประชากร',stat:false},
+];
+function MethodTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>ทางสถิติ vs ไม่ใช่ทางสถิติ</h3>
+      <table className="fin">
+        <thead><tr><th>ทางสถิติ (Statistical)</th><th>ไม่ใช่ทางสถิติ (Non-statistical)</th></tr></thead>
+        <tbody><tr>
+          <td>ต้องมีครบ 2 ข้อ: ① <b>เลือกแบบสุ่ม</b> และ ② <b>ใช้ทฤษฎีความน่าจะเป็น</b>ประเมินผล + วัดค่าความเสี่ยงจากการเลือกตัวอย่าง</td>
+          <td>วิธีที่<b>ไม่มี</b>ลักษณะครบทั้ง 2 ข้อข้างต้น</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>วิธีการเลือกตัวอย่าง 5 วิธี</h3>
+      <Collapse items={METHODS.map((m,i)=>({key:String(i),label:`${i+1}. ${m.th} (${m.en})`,children:<div>
+        <p style={{margin:'0 0 6px',fontSize:13.5}}>{m.d}</p>
+        <Tag color={m.stat?'cyan':'default'}>{m.stat?'ใช้ได้ทางสถิติ':'มักไม่ใช้ทางสถิติ / ระวังการใช้'}</Tag>
+      </div>}))}/>
+      <div className="je"><b>สูตรช่วงห่าง (Systematic & MUS):</b> Systematic → จำนวนประชากร ÷ จำนวนตัวอย่าง | MUS → ยอดรวมมูลค่าประชากร ÷ จำนวนตัวอย่าง</div>
+      <div className="warn">⚠️ <b>Block selection</b> โดยปกติไม่เหมาะกับงานสอบบัญชี เพราะไม่เป็นตัวแทนที่ดีของประชากร | <b>Haphazard</b> ต้องระวังไม่ให้มี bias</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : Stratification ============ */
+function StratTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>การจัดกลุ่มประชากร (Stratification)</h3>
+      <p>แบ่งประชากรเป็น<b>กลุ่มย่อย</b>ที่แต่ละกลุ่มมีลักษณะเฉพาะ วัตถุประสงค์เพื่อ<b>ลดความแตกต่างของรายการในแต่ละกลุ่มย่อย</b> ซึ่งทำให้<b>ลดขนาดตัวอย่างได้โดยไม่เพิ่มความเสี่ยง</b>จากการเลือกตัวอย่าง</p>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>ในการตรวจรายละเอียด มักแบ่งตาม<b>มูลค่าเป็นตัวเงิน</b> เพื่อเน้นรายการมูลค่าสูง (ซึ่งมีโอกาสแสดงจำนวนเงินสูงเกินไปมากที่สุด)</td></tr>
+        <tr><td>②</td><td>อาจแบ่งตาม<b>ความเสี่ยง</b> เช่น ทดสอบค่าเผื่อหนี้สงสัยจะสูญ อาจแบ่งกลุ่มย่อยตาม<b>อายุหนี้ค้าง</b></td></tr>
+        <tr><td>③</td><td>ผลจากกลุ่มย่อยหนึ่ง <b>ใช้คาดการณ์ได้เฉพาะกลุ่มย่อยนั้น</b> (เช่น 20% ของรายการอาจมีมูลค่ารวม 90% ของยอด → ตรวจ 90% นั้นแยกต่างหาก)</td></tr>
+        <tr><td>④</td><td><b>Stratification ไม่ใช่การเลือกตัวอย่าง</b> — เลือกตัวอย่าง<b>หลัง</b>จัดกลุ่ม และใช้วิธีเลือกต่างกันในแต่ละกลุ่มได้</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>ตัวอย่างจริง: ลูกหนี้การค้าแบ่งกลุ่ม (จากสไลด์)</h3>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th>กลุ่ม</th><th>จำนวน</th><th>องค์ประกอบ</th><th>วิธีเลือก</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td className="num">22</td><td>ทุกบัญชีมากกว่า 1,000,000 บาท</td><td><b>ตรวจ 100%</b></td></tr>
+          <tr><td>2</td><td className="num">586</td><td>บัญชีระหว่าง 300,000 – 1,000,000 บาท</td><td>เลขสุ่ม (Random)</td></tr>
+          <tr><td>3</td><td className="num">126</td><td>บัญชีต่ำกว่า 300,000 บาท</td><td>แบบมีระบบ (Systematic)</td></tr>
+          <tr><td>4</td><td className="num">14</td><td>บัญชียอดคงเหลือด้านเครดิต</td><td><b>ตรวจ 100%</b></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div className="kbox">💡 สังเกต: รายการ<b>มูลค่าสูง</b> (กลุ่ม 1) และ<b>ผิดปกติ</b> (กลุ่ม 4 ยอดเครดิตของลูกหนี้ = แปลก) → ตรวจ 100% | กลุ่มมูลค่ากลาง/เล็กที่เยอะ → ใช้การเลือกตัวอย่าง</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.3</span>ตรวจนับสินค้าหลายสาขา (Multi-location)</h3>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'เข้าใจการควบคุมภายในของแต่ละสาขา',description:'ถ้าทุกสาขามีการควบคุมเหมือนกัน → จัดเป็นประชากรกลุ่มเดียวกัน'},
+        {title:'เลือกสาขาโดยพิจารณาความเป็นตัวแทนของประชากร',description:'เอา list สาขาทั้งหมดมาประเมินความเสี่ยงแต่ละสาขาก่อน'},
+        {title:'กำหนดขนาดตัวอย่างรายการสินค้าตาม RMM แล้วจัดสรรให้แต่ละสาขา',description:'สาขาหลัก/เสี่ยงสูง (ปริมาณและเงินมาก) ได้รับจัดสรรตัวอย่างมากกว่า'},
+        {title:'เลือกรายการสินค้าด้วย MUS (เหมาะสุดสำหรับทดสอบรายละเอียด)'},
+      ]}/>
+      <div className="kbox">🚩 <b>ปัจจัยเสี่ยงของสาขา:</b> สาขาหลักที่ปริมาณ/เงินมาก · สาขาที่เคยพบข้อผิดพลาด · สาขาที่เปลี่ยนเจ้าหน้าที่บ่อย (เสี่ยง human error) · สาขาที่สภาพแวดล้อมเสี่ยงต่อความเสียหายของสินค้า</div>
+      <div className="kbox">🔁 อาจวางแผน<b>หมุนเวียน</b>ตรวจทุกสาขาให้ครบภายใน n ปี (เช่น 30 สาขา ใน 3 ปี = 10 สาขา/ปี) — สาขาที่ยังไม่ตรวจต้องใช้วิธีอื่นจนพอใจ | หรือรวมทุกสาขาแล้วเลือกด้วย MUS</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : ประเมินผล + ขนาดตัวอย่าง ============ */
+const SSFACT=[
+  {test:'ควบคุม',f:'ผู้สอบพึ่งพาการควบคุมภายในมากขึ้น (ขอบเขตประเมินความเสี่ยงที่รวม IC เพิ่ม)',e:'เพิ่ม'},
+  {test:'ควบคุม',f:'อัตราการเบี่ยงเบนที่ยอมรับได้ (tolerable rate) เพิ่มขึ้น',e:'ลด'},
+  {test:'ควบคุม',f:'อัตราการเบี่ยงเบนที่คาดว่าจะพบ (expected rate) เพิ่มขึ้น',e:'เพิ่ม'},
+  {test:'ควบคุม',f:'ระดับความเชื่อมั่นที่ต้องการเพิ่มขึ้น',e:'เพิ่ม'},
+  {test:'ควบคุม',f:'จำนวนหน่วยตัวอย่างในประชากรเพิ่มขึ้น',e:'แทบไม่กระทบ'},
+  {test:'รายละเอียด',f:'ความเสี่ยงที่ประเมิน (RMM) เพิ่มขึ้น',e:'เพิ่ม'},
+  {test:'รายละเอียด',f:'จำนวนเงิน misstatement ที่คาดว่าจะพบเพิ่มขึ้น',e:'เพิ่ม'},
+  {test:'รายละเอียด',f:'misstatement ที่ยอมรับได้ (tolerable) เพิ่มขึ้น',e:'ลด'},
+  {test:'รายละเอียด',f:'จัดกลุ่มประชากร (stratification) เมื่อเหมาะสม',e:'ลด'},
+  {test:'รายละเอียด',f:'ใช้วิธีตรวจเนื้อหาสาระอื่นในเรื่องเดียวกันเพิ่มขึ้น',e:'ลด'},
+  {test:'รายละเอียด',f:'ระดับความเชื่อมั่นที่ต้องการเพิ่มขึ้น',e:'เพิ่ม'},
+];
+function EvalTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.1</span>การประมาณ misstatement ของประชากร (Projection)</h3>
+      <p>ต้องประมาณ misstatement ของประชากรเพื่อเห็นภาพรวมขนาดของปัญหา (แต่การประมาณนี้อาจไม่พอกำหนดจำนวนเงินที่ใช้บันทึกบัญชี)</p>
+      <div className="je"><b>วิธีเทียบสัดส่วน (ratio):</b> misstatement ประชากร ≈ (misstatement ในตัวอย่าง ÷ มูลค่าที่สุ่มตรวจ) × มูลค่ารวมประชากร</div>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th>บัญชี</th><th>ข้อผิดพลาดที่พบ</th><th>มูลค่าที่สุ่มตรวจ</th><th>ยอดรวมบัญชี</th><th>ประมาณ misstatement ประชากร</th></tr></thead>
+        <tbody>
+          <tr><td>ลูกหนี้การค้า (A/R)</td><td className="num">21,000</td><td className="num">152,000</td><td className="num">502,000</td><td className="num">≈ 69,355</td></tr>
+          <tr><td>สินค้าคงเหลือ</td><td className="num">30,000</td><td className="num">1,533,000</td><td className="num">5,900,000</td><td className="num">≈ 115,460</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>คำนวณ projection</b> ใส่ตัวเลขเองแล้วดูผล (เช่น A/R: 21,000 ÷ 152,000 × 502,000 ≈ 69,355)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.2</span>การประเมินผลการเลือกตัวอย่าง</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>ทดสอบการควบคุม</b></td><td>อัตราเบี่ยงเบนของตัวอย่าง<b>สูงกว่าที่คาด</b> → อาจนำไปสู่การ<b>เพิ่ม RMM</b> เว้นแต่ได้หลักฐานเพิ่มสนับสนุนการประเมินเดิม</td></tr>
+        <tr><td><b>ทดสอบรายละเอียด</b></td><td>misstatement ในตัวอย่าง<b>สูงกว่าที่คาด</b> → อาจเชื่อว่ายอด/รายการมี misstatement อันเป็นสาระสำคัญ เว้นแต่ได้หลักฐานเพิ่มว่าไม่มี</td></tr>
+        <tr><td><b>ค่าที่ใช้ตัดสิน</b></td><td>projected misstatement + anomaly = การประมาณที่ดีที่สุดของ misstatement ประชากร | ยิ่งค่านี้<b>ใกล้ tolerable misstatement</b> ยิ่งเป็นไปได้ที่ misstatement จริงจะเกิน tolerable</td></tr>
+        <tr><td><b>ถ้าตัวอย่างไม่ให้เกณฑ์สมเหตุสมผล</b></td><td>ขอให้ฝ่ายบริหารตรวจสอบ/แก้ไข หรือปรับเปลี่ยนลักษณะ-เวลา-ขอบเขต (เช่น เพิ่มขนาดตัวอย่าง ทดสอบการควบคุมทดแทน เปลี่ยนวิธีตรวจเนื้อหาสาระ)</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.3</span>ปัจจัยที่กระทบขนาดตัวอย่าง (อิง TSA 530)</h3>
+      <div className="warn">⚠️ หมายเหตุ: สไลด์แสดงปัจจัยแต่เว้นช่อง "ผลกระทบ" ให้เติม ตารางนี้เติมทิศทางตามภาคผนวก TSA 530 (มาตรฐานจริง)</div>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th>ประเภท</th><th>เมื่อปัจจัยนี้ "เพิ่มขึ้น"</th><th>ขนาดตัวอย่าง</th></tr></thead>
+        <tbody>{SSFACT.map((r,i)=><tr key={i}><td>{r.test}</td><td>{r.f}</td>
+          <td style={{textAlign:'center',fontWeight:700,color:r.e==='เพิ่ม'?'#a8071a':r.e==='ลด'?'#237804':'#888'}}>{r.e==='เพิ่ม'?'▲ เพิ่ม':r.e==='ลด'?'▼ ลด':'≈ แทบไม่กระทบ'}</td></tr>)}</tbody>
+      </table>
+      </div>
+      <div className="kbox">🧠 หลักคิด: <b>ยิ่งอยากมั่นใจมาก / ยิ่งเสี่ยงมาก / ยิ่งคาดว่าจะเจอผิดมาก → ตัวอย่างยิ่งใหญ่</b> | <b>ยิ่งยอมรับความคลาดเคลื่อนได้มาก / มีวิธีอื่นช่วย / จัดกลุ่มแล้ว → ตัวอย่างยิ่งเล็ก</b> | ขนาดประชากร<b>แทบไม่มีผล</b></div>
+    </div>
+  </div>;
+}
+
+/* ============ FLASHCARDS ============ */
+const CARDS=[
+  {q:'การเลือกตัวอย่างในการสอบบัญชีคืออะไร?',a:'ใช้วิธีตรวจน้อยกว่า 100% ของประชากร โดยทุกหน่วยมีโอกาสถูกเลือก เพื่อให้ได้เกณฑ์สมเหตุสมผลสรุปเกี่ยวกับประชากรทั้งหมด'},
+  {q:'ต้องรู้อะไรก่อนจึงจะระบุประชากรได้?',a:'ต้องรู้วัตถุประสงค์ — ระบุว่ากำลังตรวจสิ่งที่ผู้บริหารรับรอง (assertion) ข้อไหน แล้วจึงเลือกประชากรให้ตรงทิศ'},
+  {q:'ทดสอบ Occurrence ของรายได้ขาย ใช้ประชากรใด?',a:'รายการขายทั้งหมดที่บันทึกบัญชี (All sales transactions) — เริ่มจากบัญชีย้อนไปเอกสาร (vouching)'},
+  {q:'ทดสอบ Completeness ของรายได้ขาย ใช้ประชากรใด?',a:'ใบส่งของทั้งหมด (All goods delivery notes) — เริ่มจากเอกสารต้นทางตามไปว่าบันทึกครบไหม (tracing)'},
+  {q:'ถ้าตรวจรายการที่เลือกด้วยวิธีใดๆ ไม่ได้เลย ต้องทำอย่างไร?',a:'ถือว่าเป็น "การเบี่ยงเบน" (ทดสอบการควบคุม) หรือ "การแสดงข้อมูลที่ขัดต่อข้อเท็จจริง" (ทดสอบรายละเอียด) — ห้ามข้ามไปเลือกตัวใหม่'},
+  {q:'False Negative จากการเลือกตัวอย่างคืออะไร?',a:'สรุปว่า IC มีประสิทธิผลสูงกว่าจริง / สรุปว่าไม่มี misstatement ทั้งที่มีจริง — กระทบประสิทธิผล (อันตราย)'},
+  {q:'False Positive คืออะไร?',a:'สรุปว่า IC มีประสิทธิผลต่ำกว่าจริง / สรุปว่ามี misstatement ทั้งที่ไม่มีจริง — กระทบประสิทธิภาพ (ทำงานเกิน)'},
+  {q:'การเลือกตัวอย่างทางสถิติต้องมีลักษณะอะไร?',a:'2 ข้อ: (1) เลือกแบบสุ่ม และ (2) ใช้ทฤษฎีความน่าจะเป็นประเมินผล + วัดค่าความเสี่ยงจากการเลือกตัวอย่าง'},
+  {q:'วิธีเลือกตัวอย่าง 5 วิธี?',a:'Random, Systematic, Monetary Unit Sampling (MUS), Haphazard, Block selection'},
+  {q:'Systematic selection คำนวณช่วงห่างอย่างไร?',a:'จำนวนประชากร ÷ จำนวนตัวอย่างที่ต้องการ (จุดเริ่มต้นควรสุ่ม)'},
+  {q:'MUS ทำงานอย่างไร และคำนวณช่วงอย่างไร?',a:'รายการเงินสูงมีโอกาสถูกเลือกมากกว่า | ช่วง = ยอดรวมมูลค่าประชากร ÷ จำนวนตัวอย่าง | เหมาะสุดกับทดสอบรายละเอียด'},
+  {q:'ทำไม Block selection มักไม่เหมาะกับงานสอบบัญชี?',a:'รายการที่เรียงติดกันมักมีลักษณะคล้ายกันเอง แต่ต่างจากรายการอื่น จึงไม่เป็นตัวแทนที่ดีของประชากร'},
+  {q:'Haphazard selection ต้องระวังอะไร?',a:'ต้องไม่มี bias (ไม่มีอคติในการเลือก)'},
+  {q:'วัตถุประสงค์ของ Stratification คืออะไร?',a:'ลดความแตกต่างของรายการในแต่ละกลุ่มย่อย ทำให้ลดขนาดตัวอย่างได้โดยไม่เพิ่มความเสี่ยงจากการเลือกตัวอย่าง'},
+  {q:'Stratification เป็นการเลือกตัวอย่างไหม?',a:'ไม่ใช่ — เลือกตัวอย่างหลังจัดกลุ่ม และใช้วิธีเลือกต่างกันในแต่ละกลุ่มได้'},
+  {q:'ทดสอบค่าเผื่อหนี้สงสัยจะสูญ มักแบ่งกลุ่มย่อยตามอะไร?',a:'ตามอายุหนี้ค้าง (aging)'},
+  {q:'ในตาราง A/R ที่แบ่งกลุ่ม กลุ่มไหนตรวจ 100%?',a:'บัญชีมากกว่า 1,000,000 บาท และบัญชีที่มียอดคงเหลือด้านเครดิต (ผิดปกติ)'},
+  {q:'ตรวจสินค้าหลายสาขา เลือกสาขาอย่างไร?',a:'เอา list สาขาทั้งหมดมาประเมินความเสี่ยงก่อน เลือกโดยพิจารณาความเป็นตัวแทน ถ้า IC ทุกสาขาเหมือนกันจัดเป็นประชากรกลุ่มเดียว'},
+  {q:'ปัจจัยเสี่ยงของสาขา (ยกตัวอย่าง)?',a:'สาขาหลักปริมาณ/เงินมาก, สาขาที่เคยพบข้อผิดพลาด, สาขาที่เปลี่ยนเจ้าหน้าที่บ่อย (human error), สาขาสภาพแวดล้อมเสี่ยงต่อสินค้า'},
+  {q:'projected misstatement (ratio) คำนวณอย่างไร?',a:'(misstatement ในตัวอย่าง ÷ มูลค่าที่สุ่มตรวจ) × มูลค่ารวมประชากร | เช่น A/R 21,000÷152,000×502,000 ≈ 69,355'},
+  {q:'Anomaly คืออะไร ทำอย่างไร?',a:'misstatement เฉพาะกรณี (ไม่เป็นตัวแทนประชากร) อาจไม่นำไปรวมประมาณการประชากร แต่ผลกระทบถ้าไม่แก้ต้องพิจารณารวม'},
+  {q:'ตัวชี้ขาดว่า misstatement จริงอาจเกิน tolerable?',a:'ยิ่ง projected + anomaly ใกล้เคียง tolerable misstatement เท่าไร ยิ่งเป็นไปได้ที่ misstatement จริงในประชากรจะเกิน tolerable'},
+  {q:'ปัจจัยที่ทำให้ขนาดตัวอย่าง "ใหญ่ขึ้น"?',a:'ต้องการความเชื่อมั่นมากขึ้น, RMM/ความเสี่ยงสูงขึ้น, คาดว่าจะพบผิด/เบี่ยงเบนมากขึ้น, พึ่ง IC มากขึ้น'},
+  {q:'ปัจจัยที่ทำให้ขนาดตัวอย่าง "เล็กลง"?',a:'ยอมรับความคลาดเคลื่อน (tolerable) ได้มากขึ้น, จัดกลุ่มประชากร, ใช้วิธีตรวจเนื้อหาสาระอื่นช่วย | ขนาดประชากรแทบไม่มีผล'},
+];
+function FlashTab(){
+  const [order,setOrder]=useState(CARDS.map((_,i)=>i));const [flipped,setFlipped]=useState({});const [score,setScore]=useState({know:0,dunno:0});
+  const shuffle=()=>{setOrder([...order].sort(()=>Math.random()-.5));setFlipped({});setScore({know:0,dunno:0});};
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#2b7a8c'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#2b7a8c"/>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ QUICK ============ */
+function QuickTab(){
+  const cards=[
+    {c:'#2b7a8c',t:'🎯 assertion ก่อน แล้วค่อยเลือกประชากร',d:'Occurrence → รายการขายที่บันทึก (vouching กันบันทึกเกิน) | Completeness → ใบส่งของ (tracing กันบันทึกขาด)'},
+    {c:'#9c3d3d',t:'🔴 False Negative = อันตราย',d:'พลาดของที่ผิดจริง (บอกว่าไม่มีทั้งที่มี) → กระทบประสิทธิผล | False Positive = ตกใจของไม่ผิด → แค่เสียเวลา'},
+    {c:'#356e6a',t:'🎲 5 วิธีเลือก',d:'Random · Systematic (ประชากร÷ตัวอย่าง) · MUS (เงินสูงโอกาสมาก) · Haphazard (ห้าม bias) · Block (มักไม่เหมาะ)'},
+    {c:'#8a5a2b',t:'📐 สถิติ = สุ่ม + ความน่าจะเป็น',d:'ต้องครบ 2: เลือกแบบสุ่ม + ใช้ทฤษฎีความน่าจะเป็นวัดความเสี่ยง | ขาดข้อใดข้อหนึ่ง = ไม่ใช่ทางสถิติ'},
+    {c:'#3a6b7a',t:'📊 Stratification ลดตัวอย่าง',d:'แบ่งกลุ่มลดความต่างในกลุ่ม → ตัวอย่างเล็กลงโดยไม่เพิ่มเสี่ยง | รายการใหญ่/ผิดปกติ ตรวจ 100% | ไม่ใช่การเลือกตัวอย่าง'},
+    {c:'#5a5a7a',t:'🧮 Projection แบบ ratio',d:'ผิดในตัวอย่าง ÷ มูลค่าที่สุ่ม × ยอดรวม | A/R: 21,000÷152,000×502,000 ≈ 69,355'},
+    {c:'#6b7a3a',t:'📈 ขนาดตัวอย่าง',d:'มั่นใจมาก/เสี่ยงมาก/คาดเจอผิดมาก → ใหญ่ | ยอมรับคลาดเคลื่อนมาก/จัดกลุ่ม/มีวิธีอื่น → เล็ก | ขนาดประชากร≈ไม่มีผล'},
+    {c:'#7a4f6d',t:'✋ เลือกแล้วอย่าเปลี่ยนใจ',d:'ตรวจไม่ได้ → ใช้รายการแทน | ตรวจไม่ได้เลย → ถือว่าเบี่ยงเบน/ผิด ห้ามเลี่ยงไปเลือกตัวง่าย'},
+    {c:'#2b7a8c',t:'🔎 ลักษณะและสาเหตุ',d:'หลายรายการคล้ายกัน (ที่/เวลา/สายผลิต) → ขยายตรวจ | เจตนา → เสี่ยงทุจริต | anomaly = กรณีเฉพาะ'},
+    {c:'#4a7c46',t:'📚 อ้างอิง TSA 530',d:'มาตรฐานการสอบบัญชี รหัส 530 การเลือกตัวอย่างในการสอบบัญชี'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ LAB 1 : assertion/method quiz ============ */
+const AQUIZ=[
+  {q:'ทดสอบ Occurrence (เกิดขึ้นจริง) ของรายได้ขาย ใช้ประชากรใด?',opts:['ใบส่งของ','รายการขายที่บันทึกบัญชี'],ans:1,ex:'เริ่มจากบัญชีที่บันทึกแล้ว ย้อนไปหาเอกสาร (vouching) เพื่อกันการบันทึกเกิน/รายการผี'},
+  {q:'ทดสอบ Completeness (ครบถ้วน) ของรายได้ขาย ใช้ประชากรใด?',opts:['ใบส่งของ','รายการขายที่บันทึกบัญชี'],ans:0,ex:'เริ่มจากเอกสารต้นทาง (ส่งของแล้ว) ตามไปว่าบันทึกขายครบไหม (tracing) เพื่อกันการบันทึกขาด'},
+  {q:'อยากให้รายการที่มีจำนวนเงินสูงมีโอกาสถูกเลือกมากกว่า ใช้วิธีใด?',opts:['Systematic','Monetary Unit Sampling (MUS)'],ans:1,ex:'MUS ให้น้ำหนักตามจำนวนเงิน รายการเงินสูงมีโอกาสถูกเลือกมากกว่า เหมาะกับทดสอบรายละเอียด'},
+  {q:'เลือกโดยคำนวณช่วงห่าง = ประชากร ÷ จำนวนตัวอย่าง จุดเริ่มต้นสุ่ม คือวิธีใด?',opts:['Systematic','Haphazard'],ans:0,ex:'การเลือกแบบมีระบบ (Linear Systematic)'},
+  {q:'เลือกกลุ่มรายการที่ติดกันในประชากร — วิธีนี้คือ และเหมาะกับงานสอบบัญชีไหม?',opts:['Block — มักไม่เหมาะ','Random — เหมาะ'],ans:0,ex:'Block selection รายการติดกันมักคล้ายกันเอง จึงไม่เป็นตัวแทนที่ดี โดยปกติไม่เหมาะกับงานสอบบัญชี'},
+  {q:'บัญชีลูกหนี้ยอดมากกว่า 1,000,000 บาท (มูลค่าสูง) ควรทำอย่างไร?',opts:['ตรวจ 100%','สุ่มเล็กน้อย'],ans:0,ex:'รายการมูลค่าสูงมักตรวจ 100% (ตามตัวอย่างการแบ่งกลุ่มในสไลด์)'},
+];
+function AssertLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=AQUIZ[i];
+  const choose=(n)=>{if(picked!==null)return;setPicked(n);if(n===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<AQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>🎯</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {AQUIZ.length}</div>
+    <Button type="primary" style={{background:'#2b7a8c'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="cyan">ข้อ {i+1}/{AQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <div className="sec-card" style={{marginBottom:10}}><b>{q.q}</b></div>
+    <Row gutter={[8,8]}>{q.opts.map((o,n)=>{let b='#d9d9d9',bg='#fff';if(picked!==null){if(n===q.ans){b='#237804';bg='#eaf6ea';}else if(n===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={24} md={12} key={n}><div onClick={()=>choose(n)} style={{cursor:picked!==null?'default':'pointer',padding:'12px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontWeight:600,fontSize:13.5}}>{o}</div></Col>;})}</Row>
+    {picked!==null && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700,marginBottom:4}}>{picked===q.ans?'✅ ถูกต้อง':'❌ คำตอบคือ '+q.opts[q.ans]}</div>{q.ex}
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#2b7a8c'}} onClick={next}>{i+1<AQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ LAB 2 : projection ============ */
+function ProjLab(){
+  const [err,setErr]=useState(21000);const [samp,setSamp]=useState(152000);const [total,setTotal]=useState(502000);
+  const proj = samp>0? err/samp*total : 0;
+  const rate = samp>0? err/samp*100 : 0;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:12}} message="คำนวณ projected misstatement (วิธีเทียบสัดส่วน)" description="ผิดในตัวอย่าง ÷ มูลค่าที่สุ่มตรวจ × ยอดรวมประชากร"/>
+    <Row gutter={[8,8]} style={{marginBottom:8}}>
+      <Col xs={8}><div style={{fontSize:12.5}}>ข้อผิดพลาดที่พบ</div><InputNumber style={{width:'100%'}} value={err} min={0} step={1000} onChange={v=>setErr(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>มูลค่าที่สุ่มตรวจ</div><InputNumber style={{width:'100%'}} value={samp} min={0} step={1000} onChange={v=>setSamp(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>ยอดรวมประชากร</div><InputNumber style={{width:'100%'}} value={total} min={0} step={1000} onChange={v=>setTotal(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+    </Row>
+    <div style={{padding:'14px',borderRadius:10,background:'#e4f1f2',border:'2px solid #2b7a8c',textAlign:'center'}}>
+      <div style={{fontSize:13,color:'#555'}}>อัตราผิดพลาด {rate.toFixed(2)}% → ประมาณ misstatement ของประชากร</div>
+      <div style={{fontSize:24,fontWeight:800,color:'#2b7a8c'}}>≈ {money(Math.round(proj))} บาท</div>
+    </div>
+    <div className="je" style={{marginTop:10}}>{money(err)} ÷ {money(samp)} × {money(total)} = {money(Math.round(proj))}</div>
+    <div className="kbox" style={{fontSize:12.5}}>ลองใส่ตัวเลขสินค้าคงเหลือ: 30,000 / 1,533,000 / 5,900,000 → ได้ ≈ 115,460</div>
+  </div>;
+}
+
+/* ============ LAB 3 : sample size factor quiz ============ */
+const SZQUIZ=SSFACT.filter(f=>f.e!=='แทบไม่กระทบ').map(f=>({s:f.f+' ('+f.test+')',ans:f.e}));
+function SizeLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=SZQUIZ[i];
+  const choose=(v)=>{if(picked)return;setPicked(v);if(v===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<SZQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>📈</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {SZQUIZ.length}</div>
+    <Button type="primary" style={{background:'#2b7a8c'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="cyan">ข้อ {i+1}/{SZQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เมื่อปัจจัยนี้ 'เพิ่มขึ้น' ขนาดตัวอย่างจะ...?" description={q.s}/>
+    <Row gutter={[8,8]}>{['เพิ่ม','ลด'].map(v=>{let b='#d9d9d9',bg='#fff';if(picked){if(v===q.ans){b='#237804';bg='#eaf6ea';}else if(v===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={12} key={v}><div onClick={()=>choose(v)} style={{cursor:picked?'default':'pointer',padding:'12px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontWeight:700,fontSize:15}}>{v==='เพิ่ม'?'▲ เพิ่มขึ้น':'▼ ลดลง'}</div></Col>;})}</Row>
+    {picked && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700}}>{picked===q.ans?'✅ ถูกต้อง':'❌ คำตอบคือ '+q.ans}</div>
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#2b7a8c'}} onClick={next}>{i+1<SZQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+function FloatingLab(){
+  const [open,setOpen]=useState(false);const [seg,setSeg]=useState('assert');
+  const w=typeof window!=='undefined'?Math.min(560,window.innerWidth-16):560;
+  return <React.Fragment>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square" style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ" styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}} options={[{label:'🎯 assertion/วิธี',value:'assert'},{label:'🧮 Projection',value:'proj'},{label:'📈 ขนาดตัวอย่าง',value:'size'}]}/>
+      {seg==='assert'&&<AssertLab/>}
+      {seg==='proj'&&<ProjLab/>}
+      {seg==='size'&&<SizeLab/>}
+    </Drawer>
+  </React.Fragment>;
+}
+
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>🎲 GA511 — การเลือกตัวอย่างในงานสอบบัญชี (Audit Sampling)</h1>
+      <p>Note 4: พื้นฐาน & assertion → ข้อสรุปผิด 2 ประเภท → 5 วิธีเลือก → Stratification → Projection & ขนาดตัวอย่าง | อิงสไลด์ GA511 และ TSA 530</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 ปุ่มลอย "ทดลอง" — จับคู่ assertion/วิธี · คำนวณ projection · quiz ขนาดตัวอย่าง</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'🎯 พื้นฐาน & assertion',children:<BasicTab/>},
+      {key:'2',label:'⚠️ ข้อสรุปผิด 2 ประเภท',children:<ErrorTab/>},
+      {key:'3',label:'🎲 5 วิธีเลือก',children:<MethodTab/>},
+      {key:'4',label:'📊 Stratification',children:<StratTab/>},
+      {key:'5',label:'📐 ประเมินผล & ขนาด',children:<EvalTab/>},
+      {key:'6',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'7',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>

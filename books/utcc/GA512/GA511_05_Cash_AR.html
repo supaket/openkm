@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 — ตรวจสอบเงินสดและลูกหนี้ (Cash & AR)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#eef5f0; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#1f7a5c,#36a179); border-radius:14px; padding:22px 26px; color:#eefaf4; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:23px; color:#eefaf4; }
+  .hero p { margin:0; opacity:.94; }
+  .sec-card { background:#fffdf9; border:1px solid #d5e6de; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(20,80,60,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#1f7a5c; font-size:17px; }
+  .tag-step { display:inline-block; background:#1f7a5c; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#d5ece2; color:#155743; padding:6px 8px; border:1px solid #bcdccf; text-align:center; }
+  table.fin td { padding:6px 8px; border:1px solid #d8e9e1; vertical-align:top; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin tr.total td { background:#e4f2eb; font-weight:700; }
+  table.fin tr.head td { background:#eef6f2; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#e4f2eb; border-left:4px solid #1f7a5c; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#f4faf7; border:1px dashed #8fc0ac; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#1f7a5c; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf9; border:2px solid #9fccb9; color:#155743; font-weight:600; font-size:14.5px; }
+  .flip-back { background:#1f7a5c; color:#eefaf4; transform:rotateY(180deg); font-size:12.5px; line-height:1.5; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Radio, InputNumber } = antd;
+const { useState } = React;
+const money=(x)=>x.toLocaleString('en-US',{maximumFractionDigits:0});
+
+/* ============ TAB 1 : Cash & equivalents ============ */
+function CashTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>บัญชีที่เกี่ยวข้อง</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>เงินสดย่อย / เงินสดในมือ</b></td><td>Petty cash / Cash on hand</td></tr>
+        <tr><td><b>เงินฝากธนาคาร</b></td><td>บัญชีกระแสรายวัน (Current) · ออมทรัพย์ (Saving) · เงินฝากประจำ (Fixed)</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>นิยามรายการเทียบเท่าเงินสด (TFRS 7)</h3>
+      <p>"เงินลงทุน<b>ระยะสั้นที่มีสภาพคล่องสูง</b> ซึ่งพร้อมเปลี่ยนเป็นเงินสดในจำนวนที่ทราบได้ และมี<b>ความเสี่ยงที่ไม่มีนัยสำคัญ</b>ต่อการเปลี่ยนแปลงในมูลค่า"</p>
+      <div className="kbox">📏 เกณฑ์ทั่วไป: <b>อายุคงเหลือไม่เกิน 3 เดือน</b>นับจากวันที่ได้มา และถือไว้<b>เพื่อชำระภาระผูกพันระยะสั้น</b> (ไม่ใช่เพื่อการลงทุนหรือวัตถุประสงค์อื่น)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>อันไหนเป็น "เงินสดและรายการเทียบเท่า"? (สไลด์ตั้งคำถาม)</h3>
+      <table className="fin">
+        <thead><tr><th>รายการ</th><th>เป็นเทียบเท่าเงินสด?</th><th>เหตุผล</th></tr></thead>
+        <tbody>
+          <tr><td>ตั๋วเงินคลัง (T-Bills) อายุไม่เกิน 3 เดือน</td><td style={{textAlign:'center',color:'#237804',fontWeight:700}}>ใช่</td><td>สภาพคล่องสูง อายุ ≤ 3 เดือน แปลงเป็นเงินสดจำนวนแน่นอนได้</td></tr>
+          <tr><td>ตั๋วสัญญาใช้เงินจากธนาคาร อายุไถ่ถอน 3 เดือน</td><td style={{textAlign:'center',color:'#237804',fontWeight:700}}>ใช่</td><td>สภาพคล่องสูง อายุ ≤ 3 เดือน</td></tr>
+          <tr><td>เงินฝากประจำ 3 เดือน</td><td style={{textAlign:'center',color:'#ad6800',fontWeight:700}}>มีเงื่อนไข</td><td>ถ้าอายุ ≤ 3 เดือนนับจากวันได้มา และถือเพื่อภาระระยะสั้น = เข้าเกณฑ์ | ถ้าถือเพื่อลงทุน = ไม่ใช่</td></tr>
+          <tr><td>เงินลงทุนในตราสารทุน (ซื้อหุ้น)</td><td style={{textAlign:'center',color:'#a8071a',fontWeight:700}}>ไม่ใช่</td><td>มูลค่าผันผวน มีความเสี่ยงต่อการเปลี่ยนแปลงมูลค่าอย่างมีนัยสำคัญ</td></tr>
+          <tr><td>เงินเบิกเกินบัญชี (Bank Overdraft)</td><td style={{textAlign:'center',color:'#ad6800',fontWeight:700}}>กรณีพิเศษ</td><td>ปกติเป็นหนี้สิน แต่ถ้าจ่ายคืนเมื่อทวงถามและเป็นส่วนหนึ่งของการบริหารเงินสด → รวมเป็นองค์ประกอบ (ติดลบ) ในเงินสดและรายการเทียบเท่าฯ สำหรับงบกระแสเงินสด</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>จำแนกเทียบเท่าเงินสด</b> เพื่อฝึกทีละรายการ</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : Cash fraud ============ */
+const FRAUD=[
+  {k:'Lapping',th:'การยักยอกแบบปิดบัญชีต่อเนื่อง',how:'พนักงานยักยอกเงินที่ลูกค้าชำระ แล้วนำเงินจากลูกค้ารายถัดไปมาปิดบัญชีของรายก่อนหน้า ทำต่อเนื่องเป็นทอดๆ เพื่อปกปิดเงินที่ยักยอก',
+    detect:'ส่งหนังสือยืนยันยอดลูกหนี้ · ตรวจนับเงินสดแบบไม่แจ้งล่วงหน้า · ตรวจการบันทึกเงินรับและการนำส่งเงินเข้าบัญชีว่าตรงตามลำดับเวลา',
+    prevent:'หมุนเวียนตำแหน่งที่เกี่ยวกับการรับเงิน · ติดกล้องวงจรปิด · ให้ลูกค้าโอนเงินตรงเข้าบัญชีบริษัท'},
+  {k:'Skimming',th:'รับเงินจริงแต่ไม่บันทึก',how:'รับเงินจริงจากลูกค้า แต่ไม่ออกใบเสร็จหรือไม่บันทึกบัญชี ทำให้เงินไม่เข้าบริษัท',
+    detect:'Red flag: ยอดขายเงินสดต่ำผิดปกติ · เงินฝากไม่สัมพันธ์กับยอดขาย · ลูกค้าแจ้งว่าไม่ได้ใบเสร็จ · ตัดหนี้สูญผิดปกติ → ตรวจเจอเมื่อส่งจดหมายยืนยันยอดลูกหนี้',
+    prevent:'ใบเสร็จเลขรันต่อเนื่อง · กล้องวงจรปิดจุดรับเงิน · แยกผู้รับเงินกับผู้บันทึกบัญชี · ป้ายให้ลูกค้าขอใบเสร็จ / ชิงโชคท้ายใบเสร็จ · ยืนยันยอดลูกหนี้ · อนุมัติตัดหนี้สูญรัดกุม'},
+  {k:'Check Kiting',th:'เล่นช่วงเคลียร์เช็คให้เงินดูสูงเกิน',how:'ใช้ช่วงเวลาเคลียร์เช็ค (float period) โอนเช็คข้ามหลายบัญชีช่วงปลายงวด เพื่อทำให้ยอดเงินสดดูสูงกว่าจริง — เช่น 31 ธ.ค. ออกเช็คจากบัญชี A 500,000 ฝากบัญชี B ทันที: B บันทึก +500,000 แต่ A ยังไม่ถูกหักจน 2-3 ม.ค. → ยอดรวมสูงเกินจริง',
+    detect:'ทำ Bank Transfer Schedule (ตารางตรวจรายการโอนระหว่างบัญชี)',
+    prevent:'แยกหน้าที่รับเงิน–จ่ายเงิน–กระทบยอดธนาคาร · กระทบยอดทุกบัญชีโดยบุคคลอิสระ · ฝ่ายบริหารตรวจ bank transfer schedule รายเดือน · จำกัดจำนวนบัญชีธนาคาร · ใช้โอนผ่านธนาคาร (ลดการใช้เช็ค)'},
+];
+function FraudTab(){
+  return <div>
+    <Alert type="warning" showIcon style={{marginBottom:10}} message="เงินสดคือจุดเสี่ยงทุจริตที่สุด — 3 รูปแบบคลาสสิก" description="Lapping · Skimming · Check Kiting"/>
+    {FRAUD.map((f,i)=><div className="sec-card" key={i}>
+      <h3><span className="tag-step">{i+1}</span>{f.k} — {f.th}</h3>
+      <p style={{margin:'0 0 8px',fontSize:13.5}}><b>วิธีโกง:</b> {f.how}</p>
+      <div className="je"><b>🔎 ตรวจจับ:</b> {f.detect}</div>
+      <div className="kbox" style={{margin:'8px 0 0'}}><b>🛡️ ป้องกัน:</b> {f.prevent}</div>
+    </div>)}
+    <div className="sec-card">
+      <h3>ข้อผิดพลาด/ทุจริตอื่นๆ ที่กระทบเงินสด</h3>
+      <Row gutter={[8,8]}>
+        {['ไม่ส่งใบแจ้งหนี้เรียกเก็บเงินลูกค้า','จ่ายซ้ำจากใบแจ้งหนี้ใบเดียวกัน','ใช้เงินบริษัทจ่ายค่าใช้จ่ายส่วนตัวผู้บริหาร','จ่ายซื้อวัตถุดิบที่ไม่เคยได้รับ','จ่ายค่าจ้างเกินการทำงานจริง','ออกเช็คให้ตนเองหรือบุคคลสมคบ','ปลอมลายเซ็นอนุมัติการจ่าย','ปลอมยอดคงเหลือในสมุดบัญชีธนาคาร','ไม่บันทึกเช็คค้างจ่าย/ค้างรับอย่างถูกต้อง','ผู้ดูแลเงินสดย่อยเอาเงินไปใช้ส่วนตัว','ขโมยเช็คที่จ่ายให้บริษัทแล้วเปลี่ยนชื่อผู้รับเป็นตนเอง'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><div style={{fontSize:13,padding:'6px 10px',background:'#fbf4f3',borderRadius:6,border:'1px solid #eddad6'}}>• {t}</div></Col>)}
+      </Row>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>จับประเภททุจริต</b> เพื่อฝึกแยก Lapping / Skimming / Kiting</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : Bank rec + procedures + petty cash ============ */
+function ProcTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>งบกระทบยอดเงินฝากธนาคาร (Bank Reconciliation)</h3>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>กิจการควรกระทบยอด<b>ทุกเดือน</b> สำหรับบัญชีที่ยอดตามบัญชีไม่ตรงกับยอดจากธนาคาร</td></tr>
+        <tr><td>②</td><td>ควรทำโดย<b>บุคคลที่ไม่เกี่ยวข้องกับการรับหรือจ่ายเงินสด</b></td></tr>
+        <tr><td>③</td><td>ผู้สอบตรวจว่า reconciling items มี<b>เอกสารสนับสนุน</b> · เทียบยอดกับ bank statement หรือจดหมายยืนยันยอดจากธนาคาร</td></tr>
+        <tr><td>④</td><td>ตรวจ <b>unusual reconciling items</b> เช่น deposit ย้อนหลังหลายวัน (อาจเป็นสัญญาณ Kiting)</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>แนวทางการตรวจบัญชีเงินสดทั่วไป</h3>
+      <Row gutter={[8,8]}>
+        {['นับเงินสดย่อยและเงินสดในมือ','ตรวจ unreimbursed petty cash vouchers','ส่งจดหมายยืนยันยอดเงินฝากธนาคาร','ตรวจผลต่างยอดในบัญชีกับยอดที่ธนาคารยืนยัน','ตรวจงบกระทบยอดเงินฝาก','ทดสอบการบวกเลขและการคำนวณ','ตรวจว่ายอดยกมาต้นงวด = ยอดสิ้นงวดปีก่อน','ระวังการโอนเงินระหว่างบัญชีปลายงวด (อาจเกิด Kiting)','อ่านรายงานการประชุม','วิเคราะห์เปรียบเทียบกับงวดก่อน','คำนวณดอกเบี้ยและเทียบกับอัตราจากธนาคาร','ดูสัญญา OD ว่ามีอะไรค้ำประกัน ต้องเปิดเผยในหมายเหตุ'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><div style={{fontSize:13,padding:'6px 10px',background:'#f2f8f5',borderRadius:6,border:'1px solid #d8e9e1'}}>✓ {t}</div></Col>)}
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.3</span>เงินสดย่อย (Petty Cash) — ระบบ Imprest</h3>
+      <p>เงินสดจำนวนไม่มากที่กันไว้ใช้จ่ายเล็กๆ น้อยๆ ประจำวัน (ค่าถ่ายเอกสาร ค่าขนส่งเล็กน้อย ค่าจอดรถ ค่าส่งเอกสาร)</p>
+      <table className="fin"><tbody>
+        <tr><td><b>Imprest System (ยอดคงที่)</b></td><td>ใช้ระบบ Fixed Float เช่น 5,000 บาท</td></tr>
+        <tr><td><b>Custodian</b></td><td>ผู้ดูแลเงินสดย่อย</td></tr>
+        <tr><td><b>Petty Cash Voucher</b></td><td>ใบสำคัญจ่ายทุกครั้งที่ใช้จ่าย</td></tr>
+        <tr><td><b>Replenishment (เบิกคืน)</b></td><td>เมื่อเงินเหลือน้อย เบิกคืนให้ยอดกลับเท่าเดิม — <b>บันทึกเข้าค่าใช้จ่ายแต่ละประเภทตอนเบิกคืน</b></td></tr>
+      </tbody></table>
+      <div className="je" style={{textAlign:'center',fontSize:15}}>เงินสดคงเหลือจริง + ใบสำคัญจ่ายที่ยังไม่เบิกคืน = <b>วงเงินสดย่อยตามระบบ (Imprest Amount)</b></div>
+      <div className="kbox">🔎 <b>การตรวจ:</b> นับเงินสดจริง ณ วันตรวจ + ใบสำคัญจ่าย | ผู้สอบอาจ<b>ไม่นับ</b>เพราะจำนวนน้อยหรือ IC ดี | ถ้านับ → <b>ไม่นัดล่วงหน้า</b> (กันแก้ไขรายการเงินขาด/เกิน) · ลูกค้าต้องอยู่ด้วยเสมอ · ให้ลูกค้าเซ็นว่ารับเงินคืนแล้วเมื่อนับเสร็จ</div>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" → <b>นับเงินสดย่อย</b> ใส่ตัวเลขดูว่าเงินขาด/เกินไหม</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : AR cut-off ============ */
+function ARTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>บัญชีลูกหนี้การค้า — ภาพรวมและจุดเสี่ยง</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>ประเภท</b></td><td>Related party (กิจการที่เกี่ยวข้องกัน) · Non-related party</td></tr>
+        <tr><td><b>ค่าเผื่อผลขาดทุนด้านเครดิต</b></td><td>Allowance for credit losses — <span className="hl">จุดเสี่ยงสำคัญ</span></td></tr>
+        <tr><td><b>การวิเคราะห์</b></td><td>ดูลูกหนี้ควบคู่กับยอดขายและ credit term</td></tr>
+        <tr><td><b>รายการใกล้วันสิ้นงวด</b></td><td>อาจบันทึกผิดงวด → ต้องทำ cut-off</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>Revenue Cut-off</h3>
+      <p><b>วัตถุประสงค์:</b> ตรวจว่าไม่มีการรับรู้รายได้เร็วเกินไป (premature revenue) และ sales / A/R / inventory ถูกบันทึก<b>ตรงงวดเดียวกัน</b></p>
+      <div className="kbox">📆 <b>วิธี:</b> ขอรายการขายช่วง <b>5–7 วันก่อนสิ้นงวด</b> และ <b>5–7 วันหลังสิ้นงวด</b> เพื่อดูว่ามีการบันทึกรายได้ผิดงวดไหม โดย<b>ตรวจวันที่ลูกค้าเซ็นรับของในใบส่งสินค้า</b></div>
+      <svg viewBox="0 0 640 90" style={{width:'100%',maxWidth:640}}>
+        <line x1="320" y1="55" x2="320" y2="20" stroke="#c0564a" strokeWidth="2" strokeDasharray="4 3"/>
+        <text x="320" y="15" textAnchor="middle" fontSize="12" fontWeight="700" fill="#c0564a">วันสิ้นงวด</text>
+        <rect x="150" y="40" width="170" height="26" fill="#e4f2eb" stroke="#1f7a5c"/><text x="235" y="57" textAnchor="middle" fontSize="12" fill="#155743">5-7 วันก่อน</text>
+        <rect x="320" y="40" width="170" height="26" fill="#fbf3ec" stroke="#c09a5e"/><text x="405" y="57" textAnchor="middle" fontSize="12" fill="#7a5a20">5-7 วันหลัง</text>
+      </svg>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.3</span>รายการผิดปกติของบัญชีลูกหนี้</h3>
+      <Row gutter={[8,8]}>
+        {['บันทึกรายได้เกินจริง (Overstatement of revenue)','รับรู้รายได้ผิดงวด (Cut-off errors)','ยอดลูกหนี้ไม่มีอยู่จริง (Fictitious receivables)','ประเมินค่าเผื่อฯ ต่ำกว่าจริง (Understated allowance)','การชำระเงินของลูกค้าถูกยักยอก (Lapping)','ปรับปรุงลูกหนี้ผิดปกติเพื่อปกปิดการทุจริต'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><div style={{fontSize:13,padding:'6px 10px',background:'#fbf4f3',borderRadius:6,border:'1px solid #eddad6'}}>⚠️ {t}</div></Col>)}
+      </Row>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : Confirmation ============ */
+function ConfirmTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.1</span>Tests of Details — Existence (ความมีอยู่จริง)</h3>
+      <p>ทดสอบว่าลูกหนี้ที่บันทึกมีอยู่จริง วิธีหลักคือ<b>ส่งจดหมายยืนยันยอด (confirmation)</b></p>
+      <table className="fin">
+        <thead><tr><th>ประเภทจดหมายยืนยันยอด</th><th>ลักษณะ</th><th>ความนิยม</th></tr></thead>
+        <tbody>
+          <tr><td>Positive — ลูกหนี้กรอกตัวเลขให้</td><td>ลูกหนี้ต้องตอบและกรอกยอดเอง</td><td style={{textAlign:'center'}}>ใช้ได้</td></tr>
+          <tr><td>Positive — ผู้สอบใส่ตัวเลข + รายละเอียด</td><td>ผู้สอบระบุยอด ให้ลูกหนี้ยืนยัน/ทักท้วง</td><td style={{textAlign:'center',color:'#237804',fontWeight:700}}>นิยมใช้</td></tr>
+          <tr><td>Negative — ตอบเพื่อทักท้วง</td><td>ถ้ายอดถูกต้องแล้วไม่ต้องตอบ</td><td style={{textAlign:'center',color:'#a8071a'}}>ใช้น้อย (น่าเชื่อถือต่ำ)</td></tr>
+        </tbody>
+      </table>
+      <div className="warn">⚠️ การได้รับตอบยืนยันยอดจากลูกหนี้ <b>ไม่ได้บอกว่าลูกหนี้มีความสามารถชำระหนี้</b> — อาจเป็นกรณี "ไม่มี ไม่หนี ไม่จ่าย" (ยืนยันว่าเป็นหนี้จริง แต่ไม่มีเงินจ่าย → ยังเป็นประเด็นค่าเผื่อฯ)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.2</span>ถ้าลูกหนี้ไม่ตอบ — Alternative Procedures</h3>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'ส่งอีกรอบหรือโทรตาม'},
+        {title:'ถ้ายังไม่ตอบ → ใช้วิธีอื่น',description:'Subsequent receipt (ดูการจ่ายเงินหลังวันสิ้นงวด) · ดูใบส่งของที่มีลายเซ็นผู้รับของ'},
+        {title:'ถ้าไม่ตอบหลายราย → ข้อบ่งชี้ความผิดปกติ',description:'ต้องขยายขอบเขตการตรวจสอบ | ลูกค้าอาจให้ที่อยู่ผิด หรือลูกหนี้ไม่มีตัวตน'},
+      ]}/>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.3</span>จดหมายตอบว่า "ยอดไม่ถูกต้อง" — สาเหตุความแตกต่าง</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>ประเด็นด้านช่วงเวลา (Timing Issue)</b></td><td>ลูกหนี้ไม่ได้ดูยอด ณ 31 ธ.ค. / รับชำระหลังสิ้นปีทำให้ต่าง · บริษัทบันทึกตามวันส่งสินค้า แต่ลูกค้าบันทึกตามวันที่ได้รับสินค้า</td></tr>
+        <tr><td><b>สินค้าถูกส่งคืน</b></td><td>Goods were returned</td></tr>
+        <tr><td><b>สินค้ายังไม่ได้รับ / สูญหายระหว่างทาง</b></td><td>ลูกค้ายังไม่ได้รับของ</td></tr>
+        <tr><td><b>ข้อผิดพลาดทางเอกสาร/การบันทึก</b></td><td>Clerical errors</td></tr>
+      </tbody></table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 6 : IC + analytical ============ */
+function ICTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">6.1</span>การควบคุมภายในวงจรขายและรับชำระเงิน</h3>
+      <Collapse items={[
+        {key:'1',label:'ควบคุมด้านการขาย',children:<div style={{fontSize:13.5}}>ใบสั่งขาย (Sales Order) ที่ได้รับอนุมัติ · การส่งสินค้า (Delivery Note) ต้องมีหลักฐานการรับสินค้าโดยลูกค้า · ใบกำกับสินค้า (Invoice) ออกตามยอดขายจริงเท่านั้น</div>},
+        {key:'2',label:'ควบคุมด้านการรับชำระเงิน',children:<div style={{fontSize:13.5}}><b>ผู้รับเงิน ≠ ผู้บันทึกลูกหนี้</b> · เงินที่รับต้องนำฝากธนาคารทุกวัน · ใบเสร็จมีเลขรันต่อเนื่อง · สุ่มส่งจดหมายยืนยันยอดสม่ำเสมอ · หมุนเวียนตำแหน่งงานที่เกี่ยวกับเงินสด</div>},
+        {key:'3',label:'ควบคุมเกี่ยวกับการบันทึกบัญชี',children:<div style={{fontSize:13.5}}>ระบบต้องเชื่อมโยงยอดขาย–ลูกหนี้–รับชำระ · จัดทำ Aging report ทุกเดือน · ทบทวนลูกหนี้ค้างเกินกำหนดสม่ำเสมอ</div>},
+        {key:'4',label:'ควบคุมการกันสำรองหนี้สงสัยจะสูญ',children:<div style={{fontSize:13.5}}>นโยบายการตั้งสำรองชัดเจน · ผู้บริหารตรวจลูกหนี้เก่าและลูกหนี้คดีความ · ก่อนตัดหนี้สูญต้องผ่านขั้นตอนการอนุมัติที่ถูกต้อง</div>},
+      ]}/>
+      <div className="kbox">🔑 หัวใจการแยกหน้าที่ (segregation): <b>ผู้รับเงิน ≠ ผู้บันทึกบัญชี ≠ ผู้กระทบยอดธนาคาร</b> — กันทั้ง Lapping, Skimming และ Kiting</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">6.2</span>การวิเคราะห์เปรียบเทียบบัญชีลูกหนี้</h3>
+      <Row gutter={[8,8]}>
+        {['เปรียบเทียบ turnover ratio กับปีก่อน','เปรียบเทียบ Days Sales Outstanding (DSO)','เปรียบเทียบยอดลูกหนี้กับยอดขาย','ตรวจความสัมพันธ์ยอดลูกหนี้–ยอดรับเงิน–ยอดขายรายเดือน'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><Card size="small" style={{background:'#f2f8f5'}}>📊 {t}</Card></Col>)}
+      </Row>
+      <div className="analogy">💡 DSO สูงขึ้นผิดปกติ หรือ ลูกหนี้โตเร็วกว่ายอดขาย = สัญญาณลูกหนี้เก็บไม่ได้ / รับรู้รายได้เกินจริง / ค่าเผื่อฯ ต่ำเกิน</div>
+    </div>
+  </div>;
+}
+
+/* ============ FLASHCARDS ============ */
+const CARDS=[
+  {q:'นิยามรายการเทียบเท่าเงินสดตาม TFRS 7?',a:'เงินลงทุนระยะสั้นสภาพคล่องสูง พร้อมเปลี่ยนเป็นเงินสดจำนวนที่ทราบได้ ความเสี่ยงเปลี่ยนมูลค่าไม่มีนัยสำคัญ — ทั่วไปอายุ ≤ 3 เดือนจากวันได้มา ถือเพื่อภาระระยะสั้น'},
+  {q:'ซื้อหุ้น (ตราสารทุน) เป็นเทียบเท่าเงินสดไหม?',a:'ไม่ใช่ — มูลค่าผันผวน มีความเสี่ยงต่อการเปลี่ยนแปลงมูลค่าอย่างมีนัยสำคัญ'},
+  {q:'T-Bills อายุ ≤ 3 เดือน เป็นเทียบเท่าเงินสดไหม?',a:'ใช่ — สภาพคล่องสูง อายุ ≤ 3 เดือน แปลงเป็นเงินสดจำนวนแน่นอน'},
+  {q:'Bank Overdraft เป็นเงินสดและรายการเทียบเท่าไหม?',a:'กรณีพิเศษ — ปกติเป็นหนี้สิน แต่ถ้าจ่ายคืนเมื่อทวงถามและเป็นส่วนหนึ่งของการบริหารเงินสด รวมเป็นองค์ประกอบ (ติดลบ) ในงบกระแสเงินสด'},
+  {q:'Lapping คืออะไร?',a:'ยักยอกเงินที่ลูกค้าชำระ แล้วเอาเงินลูกค้ารายถัดไปมาปิดบัญชีรายก่อน ทำต่อเนื่องเป็นทอดๆ'},
+  {q:'ตรวจจับ Lapping อย่างไร?',a:'ส่งหนังสือยืนยันยอดลูกหนี้ · ตรวจนับเงินสดไม่แจ้งล่วงหน้า · ตรวจการบันทึกเงินรับ/นำส่งเงินว่าตรงลำดับเวลา'},
+  {q:'Skimming คืออะไร ตรวจเจอเมื่อใด?',a:'รับเงินจริงแต่ไม่ออกใบเสร็จ/ไม่บันทึก เงินไม่เข้าบริษัท → มักตรวจเจอเมื่อส่งจดหมายยืนยันยอดลูกหนี้'},
+  {q:'Check Kiting คืออะไร?',a:'ใช้ช่วงเคลียร์เช็ค (float) โอนเช็คข้ามบัญชีปลายงวด ทำให้ยอดเงินสดรวมดูสูงเกินจริง'},
+  {q:'ตรวจจับ Kiting ด้วยอะไร?',a:'Bank Transfer Schedule (ตารางตรวจรายการโอนระหว่างบัญชี)'},
+  {q:'ใครควรทำ bank reconciliation?',a:'บุคคลที่ไม่เกี่ยวข้องกับการรับหรือจ่ายเงินสด'},
+  {q:'สูตรตรวจเงินสดย่อย (Imprest)?',a:'เงินสดคงเหลือจริง + ใบสำคัญจ่ายที่ยังไม่เบิกคืน = วงเงินสดย่อยตามระบบ (Imprest Amount)'},
+  {q:'Replenishment เงินสดย่อย บันทึกบัญชีเมื่อไร?',a:'บันทึกเข้าค่าใช้จ่ายแต่ละประเภท "ตอนเบิกคืน" (ไม่ใช่ตอนจ่ายแต่ละครั้ง)'},
+  {q:'ถ้าต้องนับเงินสดย่อย ควรทำอย่างไร?',a:'ไม่นัดล่วงหน้า (กันแก้ไขรายการขาด/เกิน) · ลูกค้าต้องอยู่ด้วย · ให้ลูกค้าเซ็นว่ารับเงินคืนแล้วเมื่อนับเสร็จ'},
+  {q:'วัตถุประสงค์ของ Revenue Cut-off?',a:'ตรวจว่าไม่รับรู้รายได้เร็วเกินไป และ sales/A/R/inventory บันทึกตรงงวดเดียวกัน'},
+  {q:'วิธีทำ Revenue Cut-off?',a:'ขอรายการขาย 5-7 วันก่อนและหลังสิ้นงวด ตรวจวันที่ลูกค้าเซ็นรับของในใบส่งสินค้า'},
+  {q:'รายการผิดปกติของลูกหนี้ (ยกตัวอย่าง)?',a:'รายได้เกินจริง, cut-off ผิดงวด, ลูกหนี้ปลอม (fictitious), ค่าเผื่อฯ ต่ำเกิน, Lapping, ปรับปรุงลูกหนี้ปกปิดทุจริต'},
+  {q:'จดหมายยืนยันยอดแบบไหนนิยมใช้?',a:'Positive แบบผู้สอบใส่ตัวเลข + รายละเอียด ให้ลูกหนี้ยืนยัน/ทักท้วง'},
+  {q:'Negative confirmation เป็นอย่างไร?',a:'ตอบเฉพาะเมื่อทักท้วง (ถ้ายอดถูกไม่ตอบ) — ใช้น้อย เพราะน่าเชื่อถือต่ำ'},
+  {q:'ได้รับยืนยันยอดจากลูกหนี้ = ลูกหนี้จ่ายได้ไหม?',a:'ไม่ใช่ — ยืนยันแค่ว่าเป็นหนี้จริง แต่อาจ "ไม่มี ไม่หนี ไม่จ่าย" ยังเป็นประเด็นค่าเผื่อฯ'},
+  {q:'ลูกหนี้ไม่ตอบจดหมาย ใช้วิธีอะไรแทน?',a:'ส่งซ้ำ/โทรตาม → Subsequent receipt (ดูการจ่ายหลังสิ้นงวด) · ดูใบส่งของที่มีลายเซ็นผู้รับ'},
+  {q:'ลูกหนี้ไม่ตอบหลายราย บ่งชี้อะไร?',a:'อาจเป็นความผิดปกติ (ที่อยู่ผิด/ลูกหนี้ไม่มีตัวตน) → ต้องขยายขอบเขตการตรวจสอบ'},
+  {q:'ยอดยืนยันไม่ตรง เพราะ timing issue คืออะไร?',a:'บริษัทบันทึกตามวันส่งสินค้า ลูกค้าบันทึกตามวันรับสินค้า / รับชำระหลังสิ้นปีทำให้ยอดต่าง'},
+  {q:'หลักแยกหน้าที่ในวงจรรับเงิน?',a:'ผู้รับเงิน ≠ ผู้บันทึกลูกหนี้ ≠ ผู้กระทบยอดธนาคาร (กัน Lapping/Skimming/Kiting)'},
+  {q:'อัตราส่วนวิเคราะห์ลูกหนี้ที่สำคัญ?',a:'Turnover ratio และ Days Sales Outstanding (DSO) เทียบกับปีก่อน + เทียบลูกหนี้กับยอดขาย'},
+];
+function FlashTab(){
+  const [order,setOrder]=useState(CARDS.map((_,i)=>i));const [flipped,setFlipped]=useState({});const [score,setScore]=useState({know:0,dunno:0});
+  const shuffle=()=>{setOrder([...order].sort(()=>Math.random()-.5));setFlipped({});setScore({know:0,dunno:0});};
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#1f7a5c'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#1f7a5c"/>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ QUICK ============ */
+function QuickTab(){
+  const cards=[
+    {c:'#1f7a5c',t:'💵 เทียบเท่าเงินสด = กฎ 3 เดือน',d:'สภาพคล่องสูง อายุ ≤3 เดือน ถือเพื่อภาระระยะสั้น | หุ้น=ไม่ใช่ (ผันผวน) | overdraft=กรณีพิเศษ'},
+    {c:'#9c3d3d',t:'🚨 Lapping — เอาเงินรายใหม่โปะรายเก่า',d:'ยักยอกแล้วปิดบัญชีต่อเนื่อง | จับ: ยืนยันยอด + นับเงินไม่แจ้ง + ตรวจลำดับเวลาการรับ/นำฝาก'},
+    {c:'#8a5a2b',t:'🚨 Skimming — รับเงินไม่บันทึก',d:'ไม่ออกใบเสร็จ เงินไม่เข้าบริษัท | red flag: ขายสดต่ำผิดปกติ | จับ: ยืนยันยอดลูกหนี้'},
+    {c:'#5a5a7a',t:'🚨 Kiting — เล่นช่วงเคลียร์เช็ค',d:'โอนเช็คข้ามบัญชีปลายงวด ทำยอดเงินสดสูงเกิน | จับ: Bank Transfer Schedule'},
+    {c:'#356e6a',t:'💰 Petty Cash (Imprest)',d:'เงินสดจริง + ใบสำคัญที่ยังไม่เบิกคืน = วงเงิน | นับแบบไม่นัดล่วงหน้า ลูกค้าอยู่ด้วย เซ็นรับคืน'},
+    {c:'#3a6b7a',t:'📆 Revenue Cut-off',d:'ขอรายการขาย 5-7 วันก่อน/หลังสิ้นงวด ตรวจวันลูกค้าเซ็นรับของ | กันรับรู้รายได้เร็วเกิน'},
+    {c:'#7a4f6d',t:'✉️ ยืนยันยอดลูกหนี้',d:'นิยม Positive แบบผู้สอบใส่ตัวเลข | ยืนยันได้ ≠ จ่ายได้ ("ไม่มี ไม่หนี ไม่จ่าย")'},
+    {c:'#6b7a3a',t:'🔁 ไม่ตอบ → วิธีอื่น',d:'Subsequent receipt (จ่ายหลังสิ้นงวด) + ใบส่งของมีลายเซ็นผู้รับ | ไม่ตอบหลายราย = ขยายตรวจ'},
+    {c:'#2f6d5f',t:'🔒 แยกหน้าที่คือหัวใจ',d:'ผู้รับเงิน ≠ ผู้บันทึก ≠ ผู้กระทบยอด | กันทุจริตเงินสดทั้ง 3 แบบ'},
+    {c:'#8a6d3b',t:'📊 วิเคราะห์ลูกหนี้',d:'DSO / turnover เทียบปีก่อน | ลูกหนี้โตเร็วกว่ายอดขาย = สัญญาณเก็บไม่ได้/รายได้เกิน/ค่าเผื่อต่ำ'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ LAB 1 : cash equivalent classifier ============ */
+const CQUIZ=[
+  {s:'ตั๋วเงินคลัง (Treasury Bills) อายุไม่เกิน 3 เดือน',ans:'ใช่',ex:'สภาพคล่องสูง อายุ ≤ 3 เดือน แปลงเป็นเงินสดจำนวนแน่นอน = เทียบเท่าเงินสด'},
+  {s:'เงินลงทุนในตราสารทุน (ซื้อหุ้น)',ans:'ไม่ใช่',ex:'มูลค่าผันผวน มีความเสี่ยงต่อการเปลี่ยนแปลงมูลค่าอย่างมีนัยสำคัญ'},
+  {s:'ตั๋วสัญญาใช้เงินจากธนาคาร อายุไถ่ถอน 3 เดือน',ans:'ใช่',ex:'สภาพคล่องสูง อายุ ≤ 3 เดือน'},
+  {s:'เงินฝากประจำ 3 เดือน (ถือเพื่อภาระระยะสั้น)',ans:'มีเงื่อนไข',ex:'ต้องอายุ ≤ 3 เดือนจากวันได้มา และถือเพื่อภาระระยะสั้น จึงเข้าเกณฑ์ | ถ้าถือเพื่อลงทุน = ไม่ใช่'},
+  {s:'เงินเบิกเกินบัญชี (Bank Overdraft)',ans:'มีเงื่อนไข',ex:'ปกติเป็นหนี้สิน แต่ถ้าจ่ายคืนเมื่อทวงถามและเป็นส่วนหนึ่งของการบริหารเงินสด → รวมเป็นองค์ประกอบ (ติดลบ) ในงบกระแสเงินสด'},
+];
+function CashLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=CQUIZ[i];const opts=['ใช่','ไม่ใช่','มีเงื่อนไข'];
+  const choose=(v)=>{if(picked)return;setPicked(v);if(v===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<CQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>💵</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {CQUIZ.length}</div>
+    <Button type="primary" style={{background:'#1f7a5c'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="green">ข้อ {i+1}/{CQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เป็น 'เงินสดและรายการเทียบเท่าเงินสด' หรือไม่?" description={q.s}/>
+    <Row gutter={[8,8]}>{opts.map(v=>{let b='#d9d9d9',bg='#fff';if(picked){if(v===q.ans){b='#237804';bg='#eaf6ea';}else if(v===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={8} key={v}><div onClick={()=>choose(v)} style={{cursor:picked?'default':'pointer',padding:'12px 6px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontWeight:700,fontSize:14}}>{v}</div></Col>;})}</Row>
+    {picked && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700,marginBottom:4}}>{picked===q.ans?'✅ ถูกต้อง — '+q.ans:'❌ คำตอบคือ '+q.ans}</div>{q.ex}
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#1f7a5c'}} onClick={next}>{i+1<CQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ LAB 2 : fraud matcher ============ */
+const FQUIZ=[
+  {s:'พนักงานยักยอกเงินลูกค้ารายหนึ่ง แล้วเอาเงินลูกค้ารายถัดไปมาปิดยอดรายก่อน',ans:'Lapping'},
+  {s:'รับเงินสดจากลูกค้าจริง แต่ไม่ออกใบเสร็จและไม่บันทึกบัญชี',ans:'Skimming'},
+  {s:'โอนเช็คข้ามบัญชีหลายบัญชีช่วงปลายงวดเพื่อทำให้ยอดเงินฝากรวมดูสูงเกินจริง',ans:'Check Kiting'},
+  {s:'ยอดขายเงินสดต่ำผิดปกติ เงินฝากไม่สัมพันธ์กับยอดขาย ลูกค้าบอกไม่ได้ใบเสร็จ',ans:'Skimming'},
+  {s:'ตรวจพบโดยการทำ Bank Transfer Schedule',ans:'Check Kiting'},
+  {s:'ตรวจพบโดยส่งหนังสือยืนยันยอดลูกหนี้ + นับเงินสดไม่แจ้งล่วงหน้า + ตรวจลำดับเวลาการนำฝาก',ans:'Lapping'},
+];
+function FraudLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=FQUIZ[i];const opts=['Lapping','Skimming','Check Kiting'];
+  const choose=(v)=>{if(picked)return;setPicked(v);if(v===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<FQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>🕵️</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {FQUIZ.length}</div>
+    <Button type="primary" style={{background:'#1f7a5c'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="green">ข้อ {i+1}/{FQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <Alert type="warning" showIcon style={{marginBottom:10}} message="นี่คือการทุจริต/สัญญาณของแบบใด?" description={q.s}/>
+    <Row gutter={[8,8]}>{opts.map(v=>{let b='#d9d9d9',bg='#fff';if(picked){if(v===q.ans){b='#237804';bg='#eaf6ea';}else if(v===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={8} key={v}><div onClick={()=>choose(v)} style={{cursor:picked?'default':'pointer',padding:'12px 4px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontWeight:700,fontSize:12.5}}>{v}</div></Col>;})}</Row>
+    {picked && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700}}>{picked===q.ans?'✅ ถูกต้อง — '+q.ans:'❌ คำตอบคือ '+q.ans}</div>
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#1f7a5c'}} onClick={next}>{i+1<FQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ LAB 3 : petty cash imprest ============ */
+function PettyLab(){
+  const [imp,setImp]=useState(5000);const [cash,setCash]=useState(1800);const [vou,setVou]=useState(3100);
+  const should=cash+vou; const diff=should-imp;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:12}} message="ตรวจนับเงินสดย่อย (Imprest)" description="เงินสดคงเหลือจริง + ใบสำคัญจ่ายที่ยังไม่เบิกคืน ควร = วงเงินตามระบบ"/>
+    <Row gutter={[8,8]} style={{marginBottom:8}}>
+      <Col xs={8}><div style={{fontSize:12.5}}>วงเงิน (Imprest)</div><InputNumber style={{width:'100%'}} value={imp} min={0} step={500} onChange={v=>setImp(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>เงินสดนับจริง</div><InputNumber style={{width:'100%'}} value={cash} min={0} step={100} onChange={v=>setCash(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>ใบสำคัญจ่าย</div><InputNumber style={{width:'100%'}} value={vou} min={0} step={100} onChange={v=>setVou(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+    </Row>
+    <div className="je">เงินสด {money(cash)} + ใบสำคัญ {money(vou)} = {money(should)} เทียบวงเงิน {money(imp)}</div>
+    <div style={{padding:'14px',borderRadius:10,textAlign:'center',background:diff===0?'#eaf6ea':'#fff1f0',border:'2px solid '+(diff===0?'#237804':'#c0564a')}}>
+      {diff===0? <div style={{fontSize:18,fontWeight:800,color:'#237804'}}>✓ ครบถ้วน ตรงวงเงินพอดี</div>
+        : <div style={{fontSize:18,fontWeight:800,color:'#c0564a'}}>{diff>0?`เงินเกิน ${money(diff)} บาท`:`เงินขาด ${money(-diff)} บาท`}</div>}
+    </div>
+    {diff!==0 && <div className="warn" style={{fontSize:12.5,marginTop:8}}>เงินขาด/เกิน = ต้องหาสาเหตุ (ใบสำคัญหาย, บันทึกผิด, หรือผู้ดูแลนำเงินไปใช้)</div>}
+  </div>;
+}
+
+function FloatingLab(){
+  const [open,setOpen]=useState(false);const [seg,setSeg]=useState('cash');
+  const w=typeof window!=='undefined'?Math.min(560,window.innerWidth-16):560;
+  return <React.Fragment>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square" style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ" styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}} options={[{label:'💵 จำแนกเงินสด',value:'cash'},{label:'🚨 จับทุจริต',value:'fraud'},{label:'💰 นับเงินสดย่อย',value:'petty'}]}/>
+      {seg==='cash'&&<CashLab/>}
+      {seg==='fraud'&&<FraudLab/>}
+      {seg==='petty'&&<PettyLab/>}
+    </Drawer>
+  </React.Fragment>;
+}
+
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>💵 GA511 — ตรวจสอบเงินสดและลูกหนี้ (Cash & AR)</h1>
+      <p>Note 5: เงินสด & เทียบเท่า → ทุจริต (Lapping/Skimming/Kiting) → Bank Rec & เงินสดย่อย → ลูกหนี้ cut-off → ยืนยันยอด → การควบคุมภายใน | อิงสไลด์ GA511 และ TFRS 7</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 ปุ่มลอย "ทดลอง" — จำแนกเงินสด · จับทุจริต · นับเงินสดย่อย</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'💵 เงินสด & เทียบเท่า',children:<CashTab/>},
+      {key:'2',label:'🚨 ทุจริตเงินสด',children:<FraudTab/>},
+      {key:'3',label:'🏦 Bank Rec & เงินสดย่อย',children:<ProcTab/>},
+      {key:'4',label:'💳 ลูกหนี้ & Cut-off',children:<ARTab/>},
+      {key:'5',label:'✉️ ยืนยันยอด',children:<ConfirmTab/>},
+      {key:'6',label:'🔒 IC & วิเคราะห์',children:<ICTab/>},
+      {key:'7',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'8',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>
