@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current Assets — ทบทวนฉบับเริ่มจากศูนย์</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f7f2e7; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#31556e,#4a7c9b); border-radius:14px; padding:22px 26px; color:#f0f7fc; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#f0f7fc; }
+  .hero p { margin:0; opacity:.92; }
+  .sec-card { background:#fffdf6; border:1px solid #e3d9c2; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(90,70,40,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#31556e; font-size:17px; }
+  .tag-step { display:inline-block; background:#31556e; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#dde9f0; color:#2b4a60; padding:6px 8px; border:1px solid #c3d6e2; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #dbe6ed; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin td.neg { text-align:right; color:#a8071a; }
+  table.fin tr.total td { background:#e9f1f6; font-weight:700; }
+  table.fin tr.head td { background:#f2f7fa; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#e9f1f6; border-left:4px solid #31556e; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#fbf8ef; border:1px dashed #8ba9bd; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#31556e; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf6; border:2px solid #8ba9bd; color:#2b4a60; font-weight:600; font-size:15.5px; }
+  .flip-back { background:#31556e; color:#f0f7fc; transform:rotateY(180deg); font-size:13.5px; line-height:1.55; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Slider, Switch, Radio, InputNumber, Statistic, Divider } = antd;
+const { useState } = React;
+const money = (x)=> x.toLocaleString('en-US',{maximumFractionDigits:2});
+
+/* ============ TAB 1 : สรุปปูพื้น + เงินสด ============ */
+function CashTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>Current Assets คืออะไร</h3>
+      <p><b>สินทรัพย์หมุนเวียน</b> คือสินทรัพย์ที่เข้าเงื่อนไขข้อใดข้อหนึ่ง:</p>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>คาดว่าจะได้รับประโยชน์ภายใน<b>วงจรการดำเนินงานปกติ</b> (normal operating cycle)</td></tr>
+        <tr><td>②</td><td>ถือไว้เพื่อ<b>ค้า</b> (trading) เป็นหลัก</td></tr>
+        <tr><td>③</td><td>คาดว่าจะได้รับประโยชน์ภายใน <b>12 เดือน</b>หลังวันสิ้นรอบรายงาน</td></tr>
+        <tr><td>④</td><td>เป็น<b>เงินสดหรือรายการเทียบเท่าเงินสด</b> (ที่ไม่ติดข้อจำกัดการใช้)</td></tr>
+      </tbody></table>
+      <div className="kbox">ตัวหลักในบทนี้ 3 ตัว: <Tag color="blue">เงินสด (Cash)</Tag><Tag color="green">ลูกหนี้ (Receivables)</Tag><Tag color="orange">สินค้าคงเหลือ (Inventory)</Tag> — เรียงตามสภาพคล่องจากมากไปน้อย</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>เงินสดและรายการเทียบเท่าเงินสด</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="💵 เงินสด (Cash)" style={{height:'100%',background:'#eef3fa'}}>
+          สินทรัพย์ที่<b>สภาพคล่องสูงสุด</b> ได้แก่ เหรียญ ธนบัตร เช็ค ธนาณัติ (money order) เงินฝากธนาคารประเภทจ่ายคืนเมื่อทวงถาม (demand deposits)</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🏦 รายการเทียบเท่าเงินสด (Cash Equivalents)" style={{height:'100%',background:'#eef7ee'}}>
+          เงินลงทุนระยะสั้นสภาพคล่องสูง แปลงเป็นเงินสดจำนวนแน่นอนได้ทันที ความเสี่ยงเปลี่ยนมูลค่าต่ำ — เกณฑ์ทั่วไป: <b>อายุครบกำหนดเดิมไม่เกิน 3 เดือน</b> เช่น ตั๋วเงินคลัง (treasury bills), commercial paper, กองทุนตลาดเงิน — ปกติแสดงรวมกับเงินสด</Card></Col>
+      </Row>
+      <div className="analogy">🧠 จำง่ายๆ: "3 เดือนแปลงเป็นเงินได้แน่ๆ = เทียบเท่าเงินสด" ฝากประจำ 12 เดือน ไม่ใช่!</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>งบพิสูจน์ยอดเงินฝากธนาคาร (Bank Reconciliation)</h3>
+      <p>ยอดเงินสดตามบัญชีกิจการ (book) มักไม่ตรงกับยอดตาม statement ธนาคาร (bank) เพราะ<b>ความต่างของจังหวะเวลา</b>และ<b>ข้อผิดพลาด</b> จึงต้องพิสูจน์ยอดทั้งสองข้างให้มาบรรจบที่ "ยอดเงินสดที่ถูกต้อง" เดียวกัน</p>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}>
+          <table className="fin">
+            <thead><tr><th colSpan={2}>ฝั่งธนาคาร (Bank side)</th></tr></thead>
+            <tbody>
+              <tr><td>ยอดตาม bank statement</td><td className="num">XX</td></tr>
+              <tr><td>+ เงินฝากระหว่างทาง (Deposit in transit)</td><td className="num">+</td></tr>
+              <tr><td>− เช็คค้างจ่าย (Outstanding checks)</td><td className="num">−</td></tr>
+              <tr><td>± ข้อผิดพลาดของธนาคาร</td><td className="num">±</td></tr>
+              <tr className="total"><td>= ยอดเงินสดที่ถูกต้อง</td><td className="num">XX</td></tr>
+            </tbody>
+          </table>
+        </Col>
+        <Col xs={24} md={12}>
+          <table className="fin">
+            <thead><tr><th colSpan={2}>ฝั่งบัญชีกิจการ (Book side)</th></tr></thead>
+            <tbody>
+              <tr><td>ยอดตามบัญชีกิจการ</td><td className="num">XX</td></tr>
+              <tr><td>+ ตั๋วเงินที่ธนาคารเรียกเก็บให้ (Notes collected)</td><td className="num">+</td></tr>
+              <tr><td>− เช็คคืน NSF (เงินในบัญชีผู้จ่ายไม่พอ)</td><td className="num">−</td></tr>
+              <tr><td>− ค่าธรรมเนียมธนาคาร (Service charges)</td><td className="num">−</td></tr>
+              <tr><td>± ข้อผิดพลาดของกิจการ</td><td className="num">±</td></tr>
+              <tr className="total"><td>= ยอดเงินสดที่ถูกต้อง (ต้องเท่ากัน!)</td><td className="num">XX</td></tr>
+            </tbody>
+          </table>
+        </Col>
+      </Row>
+      <Collapse items={[
+        {key:'1',label:'🔍 เข้าใจแต่ละรายการ — ทำไมต้องบวก/ลบข้างนั้น',children:<div>
+          <p><b>Deposit in transit:</b> กิจการนำฝากปลายเดือนและบันทึกแล้ว แต่ธนาคารยังไม่ได้บันทึก (จะเข้าเดือนถัดไป) → ธนาคารยังไม่รู้ → บวกฝั่งธนาคาร</p>
+          <p><b>Outstanding check:</b> กิจการเขียนเช็คจ่ายและบันทึกแล้ว แต่ผู้รับยังไม่นำไปขึ้นเงิน → ธนาคารยังไม่หัก → ลบฝั่งธนาคาร</p>
+          <p><b>NSF check:</b> เช็คที่ลูกค้าจ่ายเรามา แต่เด้ง (เช่น เขียน $200 แต่บัญชีมี $175) — กิจการเคยบันทึกรับเงินไว้ ต้องเอาออก → ลบฝั่งบัญชีกิจการ</p>
+          <p><b>Notes collected / ดอกเบี้ยรับ:</b> ธนาคารเก็บเงินให้เราแล้วแต่เรายังไม่รู้ → บวกฝั่งบัญชีกิจการ</p>
+          <div className="kbox">💡 หลักจำ: <b>"ใครยังไม่รู้ ปรับฝั่งคนนั้น"</b> — รายการที่กิจการทำแต่ธนาคารยังไม่เห็น ปรับฝั่งธนาคาร | รายการที่ธนาคารทำแต่กิจการยังไม่รู้ ปรับฝั่งกิจการ และ<b>เฉพาะฝั่งกิจการเท่านั้นที่ต้องบันทึกบัญชีปรับปรุง</b> (เพราะสมุดเราผิด/ไม่ครบ)</div></div>},
+      ]}/>
+      <div className="kbox">🛡️ Use the bank = การควบคุมภายในที่ดีเรื่องเงินสด: ลดเงินสดในมือ สร้างบันทึกซ้ำสองทาง (กิจการ+ธนาคาร) และเปิดทางให้ทำ bank reconciliation ตรวจสอบกันได้</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.4</span>เงินสดรับ มาจากไหนได้บ้าง (จากสไลด์)</h3>
+      <p>ขายสด | เก็บเงินจากลูกหนี้ | รับดอกเบี้ย ค่าเช่า เงินปันผล | เจ้าของลงทุน | กู้ธนาคาร | ขายสินทรัพย์ไม่หมุนเวียน — สังเกตว่าโยงกลับ 3 กิจกรรมของงบกระแสเงินสด (ดำเนินงาน/ลงทุน/จัดหาเงิน) ที่เรียนใน GA510</p>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : ลูกหนี้ ============ */
+function ARTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.1</span>ลูกหนี้มี 3 ประเภท</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>ลูกหนี้การค้า (Accounts Receivable)</b></td><td>เงินที่ลูกค้าค้างจากการขายสินค้า/บริการ — ไม่มีสัญญาเป็นลายลักษณ์อักษร ไม่มีดอกเบี้ย</td></tr>
+        <tr><td><b>ตั๋วเงินรับ (Notes Receivable)</b></td><td>สิทธิเรียกร้องที่มี<b>ตราสารเครดิตอย่างเป็นทางการ</b> โอนเปลี่ยนมือได้ และมักมีดอกเบี้ย</td></tr>
+        <tr><td><b>ลูกหนี้อื่น (Other Receivables)</b></td><td>ไม่ใช่จากการค้า เช่น ดอกเบี้ยค้างรับ เงินให้กู้กรรมการ เงินทดรองพนักงาน ภาษีรอขอคืน</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.2</span>บันทึกลูกหนี้ + เงื่อนไข 2/10, n/30 (ตัวอย่าง UTCC ขายให้ BKK)</h3>
+      <div className="kbox">📖 อ่านรหัสก่อน: <b>2/10, n/30</b> = จ่ายภายใน 10 วัน ได้ส่วนลด 2% | ไม่ทันก็จ่ายเต็มภายใน 30 วัน | <b>FOB shipping point</b> = กรรมสิทธิ์โอนเมื่อของขึ้นรถ/เรือ (ผู้ซื้อรับความเสี่ยงระหว่างทาง)</div>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'3 ธ.ค. ขายเชื่อ $500,000',description:'Dr ลูกหนี้การค้า 500,000 / Cr รายได้จากการขาย 500,000'},
+        {title:'8 ธ.ค. ลดหนี้ให้ (allowance) $27,000',description:'Dr รับคืนและส่วนลดจ่าย (Sales Returns and Allowances) 27,000 / Cr ลูกหนี้การค้า 27,000 → ลูกหนี้เหลือ 473,000'},
+        {title:'13 ธ.ค. รับชำระภายใน 10 วัน → ได้ส่วนลด 2%',description:'ส่วนลด = 473,000 × 2% = 9,460 | เงินสดรับ = 473,000 − 9,460 = 463,540 | Dr เงินสด 463,540 + Dr ส่วนลดจ่าย (Sales Discounts) 9,460 / Cr ลูกหนี้การค้า 473,000'},
+      ]}/>
+      <div className="warn">⚠️ กับดัก: ส่วนลด 2% คิดจากยอด<b>หลังหักลดหนี้</b> (473,000) ไม่ใช่ยอดขายเดิม 500,000 | ยอดขายสุทธิ = 500,000 − 27,000 − 9,460 = 463,540</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.3</span>หนี้สงสัยจะสูญ — Allowance Method</h3>
+      <p>กิจการต้องแสดงลูกหนี้ด้วย<b>มูลค่าที่คาดว่าจะเก็บได้จริง (cash realizable value)</b> จึงต้องประมาณหนี้เสียล่วงหน้าตั้งแต่ปีที่ขาย:</p>
+      <div className="je">Dr หนี้สงสัยจะสูญ (Bad Debt Expense) XX — เป็นค่าใช้จ่ายดำเนินงานในงบกำไรขาดทุน<br/>&nbsp;&nbsp;Cr ค่าเผื่อหนี้สงสัยจะสูญ (Allowance for Doubtful Accounts) XX — บัญชี<b>ปรับมูลค่า (contra)</b> หักจากลูกหนี้ในงบฐานะการเงิน</div>
+      <Row gutter={[10,10]}>
+        <Col xs={24} lg={12}><Card size="small" title="วิธี ① % ของยอดขายเชื่อ (มองงบกำไรขาดทุน)" style={{height:'100%'}}>
+          <p>ประมาณจากยอดขายเชื่อปีนี้ → ค่าที่ได้คือ <b>ค่าใช้จ่ายทั้งก้อน</b> ไม่สนยอดค่าเผื่อเดิม</p>
+          <p><b>ตัวอย่าง Lema:</b> ขายเชื่อสุทธิ 525,000 สถิติหนี้เสีย 2%</p>
+          <div className="je">Bad Debt Expense = 2% × 525,000 = <b>10,500</b><br/>Dr หนี้สงสัยจะสูญ 10,500 / Cr ค่าเผื่อฯ 10,500</div>
+          <p>มูลค่าที่คาดว่าจะเก็บได้ = 525,000 − 10,500 = <span className="hl">514,500</span></p></Card></Col>
+        <Col xs={24} lg={12}><Card size="small" title="วิธี ② % ของยอดลูกหนี้ (มองงบฐานะการเงิน)" style={{height:'100%'}}>
+          <p>ประมาณ<b>ยอดค่าเผื่อปลายงวดที่ควรมี</b> → ค่าใช้จ่าย = ยอดที่ควรมี − ยอดค่าเผื่อที่มีอยู่แล้ว</p>
+          <p><b>ตัวอย่าง Weir:</b> ลูกหนี้ 475,000 สถิติ 4% ค่าเผื่อคงเหลือ (เครดิต) 4,500</p>
+          <div className="je">ค่าเผื่อที่ควรมี = 4% × 475,000 = 19,000<br/>Bad Debt Expense = 19,000 − 4,500 = <b>14,500</b></div>
+          <p>มูลค่าที่คาดว่าจะเก็บได้ = 475,000 − 19,000 = <span className="hl">456,000</span></p></Card></Col>
+      </Row>
+      <div className="warn">⚠️ จุดสอบยอดฮิต: วิธี % ยอดขายเชื่อ → คำตอบคือค่าใช้จ่ายตรงๆ | วิธี % ลูกหนี้ → ต้อง<b>หักยอดค่าเผื่อเดิม</b>ก่อน (ถ้าค่าเผื่อเดิมเป็นเดบิต ให้บวกเพิ่มแทน)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.4</span>ขายลูกหนี้ (Factoring)</h3>
+      <p>ทำไมขาย? ① ต้องการเงินสดทันที ② งานติดตามทวงหนี้เสียเวลาและแพง</p>
+      <p><b>ตัวอย่างสไลด์:</b> ขายลูกหนี้ 80,000 ให้บริษัท factor แบบไม่รับประกัน — factor กัน 10% ไว้เผื่อปรับปรุง และคิดค่านายหน้า 15% ของยอดลูกหนี้:</p>
+      <table className="fin"><tbody>
+        <tr><td>เงินสดรับ (80,000 − 8,000 − 12,000)</td><td className="num">60,000</td></tr>
+        <tr><td>ลูกหนี้บริษัท factor (Due from Factor = 10% × 80,000)</td><td className="num">8,000</td></tr>
+        <tr><td>ขาดทุนจากการขายลูกหนี้ (15% × 80,000)</td><td className="num">12,000</td></tr>
+        <tr className="total"><td>ตัดลูกหนี้การค้าออก</td><td className="num">(80,000)</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.5</span>ตั๋วเงินรับ + คำนวณดอกเบี้ย (ตัวอย่าง MAX Co.)</h3>
+      <div className="kbox">💰 สูตรดอกเบี้ย: <b>เงินต้น × อัตราดอกเบี้ย/ปี × เวลา</b> (เดือน/12 หรือ วัน/360)</div>
+      <table className="fin">
+        <thead><tr><th>ตั๋ว</th><th>รายการ</th><th>บันทึกเมื่อได้ตั๋ว</th><th>ดอกเบี้ยค้างรับ ณ 31 ธ.ค.</th></tr></thead>
+        <tbody>
+          <tr><td>Simon</td><td>1 พ.ย. ให้กู้เงินสด 15,000 ตั๋ว 1 ปี 10%</td><td>Dr ตั๋วเงินรับ / Cr เงินสด 15,000</td><td className="num">15,000 × 10% × 2/12 = 250</td></tr>
+          <tr><td>Jacky</td><td>11 ธ.ค. ขายสินค้า รับตั๋ว 6,750 อายุ 90 วัน 8%</td><td>Dr ตั๋วเงินรับ / Cr รายได้ขาย 6,750</td><td className="num">6,750 × 8% × 20/360 = 30</td></tr>
+          <tr><td>Britany</td><td>16 ธ.ค. เปลี่ยนลูกหนี้เป็นตั๋ว 4,000 อายุ 6 เดือน 9%</td><td>Dr ตั๋วเงินรับ / Cr ลูกหนี้ 4,000</td><td className="num">4,000 × 9% × 15/360 = 15</td></tr>
+          <tr className="total"><td colSpan={3}>31 ธ.ค. Dr ดอกเบี้ยค้างรับ / Cr รายได้ดอกเบี้ย</td><td className="num">295</td></tr>
+        </tbody>
+      </table>
+      <div className="warn">⚠️ นับเวลาให้ถูก: Simon ถือมาแล้ว พ.ย.–ธ.ค. = 2 เดือน | Jacky 11→31 ธ.ค. = 20 วัน | Britany 16→31 ธ.ค. = 15 วัน — ดอกเบี้ยรับรู้ตามเวลาที่ผ่านไป (เกณฑ์คงค้าง) แม้ยังไม่ได้เงิน</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : สินค้าคงเหลือ ============ */
+function InvTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>สินค้าคงเหลือ และสมการต้นทุน</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="🏪 กิจการซื้อมาขายไป" style={{height:'100%'}}>บัญชีสินค้า 1 ตัว: สินค้าสำเร็จรูป (Finished Goods)</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🏭 กิจการผลิต" style={{height:'100%'}}>3 ตัว: วัตถุดิบ (Raw Materials) → งานระหว่างทำ (WIP) → สินค้าสำเร็จรูป</Card></Col>
+      </Row>
+      <div className="je" style={{textAlign:'center',fontSize:15}}>สินค้าต้นงวด + ซื้อ = <b>ต้นทุนสินค้าที่มีไว้ขาย (Cost of Goods Available for Sale)</b><br/>→ แยกเป็น <span className="hl">ต้นทุนขาย (COGS)</span> เข้างบกำไรขาดทุน + <span className="hl">สินค้าปลายงวด</span> เข้างบฐานะการเงิน</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>Perpetual vs Periodic — บันทึกต่างกันอย่างไร</h3>
+      <table className="fin">
+        <thead><tr><th>เหตุการณ์</th><th>Perpetual (ต่อเนื่อง)</th><th>Periodic (สิ้นงวด)</th></tr></thead>
+        <tbody>
+          <tr><td>ซื้อ 100 หน่วย @ $6</td><td>Dr สินค้าคงเหลือ 600 / Cr เจ้าหนี้ 600</td><td>Dr ซื้อ (Purchases) 600 / Cr เจ้าหนี้ 600</td></tr>
+          <tr><td>ขาย 20 หน่วย @ $12</td><td>Dr ลูกหนี้ 240 / Cr รายได้ขาย 240 <b>และ</b> Dr COGS 120 / Cr สินค้าคงเหลือ 120 (บันทึกต้นทุนทันที)</td><td>Dr ลูกหนี้ 240 / Cr รายได้ขาย 240 (ยังไม่บันทึกต้นทุน)</td></tr>
+          <tr><td>สิ้นงวด</td><td>ไม่ต้องทำอะไร (ยอดสินค้าอัปเดตตลอด)</td><td>ตรวจนับจริง แล้วปิดยอด: Dr สินค้าปลายงวด + Dr COGS / Cr ซื้อ + Cr สินค้าต้นงวด</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">🧠 จำ: Perpetual = "รู้ต้นทุนทุกครั้งที่ขาย" (มี subsidiary ledger คุมจำนวน+ต้นทุน) | Periodic = "รอนับของจริงสิ้นงวดแล้วค่อยคำนวณ COGS ย้อนหลัง"</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.3</span>ของใครกันแน่? — Goods in Transit (FOB)</h3>
+      <p>โดยทั่วไปสินค้าเป็นของผู้ซื้อเมื่อได้รับ ยกเว้น<b>สินค้าระหว่างทาง</b> ต้องดูเงื่อนไขส่งมอบ (ตัวอย่างสไลด์: UTCC ส่งของให้ลูกค้า A ที่ภูเก็ต ธ.ค. 2017 ถึง ม.ค. 2018):</p>
+      <table className="fin">
+        <thead><tr><th></th><th>FOB Shipping Point</th><th>FOB Destination</th></tr></thead>
+        <tbody>
+          <tr><td>กรรมสิทธิ์โอนเมื่อ</td><td>ผู้ขายส่งของขึ้นยานพาหนะ</td><td>ของถึงมือผู้ซื้อ</td></tr>
+          <tr><td>ของระหว่างทาง ณ 31 ธ.ค.</td><td>เป็นของ<b>ผู้ซื้อ</b> — ผู้ขายบันทึกขาย+ลูกหนี้ปี 2017 / ผู้ซื้อบันทึกสินค้า+เจ้าหนี้ปี 2017</td><td>ยังเป็นของ<b>ผู้ขาย</b> — ยังไม่มีการขายจนกว่าของถึง ม.ค. 2018</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.4</span>ต้นทุนอะไรรวมเข้าสินค้าได้บ้าง</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="✅ Product costs → รวมเข้าต้นทุนสินค้า" style={{height:'100%',background:'#eef7ee'}}>ราคาซื้อ อากรขาเข้า/ภาษี ค่าขนส่งเข้า (freight-in) ค่า handling ที่เกี่ยวกับการได้สินค้ามาโดยตรง</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="❌ Period costs → เป็นค่าใช้จ่ายงวดนั้นเลย" style={{height:'100%',background:'#fdf1f0'}}>ค่าใช้จ่ายขายและบริหาร — เกี่ยวข้องทางอ้อม ไม่รวมเข้าสินค้า</Card></Col>
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.5</span>ส่วนลดซื้อ: Gross Method vs Net Method (โจทย์ Jacky $500,000, 2/10, n/30)</h3>
+      <table className="fin">
+        <thead><tr><th>สถานการณ์</th><th>Gross Method (บันทึกยอดเต็ม)</th><th>Net Method (บันทึกยอดสุทธิ 98%)</th></tr></thead>
+        <tbody>
+          <tr><td>15 พ.ค. ซื้อ</td><td>Dr ซื้อ/สินค้า 500,000 / Cr เจ้าหนี้ 500,000</td><td>Dr ซื้อ/สินค้า 490,000 / Cr เจ้าหนี้ 490,000</td></tr>
+          <tr><td>จ่าย 24 พ.ค. (ทันส่วนลด)</td><td>Dr เจ้าหนี้ 500,000 / Cr เงินสด 490,000 + Cr <span className="hl">ส่วนลดรับ 10,000</span></td><td>Dr เจ้าหนี้ 490,000 / Cr เงินสด 490,000 (เรียบง่าย ไม่มีอะไรเพิ่ม)</td></tr>
+          <tr><td>จ่าย 10 มิ.ย. (พลาดส่วนลด)</td><td>Dr เจ้าหนี้ 500,000 / Cr เงินสด 500,000</td><td>Dr เจ้าหนี้ 490,000 + Dr <span className="hl">ส่วนลดที่เสียไป (Purchase Discount Lost) 10,000</span> / Cr เงินสด 500,000</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">🧠 มุมคิด: Gross มองส่วนลดเป็น "โบนัสเมื่อได้" | Net มองส่วนลดเป็นสิทธิ์ที่ควรได้อยู่แล้ว ถ้าพลาดถือเป็น "ค่าปรับ" (แสดงความไร้ประสิทธิภาพของการจ่ายเงินให้ผู้บริหารเห็น)</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : Cost Flow ============ */
+function FlowTab(){
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="โจทย์กลางจากสไลด์ (UTCC Company) — ใช้ทั้ง 3 วิธี" description="1 พ.ค. ยกมา 100 หน่วย @ $10 = 1,000 | ซื้อ 11 พ.ค. 90 หน่วย @ $11 = 990 | ซื้อ 25 พ.ค. 60 หน่วย @ $12 = 720 → มีไว้ขาย 250 หน่วย = $2,710 | ขาย 15 พ.ค. 100 หน่วย + 28 พ.ค. 60 หน่วย = 160 หน่วย @ $22 → รายได้ 3,520 | เหลือปลายงวด 90 หน่วย"/>
+    <Row gutter={[10,10]}>
+      <Col xs={24} lg={8}>
+        <div className="sec-card" style={{height:'100%'}}>
+          <h3>① Specific Identification</h3>
+          <p>ระบุตัวจริงว่าขายชิ้นไหน — สไลด์กำหนด: ขาย 100 หน่วยจากล็อตยกมา + 60 หน่วยจากล็อต 25 พ.ค.</p>
+          <table className="fin"><tbody>
+            <tr><td>COGS: 100×10 + 60×12</td><td className="num">1,720</td></tr>
+            <tr><td>ปลายงวด: 90×11 (ล็อต 11 พ.ค.)</td><td className="num">990</td></tr>
+            <tr className="total"><td>กำไรขั้นต้น 3,520 − 1,720</td><td className="num">1,800</td></tr>
+          </tbody></table>
+        </div>
+      </Col>
+      <Col xs={24} lg={8}>
+        <div className="sec-card" style={{height:'100%'}}>
+          <h3>② FIFO (เข้าก่อน ออกก่อน)</h3>
+          <p>ของเก่าขายก่อน → ปลายงวดคือ<b>ล็อตใหม่สุด</b></p>
+          <table className="fin"><tbody>
+            <tr><td>COGS: 100×10 + 60×11</td><td className="num">1,660</td></tr>
+            <tr><td>ปลายงวด: 60×12 + 30×11</td><td className="num">1,050</td></tr>
+            <tr className="total"><td>กำไรขั้นต้น 3,520 − 1,660</td><td className="num">1,860</td></tr>
+          </tbody></table>
+          <div className="kbox" style={{fontSize:13}}>เทคนิค: นับปลายงวด 90 หน่วยจากล็อตท้ายสุดย้อนขึ้น (60@12 แล้วอีก 30@11)</div>
+        </div>
+      </Col>
+      <Col xs={24} lg={8}>
+        <div className="sec-card" style={{height:'100%'}}>
+          <h3>③ Weighted Average (ถัวเฉลี่ย)</h3>
+          <p>ต้นทุนต่อหน่วย = มูลค่าที่มีไว้ขาย ÷ จำนวนที่มีไว้ขาย</p>
+          <table className="fin"><tbody>
+            <tr><td>ต่อหน่วย: 2,710 ÷ 250</td><td className="num">10.84</td></tr>
+            <tr><td>COGS: 160 × 10.84</td><td className="num">1,734.40</td></tr>
+            <tr><td>ปลายงวด: 90 × 10.84</td><td className="num">975.60</td></tr>
+            <tr className="total"><td>กำไรขั้นต้น</td><td className="num">1,785.60</td></tr>
+          </tbody></table>
+        </div>
+      </Col>
+    </Row>
+    <div className="sec-card">
+      <h3>📊 เทียบ 3 วิธี (โจทย์เดียวกัน คำตอบต่างกัน!)</h3>
+      <table className="fin">
+        <thead><tr><th>วิธี</th><th>COGS</th><th>สินค้าปลายงวด</th><th>กำไรขั้นต้น</th></tr></thead>
+        <tbody>
+          <tr><td>Specific Identification</td><td className="num">1,720.00</td><td className="num">990.00</td><td className="num">1,800.00</td></tr>
+          <tr><td>FIFO</td><td className="num">1,660.00</td><td className="num">1,050.00</td><td className="num">1,860.00</td></tr>
+          <tr><td>Weighted Average</td><td className="num">1,734.40</td><td className="num">975.60</td><td className="num">1,785.60</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">✅ เช็คทุกวิธี: COGS + ปลายงวด ต้อง = 2,710 (มูลค่าที่มีไว้ขาย) เสมอ — ใช้ตรวจคำตอบตัวเองในห้องสอบ!</div>
+      <div className="warn">⚠️ ช่วงราคาขาขึ้น (10→11→12 แบบโจทย์นี้): FIFO ให้ COGS ต่ำสุด → กำไรสูงสุด → ปลายงวดสูงสุด | ถ้าราคาขาลง ผลกลับด้าน</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : สูตร & แทนค่า ============ */
+function FormulaTab(){
+  const F = ({t,f,s})=> <div className="sec-card"><h3>{t}</h3><div className="je"><b>สูตร:</b> {f}</div><div className="kbox"><b>แทนค่า (จากตัวอย่างสไลด์):</b> {s}</div></div>;
+  return <div>
+    <F t="① ยอดเงินสดที่ถูกต้อง (ฝั่งธนาคาร)" f="ยอด bank statement + เงินฝากระหว่างทาง − เช็คค้างจ่าย ± ข้อผิดพลาดธนาคาร" s="ทั้งสองฝั่งต้องจบที่ตัวเลขเดียวกัน = Correct Cash Balance"/>
+    <F t="② ยอดเงินสดที่ถูกต้อง (ฝั่งกิจการ)" f="ยอดตามบัญชี + ตั๋วที่ธนาคารเก็บให้ − เช็ค NSF − ค่าธรรมเนียม ± ข้อผิดพลาดกิจการ" s="เฉพาะรายการฝั่งนี้ที่ต้องบันทึกปรับปรุงบัญชี"/>
+    <F t="③ ยอดขายสุทธิ" f="ขาย − รับคืนและลดหนี้ − ส่วนลดจ่าย" s="UTCC: 500,000 − 27,000 − 9,460 = 463,540 (ส่วนลด = 2% × 473,000)"/>
+    <F t="④ หนี้สงสัยจะสูญ วิธี % ขายเชื่อ" f="ค่าใช้จ่าย = % × ยอดขายเชื่อสุทธิ (ไม่สนค่าเผื่อเดิม)" s="Lema: 2% × 525,000 = 10,500"/>
+    <F t="⑤ หนี้สงสัยจะสูญ วิธี % ลูกหนี้" f="ค่าใช้จ่าย = (% × ลูกหนี้ปลายงวด) − ค่าเผื่อคงเหลือ (เครดิต)" s="Weir: (4% × 475,000) − 4,500 = 19,000 − 4,500 = 14,500"/>
+    <F t="⑥ มูลค่าที่คาดว่าจะเก็บได้" f="ลูกหนี้ − ค่าเผื่อหนี้สงสัยจะสูญ" s="Weir: 475,000 − 19,000 = 456,000"/>
+    <F t="⑦ ขายลูกหนี้ (Factoring)" f="เงินสด = ลูกหนี้ − เงินกัน % − ค่านายหน้า % | ขาดทุน = ค่านายหน้า" s="80,000 − (10%)8,000 − (15%)12,000 = 60,000 | ขาดทุน 12,000"/>
+    <F t="⑧ ดอกเบี้ยตั๋วเงินรับ" f="เงินต้น × อัตรา/ปี × เวลา (เดือน/12 หรือ วัน/360)" s="15,000×10%×2/12=250 | 6,750×8%×20/360=30 | 4,000×9%×15/360=15 → รวม 295"/>
+    <F t="⑨ ต้นทุนสินค้าที่มีไว้ขาย" f="สินค้าต้นงวด + ซื้อสุทธิ = COGS + สินค้าปลายงวด" s="UTCC: 1,000 + 990 + 720 = 2,710 → เช็คทุกวิธี cost flow ต้องรวมได้ 2,710"/>
+    <F t="⑩ Weighted Average ต่อหน่วย" f="มูลค่าที่มีไว้ขาย ÷ จำนวนหน่วยที่มีไว้ขาย" s="2,710 ÷ 250 = 10.84 → COGS 160×10.84 = 1,734.40 | ปลายงวด 90×10.84 = 975.60"/>
+    <F t="⑪ ส่วนลดซื้อ Net Method" f="บันทึกซื้อที่ราคา × (1 − % ส่วนลด) | พลาดส่วนลด → Purchase Discount Lost" s="500,000 × 98% = 490,000 | จ่ายช้า: Discount Lost 10,000"/>
+    <F t="⑫ กำไรขั้นต้น" f="รายได้ขาย − COGS" s="FIFO: 3,520 − 1,660 = 1,860 | WA: 3,520 − 1,734.40 = 1,785.60"/>
+  </div>;
+}
+
+/* ============ TAB 6 : Flashcards ============ */
+const CARDS = [
+  {q:'เงื่อนไข 4 ข้อของ Current Assets?',a:'① ได้ประโยชน์ในวงจรดำเนินงานปกติ ② ถือเพื่อค้า ③ ได้ประโยชน์ภายใน 12 เดือน ④ เป็นเงินสด/เทียบเท่าเงินสดที่ไม่ติดข้อจำกัด'},
+  {q:'Cash equivalents คืออะไร เกณฑ์กี่เดือน?',a:'เงินลงทุนระยะสั้นสภาพคล่องสูง แปลงเป็นเงินสดจำนวนแน่นอน ความเสี่ยงต่ำ — อายุครบกำหนดเดิมไม่เกิน 3 เดือน เช่น treasury bills, commercial paper'},
+  {q:'Outstanding check ปรับฝั่งไหน บวกหรือลบ?',a:'ฝั่งธนาคาร ลบออก — กิจการจ่ายและบันทึกแล้ว แต่ผู้รับยังไม่ขึ้นเงิน ธนาคารจึงยังไม่หัก'},
+  {q:'Deposit in transit ปรับฝั่งไหน?',a:'ฝั่งธนาคาร บวกเพิ่ม — กิจการฝากและบันทึกแล้ว แต่ธนาคารยังไม่บันทึก'},
+  {q:'เช็ค NSF คืออะไร ปรับฝั่งไหน?',a:'เช็คเด้ง (เงินผู้จ่ายไม่พอ) — ปรับฝั่งบัญชีกิจการ ลบออก และต้องบันทึกปรับปรุงบัญชีด้วย'},
+  {q:'รายการฝั่งไหนของ bank reconciliation ที่ต้องลงบัญชีปรับปรุง?',a:'เฉพาะฝั่งบัญชีกิจการ (book side) เช่น notes collected, NSF, ค่าธรรมเนียม — เพราะสมุดบัญชีเรายังไม่ครบ ส่วนฝั่งธนาคารเดี๋ยวธนาคารตามทันเอง'},
+  {q:'2/10, n/30 แปลว่าอะไร?',a:'จ่ายใน 10 วันได้ส่วนลด 2% ไม่ทันจ่ายเต็มใน 30 วัน'},
+  {q:'ขาย 500,000 ลดหนี้ให้ 27,000 แล้วลูกค้าจ่ายในกำหนดส่วนลด 2% — เงินสดรับเท่าไร?',a:'ฐานคิดส่วนลด = 473,000 → ส่วนลด 9,460 → เงินสด 463,540 (ส่วนลดคิดจากยอดหลังหักลดหนี้!)'},
+  {q:'Allowance for Doubtful Accounts เป็นบัญชีประเภทไหน?',a:'บัญชีปรับมูลค่า (contra asset) หักจากลูกหนี้ในงบฐานะการเงิน — คู่กับ Bad Debt Expense ที่เป็นค่าใช้จ่ายดำเนินงานในงบกำไรขาดทุน'},
+  {q:'วิธี % ของยอดขายเชื่อ ต่างจากวิธี % ของลูกหนี้อย่างไร?',a:'% ขายเชื่อ: ได้ค่าใช้จ่ายตรงๆ ไม่สนค่าเผื่อเดิม (มองงบกำไรขาดทุน) | % ลูกหนี้: ได้ยอดค่าเผื่อที่ควรมี ต้องหักค่าเผื่อเดิมก่อนเป็นค่าใช้จ่าย (มองงบฐานะการเงิน)'},
+  {q:'Weir: ลูกหนี้ 475,000 อัตรา 4% ค่าเผื่อเดิม 4,500 เครดิต — Bad Debt Expense เท่าไร?',a:'(4% × 475,000) − 4,500 = 14,500 และมูลค่าที่คาดว่าจะเก็บได้ = 456,000'},
+  {q:'ทำไมกิจการถึงขายลูกหนี้ (factoring)?',a:'① ลูกหนี้อาจเป็นแหล่งเงินสดเดียวที่มี ② งานเรียกเก็บหนี้กินเวลาและต้นทุนสูง'},
+  {q:'ตั๋วเงินรับ ต่างจากลูกหนี้การค้าอย่างไร?',a:'① เป็นตราสารเปลี่ยนมือได้ (negotiable) ② มักมีดอกเบี้ย ต้องแยกเงินต้นกับดอกเบี้ย'},
+  {q:'ตั๋ว 15,000 อัตรา 10% ถือมา 2 เดือน — ดอกเบี้ยค้างรับ?',a:'15,000 × 10% × 2/12 = 250 (Dr ดอกเบี้ยค้างรับ / Cr รายได้ดอกเบี้ย)'},
+  {q:'Perpetual system บันทึกอะไรตอนขายที่ Periodic ไม่บันทึก?',a:'ต้นทุนขายทันที: Dr COGS / Cr สินค้าคงเหลือ — Periodic รอตรวจนับสิ้นงวดแล้วค่อยคำนวณ'},
+  {q:'FOB shipping point ของระหว่างทางเป็นของใคร?',a:'ผู้ซื้อ — กรรมสิทธิ์โอนตั้งแต่ของขึ้นยานพาหนะ ผู้ขายบันทึกขายได้เลย'},
+  {q:'FOB destination ของระหว่างทางเป็นของใคร?',a:'ผู้ขาย — ยังไม่มีการขายจนกว่าของถึงมือผู้ซื้อ ผู้ขายต้องรวมของนี้ในสินค้าคงเหลือของตน'},
+  {q:'Freight-in รวมเข้าต้นทุนสินค้าไหม? แล้วค่าใช้จ่ายขาย?',a:'Freight-in เป็น product cost รวมเข้าสินค้า | ค่าใช้จ่ายขายและบริหารเป็น period cost ลงค่าใช้จ่ายทันที'},
+  {q:'Net method: ซื้อ 500,000 เงื่อนไข 2/10 แต่จ่ายช้า บันทึกอะไรเพิ่ม?',a:'Purchase Discount Lost 10,000 — บันทึกซื้อไว้ 490,000 แต่ต้องจ่าย 500,000 ส่วนต่างคือส่วนลดที่เสียไป'},
+  {q:'สูตร Weighted Average cost per unit?',a:'มูลค่าสินค้าที่มีไว้ขาย ÷ จำนวนหน่วยที่มีไว้ขาย = 2,710 ÷ 250 = 10.84 ต่อหน่วย'},
+  {q:'FIFO ช่วงราคาขาขึ้น ให้กำไรสูงหรือต่ำกว่าวิธีอื่น?',a:'สูงสุด — เพราะขายของเก่าที่ถูกกว่าออกก่อน COGS จึงต่ำ และปลายงวดเป็นล็อตใหม่ราคาสูง'},
+  {q:'วิธีเช็คคำตอบ cost flow ทุกวิธี?',a:'COGS + สินค้าปลายงวด ต้องเท่ากับต้นทุนสินค้าที่มีไว้ขายเสมอ (โจทย์สไลด์ = 2,710)'},
+  {q:'ขายลูกหนี้ 80,000 กัน 10% ค่านายหน้า 15% — ได้เงินสดเท่าไร ขาดทุนเท่าไร?',a:'เงินสด 60,000 (80,000−8,000−12,000) | ขาดทุน 12,000 | ลูกหนี้ factor อีก 8,000'},
+  {q:'Bad debt expense แสดงที่ไหนในงบการเงิน?',a:'งบกำไรขาดทุน เป็นค่าใช้จ่ายดำเนินงาน (operating expense)'},
+];
+function FlashTab(){
+  const [order,setOrder] = useState(CARDS.map((_,i)=>i));
+  const [flipped,setFlipped] = useState({});
+  const [score,setScore] = useState({know:0,dunno:0});
+  const shuffle=()=>{ setOrder([...order].sort(()=>Math.random()-.5)); setFlipped({}); setScore({know:0,dunno:0}); };
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#31556e'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#31556e"/>
+      <span style={{fontSize:12.5,color:'#557'}}>แตะการ์ดเพื่อพลิกดูคำตอบ</span>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅ รู้แล้ว</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌ ทวนอีก</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ TAB 7 : การ์ดจำด่วน ============ */
+function QuickTab(){
+  const cards = [
+    {c:'#31556e',t:'💵 เทียบเท่าเงินสด = กฎ 3 เดือน',d:'T-bills, commercial paper, กองทุนตลาดเงิน อายุเดิมไม่เกิน 3 เดือน → รวมแสดงกับเงินสด | ฝากประจำยาว เงินติดข้อจำกัด = ไม่ใช่'},
+    {c:'#4a7c46',t:'🏦 Bank Rec: "ใครยังไม่รู้ ปรับฝั่งคนนั้น"',d:'ธนาคารยังไม่รู้: +เงินฝากระหว่างทาง −เช็คค้างจ่าย | กิจการยังไม่รู้: +ตั๋วเก็บให้ −NSF −ค่าธรรมเนียม | ลงบัญชีปรับปรุงเฉพาะฝั่งกิจการ!'},
+    {c:'#8a5a2b',t:'🏷️ 2/10, n/30 คิดจากยอดหลังลดหนี้',d:'ขาย 500,000 ลดหนี้ 27,000 → ฐานส่วนลดคือ 473,000 ไม่ใช่ 500,000 | ส่วนลด 9,460 เงินสดรับ 463,540'},
+    {c:'#7a4a68',t:'🎯 หนี้สงสัยจะสูญ 2 วิธี ต่างกันจุดเดียว',d:'% ขายเชื่อ = ค่าใช้จ่ายเลย (Lema 10,500) | % ลูกหนี้ = ยอดค่าเผื่อเป้าหมาย ต้องหักของเดิมก่อน (Weir 19,000−4,500=14,500)'},
+    {c:'#356e6a',t:'📜 ดอกเบี้ยตั๋ว: ต้น × อัตรา × เวลา',d:'เดือน/12 หรือ วัน/360 | นับเฉพาะเวลาที่ถือในปีนี้ (เกณฑ์คงค้าง) | MAX Co: 250+30+15 = 295'},
+    {c:'#9c3d3d',t:'📦 Perpetual ขายปุ๊บลง COGS ปั๊บ',d:'Perpetual: ขาย = 2 คู่บัญชี (รายได้ + ต้นทุน) | Periodic: ขาย = คู่เดียว รอนับของสิ้นงวดค่อยหา COGS'},
+    {c:'#5a5a7a',t:'🚢 FOB = ใครเป็นเจ้าของของระหว่างทาง',d:'Shipping point: ขึ้นยานพาหนะปุ๊บเป็นของผู้ซื้อ (ผู้ขายบันทึกขายได้เลย) | Destination: ถึงมือค่อยเป็นของผู้ซื้อ'},
+    {c:'#6b7a3a',t:'🧾 Gross vs Net method',d:'Gross ลงเต็ม ได้ส่วนลดค่อยบันทึก "ส่วนลดรับ" | Net ลง 98% พลาดส่วนลดบันทึก "Purchase Discount Lost" (โชว์ความพลาดให้เห็น)'},
+    {c:'#3a6b7a',t:'🔢 Cost flow เช็คด้วย 2,710 เสมอ',d:'COGS + ปลายงวด = มีไว้ขาย ทุกวิธี | ราคาขาขึ้น: FIFO กำไรสูงสุด (1,860) > SI (1,800) > WA (1,785.6)'},
+    {c:'#7a5a20',t:'🧮 FIFO นับปลายงวดจากล็อตท้าย',d:'เหลือ 90 หน่วย → หยิบจากล็อตใหม่สุดย้อนขึ้น: 60@12 + 30@11 = 1,050 | COGS หยิบจากล็อตเก่าสุดลงมา'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ INTERACTIVE LAB 1 : Cost Flow Visualizer ============ */
+function CostFlowLab(){
+  const layers=[
+    {d:'1 พ.ค. ยกมา',u:100,c:10,color:'#6aa9d8'},
+    {d:'11 พ.ค. ซื้อ',u:90,c:11,color:'#7bc47f'},
+    {d:'25 พ.ค. ซื้อ',u:60,c:12,color:'#e0a458'},
+  ];
+  const totalU=250, totalC=2710, price=22;
+  const [sold,setSold]=useState(160);
+  const [method,setMethod]=useState('FIFO');
+  // FIFO peel from oldest (bottom) layer
+  let rem=sold, fifoCOGS=0; const consumed=[];
+  for(const L of layers){ const take=Math.max(0,Math.min(rem,L.u)); fifoCOGS+=take*L.c; consumed.push(take); rem-=take; }
+  const wa=totalC/totalU;                    // 10.84
+  const waCOGS=sold*wa;
+  const cogs = method==='FIFO'? fifoCOGS : waCOGS;
+  const ending = totalC - cogs;
+  const revenue = sold*price;
+  const gp = revenue - cogs;
+  // geometry
+  const H=250, y0=270, scale=H/totalU;
+  let acc=0; const rects=layers.map(L=>{ const yb=y0-acc*scale; const h=L.u*scale; acc+=L.u; return {...L,y:yb-h,h,ytop:yb-h,ybot:yb}; });
+  const yCut = y0 - sold*scale;
+  return <div>
+    <div style={{marginBottom:10}}>
+      <Radio.Group value={method} onChange={e=>setMethod(e.target.value)} optionType="button" buttonStyle="solid"
+        options={[{label:'FIFO (เข้าก่อนออกก่อน)',value:'FIFO'},{label:'ถัวเฉลี่ย (Weighted Avg)',value:'WA'}]}/>
+    </div>
+    <div style={{fontSize:13.5,marginBottom:6}}>ลากปรับ <b>จำนวนที่ขาย</b> (หน่วย): <b style={{color:'#31556e'}}>{sold}</b> จาก {totalU}</div>
+    <Slider min={0} max={250} value={sold} onChange={setSold} tooltip={{formatter:v=>v+' หน่วย'}}/>
+    <div style={{display:'flex',gap:6,flexWrap:'wrap',margin:'2px 0 12px'}}>
+      {[100,160,190,250].map(v=><Button key={v} size="small" onClick={()=>setSold(v)}>{v}</Button>)}
+    </div>
+    <Row gutter={[12,12]}>
+      <Col xs={24} md={11}>
+        <svg viewBox="0 0 300 300" style={{width:'100%',background:'#fbfaf5',borderRadius:10,border:'1px solid #e3d9c2'}}>
+          <defs><pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="#31556e" opacity="0.10"/><line x1="0" y1="0" x2="0" y2="6" stroke="#31556e" strokeWidth="2" opacity="0.35"/></pattern></defs>
+          {rects.map((r,i)=><g key={i}>
+            <rect x="70" y={r.ytop} width="150" height={r.h} fill={r.color} opacity={method==='WA'?0.55:0.9} stroke="#fff"/>
+            <text x="145" y={r.ytop+r.h/2+4} textAnchor="middle" fontSize="12" fill="#20303c">{r.u} @ ${r.c}</text>
+            <text x="64" y={r.ytop+r.h/2+4} textAnchor="end" fontSize="10.5" fill="#6a6250">{r.d}</text>
+          </g>)}
+          {/* COGS overlay (bottom sold units) */}
+          <rect x="70" y={yCut} width="150" height={y0-yCut} fill="url(#hatch)"/>
+          <line x1="60" y1={yCut} x2="230" y2={yCut} stroke="#a8071a" strokeWidth="2" strokeDasharray="5 3"/>
+          <text x="225" y={yCut-4} textAnchor="end" fontSize="10.5" fill="#a8071a">เส้นแบ่งที่ขาย</text>
+          <text x="145" y={(yCut+y0)/2} textAnchor="middle" fontSize="11.5" fill="#a8071a" fontWeight="700">COGS ({sold} หน่วย)</text>
+          {yCut>26 && <text x="145" y={(20+yCut)/2} textAnchor="middle" fontSize="11.5" fill="#237804" fontWeight="700">ปลายงวด ({totalU-sold})</text>}
+        </svg>
+      </Col>
+      <Col xs={24} md={13}>
+        <Row gutter={[8,8]}>
+          <Col span={12}><Card size="small"><Statistic title="ต้นทุนขาย (COGS)" value={money(cogs)} prefix="$" valueStyle={{color:'#a8071a',fontSize:18}}/></Card></Col>
+          <Col span={12}><Card size="small"><Statistic title="สินค้าปลายงวด" value={money(ending)} prefix="$" valueStyle={{color:'#237804',fontSize:18}}/></Card></Col>
+          <Col span={12}><Card size="small"><Statistic title="รายได้ขาย" value={money(revenue)} prefix="$" valueStyle={{fontSize:18}}/></Card></Col>
+          <Col span={12}><Card size="small"><Statistic title="กำไรขั้นต้น" value={money(gp)} prefix="$" valueStyle={{color:'#31556e',fontSize:18}}/></Card></Col>
+        </Row>
+        <div className="kbox" style={{marginTop:10,fontSize:13}}>
+          {method==='FIFO'
+            ? <span>FIFO ปอกจากล็อตเก่าสุดก่อน: {consumed.map((t,i)=>t>0?`${t}×$${layers[i].c}`:null).filter(Boolean).join(' + ')} = <b>${money(fifoCOGS)}</b></span>
+            : <span>ถัวเฉลี่ย: ต้นทุนต่อหน่วย = $2,710 ÷ 250 = <b>${money(wa)}</b> → COGS = {sold} × ${money(wa)} = <b>${money(waCOGS)}</b></span>}
+        </div>
+        <div className={Math.abs(cogs+ending-totalC)<0.01?'analogy':'warn'} style={{fontSize:13}}>
+          ✅ เช็ค: COGS + ปลายงวด = ${money(cogs)} + ${money(ending)} = <b>${money(cogs+ending)}</b> (ต้อง = $2,710 เสมอ)
+        </div>
+        <div className="kbox" style={{fontSize:12.5}}>เทียบ ณ ขาย {sold} หน่วย: FIFO COGS ${money(fifoCOGS)} vs ถัวเฉลี่ย ${money(waCOGS)} — {fifoCOGS<waCOGS?'FIFO ให้กำไรสูงกว่า (ราคาขาขึ้น)':'ใกล้เคียงกัน'}</div>
+      </Col>
+    </Row>
+  </div>;
+}
+
+/* ============ INTERACTIVE LAB 2 : Bank Reconciliation ============ */
+function BankRecLab(){
+  const bankStart=8300, bookStart=7800;
+  const [items,setItems]=useState([
+    {id:1,label:'เงินฝากระหว่างทาง (Deposit in transit)',side:'bank',amt:2000,on:true},
+    {id:2,label:'เช็คค้างจ่าย (Outstanding checks)',side:'bank',amt:-1200,on:true},
+    {id:3,label:'ตั๋วเงินที่ธนาคารเก็บให้ (Note collected)',side:'book',amt:1500,on:true},
+    {id:4,label:'เช็คคืน NSF (เด้ง)',side:'book',amt:-150,on:true},
+    {id:5,label:'ค่าธรรมเนียมธนาคาร',side:'book',amt:-50,on:true},
+  ]);
+  const toggle=id=>setItems(items.map(x=>x.id===id?{...x,on:!x.on}:x));
+  const bank=bankStart+items.filter(x=>x.side==='bank'&&x.on).reduce((a,x)=>a+x.amt,0);
+  const book=bookStart+items.filter(x=>x.side==='book'&&x.on).reduce((a,x)=>a+x.amt,0);
+  const eq=bank===book;
+  const maxV=Math.max(bank,book,9500), sc=210/maxV;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="สลับรายการปรับปรุงแล้วดูยอดสองฝั่งบรรจบกัน" description="ยอดตั้งต้น: bank statement $8,300 | ตามบัญชีกิจการ $7,800 — เปิดครบทุกข้อจะบรรจบที่ $9,100"/>
+    <Row gutter={[12,12]}>
+      <Col xs={24} md={13}>
+        {items.map(x=><div key={x.id} style={{display:'flex',alignItems:'center',gap:10,padding:'6px 10px',marginBottom:6,background:x.on?'#eef7ee':'#f4f4f4',borderRadius:8,border:'1px solid #e0e0d0'}}>
+          <Switch size="small" checked={x.on} onChange={()=>toggle(x.id)}/>
+          <span style={{flex:1,fontSize:13}}>{x.label}</span>
+          <Tag color={x.side==='bank'?'blue':'gold'}>{x.side==='bank'?'ฝั่งธนาคาร':'ฝั่งกิจการ'}</Tag>
+          <span style={{fontVariantNumeric:'tabular-nums',color:x.amt<0?'#a8071a':'#237804',minWidth:64,textAlign:'right',fontSize:13}}>{x.amt<0?`(${money(-x.amt)})`:'+'+money(x.amt)}</span>
+        </div>)}
+        <div className="warn" style={{fontSize:12.5}}>⚠️ จำ: เฉพาะรายการ <b>ฝั่งกิจการ</b> (สีทอง) เท่านั้นที่ต้องบันทึกปรับปรุงบัญชีจริง</div>
+      </Col>
+      <Col xs={24} md={11}>
+        <svg viewBox="0 0 260 270" style={{width:'100%',background:'#fbfaf5',borderRadius:10,border:'1px solid #e3d9c2'}}>
+          <line x1="20" y1="240" x2="240" y2="240" stroke="#c3b998" strokeWidth="1.5"/>
+          {[{x:55,v:bank,c:'#4a7c9b',l:'ธนาคาร'},{x:165,v:book,c:'#c9a227',l:'กิจการ'}].map((b,i)=><g key={i}>
+            <rect x={b.x} y={240-b.v*sc} width="60" height={b.v*sc} rx="4" fill={eq?'#5aa469':b.c} opacity="0.9"/>
+            <text x={b.x+30} y={240-b.v*sc-6} textAnchor="middle" fontSize="12.5" fontWeight="700" fill="#20303c">${money(b.v)}</text>
+            <text x={b.x+30} y="256" textAnchor="middle" fontSize="12" fill="#4a4634">{b.l}</text>
+          </g>)}
+          {eq && <g><line x1="20" y1={240-bank*sc} x2="240" y2={240-bank*sc} stroke="#237804" strokeWidth="1.5" strokeDasharray="5 3"/>
+            <text x="130" y="20" textAnchor="middle" fontSize="14" fontWeight="700" fill="#237804">✓ บรรจบกัน = ยอดที่ถูกต้อง</text></g>}
+          {!eq && <text x="130" y="20" textAnchor="middle" fontSize="13" fontWeight="700" fill="#a8071a">ยังไม่บรรจบ — ต่างกัน ${money(Math.abs(bank-book))}</text>}
+        </svg>
+        <Row gutter={8} style={{marginTop:8}}>
+          <Col span={12}><Card size="small"><Statistic title="ฝั่งธนาคาร" value={money(bank)} prefix="$" valueStyle={{fontSize:16,color:'#4a7c9b'}}/></Card></Col>
+          <Col span={12}><Card size="small"><Statistic title="ฝั่งกิจการ" value={money(book)} prefix="$" valueStyle={{fontSize:16,color:'#c9a227'}}/></Card></Col>
+        </Row>
+      </Col>
+    </Row>
+  </div>;
+}
+
+/* ============ INTERACTIVE LAB 3 : Bad Debt ============ */
+function BadDebtLab(){
+  const [method,setMethod]=useState('sales');
+  const [creditSales,setCreditSales]=useState(525000);
+  const [rateS,setRateS]=useState(2);
+  const [recv,setRecv]=useState(475000);
+  const [rateR,setRateR]=useState(4);
+  const [allow,setAllow]=useState(4500);
+  const [allowSide,setAllowSide]=useState('credit');
+  let expense, target, crv, detail;
+  if(method==='sales'){
+    expense = creditSales*rateS/100;
+    detail = `${rateS}% × ${money(creditSales)} = ${money(expense)} (บันทึกเป็นค่าใช้จ่ายทั้งก้อน ไม่สนค่าเผื่อเดิม)`;
+    crv = null;
+  } else {
+    target = recv*rateR/100;
+    expense = allowSide==='credit'? target-allow : target+allow;
+    crv = recv-target;
+    detail = allowSide==='credit'
+      ? `เป้าหมายค่าเผื่อ = ${rateR}% × ${money(recv)} = ${money(target)} แล้วหักค่าเผื่อเดิม (เครดิต) ${money(allow)} → ${money(expense)}`
+      : `เป้าหมายค่าเผื่อ = ${money(target)} บวกค่าเผื่อเดิม (เดบิต) ${money(allow)} → ${money(expense)}`;
+  }
+  return <div>
+    <Radio.Group value={method} onChange={e=>setMethod(e.target.value)} optionType="button" buttonStyle="solid" style={{marginBottom:12}}
+      options={[{label:'① % ของยอดขายเชื่อ',value:'sales'},{label:'② % ของลูกหนี้',value:'recv'}]}/>
+    {method==='sales'
+      ? <Row gutter={[10,10]}>
+          <Col span={12}><div style={{fontSize:13}}>ยอดขายเชื่อสุทธิ</div><InputNumber style={{width:'100%'}} value={creditSales} step={5000} min={0} onChange={v=>setCreditSales(v||0)} formatter={v=>`$ ${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+          <Col span={12}><div style={{fontSize:13}}>อัตราหนี้เสีย (%)</div><InputNumber style={{width:'100%'}} value={rateS} step={0.5} min={0} onChange={v=>setRateS(v||0)}/></Col>
+        </Row>
+      : <Row gutter={[10,10]}>
+          <Col xs={12} md={6}><div style={{fontSize:13}}>ลูกหนี้ปลายงวด</div><InputNumber style={{width:'100%'}} value={recv} step={5000} min={0} onChange={v=>setRecv(v||0)} formatter={v=>`$ ${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+          <Col xs={12} md={6}><div style={{fontSize:13}}>อัตรา (%)</div><InputNumber style={{width:'100%'}} value={rateR} step={0.5} min={0} onChange={v=>setRateR(v||0)}/></Col>
+          <Col xs={12} md={6}><div style={{fontSize:13}}>ค่าเผื่อคงเหลือเดิม</div><InputNumber style={{width:'100%'}} value={allow} step={500} min={0} onChange={v=>setAllow(v||0)}/></Col>
+          <Col xs={12} md={6}><div style={{fontSize:13}}>ยอดเดิมเป็น</div><Radio.Group size="small" value={allowSide} onChange={e=>setAllowSide(e.target.value)} options={[{label:'เครดิต',value:'credit'},{label:'เดบิต',value:'debit'}]}/></Col>
+        </Row>}
+    <Row gutter={[8,8]} style={{marginTop:12}}>
+      <Col xs={24} md={crv!=null?8:24}><Card size="small"><Statistic title="หนี้สงสัยจะสูญ (Bad Debt Expense)" value={money(expense)} prefix="$" valueStyle={{color:'#a8071a',fontSize:20}}/></Card></Col>
+      {crv!=null && <Col xs={12} md={8}><Card size="small"><Statistic title="ค่าเผื่อฯ ปลายงวด" value={money(target)} prefix="$" valueStyle={{fontSize:20}}/></Card></Col>}
+      {crv!=null && <Col xs={12} md={8}><Card size="small"><Statistic title="มูลค่าที่คาดว่าจะเก็บได้" value={money(crv)} prefix="$" valueStyle={{color:'#237804',fontSize:20}}/></Card></Col>}
+    </Row>
+    <div className="je" style={{marginTop:10}}>Dr หนี้สงสัยจะสูญ {money(expense)} / Cr ค่าเผื่อหนี้สงสัยจะสูญ {money(expense)}</div>
+    <div className="kbox" style={{fontSize:13}}>{detail}</div>
+    <div className="warn" style={{fontSize:12.5}}>ลองสลับสองวิธีด้วยตัวเลขชุดเดียวกัน จะเห็นว่า "% ขายเชื่อ" ได้ค่าใช้จ่ายตรงๆ ส่วน "% ลูกหนี้" ต้องหักค่าเผื่อเดิมก่อน — นี่คือจุดที่ข้อสอบชอบหลอก</div>
+  </div>;
+}
+
+/* ============ FLOATING TOGGLE TOOL ============ */
+function FloatingLab(){
+  const [open,setOpen]=useState(false);
+  const [seg,setSeg]=useState('cost');
+  const w = typeof window!=='undefined'? Math.min(560, window.innerWidth-16) : 560;
+  return <>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square"
+      style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ — ลากปรับค่าแล้วดูภาพอัปเดตสด"
+      styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}}
+        options={[{label:'📦 Cost Flow',value:'cost'},{label:'🏦 Bank Rec',value:'bank'},{label:'🎯 หนี้สงสัยจะสูญ',value:'bad'}]}/>
+      {seg==='cost' && <CostFlowLab/>}
+      {seg==='bank' && <BankRecLab/>}
+      {seg==='bad' && <BadDebtLab/>}
+    </Drawer>
+  </>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>💰 Current Assets — สินทรัพย์หมุนเวียน</h1>
+      <p>ทบทวนจากศูนย์: เงินสด & Bank Reconciliation → ลูกหนี้ & หนี้สงสัยจะสูญ → สินค้าคงเหลือ → Cost Flow (FIFO / Weighted Average) | อิงสไลด์ อ.Sannudee Selaratana ปี 2569</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 กดปุ่มลอย <b>"ทดลอง"</b> มุมขวาล่าง เพื่อเปิดห้องทดลองแบบโต้ตอบ — ลากปรับค่าแล้วดูภาพอัปเดตสด</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'💵 เงินสด & Bank Rec',children:<CashTab/>},
+      {key:'2',label:'💳 ลูกหนี้',children:<ARTab/>},
+      {key:'3',label:'📦 สินค้าคงเหลือ',children:<InvTab/>},
+      {key:'4',label:'🔢 Cost Flow',children:<FlowTab/>},
+      {key:'5',label:'🧮 สูตร & แทนค่า',children:<FormulaTab/>},
+      {key:'6',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'7',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>
