@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Non-Current Assets — ทบทวนฉบับเริ่มจากศูนย์</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f2f5f2; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#2f6d5f,#3f9484); border-radius:14px; padding:22px 26px; color:#f0fbf7; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#f0fbf7; }
+  .hero p { margin:0; opacity:.94; }
+  .sec-card { background:#fffdf9; border:1px solid #d9e5df; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(40,80,60,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#2f6d5f; font-size:17px; }
+  .tag-step { display:inline-block; background:#2f6d5f; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#dcebe4; color:#255649; padding:6px 8px; border:1px solid #c2ddd2; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #dbe8e2; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin td.neg { text-align:right; color:#a8071a; }
+  table.fin tr.total td { background:#e6f2ec; font-weight:700; }
+  table.fin tr.head td { background:#f0f7f3; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#e6f2ec; border-left:4px solid #2f6d5f; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .bonus { background:#f4f0fa; border-left:4px solid #7a5c9e; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#f8f6ef; border:1px dashed #8fb3a6; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#2f6d5f; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf9; border:2px solid #9ec4b7; color:#255649; font-weight:600; font-size:15.5px; }
+  .flip-back { background:#2f6d5f; color:#f0fbf7; transform:rotateY(180deg); font-size:13.5px; line-height:1.55; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Slider, Switch, Radio, InputNumber, Statistic, Divider } = antd;
+const { useState } = React;
+const money = (x)=> x.toLocaleString('en-US',{maximumFractionDigits:2});
+
+/* ============ TAB 1 : ภาพรวม & ต้นทุนได้มา ============ */
+function OverviewTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>PP&E คืออะไร — 3 ลักษณะสำคัญ</h3>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>ถือไว้<b>ใช้ในการดำเนินงาน</b> (แม้ไม่ได้ใช้ตลอดเวลา) — ที่ถือไว้ขายหรือลงทุน ไม่ใช่ PP&E</td></tr>
+        <tr><td>②</td><td>อายุการใช้งาน<b>เกิน 1 ปี</b></td></tr>
+        <tr><td>③</td><td>มี<b>ตัวตนจับต้องได้</b> (tangible)</td></tr>
+      </tbody></table>
+      <p style={{marginTop:8}}>ตัวอย่าง: ที่ดิน อาคาร อุปกรณ์ คอมพิวเตอร์ เครื่องจักร เครื่องพิมพ์</p>
+      <div className="kbox">📌 <b>เกณฑ์รับรู้เป็นสินทรัพย์ (Recognition):</b> ต้องเข้าครบ 2 ข้อ — ① น่าจะได้<b>ประโยชน์เชิงเศรษฐกิจในอนาคต</b>ไหลเข้ากิจการ และ ② <b>วัดต้นทุนได้อย่างน่าเชื่อถือ</b></div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>ต้นทุนเริ่มแรก (Initial Cost) — รวมอะไรบ้าง</h3>
+      <p>หลักการ: <b>ทุกต้นทุนที่จำเป็นเพื่อทำให้สินทรัพย์พร้อมใช้งาน ณ สถานที่และสภาพที่ต้องการ</b> ให้รวมเป็นต้นทุนสินทรัพย์</p>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="✅ รวมเข้าต้นทุน" style={{height:'100%',background:'#eef7ee'}}>
+          ราคาซื้อ (รวมค่านายหน้า/กฎหมาย ภาษีนำเข้า ภาษีซื้อที่<b>ขอคืนไม่ได้</b>) หลังหักส่วนลดการค้า | ต้นทุนที่เกี่ยวโดยตรง: เตรียมสถานที่ ขนส่ง ติดตั้ง ทดสอบ | ประมาณการ<b>รื้อถอนและบูรณะสถานที่</b></Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="❌ ไม่รวม (ลงค่าใช้จ่าย)" style={{height:'100%',background:'#fdf1f0'}}>
+          ค่าซ่อมความเสียหายที่เกิดระหว่างติดตั้ง (ไม่ทำประกัน) | ค่าฝึกอบรมพนักงาน | ค่าใช้จ่ายบริหารทั่วไป | ภาษีทรัพย์สินงวดปัจจุบัน</Card></Col>
+      </Row>
+      <div className="analogy">❄️ <b>ตัวอย่างง่าย (แอร์):</b> ราคาซื้อ 20,000 + ค่าติดตั้ง 2,000 = ต้นทุนแอร์ <b>22,000</b> บาท — ค่าติดตั้งจำเป็นเพื่อให้ใช้งานได้ จึงรวม</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>ตัวอย่างสไลด์ #1: ที่ดิน (Dexter Company)</h3>
+      <p>ซื้อที่ดินเป็นที่ตั้งโรงงานใหม่ 200,000 แล้วรื้ออาคารเก่าเพื่อสร้างโรงงาน:</p>
+      <table className="fin"><tbody>
+        <tr><td>ราคาซื้อที่ดิน</td><td className="num">200,000</td></tr>
+        <tr><td>+ ค่ารื้อถอนอาคารเก่า (Demolition)</td><td className="num">8,000</td></tr>
+        <tr><td>+ ค่าประกันกรรมสิทธิ์ (Title insurance)</td><td className="num">4,000</td></tr>
+        <tr><td>+ ค่าสำรวจที่ดิน (Land survey)</td><td className="num">2,300</td></tr>
+        <tr><td>+ ภาษีทรัพย์สินค้างเก่า (Delinquent property taxes)</td><td className="num">1,000</td></tr>
+        <tr><td>− ขายซากวัสดุจากอาคารเก่า</td><td className="neg">(1,500)</td></tr>
+        <tr className="total"><td>ต้นทุนที่ดิน</td><td className="num">213,800</td></tr>
+      </tbody></table>
+      <div className="je">Dr ที่ดิน 213,800 + Dr <b>ค่าใช้จ่ายภาษีทรัพย์สิน 900</b> (งวดปัจจุบัน แยกออก) / Cr เงินสด 214,700</div>
+      <div className="warn">⚠️ 2 กับดัก: ① <b>ภาษีค้างเก่า (delinquent) รวม</b>เข้าที่ดิน แต่ <b>ภาษีงวดปัจจุบัน 900 เป็นค่าใช้จ่าย</b> ② เงินขายซากวัสดุ <b>หักออก</b>จากต้นทุนที่ดิน</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.4</span>ตัวอย่างสไลด์ #2: เครื่องจักร (DEX Inc.)</h3>
+      <p>ราคาตามสัญญา 50,000 เงื่อนไข 2/10, n/30 จ่ายทันส่วนลด + ค่าขนส่ง 2,000 + ติดตั้ง/ทดสอบ 1,500 + VAT 3,500 + ระหว่างติดตั้งเกิดความเสียหายไม่ทำประกัน 400:</p>
+      <table className="fin"><tbody>
+        <tr><td>ราคาตามสัญญา</td><td className="num">50,000</td></tr>
+        <tr><td>− ส่วนลดเงินสด (2% × 50,000)</td><td className="neg">(1,000)</td></tr>
+        <tr><td>+ ค่าขนส่ง</td><td className="num">2,000</td></tr>
+        <tr><td>+ ค่าติดตั้งและทดสอบ</td><td className="num">1,500</td></tr>
+        <tr><td>+ ภาษีขาย/VAT (ขอคืนไม่ได้)</td><td className="num">3,500</td></tr>
+        <tr className="total"><td>ต้นทุนเครื่องจักร</td><td className="num">56,000</td></tr>
+      </tbody></table>
+      <div className="je">Dr เครื่องจักร 56,000 + Dr <b>ค่าซ่อมแซม (Repair &amp; Maintenance) 400</b> / Cr เงินสด 56,400</div>
+      <div className="warn">⚠️ ความเสียหาย 400 ระหว่างติดตั้ง (ไม่ทำประกัน) <b>ไม่รวม</b>เข้าเครื่องจักร → ลงเป็นค่าใช้จ่ายซ่อมแซม (ไม่ใช่ต้นทุนที่จำเป็น เป็นความผิดพลาด)</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : รายจ่ายภายหลัง ============ */
+function SubsequentTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.1</span>รายจ่ายภายหลังการได้มา — Capitalize หรือ Expense?</h3>
+      <p>หลังได้สินทรัพย์มา มีรายจ่ายตามมาเรื่อยๆ ตั้งแต่ซ่อมเล็กน้อยจนถึงยกเครื่องใหญ่ ต้องตัดสินใจว่าจะ<b>บันทึกเป็นสินทรัพย์ (capitalize)</b> หรือ<b>ค่าใช้จ่าย (expense)</b></p>
+      <div className="kbox">🔑 <b>เกณฑ์ตัดสิน:</b> ถ้ารายจ่ายคาดว่าจะ<b>เพิ่มประโยชน์เชิงเศรษฐกิจในอนาคต</b> → capitalize (เป็นสินทรัพย์) ไม่งั้น → expense</div>
+      <p>ประโยชน์ในอนาคตที่เข้าเกณฑ์ capitalize:</p>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td><b>ยืดอายุการใช้งาน</b>ของสินทรัพย์ (extending useful life)</td></tr>
+        <tr><td>②</td><td><b>เพิ่มกำลังการผลิต</b> — ผลิตได้มากขึ้นด้วยต้นทุนเท่าเดิม หรือผลิตเท่าเดิมด้วยต้นทุนต่ำลง</td></tr>
+        <tr><td>③</td><td><b>เพิ่มคุณภาพ</b>ของสินค้า</td></tr>
+      </tbody></table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.2</span>เทียบชัดๆ — ปรับปรุง (Capital) vs ซ่อมบำรุง (Revenue)</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="🏗️ รายจ่ายฝ่ายทุน (Capital Expenditure)" style={{height:'100%',background:'#eef7ee'}}>
+          บันทึกเป็น<b>สินทรัพย์</b> → ทยอยตัดค่าเสื่อม<br/>ต่อเติม/ขยายอาคาร ยกเครื่องใหญ่ที่ยืดอายุ ปรับปรุงให้ผลิตดีขึ้น</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🔧 รายจ่ายฝ่ายรายได้ (Revenue Expenditure)" style={{height:'100%',background:'#fdf1f0'}}>
+          บันทึกเป็น<b>ค่าใช้จ่าย</b>งวดนั้นทันที<br/>ซ่อมบำรุงตามปกติ ทาสี เปลี่ยนอะไหล่เล็กน้อย ค่าน้ำมันเครื่อง</Card></Col>
+      </Row>
+      <div className="analogy">🚗 <b>เทียบรถยนต์:</b> เปลี่ยนน้ำมันเครื่อง = ค่าใช้จ่าย (ทำให้วิ่งต่อได้ตามปกติ) | ยกเครื่องยนต์ใหม่ที่ยืดอายุรถอีก 5 ปี = capitalize (เพิ่มประโยชน์อนาคต)</div>
+      <div className="kbox">📌 <b>ตัวอย่างสไลด์ (BAX Inc.):</b> จ่าย 160,000 เพื่อ<b>ต่อเติมโรงงานให้ใหญ่ขึ้น</b> เพิ่มประโยชน์ → capitalize เข้าอาคาร<br/><span className="je" style={{display:'block',marginTop:6}}>Dr อาคาร 160,000 / Cr เงินสด 160,000</span></div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : ค่าเสื่อมราคา ============ */
+function DepreciationTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>ค่าเสื่อมราคาคืออะไร — แนวคิดหลัก</h3>
+      <p>ค่าเสื่อมราคา = การ<b>ปันส่วนต้นทุน</b>ของสินทรัพย์มีตัวตนไปเป็นค่าใช้จ่ายในงวดที่ใช้ประโยชน์ (ไม่ใช่การตีมูลค่าตลาด!) ค่าเสื่อมสะสมทั้งหมดตลอดอายุ = ต้นทุนเดิม − มูลค่าซาก</p>
+      <table className="fin"><tbody>
+        <tr><td><b>ฐานคิดค่าเสื่อม (Depreciable base)</b></td><td>ต้นทุนเดิม − มูลค่าซาก (residual value)</td></tr>
+        <tr><td><b>อายุการใช้งาน (Useful life)</b></td><td>ระยะที่กิจการคาดว่าจะใช้ประโยชน์ — ต่างจากอายุทางกายภาพ (โต๊ะไม้ทนได้ 40 ปี แต่ใช้จริง 10 ปี → คิด 10 ปี)</td></tr>
+        <tr><td><b>ค่าเสื่อมราคาสะสม (Accumulated Depreciation)</b></td><td>บัญชี<b>ปรับมูลค่า (contra-asset)</b> หักจากต้นทุนในงบฐานะการเงิน</td></tr>
+        <tr><td><b>มูลค่าตามบัญชี (Carrying/Book value)</b></td><td>ต้นทุนเดิม − ค่าเสื่อมราคาสะสม</td></tr>
+      </tbody></table>
+      <div className="kbox">🗓️ ค่าเสื่อมราคาเป็น <b>การปันส่วนต้นทุน</b> (allocation) ไม่ใช่การตีราคาตลาดของสินทรัพย์ — แม้ราคาตลาดขึ้น ก็ยังคิดค่าเสื่อมตามต้นทุนเดิมเสมอ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>การคำนวณค่าเสื่อมราคา — ตอบ 3 คำถาม (The Computation of Depreciation)</h3>
+      <p>สไลด์วางกรอบว่า ก่อนคิดค่าเสื่อมต้องตอบ 3 คำถามนี้ให้ครบก่อน:</p>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'คำถามที่ 1 — ใช้ฐานคิดค่าเสื่อมเท่าไร? (Depreciable base)',description:'ฐาน = ต้นทุนเดิม − มูลค่าซาก | ต้นทุนเดิมรวมทุกอย่างที่จำเป็นเพื่อให้พร้อมใช้ | มูลค่าซาก = จำนวนที่คาดว่าจะได้จากการจำหน่ายเมื่อสิ้นอายุ'},
+        {title:'คำถามที่ 2 — อายุการใช้งานเท่าไร? (Useful life / Service life)',description:'ปริมาณบริการหรือการใช้ที่กิจการคาดว่าจะได้จากสินทรัพย์ก่อนจำหน่าย — คนละอย่างกับอายุทางกายภาพ (physical life)'},
+        {title:'คำถามที่ 3 — ใช้วิธีค่าเสื่อมแบบไหน? (Depreciation method)',description:'เช่น วิธีเส้นตรงที่อาจารย์เน้น (ดูหัวข้อ 3.3)'},
+      ]}/>
+      <table className="fin"><tbody>
+        <tr className="head"><td colSpan={2}>ตัวอย่างฐานคิดค่าเสื่อม (สไลด์)</td></tr>
+        <tr><td>ต้นทุนเดิม (Original cost)</td><td className="num">50,000</td></tr>
+        <tr><td>หัก มูลค่าซาก (Residual value)</td><td className="neg">(5,000)</td></tr>
+        <tr className="total"><td>ฐานคิดค่าเสื่อม (Depreciable base)</td><td className="num">45,000</td></tr>
+      </tbody></table>
+      <div className="analogy">🪑 <b>ตัวอย่างโต๊ะไม้ (สไลด์):</b> อายุทางกายภาพ 40 ปี แต่กิจการคาดว่าจะใช้เพียง 10 ปี → คิดค่าเสื่อมตาม <b>อายุการใช้งาน 10 ปี</b> ไม่ใช่ 40 ปี — เพราะเราสนใจ "ระยะที่ใช้ประโยชน์จริง" ไม่ใช่ "ทนได้กี่ปี"</div>
+      <div className="kbox"><b>ทำไมกิจการเลิกใช้สินทรัพย์ก่อนหมดอายุทางกายภาพ? มี 2 ปัจจัย</b><br/>① <b>ปัจจัยกายภาพ (Physical factors)</b> — เช่น อุบัติภัย/ความเสียหาย (casualty)<br/>② <b>ปัจจัยเศรษฐกิจ (Economic factors)</b> — ไม่เพียงพอต่อความต้องการ (inadequacy), มีของใหม่มาแทนที่ (supersession), ล้าสมัย (obsolescence)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.3</span>วิธีเส้นตรง (Straight-line) — วิธีหลักที่อาจารย์เน้น</h3>
+      <div style={{textAlign:'center',fontSize:16,fontWeight:700,color:'#2f6d5f',margin:'8px 0'}}>ค่าเสื่อม/ปี = (ต้นทุน − มูลค่าซาก) ÷ อายุการใช้งาน</div>
+      <p><b>ตัวอย่างสไลด์:</b> อุปกรณ์ 1,000,000 อายุ 5 ปี ซาก 100,000 → (1,000,000 − 100,000) ÷ 5 = <span className="hl">180,000/ปี</span></p>
+      <table className="fin">
+        <thead><tr><th>สิ้นปีที่</th><th>ค่าเสื่อมราคา</th><th>ค่าเสื่อมสะสม</th><th>มูลค่าตามบัญชี</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td className="num">180,000</td><td className="num">180,000</td><td className="num">820,000</td></tr>
+          <tr><td>2</td><td className="num">180,000</td><td className="num">360,000</td><td className="num">640,000</td></tr>
+          <tr><td>3</td><td className="num">180,000</td><td className="num">540,000</td><td className="num">460,000</td></tr>
+          <tr><td>4</td><td className="num">180,000</td><td className="num">720,000</td><td className="num">280,000</td></tr>
+          <tr><td>5</td><td className="num">180,000</td><td className="num">900,000</td><td className="num">100,000</td></tr>
+        </tbody>
+      </table>
+      <div className="je">แต่ละปี: Dr ค่าเสื่อมราคา 180,000 / Cr ค่าเสื่อมราคาสะสม 180,000 — มูลค่าตามบัญชีปีที่ 1 = 1,000,000 − 180,000 = 820,000</div>
+      <div className="kbox">🧪 กดปุ่มลอย "ทดลอง" มุมขวาล่าง → แท็บ <b>ค่าเสื่อม</b> เพื่อลากปรับตัวเลขและดูเส้นมูลค่าตามบัญชีเคลื่อนสด</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.4</span>วิธีอื่นๆ (เสริมความเข้าใจ — นอกสไลด์)</h3>
+      <div className="bonus">💡 อาจารย์เน้นเส้นตรง แต่รู้ไว้เผื่อเจอ: วิธีเหล่านี้ใช้ฐานเดียวกัน (ต้นทุน 1,000,000 ซาก 100,000 อายุ 5 ปี) แต่กระจายค่าเสื่อมต่างกัน</div>
+      <Collapse items={[
+        {key:'1',label:'ตามหน่วยผลิต (Units of Production) — ผูกกับการใช้งานจริง',children:<div>
+          <p>ค่าเสื่อม/หน่วย = (ต้นทุน − ซาก) ÷ หน่วยรวมที่คาดว่าจะผลิต → คูณด้วยหน่วยที่ใช้จริงแต่ละปี</p>
+          <p>เช่น รวม 900,000 หน่วย → 1 บาท/หน่วย ปีไหนใช้มากเสื่อมมาก (เหมาะกับเครื่องจักรที่การสึกหรอขึ้นกับการใช้)</p></div>},
+        {key:'2',label:'ยอดลดลงทวีคูณ (Double-Declining Balance) — เสื่อมเร็วช่วงต้น',children:<div>
+          <p>อัตรา = 2 × (1/อายุ) = 40% คูณกับ<b>มูลค่าตามบัญชี</b> (ไม่หักซากก่อน) จนกว่าจะแตะมูลค่าซาก</p>
+          <table className="fin"><tbody>
+            <tr><td>ปี 1: 1,000,000 × 40%</td><td className="num">400,000</td></tr>
+            <tr><td>ปี 2: 600,000 × 40%</td><td className="num">240,000</td></tr>
+            <tr><td>ปี 3: 360,000 × 40%</td><td className="num">144,000</td></tr>
+            <tr><td>ปี 4: 216,000 × 40%</td><td className="num">86,400</td></tr>
+            <tr><td>ปี 5: เหลือให้ถึงซาก</td><td className="num">29,600</td></tr>
+          </tbody></table></div>},
+        {key:'3',label:'ผลรวมจำนวนปี (Sum-of-Years-Digits) — เสื่อมเร็วช่วงต้นแบบเป็นเส้นตรง',children:<div>
+          <p>ผลรวม = 5+4+3+2+1 = 15 → ปีแรก 5/15 ปีสอง 4/15 … คูณฐาน 900,000</p>
+          <table className="fin"><tbody>
+            <tr><td>ปี 1: 5/15 × 900,000</td><td className="num">300,000</td></tr>
+            <tr><td>ปี 2: 4/15 × 900,000</td><td className="num">240,000</td></tr>
+            <tr><td>ปี 3: 3/15 × 900,000</td><td className="num">180,000</td></tr>
+            <tr><td>ปี 4: 2/15 × 900,000</td><td className="num">120,000</td></tr>
+            <tr><td>ปี 5: 1/15 × 900,000</td><td className="num">60,000</td></tr>
+          </tbody></table></div>},
+      ]}/>
+      <div className="warn">⚠️ ทุกวิธีค่าเสื่อมสะสมรวม 5 ปี = 900,000 เท่ากัน (ต่างแค่จังหวะ) และมูลค่าตามบัญชีปลายทางเท่ากันที่ 100,000 = มูลค่าซาก</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : ด้อยค่า & จำหน่าย ============ */
+function ImpairDisposalTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>การด้อยค่า (Impairment) — TAS 36</h3>
+      <p>ปกติแสดง PP&E ที่ราคาทุนหักค่าเสื่อมสะสม แต่ถ้า<b>มูลค่าตามบัญชีสูงกว่ามูลค่าที่จะได้รับคืน</b> (recoverable amount) แสดงว่าสินทรัพย์<b>ด้อยค่า</b> ต้องทดสอบเมื่อมี<b>ข้อบ่งชี้</b>ว่าอาจด้อยค่า (ไม่ต้องทดสอบทุกกรณี)</p>
+      <div style={{textAlign:'center',fontSize:15,fontWeight:700,color:'#2f6d5f',margin:'8px 0'}}>มูลค่าที่จะได้รับคืน = ค่าที่สูงกว่า ระหว่าง (มูลค่ายุติธรรมหักต้นทุนขาย) กับ (มูลค่าจากการใช้)</div>
+      <p><b>ตัวอย่างสไลด์ (MAC Inc. — อาคาร):</b> มูลค่าตามบัญชี 400,000 | FV หักต้นทุนขาย 390,000 | มูลค่าจากการใช้ (value in use) 410,000</p>
+      <table className="fin"><tbody>
+        <tr><td>มูลค่าที่จะได้รับคืน = สูงกว่า(390,000 , 410,000)</td><td className="num">410,000</td></tr>
+        <tr><td>มูลค่าตามบัญชี</td><td className="num">400,000</td></tr>
+        <tr className="total"><td>410,000 &gt; 400,000 → <b>ไม่ด้อยค่า</b></td><td>ไม่บันทึก</td></tr>
+      </tbody></table>
+      <p style={{marginTop:8}}><b>กรณีด้อยค่า:</b> ถ้ามูลค่าจากการใช้เหลือ 380,000 → recoverable = 390,000 &lt; 400,000 → ด้อยค่า</p>
+      <table className="fin"><tbody>
+        <tr><td>ขาดทุนจากการด้อยค่า = 400,000 − 390,000</td><td className="num">10,000</td></tr>
+      </tbody></table>
+      <div className="je">Dr ขาดทุนจากการด้อยค่า 10,000 / Cr ค่าเผื่อการด้อยค่าสะสม (Accumulated Impairment Loss) 10,000</div>
+      <div className="kbox">📐 หลังด้อยค่า: มูลค่าตามบัญชี = ต้นทุน − ค่าเสื่อมสะสม − <b>ค่าเผื่อการด้อยค่าสะสม</b> (เป็น contra-asset อีกตัว)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>การจำหน่าย (Disposal) — สูตรกำไร/ขาดทุน</h3>
+      <div style={{textAlign:'center',fontSize:16,fontWeight:700,color:'#2f6d5f',margin:'8px 0'}}>กำไร/ขาดทุน = เงินที่ได้รับ − มูลค่าตามบัญชี</div>
+      <p><b>ตัวอย่างสไลด์ (Martin Co.):</b> เครื่องจักรต้นทุน 20,000 ค่าเสื่อมสะสมต้นปี 14,000 (มูลค่าตามบัญชี 6,000) เสื่อมปีละ 2,000 ขาย 2,500 วันที่ 1 ต.ค.</p>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'ขั้นที่ 1 — คิดค่าเสื่อมถึงวันขาย (ม.ค.–ต.ค. = 9 เดือน)',description:'ค่าเสื่อม = 2,000 × 9/12 = 1,500 → Dr ค่าเสื่อมราคา 1,500 / Cr ค่าเสื่อมสะสม 1,500'},
+        {title:'ขั้นที่ 2 — หามูลค่าตามบัญชี ณ วันขาย',description:'20,000 − (14,000 + 1,500) = 20,000 − 15,500 = 4,500'},
+        {title:'ขั้นที่ 3 — เทียบเงินที่ได้กับมูลค่าตามบัญชี',description:'ได้ 2,500 − มูลค่าตามบัญชี 4,500 = ขาดทุน 2,000'},
+      ]}/>
+      <div className="je">Dr เงินสด 2,500 + Dr ค่าเสื่อมสะสม 15,500 + Dr <b>ขาดทุนจากการจำหน่าย 2,000</b> / Cr เครื่องจักร 20,000</div>
+      <div className="warn">⚠️ อย่าลืม<b>คิดค่าเสื่อมถึงวันขายก่อน</b> (partial year) ไม่งั้นมูลค่าตามบัญชีผิด กำไร/ขาดทุนก็ผิด — และตอนตัดจำหน่ายต้องล้าง<b>ค่าเสื่อมสะสมทั้งก้อน</b> (รวมส่วนที่เพิ่งคิด)</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : ทรัพยากรธรรมชาติ & ไม่มีตัวตน ============ */
+function IntangibleTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.1</span>ทรัพยากรธรรมชาติ & ค่าสูญสิ้น (Depletion)</h3>
+      <p>ทรัพยากรธรรมชาติ (ไม้ น้ำมัน ก๊าซ แร่) ถูกใช้จนหมดไป การปันส่วนต้นทุนเรียก <b>ค่าสูญสิ้น (Depletion)</b> — คิดแบบตามหน่วยผลิต</p>
+      <div style={{textAlign:'center',fontSize:15,fontWeight:700,color:'#2f6d5f',margin:'8px 0'}}>ค่าสูญสิ้น/หน่วย = (ต้นทุน − ซาก) ÷ หน่วยที่คาดว่าจะได้ &nbsp;→&nbsp; ค่าสูญสิ้นงวด = อัตรา × หน่วยที่ขุดได้</div>
+      <p><b>ตัวอย่างสไลด์ (MIN Co. — เหมืองเงิน):</b> ซื้อที่ดิน 2,000,000 คาดขุดแร่เงิน 500,000 ตัน ซาก 100,000 ปีแรกขุด 50,000 ตัน</p>
+      <table className="fin"><tbody>
+        <tr><td>ค่าสูญสิ้น/ตัน = (2,000,000 − 100,000) ÷ 500,000</td><td className="num">3.80</td></tr>
+        <tr><td>ค่าสูญสิ้นปีแรก = 3.80 × 50,000 ตัน</td><td className="num">190,000</td></tr>
+      </tbody></table>
+      <div className="je">Dr สินค้าคงเหลือ (Inventory) 190,000 / Cr ค่าสูญสิ้นสะสม (Accumulated Depletion) 190,000</div>
+      <div className="kbox">📊 แสดงในงบ: เหมืองเงิน 2,000,000 − ค่าสูญสิ้นสะสม 190,000 = <b>1,810,000</b> | สังเกต: เดบิตเข้า<b>สินค้าคงเหลือ</b> (ไม่ใช่ค่าใช้จ่ายตรงๆ) เพราะแร่ที่ขุดได้กลายเป็นสินค้ารอขาย</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.2</span>สินทรัพย์ไม่มีตัวตน (Intangible Assets)</h3>
+      <p>สินทรัพย์ที่ระบุได้ ไม่เป็นตัวเงิน และ<b>ไม่มีรูปร่าง</b> — เกณฑ์รับรู้: ① ระบุแยกจากกิจการได้ ② กิจการควบคุมได้จากเหตุการณ์ในอดีต ③ คาดว่าจะได้ประโยชน์อนาคต ④ วัดต้นทุนได้น่าเชื่อถือ</p>
+      <table className="fin">
+        <thead><tr><th>กลุ่ม</th><th>ตัวอย่าง</th></tr></thead>
+        <tbody>
+          <tr><td>เกี่ยวกับการตลาด</td><td>เครื่องหมายการค้า ชื่อการค้า ชื่อโดเมนอินเทอร์เน็ต</td></tr>
+          <tr><td>เกี่ยวกับลูกค้า</td><td>รายชื่อลูกค้า (customer lists)</td></tr>
+          <tr><td>เกี่ยวกับศิลปะ</td><td>ลิขสิทธิ์ (copyrights)</td></tr>
+          <tr><td>เกี่ยวกับสัญญา</td><td>แฟรนไชส์ สิทธิในการออกอากาศ</td></tr>
+          <tr><td>เกี่ยวกับเทคโนโลยี</td><td>สิทธิบัตร (patent)</td></tr>
+          <tr><td><b>ค่าความนิยม (Goodwill)</b></td><td>เกิดจากการซื้อกิจการ — จ่ายเกินมูลค่ายุติธรรมสุทธิ</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.3</span>การตัดจำหน่าย (Amortization)</h3>
+      <p>คล้ายค่าเสื่อมราคาของสินทรัพย์มีตัวตน — ปันส่วนต้นทุนสินทรัพย์ไม่มีตัวตนตลอดอายุการใช้งานอย่างเป็นระบบ เรียก <b>Amortization</b> ปกติใช้<b>วิธีเส้นตรง</b></p>
+      <div className="kbox">🧠 จำง่าย 3 คำ: สินทรัพย์มีตัวตน → <b>Depreciation</b> | ทรัพยากรธรรมชาติ → <b>Depletion</b> | สินทรัพย์ไม่มีตัวตน → <b>Amortization</b> (ทั้งหมดคือการปันส่วนต้นทุนเป็นค่าใช้จ่าย)</div>
+      <div className="bonus">💡 เสริม: อายุจำกัด (finite) → ตัดจำหน่าย | อายุไม่จำกัด (indefinite) และ goodwill → ไม่ตัดจำหน่าย แต่<b>ทดสอบด้อยค่า</b>ทุกปี</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 6 : สูตร & แทนค่า ============ */
+function FormulaTab(){
+  const F = ({t,f,s})=> <div className="sec-card"><h3>{t}</h3><div className="je"><b>สูตร:</b> {f}</div><div className="kbox"><b>แทนค่า (จากตัวอย่างสไลด์):</b> {s}</div></div>;
+  return <div>
+    <F t="① ต้นทุนสินทรัพย์ (Initial Cost)" f="ราคาซื้อ (หักส่วนลด) + ต้นทุนที่เกี่ยวโดยตรง (ขนส่ง ติดตั้ง ทดสอบ) + ประมาณการรื้อถอน" s="DEX: 50,000 − 1,000 + 2,000 + 1,500 + 3,500 = 56,000 (ค่าเสียหาย 400 เป็นค่าใช้จ่าย)"/>
+    <F t="② ต้นทุนที่ดิน" f="ราคาซื้อ + ค่ารื้อถอน + ประกันกรรมสิทธิ์ + สำรวจ + ภาษีค้างเก่า − ขายซาก" s="Dexter: 200,000 + 8,000 + 4,000 + 2,300 + 1,000 − 1,500 = 213,800 (ภาษีปัจจุบัน 900 = ค่าใช้จ่าย)"/>
+    <F t="③ ค่าเสื่อมราคา (เส้นตรง)" f="(ต้นทุน − มูลค่าซาก) ÷ อายุการใช้งาน" s="อุปกรณ์: (1,000,000 − 100,000) ÷ 5 = 180,000/ปี"/>
+    <F t="④ มูลค่าตามบัญชี (Carrying Value)" f="ต้นทุน − ค่าเสื่อมราคาสะสม (− ค่าเผื่อด้อยค่าสะสม ถ้ามี)" s="ปีที่ 1: 1,000,000 − 180,000 = 820,000"/>
+    <F t="⑤ มูลค่าที่จะได้รับคืน (Recoverable Amount)" f="ค่าที่สูงกว่า ระหว่าง (FV หักต้นทุนขาย) กับ (มูลค่าจากการใช้)" s="MAC: สูงกว่า(390,000 , 410,000) = 410,000"/>
+    <F t="⑥ ขาดทุนจากการด้อยค่า" f="มูลค่าตามบัญชี − มูลค่าที่จะได้รับคืน (เมื่อบัญชี > recoverable)" s="MAC กรณีด้อยค่า: 400,000 − 390,000 = 10,000"/>
+    <F t="⑦ ค่าเสื่อมบางส่วนของปี (Partial Year)" f="ค่าเสื่อมเต็มปี × (เดือนที่ใช้ ÷ 12)" s="Martin: 2,000 × 9/12 = 1,500 (ม.ค.–ต.ค.)"/>
+    <F t="⑧ กำไร/ขาดทุนจากการจำหน่าย" f="เงินที่ได้รับ − มูลค่าตามบัญชี ณ วันจำหน่าย" s="Martin: 2,500 − 4,500 = ขาดทุน 2,000 (บัญชี = 20,000 − 15,500)"/>
+    <F t="⑨ ค่าสูญสิ้น/หน่วย (Depletion Rate)" f="(ต้นทุน − มูลค่าซาก) ÷ หน่วยที่คาดว่าจะได้" s="MIN: (2,000,000 − 100,000) ÷ 500,000 = 3.80/ตัน"/>
+    <F t="⑩ ค่าสูญสิ้นงวด" f="อัตราค่าสูญสิ้น × หน่วยที่ขุดได้จริง" s="MIN: 3.80 × 50,000 = 190,000"/>
+    <F t="⑪ [เสริม] ยอดลดลงทวีคูณ (DDB)" f="มูลค่าตามบัญชีต้นปี × (2 ÷ อายุ) จนแตะมูลค่าซาก" s="1,000,000 × 40% = 400,000 (ปีแรก)"/>
+    <F t="⑫ [เสริม] ผลรวมจำนวนปี (SYD)" f="(ปีคงเหลือ ÷ ผลรวมจำนวนปี) × ฐานคิดค่าเสื่อม" s="ปีแรก: 5/15 × 900,000 = 300,000"/>
+  </div>;
+}
+
+/* ============ TAB 7 : Flashcards ============ */
+const CARDS = [
+  {q:'PP&E มี 3 ลักษณะอะไรบ้าง?',a:'① ถือไว้ใช้ในการดำเนินงาน ② อายุใช้งานเกิน 1 ปี ③ มีตัวตนจับต้องได้'},
+  {q:'เกณฑ์รับรู้ PP&E เป็นสินทรัพย์ 2 ข้อ?',a:'① น่าจะได้ประโยชน์เชิงเศรษฐกิจในอนาคตไหลเข้ากิจการ ② วัดต้นทุนได้อย่างน่าเชื่อถือ'},
+  {q:'ต้นทุนเริ่มแรกของ PP&E รวมอะไรบ้าง?',a:'ทุกต้นทุนที่จำเป็นเพื่อให้พร้อมใช้: ราคาซื้อ(หักส่วนลด) ภาษีนำเข้า/ภาษีขอคืนไม่ได้ ขนส่ง ติดตั้ง ทดสอบ เตรียมสถานที่ + ประมาณการรื้อถอน/บูรณะ'},
+  {q:'แอร์ราคา 20,000 ค่าติดตั้ง 2,000 ต้นทุนเท่าไร?',a:'22,000 — ค่าติดตั้งจำเป็นเพื่อใช้งานได้ จึงรวมเข้าต้นทุน'},
+  {q:'Dexter ซื้อที่ดิน: ภาษีทรัพย์สินค้างเก่า vs งวดปัจจุบัน ต่างกันอย่างไร?',a:'ภาษีค้างเก่า (delinquent) รวมเข้าต้นทุนที่ดิน | ภาษีงวดปัจจุบันเป็นค่าใช้จ่าย (property tax expense)'},
+  {q:'ขายซากวัสดุจากอาคารที่รื้อ ทำอย่างไรกับต้นทุนที่ดิน?',a:'หักออกจากต้นทุนที่ดิน (Dexter: ...− 1,500 = 213,800)'},
+  {q:'DEX เครื่องจักร: ความเสียหาย 400 ระหว่างติดตั้ง (ไม่ประกัน) บันทึกอย่างไร?',a:'ค่าใช้จ่ายซ่อมแซม (Repair & Maintenance) ไม่รวมเข้าเครื่องจักร — เป็นความผิดพลาด ไม่ใช่ต้นทุนที่จำเป็น'},
+  {q:'รายจ่ายภายหลัง capitalize เมื่อไร?',a:'เมื่อเพิ่มประโยชน์อนาคต: ยืดอายุ เพิ่มกำลังผลิต หรือเพิ่มคุณภาพสินค้า — ไม่งั้นลงค่าใช้จ่าย'},
+  {q:'ต่อเติมโรงงาน (BAX 160,000) บันทึกอย่างไร?',a:'Capitalize เข้าอาคาร: Dr อาคาร 160,000 / Cr เงินสด 160,000 (เพิ่มประโยชน์อนาคต)'},
+  {q:'เปลี่ยนน้ำมันเครื่อง vs ยกเครื่องยนต์ใหม่ อันไหน capitalize?',a:'เปลี่ยนน้ำมัน = ค่าใช้จ่าย (ซ่อมบำรุงปกติ) | ยกเครื่องที่ยืดอายุ = capitalize'},
+  {q:'ฐานคิดค่าเสื่อมราคา (Depreciable base) คำนวณอย่างไร?',a:'ต้นทุนเดิม − มูลค่าซาก (residual value)'},
+  {q:'ค่าเสื่อมราคาสะสม เป็นบัญชีประเภทไหน?',a:'contra-asset (บัญชีปรับมูลค่า) หักจากต้นทุนในงบฐานะการเงิน'},
+  {q:'สูตรค่าเสื่อมเส้นตรง + ตัวอย่างสไลด์?',a:'(ต้นทุน − ซาก) ÷ อายุ = (1,000,000 − 100,000) ÷ 5 = 180,000/ปี'},
+  {q:'มูลค่าตามบัญชี (Carrying value) คำนวณอย่างไร?',a:'ต้นทุน − ค่าเสื่อมราคาสะสม (− ค่าเผื่อการด้อยค่าสะสม ถ้ามี) เช่น 1,000,000 − 180,000 = 820,000'},
+  {q:'อายุการใช้งาน ต่างจากอายุกายภาพอย่างไร?',a:'อายุใช้งาน = ที่กิจการคาดใช้จริง (โต๊ะไม้ทน 40 ปี แต่ใช้ 10 ปี → คิดค่าเสื่อม 10 ปี)'},
+  {q:'การคำนวณค่าเสื่อมราคา ต้องตอบ 3 คำถามอะไร?',a:'① ฐานคิดค่าเสื่อม (ต้นทุน − ซาก) ② อายุการใช้งาน (useful/service life) ③ วิธีค่าเสื่อมราคา'},
+  {q:'ทำไมเลิกใช้สินทรัพย์ก่อนหมดอายุกายภาพ? (2 ปัจจัย)',a:'① ปัจจัยกายภาพ เช่น อุบัติภัย (casualty) ② ปัจจัยเศรษฐกิจ: ไม่เพียงพอ (inadequacy) มีของใหม่แทน (supersession) ล้าสมัย (obsolescence)'},
+  {q:'มูลค่าที่จะได้รับคืน (Recoverable amount) คืออะไร?',a:'ค่าที่สูงกว่า ระหว่าง FV หักต้นทุนขาย กับ มูลค่าจากการใช้ (value in use)'},
+  {q:'MAC: บัญชี 400,000 FV−ขาย 390,000 ใช้ 410,000 — ด้อยค่าไหม?',a:'ไม่ด้อยค่า — recoverable = 410,000 > 400,000'},
+  {q:'ถ้ามูลค่าจากการใช้เหลือ 380,000 ขาดทุนด้อยค่าเท่าไร?',a:'recoverable = 390,000 < 400,000 → ขาดทุน 400,000 − 390,000 = 10,000'},
+  {q:'ต้องทดสอบด้อยค่าเมื่อไร?',a:'เมื่อมีข้อบ่งชี้ว่าอาจด้อยค่า (ไม่ใช่ทุกกรณี) ตาม TAS 36 ประเมินทุกสิ้นรอบรายงาน'},
+  {q:'สูตรกำไร/ขาดทุนจากการจำหน่าย?',a:'เงินที่ได้รับ − มูลค่าตามบัญชี ณ วันจำหน่าย'},
+  {q:'Martin ขายเครื่อง 1 ต.ค. ต้องทำอะไรก่อนคิดกำไร/ขาดทุน?',a:'คิดค่าเสื่อมถึงวันขายก่อน (partial year) = 2,000 × 9/12 = 1,500 → มูลค่าตามบัญชี 4,500'},
+  {q:'Martin ขาย 2,500 มูลค่าตามบัญชี 4,500 ผลเป็นอย่างไร?',a:'ขาดทุนจากการจำหน่าย 2,000 (2,500 − 4,500)'},
+  {q:'Depreciation, Depletion, Amortization ต่างกันอย่างไร?',a:'มีตัวตน→Depreciation | ทรัพยากรธรรมชาติ→Depletion | ไม่มีตัวตน→Amortization (ทั้งหมดคือปันส่วนต้นทุน)'},
+  {q:'ค่าสูญสิ้น/หน่วย + ตัวอย่าง MIN?',a:'(ต้นทุน − ซาก) ÷ หน่วยที่คาดได้ = (2,000,000 − 100,000) ÷ 500,000 = 3.80/ตัน → ปีแรก 3.80 × 50,000 = 190,000'},
+  {q:'ขุดแร่ได้ เดบิตเข้าบัญชีอะไร (ไม่ใช่ค่าใช้จ่าย)?',a:'สินค้าคงเหลือ (Inventory) เพราะแร่ที่ขุดได้กลายเป็นสินค้ารอขาย / Cr ค่าสูญสิ้นสะสม'},
+  {q:'สินทรัพย์ไม่มีตัวตนตัดจำหน่ายด้วยวิธีไหน?',a:'วิธีเส้นตรง (Amortization) ตลอดอายุการใช้งาน'},
+  {q:'อายุไม่จำกัด และ Goodwill ตัดจำหน่ายไหม?',a:'ไม่ตัดจำหน่าย แต่ต้องทดสอบการด้อยค่าทุกปี'},
+  {q:'ประเภทสินทรัพย์ไม่มีตัวตน (ยกตัวอย่าง)?',a:'การตลาด (เครื่องหมายการค้า) ลูกค้า (รายชื่อลูกค้า) ศิลปะ (ลิขสิทธิ์) สัญญา (แฟรนไชส์) เทคโนโลยี (สิทธิบัตร) + ค่าความนิยม'},
+];
+function FlashTab(){
+  const [order,setOrder] = useState(CARDS.map((_,i)=>i));
+  const [flipped,setFlipped] = useState({});
+  const [score,setScore] = useState({know:0,dunno:0});
+  const shuffle=()=>{ setOrder([...order].sort(()=>Math.random()-.5)); setFlipped({}); setScore({know:0,dunno:0}); };
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#2f6d5f'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#2f6d5f"/>
+      <span style={{fontSize:12.5,color:'#5a6a62'}}>แตะการ์ดเพื่อพลิกดูคำตอบ</span>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅ รู้แล้ว</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌ ทวนอีก</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ TAB 8 : การ์ดจำด่วน ============ */
+function QuickTab(){
+  const cards = [
+    {c:'#2f6d5f',t:'🧰 ต้นทุน = "ทำให้พร้อมใช้"',d:'ทุกอย่างที่จำเป็นเพื่อให้สินทรัพย์ใช้งานได้ = รวมเข้าต้นทุน (ขนส่ง ติดตั้ง ทดสอบ) | ความผิดพลาด/เสียหาย/ฝึกอบรม/ภาษีงวดปัจจุบัน = ค่าใช้จ่าย'},
+    {c:'#4a7c46',t:'🏗️ Capital vs Revenue',d:'เพิ่มประโยชน์อนาคต (ยืดอายุ/เพิ่มกำลังผลิต/เพิ่มคุณภาพ) = capitalize | ซ่อมบำรุงให้ใช้ต่อได้ตามปกติ = expense'},
+    {c:'#356e6a',t:'📉 เส้นตรง = (ต้นทุน − ซาก) ÷ อายุ',d:'อาจารย์เน้นวิธีนี้ | 1,000,000 − 100,000 ÷ 5 = 180,000/ปี | มูลค่าตามบัญชี = ต้นทุน − ค่าเสื่อมสะสม'},
+    {c:'#7a5c9e',t:'⚡ [เสริม] เร่งค่าเสื่อม',d:'DDB: อัตราคู่ × มูลค่าตามบัญชี (เสื่อมเร็วต้น) | SYD: 5/15,4/15... | ทุกวิธีรวม 900,000 เท่ากัน จบที่ซาก 100,000'},
+    {c:'#8a5a2b',t:'💥 ด้อยค่า: สูงกว่าชนะ',d:'Recoverable = สูงกว่า(FV−ต้นทุนขาย , มูลค่าจากการใช้) | บัญชี > recoverable → ด้อยค่า | ขาดทุน = บัญชี − recoverable'},
+    {c:'#9c3d3d',t:'💰 จำหน่าย: คิดค่าเสื่อมถึงวันขายก่อน!',d:'partial year ก่อนเสมอ → หามูลค่าตามบัญชี → เงินที่ได้ − บัญชี = กำไร/ขาดทุน | Martin: 2,500 − 4,500 = ขาดทุน 2,000'},
+    {c:'#3a6b7a',t:'⛏️ ค่าสูญสิ้น เข้า "สินค้าคงเหลือ"',d:'(ต้นทุน − ซาก) ÷ หน่วยรวม × หน่วยที่ขุด | MIN 3.80 × 50,000 = 190,000 | Dr Inventory (ไม่ใช่ค่าใช้จ่าย) / Cr ค่าสูญสิ้นสะสม'},
+    {c:'#5a5a7a',t:'🔤 3 คำที่ต้องแยก',d:'มีตัวตน → Depreciation | ทรัพยากรธรรมชาติ → Depletion | ไม่มีตัวตน → Amortization — ทั้งหมดคือปันส่วนต้นทุนเป็นค่าใช้จ่าย'},
+    {c:'#6b7a3a',t:'♾️ Goodwill ไม่ตัดจำหน่าย',d:'อายุจำกัด → ตัดจำหน่าย (เส้นตรง) | อายุไม่จำกัด + goodwill → ไม่ตัด แต่ทดสอบด้อยค่าทุกปี'},
+    {c:'#2f6d5f',t:'🧾 contra-asset 3 ตัว',d:'ค่าเสื่อมราคาสะสม + ค่าเผื่อการด้อยค่าสะสม + ค่าสูญสิ้นสะสม — ทั้งหมดหักจากต้นทุนได้มูลค่าตามบัญชี'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ INTERACTIVE LAB 1 : Depreciation Visualizer ============ */
+function schedule(method, cost, res, life){
+  const rows=[]; let bv=cost; let acc=0; const base=cost-res; const syd=life*(life+1)/2;
+  for(let y=1;y<=life;y++){
+    let dep;
+    if(method==='SL') dep = base/life;
+    else if(method==='DDB'){ dep = bv*(2/life); if(bv-dep<res) dep=Math.max(0,bv-res); }
+    else dep = (life-y+1)/syd*base;
+    acc+=dep; bv-=dep; rows.push({y,dep,acc,bv});
+  }
+  return rows;
+}
+function DepLab(){
+  const [cost,setCost]=useState(1000000);
+  const [res,setRes]=useState(100000);
+  const [life,setLife]=useState(5);
+  const [method,setMethod]=useState('SL');
+  const [year,setYear]=useState(1);
+  const L = Math.max(2,Math.min(12,life||5));
+  const yr = Math.max(0,Math.min(L,year));
+  const methods=['SL','DDB','SYD'];
+  const colors={SL:'#2f6d5f',DDB:'#c0564a',SYD:'#7a5c9e'};
+  const names={SL:'เส้นตรง',DDB:'DDB (เสริม)',SYD:'SYD (เสริม)'};
+  const scheds={}; methods.forEach(m=>scheds[m]=schedule(m,cost,res,L));
+  const cur = scheds[method];
+  const row = yr===0? {dep:0,acc:0,bv:cost} : cur[yr-1];
+  // geometry
+  const x0=44,x1=340,yTop=18,yBot=200; const maxV=cost;
+  const xf=(y)=> x0+(x1-x0)*(y/L);
+  const yf=(v)=> yBot-(yBot-yTop)*(v/maxV);
+  const bvSeries=(m)=>{ const s=scheds[m]; let pts=`${xf(0)},${yf(cost)}`; s.forEach(r=>pts+=` ${xf(r.y)},${yf(r.bv)}`); return pts; };
+  return <div>
+    <div className="bonus" style={{fontSize:12.5,marginBottom:10}}>💡 อาจารย์เน้น <b>เส้นตรง (SL)</b> — DDB/SYD ใส่ไว้ให้เห็นภาพเปรียบเทียบ (นอกสไลด์)</div>
+    <Row gutter={[8,8]} style={{marginBottom:8}}>
+      <Col xs={8}><div style={{fontSize:12.5}}>ต้นทุน</div><InputNumber style={{width:'100%'}} value={cost} min={0} step={50000} onChange={v=>setCost(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>มูลค่าซาก</div><InputNumber style={{width:'100%'}} value={res} min={0} step={10000} onChange={v=>setRes(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>อายุ (ปี)</div><InputNumber style={{width:'100%'}} value={life} min={2} max={12} onChange={v=>{setLife(v||5); setYear(Math.min(year,v||5));}}/></Col>
+    </Row>
+    <Radio.Group value={method} onChange={e=>setMethod(e.target.value)} optionType="button" buttonStyle="solid" style={{marginBottom:10}}
+      options={methods.map(m=>({label:names[m],value:m}))}/>
+    <div style={{fontSize:13.5,margin:'2px 0 4px'}}>เลื่อนดู <b>สิ้นปีที่</b>: <b style={{color:'#2f6d5f'}}>{yr}</b> / {L}</div>
+    <Slider min={0} max={L} value={yr} onChange={setYear} marks={Object.fromEntries(Array.from({length:L+1},(_,i)=>[i,`${i}`]))}/>
+    <Row gutter={[12,12]}>
+      <Col xs={24} md={13}>
+        <svg viewBox="0 0 360 230" style={{width:'100%',background:'#fbfdfb',borderRadius:10,border:'1px solid #d9e5df'}}>
+          <line x1={x0} y1={yBot} x2={x1} y2={yBot} stroke="#b9ccc3" strokeWidth="1"/>
+          <line x1={x0} y1={yTop} x2={x0} y2={yBot} stroke="#b9ccc3" strokeWidth="1"/>
+          {/* residual line */}
+          <line x1={x0} y1={yf(res)} x2={x1} y2={yf(res)} stroke="#c9a227" strokeWidth="1" strokeDasharray="4 3"/>
+          <text x={x1-2} y={yf(res)-3} textAnchor="end" fontSize="9.5" fill="#8a7016">ซาก {money(res)}</text>
+          {/* other methods faint */}
+          {methods.map(m=> m!==method && <polyline key={m} points={bvSeries(m)} fill="none" stroke={colors[m]} strokeWidth="1.3" opacity="0.28"/>)}
+          {/* selected bold */}
+          <polyline points={bvSeries(method)} fill="none" stroke={colors[method]} strokeWidth="2.6"/>
+          {cur.map((r,i)=><circle key={i} cx={xf(r.y)} cy={yf(r.bv)} r="2.4" fill={colors[method]}/>)}
+          {/* marker */}
+          <line x1={xf(yr)} y1={yTop} x2={xf(yr)} y2={yBot} stroke="#666" strokeWidth="1" strokeDasharray="3 3"/>
+          <circle cx={xf(yr)} cy={yf(row.bv)} r="4.5" fill="#fff" stroke={colors[method]} strokeWidth="2.5"/>
+          <text x={x0-4} y={yf(cost)+3} textAnchor="end" fontSize="9.5" fill="#5a6a62">{money(cost)}</text>
+          <text x={xf(yr)} y={yBot+14} textAnchor="middle" fontSize="10.5" fill="#333">ปี {yr}</text>
+          <text x="200" y="14" textAnchor="middle" fontSize="10.5" fill="#5a6a62">เส้นมูลค่าตามบัญชี (เข้มคือวิธีที่เลือก)</text>
+        </svg>
+      </Col>
+      <Col xs={24} md={11}>
+        <Row gutter={[8,8]}>
+          <Col span={12}><Card size="small"><Statistic title={`ค่าเสื่อมปีที่ ${yr||'-'}`} value={yr?money(row.dep):'-'} prefix={yr?'฿':''} valueStyle={{color:'#c0564a',fontSize:17}}/></Card></Col>
+          <Col span={12}><Card size="small"><Statistic title="ค่าเสื่อมสะสม" value={money(row.acc)} prefix="฿" valueStyle={{fontSize:17}}/></Card></Col>
+          <Col span={24}><Card size="small"><Statistic title="มูลค่าตามบัญชี (Carrying Value)" value={money(row.bv)} prefix="฿" valueStyle={{color:'#2f6d5f',fontSize:19}}/></Card></Col>
+        </Row>
+        <table className="fin" style={{marginTop:8}}>
+          <thead><tr><th>ปี</th><th>ค่าเสื่อม</th><th>สะสม</th><th>คงเหลือ</th></tr></thead>
+          <tbody>{cur.map(r=><tr key={r.y} style={r.y===yr?{background:'#fff3bf'}:{}}>
+            <td style={{textAlign:'center'}}>{r.y}</td><td className="num">{money(r.dep)}</td><td className="num">{money(r.acc)}</td><td className="num">{money(r.bv)}</td></tr>)}</tbody>
+        </table>
+      </Col>
+    </Row>
+    <div className="analogy" style={{fontSize:12.5}}>✅ เช็ค: ค่าเสื่อมสะสมสิ้นปีสุดท้าย = {money(cur[L-1].acc)} = ต้นทุน − ซาก ({money(cost-res)}) และมูลค่าคงเหลือจบที่ {money(cur[L-1].bv)} = มูลค่าซาก</div>
+  </div>;
+}
+
+/* ============ INTERACTIVE LAB 2 : Capitalize vs Expense ============ */
+function CapExLab(){
+  const items=[
+    {id:1,label:'ราคาซื้อเครื่องจักร (หักส่วนลดแล้ว)',amt:49000,cap:true},
+    {id:2,label:'ค่าขนส่งเครื่องจักรมาโรงงาน',amt:2000,cap:true},
+    {id:3,label:'ค่าติดตั้งและทดสอบ',amt:1500,cap:true},
+    {id:4,label:'ภาษี VAT (ขอคืนไม่ได้)',amt:3500,cap:true},
+    {id:5,label:'ค่าซ่อมความเสียหายระหว่างติดตั้ง (ไม่ประกัน)',amt:400,cap:false},
+    {id:6,label:'ค่าฝึกอบรมพนักงานใช้เครื่อง',amt:1200,cap:false},
+    {id:7,label:'ค่าประกันภัยเครื่องจักรรายปี',amt:800,cap:false},
+  ];
+  const [pick,setPick]=useState({1:true,2:true,3:true,4:true,5:true,6:false,7:false});
+  const toggle=id=>setPick({...pick,[id]:!pick[id]});
+  const total=items.filter(x=>pick[x.id]).reduce((a,x)=>a+x.amt,0);
+  const correctTotal=items.filter(x=>x.cap).reduce((a,x)=>a+x.amt,0);
+  const allRight=items.every(x=>pick[x.id]===x.cap);
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เลือกว่ารายการไหน 'รวมเข้าต้นทุนเครื่องจักร'" description="เปิดสวิตช์ = รวมเข้าต้นทุน (capitalize) | ปิด = ลงค่าใช้จ่าย (expense) — เป้าหมายต้นทุนที่ถูกต้อง = 56,000"/>
+    {items.map(x=>{
+      const on=pick[x.id]; const right=on===x.cap;
+      return <div key={x.id} style={{display:'flex',alignItems:'center',gap:10,padding:'6px 10px',marginBottom:6,background:right?'#eef7ee':'#fdeeec',borderRadius:8,border:'1px solid '+(right?'#c7e2c7':'#eecfca')}}>
+        <Switch size="small" checked={on} onChange={()=>toggle(x.id)}/>
+        <span style={{flex:1,fontSize:13}}>{x.label}</span>
+        <span style={{fontVariantNumeric:'tabular-nums',fontSize:13,minWidth:56,textAlign:'right'}}>{money(x.amt)}</span>
+        <Tag color={on?'green':'default'} style={{minWidth:74,textAlign:'center'}}>{on?'รวมต้นทุน':'ค่าใช้จ่าย'}</Tag>
+        <span style={{width:18}}>{right?'✓':'✗'}</span>
+      </div>;
+    })}
+    <Row gutter={8} style={{marginTop:6}}>
+      <Col span={12}><Card size="small"><Statistic title="ต้นทุนที่คุณเลือก" value={money(total)} prefix="฿" valueStyle={{fontSize:18,color:total===correctTotal?'#237804':'#c0564a'}}/></Card></Col>
+      <Col span={12}><Card size="small"><Statistic title="ต้นทุนที่ถูกต้อง" value={money(correctTotal)} prefix="฿" valueStyle={{fontSize:18}}/></Card></Col>
+    </Row>
+    <div className={allRight?'analogy':'warn'} style={{marginTop:8,fontSize:13}}>
+      {allRight? '✅ ถูกทั้งหมด! เครื่องจักร 56,000 — ค่าซ่อม/ฝึกอบรม/ประกันเป็นค่าใช้จ่าย ไม่รวมต้นทุน' : '📝 ยังไม่ครบ: จำหลัก "ต้นทุนที่จำเป็นเพื่อให้พร้อมใช้เท่านั้น" — ความเสียหาย ฝึกอบรม ประกันรายปี ไม่ใช่'}
+    </div>
+  </div>;
+}
+
+/* ============ INTERACTIVE LAB 3 : Impairment ============ */
+function ImpairLab(){
+  const [cv,setCv]=useState(400000);
+  const [fv,setFv]=useState(390000);
+  const [viu,setViu]=useState(410000);
+  const rec=Math.max(fv,viu);
+  const impaired=cv>rec;
+  const loss=impaired? cv-rec:0;
+  const maxV=Math.max(cv,fv,viu,1); const sc=150/maxV;
+  const bars=[{l:'มูลค่าตามบัญชี',v:cv,c:'#5a6a62'},{l:'FV − ต้นทุนขาย',v:fv,c:'#7aa8c0'},{l:'มูลค่าจากการใช้',v:viu,c:'#9ec4b7'}];
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="มูลค่าที่จะได้รับคืน = ค่าที่สูงกว่า ระหว่าง FV−ต้นทุนขาย กับ มูลค่าจากการใช้" description="ตัวอย่างสไลด์ MAC: บัญชี 400,000 / FV−ขาย 390,000 / ใช้ 410,000 → ไม่ด้อยค่า | ลองลดมูลค่าจากการใช้เหลือ 380,000 ดู"/>
+    <Row gutter={[8,8]} style={{marginBottom:8}}>
+      <Col xs={8}><div style={{fontSize:12.5}}>มูลค่าตามบัญชี</div><InputNumber style={{width:'100%'}} value={cv} min={0} step={10000} onChange={v=>setCv(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>FV − ต้นทุนขาย</div><InputNumber style={{width:'100%'}} value={fv} min={0} step={10000} onChange={v=>setFv(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>มูลค่าจากการใช้</div><InputNumber style={{width:'100%'}} value={viu} min={0} step={10000} onChange={v=>setViu(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+    </Row>
+    <svg viewBox="0 0 360 210" style={{width:'100%',background:'#fbfdfb',borderRadius:10,border:'1px solid #d9e5df'}}>
+      <line x1="20" y1="175" x2="340" y2="175" stroke="#b9ccc3"/>
+      {bars.map((b,i)=>{ const x=40+i*105; const isRec=(b.l!=='มูลค่าตามบัญชี'&&b.v===rec);
+        return <g key={i}>
+          <rect x={x} y={175-b.v*sc} width="70" height={b.v*sc} rx="4" fill={b.c} opacity={isRec?1:0.8} stroke={isRec?'#237804':'none'} strokeWidth={isRec?2.5:0}/>
+          <text x={x+35} y={175-b.v*sc-5} textAnchor="middle" fontSize="11" fontWeight="700" fill="#20303c">{money(b.v)}</text>
+          <text x={x+35} y="190" textAnchor="middle" fontSize="9.5" fill="#4a5650">{b.l}</text>
+          {isRec && <text x={x+35} y={175-b.v*sc-18} textAnchor="middle" fontSize="9" fill="#237804" fontWeight="700">= recoverable</text>}
+        </g>; })}
+      <line x1="20" y1={175-rec*sc} x2="340" y2={175-rec*sc} stroke="#237804" strokeWidth="1" strokeDasharray="5 3"/>
+    </svg>
+    <Row gutter={8} style={{marginTop:8}}>
+      <Col span={12}><Card size="small"><Statistic title="มูลค่าที่จะได้รับคืน" value={money(rec)} prefix="฿" valueStyle={{fontSize:18,color:'#237804'}}/></Card></Col>
+      <Col span={12}><Card size="small"><Statistic title={impaired?'ขาดทุนจากการด้อยค่า':'ไม่ด้อยค่า'} value={impaired?money(loss):'—'} prefix={impaired?'฿':''} valueStyle={{fontSize:18,color:impaired?'#c0564a':'#237804'}}/></Card></Col>
+    </Row>
+    {impaired
+      ? <div className="je" style={{marginTop:8}}>Dr ขาดทุนจากการด้อยค่า {money(loss)} / Cr ค่าเผื่อการด้อยค่าสะสม {money(loss)}</div>
+      : <div className="analogy" style={{marginTop:8,fontSize:13}}>✅ recoverable {money(rec)} ≥ บัญชี {money(cv)} → ไม่ด้อยค่า ไม่ต้องบันทึก</div>}
+  </div>;
+}
+
+/* ============ INTERACTIVE LAB 4 : Disposal ============ */
+function DisposalLab(){
+  const [cost,setCost]=useState(20000);
+  const [acc,setAcc]=useState(15500);
+  const [proceeds,setProceeds]=useState(2500);
+  const cv=cost-acc;
+  const gl=proceeds-cv;
+  const gain=gl>0, loss=gl<0;
+  const maxV=Math.max(proceeds,cv,1),sc=140/maxV;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="กำไร/ขาดทุน = เงินที่ได้รับ − มูลค่าตามบัญชี" description="ตัวอย่างสไลด์ Martin (หลังคิดค่าเสื่อมถึงวันขายแล้ว): ต้นทุน 20,000 / ค่าเสื่อมสะสม 15,500 / ขาย 2,500 → ขาดทุน 2,000"/>
+    <Row gutter={[8,8]} style={{marginBottom:8}}>
+      <Col xs={8}><div style={{fontSize:12.5}}>ต้นทุน</div><InputNumber style={{width:'100%'}} value={cost} min={0} step={1000} onChange={v=>setCost(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>ค่าเสื่อมสะสม</div><InputNumber style={{width:'100%'}} value={acc} min={0} step={500} onChange={v=>setAcc(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+      <Col xs={8}><div style={{fontSize:12.5}}>เงินที่ได้รับ</div><InputNumber style={{width:'100%'}} value={proceeds} min={0} step={500} onChange={v=>setProceeds(v||0)} formatter={v=>`${v}`.replace(/\B(?=(\d{3})+(?!\d))/g,',')}/></Col>
+    </Row>
+    <svg viewBox="0 0 300 190" style={{width:'100%',maxWidth:300,background:'#fbfdfb',borderRadius:10,border:'1px solid #d9e5df'}}>
+      <line x1="20" y1="155" x2="280" y2="155" stroke="#b9ccc3"/>
+      {[{l:'เงินที่ได้รับ',v:proceeds,c:'#7aa8c0'},{l:'มูลค่าตามบัญชี',v:cv,c:'#5a6a62'}].map((b,i)=>{const x=60+i*110;return <g key={i}>
+        <rect x={x} y={155-b.v*sc} width="70" height={Math.max(0,b.v*sc)} rx="4" fill={b.c} opacity="0.85"/>
+        <text x={x+35} y={155-b.v*sc-5} textAnchor="middle" fontSize="11" fontWeight="700" fill="#20303c">{money(b.v)}</text>
+        <text x={x+35} y="170" textAnchor="middle" fontSize="9.5" fill="#4a5650">{b.l}</text>
+      </g>;})}
+      <text x="150" y="16" textAnchor="middle" fontSize="12" fontWeight="700" fill={gain?'#237804':loss?'#c0564a':'#5a6a62'}>{gain?`กำไร ${money(gl)}`:loss?`ขาดทุน ${money(-gl)}`:'ไม่มีกำไร/ขาดทุน'}</text>
+    </svg>
+    <div className="je" style={{marginTop:8}}>
+      Dr เงินสด {money(proceeds)} + Dr ค่าเสื่อมสะสม {money(acc)}{loss?` + Dr ขาดทุนจากการจำหน่าย ${money(-gl)}`:''} / Cr สินทรัพย์ {money(cost)}{gain?` + Cr กำไรจากการจำหน่าย ${money(gl)}`:''}
+    </div>
+    <div className="warn" style={{fontSize:12.5}}>⚠️ ตัวเลข "ค่าเสื่อมสะสม" ต้องรวมค่าเสื่อมที่คิดถึงวันขายแล้ว (partial year) — ในสไลด์ Martin คือ 14,000 + 1,500 = 15,500</div>
+  </div>;
+}
+
+/* ============ FLOATING TOGGLE TOOL ============ */
+function FloatingLab(){
+  const [open,setOpen]=useState(false);
+  const [seg,setSeg]=useState('dep');
+  const w = typeof window!=='undefined'? Math.min(580, window.innerWidth-16) : 580;
+  return <React.Fragment>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square"
+      style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ — ลากปรับค่าแล้วดูภาพอัปเดตสด" styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}}
+        options={[{label:'📉 ค่าเสื่อม',value:'dep'},{label:'🏗️ ต้นทุน',value:'cap'},{label:'💥 ด้อยค่า',value:'imp'},{label:'💰 จำหน่าย',value:'dis'}]}/>
+      {seg==='dep' && <DepLab/>}
+      {seg==='cap' && <CapExLab/>}
+      {seg==='imp' && <ImpairLab/>}
+      {seg==='dis' && <DisposalLab/>}
+    </Drawer>
+  </React.Fragment>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>🏛️ Non-Current Assets — สินทรัพย์ไม่หมุนเวียน</h1>
+      <p>ทบทวนจากศูนย์: ต้นทุน PP&E → รายจ่ายภายหลัง → ค่าเสื่อมราคา → ด้อยค่า &amp; จำหน่าย → ค่าสูญสิ้น &amp; สินทรัพย์ไม่มีตัวตน | อิงสไลด์ อ.Sannudee Selaratana ปี 2569</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 กดปุ่มลอย <b>"ทดลอง"</b> มุมขวาล่าง เปิดห้องทดลอง 4 เคส — ค่าเสื่อม / ต้นทุน / ด้อยค่า / จำหน่าย</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'🏛️ ต้นทุนได้มา',children:<OverviewTab/>},
+      {key:'2',label:'🔧 รายจ่ายภายหลัง',children:<SubsequentTab/>},
+      {key:'3',label:'📉 ค่าเสื่อมราคา',children:<DepreciationTab/>},
+      {key:'4',label:'💥 ด้อยค่า & จำหน่าย',children:<ImpairDisposalTab/>},
+      {key:'5',label:'⛏️ ไม่มีตัวตน & ทรัพยากร',children:<IntangibleTab/>},
+      {key:'6',label:'🧮 สูตร & แทนค่า',children:<FormulaTab/>},
+      {key:'7',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'8',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>
