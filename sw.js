@@ -1,6 +1,6 @@
 // Service Worker for บทสวดมนต์ PWA
 // Version: Update this to force cache refresh
-const CACHE_VERSION = 'v1.6.1';
+const CACHE_VERSION = 'v1.6.2';
 const CACHE_NAME = `chanting-cache-${CACHE_VERSION}`;
 
 // Files to cache — use relative paths so it works on subpath hosting (GitHub Pages)
@@ -76,11 +76,14 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // Clone and cache the fresh response
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
+          // Only cache successful HTML responses. Caching 404/redirect fallback pages
+          // can make broken or moved document links appear to open the main page.
+          if (response && response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
           return response;
         })
         .catch(() => {
