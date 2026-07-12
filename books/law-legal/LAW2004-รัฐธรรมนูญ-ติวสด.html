@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW2004 / LAW2104 · กฎหมายรัฐธรรมนูญ · ห้องเรียนสด</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'Noto Sans Thai', sans-serif; }
+  body { background:#F5F0E8; line-height:1.85; margin:0; color:#3D3229; }
+  .serif { font-family:'Noto Serif Thai', serif; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:6px; }
+  .ant-table-cell { line-height:1.9 !important; }
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; min-height:270px; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; display:flex; flex-direction:column; justify-content:center; padding:26px; box-sizing:border-box; box-shadow:0 8px 26px rgba(120,100,70,.16); }
+  .fc-back { transform:rotateY(180deg); }
+  .qc { transition:transform .18s, box-shadow .18s; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(120,100,70,.18); }
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fadeUp { animation:fadeUp .5s ease both; }
+  @keyframes pulseGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(91,122,158,.35);} 50%{ box-shadow:0 0 0 10px rgba(91,122,158,0);} }
+  .pulse { animation:pulseGlow 1.8s infinite; }
+  @keyframes floaty { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .floaty { animation:floaty 3s ease-in-out infinite; }
+  .hl { background:linear-gradient(transparent 62%, #CFE0EC 62%); padding:0 2px; font-weight:600; }
+  .mnum { display:inline-block; background:#5B7A9E; color:#FAF7F2; border-radius:7px; padding:1px 8px; font-weight:600; font-size:.9em; white-space:nowrap; }
+  .stepdot { width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff; }
+  .diagram-box { border:2px solid #C4B49A; border-radius:14px; padding:14px; background:#FAF7F2; text-align:center; font-weight:600; transition:.3s; }
+  .bignum { font-size:30px; font-weight:800; line-height:1; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Segmented, Progress, Radio, Steps, Result, Collapse, Slider, Tooltip, Badge } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { Header, Content, Footer } = Layout;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62', white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+  gold2:'#F5EFDD'
+};
+const M = (n) => <span className="mnum">ม.{n}</span>;
+const box = (bg,bd) => ({background:bg, border:'1px solid '+bd, borderRadius:14, padding:'14px 16px', marginBottom:12});
+const Stars = ({n}) => <span style={{color:C.gold,letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+/* =================== BASICS =================== */
+function BasicsTab(){
+  const [pw,setPw]=React.useState(null);
+  const powers={
+    leg:{name:'นิติบัญญัติ',who:'รัฐสภา (สส + สว)',job:'ออกกฎหมายระดับ พ.ร.บ. / ประมวลกฎหมาย + ควบคุมตรวจสอบฝ่ายบริหาร',color:C.blue,ic:'📜'},
+    exe:{name:'บริหาร',who:'คณะรัฐมนตรี (ครม.)',job:'กำหนดนโยบาย + บริหารราชการแผ่นดิน + ออกกฎหมายลำดับรอง (กฎ/ข้อบังคับ)',color:C.green,ic:'🏛️'},
+    jud:{name:'ตุลาการ',who:'ศาล (4 ศาล)',job:'พิจารณาพิพากษาคดีในพระปรมาภิไธย King อย่างเป็นอิสระ',color:C.purple,ic:'⚖️'},
+  };
+  return (
+  <div className="fadeUp">
+    <Alert type="success" showIcon style={{marginBottom:16, borderRadius:12}}
+      message="เริ่มจากศูนย์ — อ่านหน้านี้ก่อนถ้ายังไม่มีพื้นรัฐธรรมนูญ"
+      description="วิชานี้ว่าด้วย 'กติกาสูงสุดของประเทศ' คือใครมีอำนาจอะไร ใช้อย่างไร ตรวจสอบกันยังไง และคุ้มครองสิทธิประชาชนแค่ไหน หน้านี้ปูแนวคิดหลักก่อนไปเจาะรายมาตรา"/>
+
+    <Card style={{...box(C.blueBg,C.blue)}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.blue}}>① รัฐธรรมนูญคืออะไร — 2 มุมมอง</Title>
+      <Row gutter={12}>
+        <Col xs={24} md={12}>
+          <div className="diagram-box floaty" style={{borderColor:C.blue}}>
+            <div style={{fontSize:28}}>🏔️</div>
+            <div style={{color:C.blue,fontSize:17}}>เชิงเนื้อหา = "ลำดับชั้น"</div>
+            <Text type="secondary">เป็นกฎหมายสูงสุด ชี้วัดว่ากฎหมายใดชอบ/ไม่ชอบด้วย รธน</Text>
+          </div>
+        </Col>
+        <Col xs={24} md={12}>
+          <div className="diagram-box" style={{borderColor:C.gold}}>
+            <div style={{fontSize:28}}>⚙️</div>
+            <div style={{color:C.goldDark,fontSize:17}}>เชิงรูปแบบ = "กระบวนการ"</div>
+            <Text type="secondary">ดูวิธีตรากฎหมาย เหมือน กม.ทั่วไป = แก้ง่าย · ต่าง = แก้ยาก</Text>
+          </div>
+        </Col>
+      </Row>
+      <Alert style={{marginTop:12,borderRadius:10}} type="info" showIcon message="รูปแบบ รธน: ลายลักษณ์อักษร (เอกสารชัดเจน มักทำหลังปฏิวัติ) vs จารีตประเพณี (ใช้สืบต่อกันมา เช่น อังกฤษ)"/>
+    </Card>
+
+    <Card style={{...box(C.purpleBg,C.purple)}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.purple}}>② หลักสำคัญของประชาธิปไตย 5 ข้อ</Title>
+      <Row gutter={[10,10]}>
+        {[['เสมอภาค','ทุกคนอยู่ใต้กฎหมายเดียวกัน (จอห์น ล็อค)'],
+          ['แบ่งแยกอำนาจ','แยกใช้ 3 อำนาจ (มองเตสกิเออ) = ประกันสิทธิเสรีภาพ'],
+          ['มีส่วนร่วม','ผู้ใช้อำนาจต้องมาจากประชาชน = เลือกตั้ง'],
+          ['ใช้อำนาจโดยชอบ','ไม่มีกฎหมายให้อำนาจ = ทำไม่ได้'],
+          ['ตรวจสอบถ่วงดุล','นิติบัญญัติ ⇄ บริหาร + องค์กรอิสระ']].map((x,i)=>(
+          <Col xs={24} md={i<2?12:8} key={i}>
+            <div style={box(C.white,C.border)}>
+              <Tag color="purple">{i+1}</Tag> <b>{x[0]}</b>
+              <div style={{color:C.text2,fontSize:13,marginTop:2}}>{x[1]}</div>
+            </div>
+          </Col>
+        ))}
+      </Row>
+    </Card>
+
+    <Card style={{...box(C.cyanBg,C.cyan)}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.cyan}}>③ ลองเล่น: อำนาจอธิปไตย 3 ฝ่าย (คลิกดูใครใช้)</Title>
+      <Text type="secondary">{M('3')} อำนาจอธิปไตยเป็นของปวงชนชาวไทย King ทรงใช้ผ่าน 3 องค์กรนี้</Text>
+      <Row gutter={10} style={{marginTop:12}}>
+        {Object.keys(powers).map(k=>(
+          <Col xs={8} key={k}>
+            <div className="diagram-box qc" onClick={()=>setPw(k)}
+              style={{borderColor:pw===k?powers[k].color:C.border, background:pw===k?powers[k].color:C.white, color:pw===k?'#fff':C.text, cursor:'pointer'}}>
+              <div style={{fontSize:26}}>{powers[k].ic}</div>
+              <div style={{fontSize:14}}>{powers[k].name}</div>
+            </div>
+          </Col>
+        ))}
+      </Row>
+      {pw && <div key={pw} className="fadeUp" style={{...box(C.white,powers[pw].color),marginTop:12}}>
+        <Tag color="blue">{powers[pw].name}</Tag> <b>ผู้ใช้: {powers[pw].who}</b>
+        <div style={{marginTop:4,color:C.text2}}>{powers[pw].job}</div>
+      </div>}
+    </Card>
+
+    <Card style={{...box(C.gold2,C.gold)}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.goldDark}}>④ วิธีเขียนตอบข้อสอบรัฐธรรมนูญ (อัตนัย)</Title>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:<b>วางหลัก (นิยาม/มาตรา)</b>,description:'อธิบายความหมาย/หลักการ + อ้างมาตราให้ตรง เช่น ม.5 รธน สูงสุด'},
+        {title:<b>อธิบายเหตุผล/องค์ประกอบ</b>,description:'ขยายว่าทำไม + แยกเงื่อนไข/ขั้นตอนให้ครบ'},
+        {title:<b>ยกตัวอย่างประกอบ</b>,description:'ข้อสอบรัฐธรรมนูญมักสั่ง "อธิบายพร้อมยกตัวอย่าง" → ต้องมีตัวอย่าง'},
+        {title:<b>สรุปตอบคำถาม</b>,description:'ฟันธงให้ตรงประเด็นที่ถาม'},
+      ]}/>
+      <Alert type="success" showIcon style={{borderRadius:10}} message="วิชานี้เน้น 'อธิบาย + ยกตัวอย่าง' มากกว่าวินิจฉัยเคส — ท่องมาตราหลัก + ตัวเลของค์กรให้แม่น"/>
+    </Card>
+  </div>);
+}
+
+/* =================== SUMMARY =================== */
+const summaryData=[
+  {key:'map',title:'🗺️ ภาพรวมวิชา + รธน 2560',tags:[['ต้องรู้','volcano']],content:()=>(
+    <div>
+      <Alert style={{marginBottom:12,borderRadius:10}} type="info" showIcon
+        message="รธน แห่งราชอาณาจักรไทย พ.ศ.2560 · 16 หมวด 279 มาตรา · ข้อสอบอัตนัย 4 ข้อ ข้อละ 25 คะแนน (เน้นอธิบาย+ยกตัวอย่าง)"/>
+      <Table size="small" pagination={false} bordered
+        columns={[{title:'กลุ่มเนื้อหา',dataIndex:'t'},{title:'มาตรา/คีย์',dataIndex:'m'},{title:'ออกบ่อย',dataIndex:'s',width:80,render:v=><Stars n={v}/>}]}
+        dataSource={[
+          {key:1,t:'หลักประชาธิปไตย · เสมอภาค/เสรีภาพ',m:'ม.4, 25, 26, 27',s:3},
+          {key:2,t:'อำนาจอธิปไตย · แบ่งแยกอำนาจ · The King Can Do No Wrong',m:'ม.2, 3, 5, 6',s:3},
+          {key:3,t:'ตรวจสอบความชอบด้วย รธน ของกฎหมาย/การกระทำ',m:'ม.148, 212, 231, 213',s:3},
+          {key:4,t:'รัฐสภา · องค์กรอิสระ · แก้ไข รธน · ประชามติ',m:'ม.79–165, 256',s:2},
+        ]}/>
+      <div style={{...box(C.gold2,C.gold),marginTop:12}}>
+        <b>จากข้อสอบจริง 2/2567:</b> ข้อ 1 = เสมอภาค vs เสรีภาพ (+Positive Discrimination) · ข้อ 2 = อำนาจอธิปไตย / veto ร่างกฎหมาย · ข้อ 3 = ม.5+ม.50(7) ทำไม King ไม่ต้องเลือกตั้ง · ข้อ 4 = คำวินิจฉัยศาล รธน 3/2567 (ม.112) + The King Can Do No Wrong / Supreme Law
+      </div>
+    </div>
+  )},
+  {key:'p1',title:'⚖️ พาร์ท 1 · การปกครองไทย + สิทธิเสรีภาพ (ม.1–6, 25–27)',tags:[['ข้อ 1,3','geekblue'],['ออกบ่อย','volcano']],content:()=>(
+    <div>
+      <Table size="small" pagination={false} bordered style={{marginBottom:12}}
+        columns={[{title:'มาตรา',dataIndex:'m',width:60,render:v=><b>{v}</b>},{title:'สาระสำคัญ',dataIndex:'d'}]}
+        dataSource={[
+          {key:1,m:'ม.1',d:'ประเทศไทยเป็นรัฐเดี่ยว (ราชอาณาจักรอันหนึ่งอันเดียว แบ่งแยกไม่ได้)'},
+          {key:2,m:'ม.2',d:'ปกครองระบอบประชาธิปไตยอันมีพระมหากษัตริย์ทรงเป็นประมุข'},
+          {key:3,m:'ม.3',d:'อำนาจอธิปไตยเป็นของปวงชนชาวไทย · King ทรงใช้ผ่าน รัฐสภา ครม และศาล'},
+          {key:4,m:'ม.4',d:'ศักดิ์ศรีความเป็นมนุษย์ สิทธิ เสรีภาพ ความเสมอภาค ย่อมได้รับความคุ้มครอง'},
+          {key:5,m:'ม.5',d:'รธน เป็นกฎหมายสูงสุด · กฎหมาย/กฎ/การกระทำใดขัดหรือแย้ง = ใช้บังคับไม่ได้'},
+          {key:6,m:'ม.6',d:'องค์พระมหากษัตริย์ทรงดำรงอยู่ในฐานะอันเป็นที่เคารพสักการะ ผู้ใดจะละเมิดมิได้ = The King Can Do No Wrong'},
+        ]}/>
+      <div style={box(C.greenBg,C.green)}>
+        <b>เสมอภาค vs เสรีภาพ (ข้อสอบ 2/67 ข้อ 1):</b> ทั้งสองสัมพันธ์กัน — เสรีภาพคือการทำได้ตามใจในกรอบกฎหมาย ส่วนเสมอภาคคือทุกคนได้รับการปฏิบัติเท่าเทียมกันภายใต้กฎหมายเดียวกัน · <span className="hl">การเลือกปฏิบัติที่เป็นธรรม (Positive Discrimination)</span> = ปฏิบัติต่างกันได้ ถ้ามีเหตุผลอันสมควรเพื่อช่วยผู้ด้อยโอกาสให้เท่าเทียม (เช่น สิ่งอำนวยความสะดวกคนพิการ) ไม่ถือว่าขัดหลักเสมอภาค
+      </div>
+      <div style={box(C.blueBg,C.blue)}>
+        <b>คุ้มครองสิทธิเสรีภาพ:</b> {M('25')} สิทธิเสรีภาพได้รับการคุ้มครองตราบเท่าที่ ① ไม่กระทบความมั่นคงรัฐ ② ไม่กระทบความสงบ/ศีลธรรม ③ ไม่ละเมิดสิทธิผู้อื่น → ยกขึ้นใช้สิทธิทางศาลได้ (เฉพาะถูกละเมิดจากการใช้อำนาจรัฐ)
+      </div>
+      <div style={box(C.redBg,C.red)}>
+        <b>จำกัดสิทธิได้เมื่อ {M('26')}:</b> ① ไม่ขัดหลักนิติธรรม ② ไม่เกินสมควรแก่เหตุ ③ ไม่กระทบศักดิ์ศรีความเป็นมนุษย์ ④ ระบุเหตุผล ⑤ ใช้บังคับเป็นการทั่วไป
+      </div>
+    </div>
+  )},
+  {key:'p2',title:'👑 พาร์ท 2 · The King Can Do No Wrong + ทำไม King ไม่เลือกตั้ง',tags:[['ข้อ 3,4','geekblue'],['ออก 2 ปีซ้อน','volcano']],content:()=>(
+    <div>
+      <div style={box(C.gold2,C.gold)}>
+        <b>ทำไม King/พระบรมวงศานุวงศ์ชั้นหม่อมเจ้าขึ้นไป ไม่ต้องไปเลือกตั้ง (ข้อ 3):</b><br/>
+        แม้ {M('50(7)')} กำหนดหน้าที่ปวงชนชาวไทยต้องไปใช้สิทธิเลือกตั้ง แต่ King ทรงดำรงสถานะ <span className="hl">เป็นกลางทางการเมือง อยู่เหนือการเมือง</span> ตาม {M('6')} (The King Can Do No Wrong) · การไปเลือกตั้งย่อมแสดงการฝักใฝ่ฝ่ายใดฝ่ายหนึ่ง ขัดกับความเป็นกลาง → จึงไม่ต้องไปใช้สิทธิ และไม่ถือว่าขัด/แย้งต่อ รธน
+      </div>
+      <div style={box(C.purpleBg,C.purple)}>
+        <b>คำวินิจฉัยศาล รธน 3/2567 (ข้อ 4):</b> การเสนอแก้ {M('112')} ให้ลดอัตราโทษ/ย้ายจากความผิดเกี่ยวกับความมั่นคงไปเป็นความผิดอันยอมความได้ → ศาล รธน วินิจฉัยว่าเป็นการ <span className="hl">ล้มล้างการปกครองระบอบประชาธิปไตยอันมี King เป็นประมุข</span> เพราะกระทบสถานะความเป็นกลางและฐานะอันเป็นที่เคารพสักการะของ King ({M('6')}) ทำให้สถาบันกลายเป็นคู่ขัดแย้งทางการเมือง
+      </div>
+      <Alert type="info" showIcon style={{borderRadius:10}} message="เชื่อมโยงกับ ม.49 (สิทธิต่อต้านการล้มล้างการปกครอง): ผู้ทราบมีสิทธิร้องอัยการสูงสุด → ศาล รธน (ถ้าอัยการไม่ดำเนินการใน 15 วัน ยื่นศาล รธน เองได้)"/>
+    </div>
+  )},
+  {key:'p3',title:'🏛️ พาร์ท 3 · 3 ระบบการปกครอง + สถาบัน + องค์กรอิสระ',tags:[['ข้อ 1–2','geekblue']],content:()=>(
+    <div>
+      <Title level={5} style={{color:C.blue}}>ก. เทียบ 3 ระบบประชาธิปไตย</Title>
+      <Table size="small" pagination={false} bordered style={{marginBottom:12}}
+        columns={[{title:'ระบบ',dataIndex:'r',width:110},{title:'เด่น',dataIndex:'d'},{title:'ตุลาการ',dataIndex:'j'}]}
+        dataSource={[
+          {key:1,r:'ประธานาธิบดี (USA)',d:'แบ่งแยกอำนาจเคร่งครัด · ปธน.วาระ 4 ปี ไม่เกิน 2 วาระ · สภาคองเกรส',j:'ศาลสูง ตลอดชีพ'},
+          {key:2,r:'รัฐสภา (อังกฤษ)',d:'นายกจากพรรคเสียงข้างมาก · สภาขุนนาง+สภาล่าง · ยุบสภาได้',j:'ศาลไม่ตรวจสอบความชอบด้วย รธน'},
+          {key:3,r:'กึ่งฯ (ฝรั่งเศส)',d:'ปธน.เลือกตรง 2 รอบ + นายก(ปธน.แต่งตั้ง)',j:'ตุลาการ รธน 9 คน/9 ปี + อดีต ปธน ตลอดชีพ'},
+        ]}/>
+      <Title level={5} style={{color:C.green}}>ข. สถาบันการเมือง 7 + ศาล 4</Title>
+      <div style={box(C.greenBg,C.green)}>
+        7 สถาบัน: ① พระมหากษัตริย์ ② รัฐสภา ③ ครม ④ ศาล ⑤ องค์กรอิสระ ⑥ พรรคการเมือง ⑦ กลุ่มผลประโยชน์<br/>
+        ศาลไทย 4: <span className="hl">ยุติธรรม · ปกครอง · รัฐธรรมนูญ · ทหาร</span>
+      </div>
+      <Title level={5} style={{color:C.purple}}>ค. องค์กรอิสระ 5 (จำ: ส่วนใหญ่วาระ 7 ปี 1 วาระ)</Title>
+      <Table size="small" pagination={false} bordered
+        columns={[{title:'องค์กร',dataIndex:'o'},{title:'จำนวน',dataIndex:'n',width:70},{title:'หน้าที่',dataIndex:'j'}]}
+        dataSource={[
+          {key:1,o:'กกต (เลือกตั้ง)',n:'7 คน',j:'จัดการเลือกตั้งให้สุจริต เที่ยงธรรม'},
+          {key:2,o:'ผู้ตรวจการแผ่นดิน',n:'3 คน',j:'เสนอเรื่องกฎหมายขัด รธน ต่อศาล รธน/ศาลปกครอง'},
+          {key:3,o:'ปปช',n:'9 คน',j:'ไต่สวนคดีทุจริตของผู้ดำรงตำแหน่งทางการเมือง'},
+          {key:4,o:'คตง (ตรวจเงินแผ่นดิน)',n:'7 คน',j:'ตรวจสอบการใช้เงินแผ่นดิน'},
+          {key:5,o:'กสม (สิทธิมนุษยชน)',n:'7 คน',j:'คุ้มครอง/ช่วยเหลือผู้ถูกละเมิดสิทธิมนุษยชน'},
+        ]}/>
+      <Alert type="warning" showIcon style={{borderRadius:10,marginTop:8}} message="ทุกองค์กรอิสระ = ดำรงตำแหน่ง 7 ปี วาระเดียว · จำเลข: กกต/คตง/กสม = 7 คน · ผู้ตรวจการ = 3 · ปปช = 9"/>
+    </div>
+  )},
+  {key:'p4',title:'🔍 พาร์ท 4 · การตรวจสอบความชอบด้วย รธน + รัฐสภา + แก้ไข รธน',tags:[['ข้อ 2,4','geekblue']],content:()=>(
+    <div>
+      <Title level={5} style={{color:C.red}}>ก. ตรวจสอบกฎหมาย/การกระทำ ขัด รธน</Title>
+      <Table size="small" pagination={false} bordered style={{marginBottom:12}}
+        columns={[{title:'มาตรา',dataIndex:'m',width:64,render:v=><b>{v}</b>},{title:'กรณี',dataIndex:'c'}]}
+        dataSource={[
+          {key:1,m:'ม.148',c:'ก่อนประกาศใช้: ร่าง พ.ร.บ. — สส/สว 1/10 หรือนายกฯ ส่งศาล รธน วินิจฉัย (ขัดเนื้อหา/กระบวนการตรา)'},
+          {key:2,m:'ม.212',c:'หลังประกาศใช้: บทบัญญัติที่ศาลจะใช้กับคดี — เฉพาะ "ขัด/แย้ง" (ไม่รวมกระบวนการตรา) ศาลส่งศาล รธน'},
+          {key:3,m:'ม.231',c:'ผู้ตรวจการแผ่นดินส่งเรื่อง — กฎหมาย→ศาล รธน / กฎ-คำสั่ง→ศาลปกครอง'},
+          {key:4,m:'ม.213',c:'"การกระทำ" ละเมิดสิทธิ — ยื่นผู้ตรวจการใน 90 วัน → ศาล รธน (ยื่นตรงได้ในบางกรณี)'},
+        ]}/>
+      <Title level={5} style={{color:C.blue}}>ข. รัฐสภา (ตัวเลขทอง)</Title>
+      <div style={box(C.blueBg,C.blue)}>
+        <b>สส 500</b> (เขต 400 + บัญชีรายชื่อ 100) วาระ 4 ปี · <b>สว 200</b> เลือกกันเอง วาระ 5 ปี (บทเฉพาะกาล คสช 250 คน/5 ปี)<br/>
+        <b>ครม:</b> นายก + รมต. รวม ≤ 35 คน · แถลงนโยบายต่อรัฐสภาใน 15 วัน · เสนอชื่อนายกต้องมี สส รับรอง ≥ 1/10 · นายกดำรงตำแหน่งรวม ≤ 8 ปี<br/>
+        <b>ประชุม:</b> องค์ประชุม เกินกึ่งหนึ่ง · ลงมติเสียงข้างมาก · ประธาน +1 ชี้ขาด · ปีละ 2 สมัยสามัญ สมัยละ 120 วัน
+      </div>
+      <Title level={5} style={{color:C.purple}}>ค. แก้ไขเพิ่มเติม รธน {M('256')}</Title>
+      <div style={box(C.purpleBg,C.purple)}>
+        3 วาระ (รับหลักการ → เรียงมาตรา → ลงมติ) · ต้องมี สว เห็นชอบเกิน 1/3 + สส ฝ่ายไม่เป็นรัฐบาลเกิน 20%<br/>
+        <b>ห้ามแก้ {M('255')}:</b> เปลี่ยนรูปแบบรัฐ ({M('1')}) หรือรูปแบบการปกครอง ({M('2')})<br/>
+        <b>ต้องทำประชามติ {M('256(8)')}:</b> แก้หมวด 1 บททั่วไป · หมวด 2 พระมหากษัตริย์ · หมวด 15 การแก้ไข · คุณสมบัติผู้ดำรงตำแหน่ง · อำนาจศาล/องค์กรอิสระ
+      </div>
+    </div>
+  )}
+];
+function SummaryTab(){
+  return (<div className="fadeUp"><Collapse defaultActiveKey={['map']} accordion style={{background:'transparent',border:'none'}}
+    items={summaryData.map(s=>({key:s.key,
+      label:<span style={{fontWeight:600,fontSize:15}}>{s.title} {s.tags.map((t,i)=><Tag key={i} color={t[1]} style={{marginLeft:4}}>{t[0]}</Tag>)}</span>,
+      children:<div>{s.content()}</div>,
+      style:{marginBottom:12,borderRadius:14,border:'1px solid '+C.border,background:C.white,overflow:'hidden'}}))}/></div>);
+}
+
+/* =================== FLASHCARDS + MATCH =================== */
+const flashcards=[
+  {q:'รธน เชิงเนื้อหา ต่างจากเชิงรูปแบบอย่างไร?',a:'เนื้อหา=ลำดับชั้น · รูปแบบ=กระบวนการ',d:'เชิงเนื้อหา: เป็นกฎหมายสูงสุด ชี้วัดความชอบด้วย รธน ของกฎหมาย · เชิงรูปแบบ: ดูวิธีตรากฎหมาย เหมือน กม.ทั่วไป=แก้ง่าย ต่าง=แก้ยาก',star:2,exam:false},
+  {q:'หลักสำคัญของประชาธิปไตยมีกี่ข้อ?',a:'5 ข้อ',d:'เสมอภาค · แบ่งแยกอำนาจ · มีส่วนร่วม · ใช้อำนาจโดยชอบ · ตรวจสอบถ่วงดุล',star:3,exam:false},
+  {q:'ใครเสนอหลักแบ่งแยกอำนาจ 3 ฝ่าย?',a:'มงเตสกิเออ (Montesquieu)',d:'แบ่งอำนาจอธิปไตยเป็น นิติบัญญัติ/บริหาร/ตุลาการ เพื่อไม่ให้อำนาจตกที่คนเดียว = ประกันสิทธิเสรีภาพ',star:2,exam:false},
+  {q:'ระบบประธานาธิบดี (USA) มีลักษณะเด่นอะไร?',a:'แบ่งแยกอำนาจเคร่งครัด',d:'สภาคองเกรส(นิติบัญญัติ) · ประธานาธิบดี วาระ 4 ปี ไม่เกิน 2 วาระ(บริหาร) · ศาลสูงตลอดชีพ(ตุลาการ) ทั้ง 3 อิสระต่อกัน',star:2,exam:false},
+  {q:'ระบบรัฐสภา (อังกฤษ) นายกมาจากไหน และศาลตรวจสอบความชอบด้วย รธน ได้ไหม?',a:'นายกจากพรรคเสียงข้างมาก · ศาลตรวจสอบไม่ได้',d:'ฝ่ายบริหาร(ครม)มาจากรัฐสภา · ศาลอังกฤษไม่มีอำนาจตรวจสอบความชอบด้วย รธน ของกฎหมายที่ออกโดยนิติบัญญัติ',star:2,exam:false},
+  {q:'ระบบกึ่งฯ (ฝรั่งเศส) ตุลาการ รธน กี่คน วาระเท่าไร?',a:'9 คน วาระ 9 ปี',d:'ปธน./ประธาน สส/ประธาน สว เสนอฝ่ายละ 3 + อดีตประธานาธิบดีทุกคนเป็นตุลาการ รธน ตลอดชีพ',star:1,exam:false},
+  {q:'ประเทศไทยเป็นรัฐแบบใด ปกครองระบอบใด?',a:'รัฐเดี่ยว · ประชาธิปไตยอันมี King เป็นประมุข',d:'ม.1 รัฐเดี่ยว (แบ่งแยกไม่ได้) · ม.2 ประชาธิปไตยอันมีพระมหากษัตริย์ทรงเป็นประมุข',star:3,exam:false},
+  {q:'อำนาจอธิปไตยเป็นของใคร King ทรงใช้ผ่านอะไร? (ม.3)',a:'เป็นของปวงชนชาวไทย · ใช้ผ่าน รัฐสภา ครม ศาล',d:'ม.3 · King ไม่ได้ใช้อำนาจเองโดยตรง',star:3,exam:false},
+  {q:'"The King Can Do No Wrong" บัญญัติไว้ในมาตราใด?',a:'ม.6',d:'องค์พระมหากษัตริย์ทรงดำรงอยู่ในฐานะอันเป็นที่เคารพสักการะ ผู้ใดจะละเมิดมิได้ = ทรงเป็นกลาง อยู่เหนือการเมือง',star:3,exam:true},
+  {q:'[ข้อสอบ 2/67] ทำไม King และพระบรมวงศานุวงศ์ชั้นหม่อมเจ้าขึ้นไป ไม่ต้องไปใช้สิทธิเลือกตั้ง?',a:'เพราะทรงเป็นกลางทางการเมือง อยู่เหนือการเมือง (ม.6)',d:'แม้ ม.50(7) กำหนดหน้าที่ปวงชนต้องเลือกตั้ง แต่การไปเลือกตั้งแสดงการฝักใฝ่ฝ่ายใดฝ่ายหนึ่ง ขัดความเป็นกลางตาม ม.6 จึงไม่ต้องไป และไม่ขัด รธน',star:3,exam:true},
+  {q:'[ข้อสอบ 2/67] หลักความเสมอภาค กับ Positive Discrimination ขัดกันไหม?',a:'ไม่ขัด (เป็นการเลือกปฏิบัติที่เป็นธรรม)',d:'ปฏิบัติต่างกันได้ถ้ามีเหตุผลอันสมควรเพื่อช่วยผู้ด้อยโอกาสให้เท่าเทียม เช่น สิทธิพิเศษคนพิการ/สตรีมีครรภ์ ไม่ถือว่าละเมิดหลักเสมอภาค',star:3,exam:true},
+  {q:'สิทธิเสรีภาพได้รับการคุ้มครองภายใต้เงื่อนไข 3 ข้อ (ม.25) คือ?',a:'ไม่กระทบมั่นคง · ไม่กระทบความสงบ/ศีลธรรม · ไม่ละเมิดผู้อื่น',d:'ผ่าน 3 เงื่อนไขจึงยกขึ้นใช้สิทธิทางศาลได้ (ม.25 ว.3) เฉพาะถูกละเมิดจากการใช้อำนาจรัฐ',star:3,exam:false},
+  {q:'การตรากฎหมายจำกัดสิทธิเสรีภาพทำได้เมื่อใด (ม.26)?',a:'ไม่ขัดนิติธรรม+ไม่เกินสมควรแก่เหตุ+ไม่กระทบศักดิ์ศรี+ระบุเหตุผล+ใช้ทั่วไป',d:'โดยหลักรัฐจำกัดสิทธิไม่ได้ เว้นแต่เข้าเงื่อนไข ม.26',star:2,exam:false},
+  {q:'รธน เป็นกฎหมายสูงสุด บัญญัติในมาตราใด?',a:'ม.5',d:'บทบัญญัติของกฎหมาย/กฎ/ข้อบังคับ/การกระทำใด ขัดหรือแย้งต่อ รธน = ใช้บังคับไม่ได้',star:3,exam:true},
+  {q:'ตรวจสอบความชอบด้วย รธน "ก่อน" ประกาศใช้ ใช้มาตราใด ใครยื่น?',a:'ม.148 · สส/สว 1/10 หรือนายกฯ',d:'ร่าง พ.ร.บ.ที่ผ่านรัฐสภาแล้วแต่ยังไม่ทูลเกล้า ส่งศาล รธน วินิจฉัย (ขัดเนื้อหา/กระบวนการตรา) · ถ้าข้อความสาระสำคัญขัด=ตกทั้งฉบับ',star:2,exam:false},
+  {q:'ม.212 ตรวจสอบอะไร ต่างจาก ม.148 อย่างไร?',a:'บทบัญญัติที่ศาลใช้กับคดี · เฉพาะ "ขัด/แย้ง" ไม่รวมกระบวนการตรา',d:'เป็นการควบคุม "หลัง" ประกาศใช้ · ถ้าศาล รธน วินิจฉัยว่าขัด บทบัญญัตินั้นใช้บังคับไม่ได้นับแต่วันวินิจฉัย',star:2,exam:false},
+  {q:'การกระทำละเมิดสิทธิที่ขัด รธน ยื่นใคร ภายในกี่วัน (ม.213)?',a:'ผู้ตรวจการแผ่นดิน ภายใน 90 วัน',d:'แล้วผู้ตรวจการยื่นศาล รธน ใน 60 วัน หรือผู้ถูกละเมิดยื่นตรงต่อศาล รธน ได้ในบางกรณี',star:2,exam:false},
+  {q:'[ข้อสอบ 2/67] คำวินิจฉัยศาล รธน 3/2567 เรื่องแก้ ม.112 วินิจฉัยว่าอย่างไร?',a:'เป็นการล้มล้างการปกครองระบอบประชาธิปไตยอันมี King เป็นประมุข',d:'การลดโทษ/ย้าย ม.112 ไปเป็นความผิดยอมความได้ กระทบความเป็นกลางและฐานะอันเป็นที่เคารพสักการะของ King (ม.6) ทำให้สถาบันเป็นคู่ขัดแย้งทางการเมือง',star:3,exam:true},
+  {q:'สิทธิต่อต้านการล้มล้างการปกครอง อยู่มาตราใด ยื่นใคร?',a:'ม.49 · อัยการสูงสุด → ศาล รธน',d:'ผู้ทราบมีสิทธิร้องอัยการสูงสุดให้ร้องศาล รธน · ถ้าอัยการไม่ดำเนินการใน 15 วัน ยื่นศาล รธน เองได้',star:2,exam:false},
+  {q:'สส มีกี่คน แบ่งอย่างไร วาระเท่าไร?',a:'500 คน (เขต 400 + บัญชี 100) วาระ 4 ปี',d:'เลือกตั้งวันเดียวกันทั่วราชอาณาจักร',star:3,exam:false},
+  {q:'สว มีกี่คน ที่มาอย่างไร วาระเท่าไร?',a:'200 คน · เลือกกันเอง · วาระ 5 ปี',d:'บทเฉพาะกาล: สว 250 คน (คสช.แนะนำ King แต่งตั้ง) วาระ 5 ปี — ไม่ยึดโยง ปชช',star:3,exam:false},
+  {q:'ครม มีกี่คน แถลงนโยบายภายในกี่วัน?',a:'นายก + รมต ≤ 35 คน · แถลงนโยบายใน 15 วัน',d:'เสนอชื่อนายกต้องมี สส รับรอง ≥ 1/10 · นายกดำรงตำแหน่งรวม ≤ 8 ปี',star:3,exam:false},
+  {q:'องค์กรอิสระมีกี่องค์กร วาระเท่าไร?',a:'5 องค์กร · ทั้งหมด 7 ปี วาระเดียว',d:'กกต(7) ผู้ตรวจการ(3) ปปช(9) คตง(7) กสม(7) — เลขในวงเล็บ=จำนวนคน',star:2,exam:false},
+  {q:'อภิปรายไม่ไว้วางใจ (ม.151) ต่างจากซักถาม (ม.152) ตรงไหน?',a:'151 มีลงมติ (รมต.อาจพ้นตำแหน่ง) · 152 ไม่ลงมติ',d:'ม.151 สส ขอเปิดเพื่อลงมติไม่ไว้วางใจ ถ้ามติไม่ไว้วางใจ รมต พ้นตำแหน่ง (ม.170(3)) · ม.152 แค่ซักถาม/เสนอแนะ ไม่ลงมติ',star:2,exam:false},
+  {q:'การยุบสภาทำโดยอะไร ฟ้องศาลได้ไหม?',a:'ตราเป็นพระราชกฤษฎีกา · ฟ้องศาลไม่ได้',d:'เป็นการกระทำทางรัฐบาล (พรฎ ออกตาม รธน) ไว้ถ่วงดุลนิติบัญญัติ ศาล รธน/ปกครองไม่รับฟ้อง',star:2,exam:false},
+  {q:'แก้ไข รธน มีกี่วาระ ห้ามแก้เรื่องใด (ม.255)?',a:'3 วาระ · ห้ามเปลี่ยนรูปแบบรัฐ(ม.1)/การปกครอง(ม.2)',d:'ต้องมี สว เห็นชอบ >1/3 + สส ฝ่ายไม่เป็นรัฐบาล >20% · บางเรื่องต้องทำประชามติ (ม.256(8))',star:2,exam:true},
+  {q:'ประชามติแบบบังคับ ต่างจากแบบทางเลือกอย่างไร?',a:'บังคับ=ต้องทำจึงใช้ได้ · ทางเลือก=ทำหรือไม่ก็ได้',d:'บังคับ เช่น ม.256(8) ต้องทำประชามติก่อน · ต่างจากประชาพิจารณ์ที่เป็นแค่รับฟังความเห็น ไม่ผูกพัน',star:1,exam:false},
+  {q:'[ข้อสอบ 2/67] ร่าง พ.ร.บ.ผ่านรัฐสภาแล้ว นายกทูลเกล้าฯ แต่ King ไม่พระราชทานคืนภายใน 90 วัน ต้องทำอย่างไร?',a:'รัฐสภาต้องปรึกษาร่างนั้นใหม่ ถ้ายืนยันด้วยเสียง ≥ 2/3 นายกนำขึ้นทูลเกล้าฯ อีกครั้ง',d:'พระราชอำนาจยับยั้ง (veto): King ไม่ทรงเห็นชอบและส่งคืน หรือพ้น 90 วันไม่คืน → รัฐสภาต้องพิจารณาใหม่ ถ้ายืนยันมติเดิมด้วยคะแนน >2/3 ของสมาชิกทั้งสองสภา นายกนำขึ้นทูลเกล้าฯ อีกครั้ง หากไม่ทรงลงพระปรมาภิไธยภายในกำหนด นายกประกาศในราชกิจจาฯ ใช้บังคับเป็นกฎหมายได้',star:3,exam:true},
+];
+function FlashcardTab(){
+  const [mode,setMode]=React.useState('การ์ด');
+  return (<div className="fadeUp">
+    <Segmented block value={mode} onChange={setMode} options={['การ์ด','เกมจับคู่']} style={{marginBottom:16}}/>
+    {mode==='การ์ด'?<FlashDeck/>:<MatchGame/>}
+  </div>);
+}
+function FlashDeck(){
+  const [filter,setFilter]=React.useState('ทั้งหมด');
+  const pool=React.useMemo(()=>{let p=flashcards.map((c,i)=>({...c,i}));
+    if(filter==='ข้อสอบจริง')p=p.filter(c=>c.exam); if(filter==='★★★')p=p.filter(c=>c.star===3); return p;},[filter]);
+  const [idx,setIdx]=React.useState(0); const [flip,setFlip]=React.useState(false); const [score,setScore]=React.useState({c:0,w:0});
+  React.useEffect(()=>{setIdx(0);setFlip(false);},[filter]);
+  const list=pool; const card=list[idx]||list[0];
+  const next=(d)=>{setFlip(false);setTimeout(()=>setIdx(p=>(p+d+list.length)%list.length),120);};
+  const mark=(ok)=>{setScore(s=>({c:s.c+(ok?1:0),w:s.w+(ok?0:1)}));next(1);};
+  if(!card)return <Alert message="ไม่มีการ์ดในหมวดนี้"/>;
+  return (<div>
+    <Flex justify="space-between" align="center" wrap gap={8} style={{marginBottom:12}}>
+      <Segmented value={filter} onChange={setFilter} options={['ทั้งหมด','ข้อสอบจริง','★★★']}/>
+      <Space><Tag color="green">ถูก {score.c}</Tag><Tag color="red">ผิด {score.w}</Tag><Button size="small" onClick={()=>setScore({c:0,w:0})}>รีเซ็ต</Button></Space>
+    </Flex>
+    <Text type="secondary">การ์ด {idx+1}/{list.length} · แตะเพื่อพลิกดูเฉลย</Text>
+    <div className="fc-perspective" style={{marginTop:10}}>
+      <div className={'fc-card'+(flip?' flipped':'')} onClick={()=>setFlip(f=>!f)}>
+        <div className="fc-face" style={{background:C.white,border:'2px solid '+C.border}}>
+          <Space style={{marginBottom:8}}>{card.exam&&<Tag color="volcano">ข้อสอบจริง</Tag>}<Stars n={card.star}/></Space>
+          <div className="serif" style={{fontSize:19,color:C.text,lineHeight:1.7}}>{card.q}</div>
+          <Text type="secondary" style={{marginTop:14}}>👆 แตะเพื่อดูคำตอบ</Text>
+        </div>
+        <div className="fc-face fc-back" style={{background:C.blueBg,border:'2px solid '+C.blue}}>
+          <Tag color="blue" style={{alignSelf:'flex-start'}}>คำตอบ</Tag>
+          <div style={{fontSize:18,fontWeight:700,color:C.blue,margin:'6px 0'}}>{card.a}</div>
+          <Text style={{color:C.text2}}>{card.d}</Text>
+        </div>
+      </div>
+    </div>
+    <Flex justify="center" gap={10} style={{marginTop:16}} wrap>
+      <Button onClick={()=>next(-1)}>◀ ก่อนหน้า</Button>
+      <Button danger onClick={()=>mark(false)}>ยังไม่แม่น</Button>
+      <Button type="primary" style={{background:C.green,borderColor:C.green}} onClick={()=>mark(true)}>จำได้ ✓</Button>
+      <Button onClick={()=>next(1)}>ถัดไป ▶</Button>
+    </Flex>
+  </div>);
+}
+const matchPairs=[
+  {m:'1',t:'ประเทศไทยเป็นรัฐเดี่ยว'},
+  {m:'2',t:'ประชาธิปไตยอันมีพระมหากษัตริย์ทรงเป็นประมุข'},
+  {m:'3',t:'อำนาจอธิปไตยเป็นของปวงชน King ใช้ผ่าน 3 องค์กร'},
+  {m:'5',t:'รัฐธรรมนูญเป็นกฎหมายสูงสุด'},
+  {m:'6',t:'The King Can Do No Wrong'},
+  {m:'26',t:'เงื่อนไขการตรากฎหมายจำกัดสิทธิเสรีภาพ'},
+  {m:'148',t:'ตรวจสอบร่าง พ.ร.บ. ก่อนประกาศใช้'},
+  {m:'151',t:'อภิปรายไม่ไว้วางใจ (มีลงมติ)'},
+  {m:'213',t:'การกระทำละเมิดสิทธิ ยื่นผู้ตรวจการใน 90 วัน'},
+  {m:'256',t:'หลักเกณฑ์การแก้ไขเพิ่มเติมรัฐธรรมนูญ'},
+];
+function MatchGame(){
+  const [key,setKey]=React.useState(0);
+  const [pool]=React.useState(()=>matchPairs.slice().sort(()=>Math.random()-.5).slice(0,6));
+  const [rights]=React.useState(()=>pool.map(p=>p.t).sort(()=>Math.random()-.5));
+  const [sel,setSel]=React.useState(null); const [matched,setMatched]=React.useState({}); const [wrong,setWrong]=React.useState(null);
+  const done=Object.keys(matched).length===pool.length;
+  const pick=(t)=>{if(!sel)return; if(sel.t===t){setMatched(m=>({...m,[sel.m]:true}));setSel(null);}else{setWrong(t);setTimeout(()=>setWrong(null),500);setSel(null);}};
+  return (<div>
+    <Alert type="info" showIcon style={{borderRadius:10,marginBottom:12}} message="คลิก 'เลขมาตรา' ซ้าย แล้วคลิก 'หลัก' ขวาที่คู่กัน จับให้ครบ"/>
+    {done&&<Result status="success" title="จับคู่ครบแล้ว! 🎉" extra={<Button type="primary" style={{background:C.blue,borderColor:C.blue}} onClick={()=>setKey(k=>k+1)} key="r">เล่นชุดใหม่</Button>}/>}
+    {!done&&<Row gutter={12}>
+      <Col span={7}><Space direction="vertical" style={{width:'100%'}}>
+        {pool.map(p=>(<div key={p.m} onClick={()=>!matched[p.m]&&setSel(p)}
+          style={{...box(matched[p.m]?C.greenBg:(sel&&sel.m===p.m?C.blue:C.white),matched[p.m]?C.green:(sel&&sel.m===p.m?C.blue:C.border)),cursor:matched[p.m]?'default':'pointer',textAlign:'center',opacity:matched[p.m]?.55:1,marginBottom:0,color:sel&&sel.m===p.m?'#fff':C.text}}>
+          <span className="mnum" style={sel&&sel.m===p.m?{background:'#fff',color:C.blue}:{}}>ม.{p.m}</span> {matched[p.m]&&'✓'}
+        </div>))}
+      </Space></Col>
+      <Col span={17}><Space direction="vertical" style={{width:'100%'}}>
+        {rights.map((t,i)=>{const isM=Object.keys(matched).some(k=>pool.find(p=>p.m===k&&p.t===t));
+          return(<div key={i} onClick={()=>!isM&&pick(t)} style={{...box(isM?C.greenBg:(wrong===t?C.redBg:C.white),isM?C.green:(wrong===t?C.red:C.border)),cursor:isM?'default':'pointer',opacity:isM?.55:1,marginBottom:0,fontSize:13}}>{t} {isM&&'✓'}</div>);})}
+      </Space></Col>
+    </Row>}
+  </div>);
+}
+
+/* =================== EXPLORER (เทียบระบบ + องค์กร) =================== */
+const systems={
+  usa:{name:'🇺🇸 ประธานาธิบดี',color:C.blue,rows:[['นิติบัญญัติ','สภาคองเกรส (สส + สว)'],['บริหาร','ประธานาธิบดี วาระ 4 ปี ไม่เกิน 2 วาระ'],['ตุลาการ','ศาลสูง ตลอดชีพ'],['เด่น','แบ่งแยกอำนาจเคร่งครัด อิสระต่อกัน'],['แก้ รธน','สส+สว 2/3 หรือ สภานิติบัญญัติรัฐ 2/3']]},
+  uk:{name:'🇬🇧 รัฐสภา',color:C.green,rows:[['นิติบัญญัติ','สภาขุนนาง + สภาล่าง (สส 650)'],['บริหาร','ครม — นายกจากพรรคเสียงข้างมาก'],['ตุลาการ','ศาล — ไม่ตรวจสอบความชอบด้วย รธน'],['เด่น','ฝ่ายบริหารมาจากรัฐสภา ยุบสภาได้'],['พรรค','อนุรักษ์นิยม(ทอรี)/เสรีนิยม(วิก)/แรงงาน']]},
+  fr:{name:'🇫🇷 กึ่งประธานาธิบดีกึ่งรัฐสภา',color:C.purple,rows:[['ประมุขบริหาร','ประธานาธิบดี เลือกตรง 2 รอบ วาระ 5 ปี'],['นายก','ประธานาธิบดีแต่งตั้ง'],['นิติบัญญัติ','รัฐสภา (สส + สว)'],['ตุลาการ รธน','9 คน วาระ 9 ปี + อดีต ปธน ตลอดชีพ'],['คติ','เสรีภาพ เสมอภาค ภราดรภาพ']]}
+};
+const orgs=[
+  {k:'กกต',n:'7 คน',y:'7 ปี · วาระเดียว',j:'จัดการเลือกตั้งให้สุจริต เที่ยงธรรม'},
+  {k:'ผู้ตรวจการแผ่นดิน',n:'3 คน',y:'7 ปี · วาระเดียว',j:'เสนอเรื่องกฎหมายขัด รธน ต่อศาล รธน/ศาลปกครอง'},
+  {k:'ปปช',n:'9 คน',y:'7 ปี · วาระเดียว',j:'ไต่สวนคดีทุจริตของผู้ดำรงตำแหน่งทางการเมือง'},
+  {k:'คตง',n:'7 คน',y:'7 ปี · วาระเดียว',j:'ตรวจสอบการใช้เงินแผ่นดินให้มีประสิทธิภาพ'},
+  {k:'กสม (สิทธิมนุษยชน)',n:'7 คน',y:'7 ปี · วาระเดียว',j:'คุ้มครอง/ช่วยเหลือผู้ถูกละเมิดสิทธิมนุษยชน'},
+];
+function ExplorerTab(){
+  const [tab,setTab]=React.useState('เทียบ 3 ระบบ');
+  const [sys,setSys]=React.useState('usa');
+  const [org,setOrg]=React.useState(null);
+  return (<div className="fadeUp">
+    <Segmented block value={tab} onChange={setTab} options={['เทียบ 3 ระบบ','องค์กร + ตัวเลข']} style={{marginBottom:16}}/>
+    {tab==='เทียบ 3 ระบบ'?<div>
+      <Space wrap style={{marginBottom:12}}>
+        {Object.keys(systems).map(k=>(<Button key={k} type={sys===k?'primary':'default'} onClick={()=>setSys(k)} style={sys===k?{background:systems[k].color,borderColor:systems[k].color}:{}}>{systems[k].name}</Button>))}
+      </Space>
+      <Card key={sys} className="fadeUp" style={box(C.white,systems[sys].color)} bodyStyle={{padding:6}}>
+        <Table size="small" pagination={false} showHeader={false}
+          columns={[{dataIndex:'a',width:130,render:v=><b style={{color:systems[sys].color}}>{v}</b>},{dataIndex:'b'}]}
+          dataSource={systems[sys].rows.map((r,i)=>({key:i,a:r[0],b:r[1]}))}/>
+      </Card>
+    </div>:<div>
+      <Alert type="warning" showIcon style={{borderRadius:10,marginBottom:12}} message="เคล็ดจำ: องค์กรอิสระทุกองค์กร = ดำรงตำแหน่ง 7 ปี วาระเดียว · ต่างกันแค่จำนวนคน (3/7/9)"/>
+      <Row gutter={[10,10]}>
+        {orgs.map((o,i)=>(<Col xs={12} md={8} key={i}>
+          <div className="diagram-box qc" onClick={()=>setOrg(o)} style={{borderColor:org&&org.k===o.k?C.purple:C.border,background:org&&org.k===o.k?C.purpleBg:C.white,cursor:'pointer'}}>
+            <div className="bignum" style={{color:C.purple}}>{o.n}</div>
+            <div style={{fontSize:13}}>{o.k}</div>
+          </div>
+        </Col>))}
+      </Row>
+      {org&&<Card key={org.k} className="fadeUp" style={{...box(C.purpleBg,C.purple),marginTop:12}} bodyStyle={{padding:16}}>
+        <Title level={5} style={{margin:0,color:C.purple}}>{org.k}</Title>
+        <div style={{marginTop:6}}><Tag color="purple">{org.n}</Tag><Tag>{org.y}</Tag></div>
+        <div style={{marginTop:8,color:C.text2}}>หน้าที่: {org.j}</div>
+      </Card>}
+      <Card style={{...box(C.blueBg,C.blue),marginTop:14}} bodyStyle={{padding:16}}>
+        <Title level={5} style={{margin:'0 0 8px',color:C.blue}}>🔢 ตัวเลขรัฐสภาที่ต้องจำ</Title>
+        <Row gutter={[10,10]}>
+          {[['สส','500','เขต 400 + บัญชี 100 · วาระ 4 ปี'],['สว','200','เลือกกันเอง · วาระ 5 ปี (บทเฉพาะกาล 250)'],['ครม','≤35','นายก+รมต · แถลงนโยบาย 15 วัน'],['นายก','≤8 ปี','รับรองโดย สส ≥ 1/10'],['องค์ประชุม','>½','ลงมติเสียงข้างมาก'],['สมัยประชุม','2/ปี','สมัยละ 120 วัน']].map((x,i)=>(
+            <Col xs={12} md={8} key={i}><div style={box(C.white,C.border)}>
+              <div style={{color:C.text3,fontSize:12}}>{x[0]}</div>
+              <div className="bignum" style={{color:C.blue,fontSize:22}}>{x[1]}</div>
+              <div style={{fontSize:11,color:C.text3}}>{x[2]}</div>
+            </div></Col>
+          ))}
+        </Row>
+      </Card>
+    </div>}
+  </div>);
+}
+
+/* =================== FLOW / DIAGNOSIS (ผังตรวจสอบ) =================== */
+const trees={
+  law:{name:'📜 กฎหมายขัด รธน ทำอย่างไร',start:'q1',nodes:{
+    q1:{q:'ต้องการตรวจสอบตอนไหน?',opts:[
+      {t:'ก่อนประกาศใช้ (ร่าง พ.ร.บ. ผ่านรัฐสภาแล้ว)',go:'r148'},
+      {t:'หลังประกาศใช้ (มีคดีขึ้นสู่ศาล)',go:'q2'},
+      {t:'ผ่านผู้ตรวจการแผ่นดิน',go:'r231'}]},
+    q2:{q:'ปัญหาคืออะไร?',opts:[
+      {t:'บทบัญญัติที่ศาลจะใช้กับคดี "ขัด/แย้ง" รธน',go:'r212'},
+      {t:'กระบวนการตราไม่ชอบ',go:'r212no'}]},
+  },results:{
+    r148:{law:'ม.148',v:'สส/สว 1/10 หรือนายกฯ ส่งศาล รธน วินิจฉัย',color:C.green,irac:'ร่าง พ.ร.บ.ที่ผ่านรัฐสภาแต่ยังไม่ทูลเกล้าฯ · สส/สว/สส+สว ≥ 1/10 แจ้งผ่านประธาน หรือ นายกฯ เห็นว่าขัด → ส่งศาล รธน · ถ้าข้อความสาระสำคัญขัด/กระบวนการตราไม่ชอบ = ร่างตกทั้งฉบับ (ว.3) · ถ้าไม่ใช่สาระสำคัญ = ตกเฉพาะข้อความนั้น (ว.4)'},
+    r212:{law:'ม.212',v:'ศาลที่พิจารณาคดีส่งความเห็นไปศาล รธน',color:C.green,irac:'กรณีมีคดีขึ้นสู่ศาล กฎหมายที่จะใช้กับคดีต้องด้วย ม.5 (ขัด/แย้ง) · ศาลเห็นเอง/คู่ความโต้แย้ง และศาล รธน ยังไม่เคยวินิจฉัย → ส่งศาล รธน · ระหว่างรอ ศาลพิจารณาต่อได้แต่รอพิพากษา · ถ้าวินิจฉัยว่าขัด บทบัญญัตินั้นใช้บังคับมิได้นับแต่วันวินิจฉัย'},
+    r212no:{law:'ม.212 (ไม่เข้า)',v:'ม.212 ใช้เฉพาะ "ขัด/แย้ง" ไม่รวมกระบวนการตรา',color:C.red,irac:'ข้อควรระวัง: การควบคุมหลังประกาศใช้ตาม ม.212 ตรวจสอบเฉพาะเนื้อหา "ขัด/แย้ง" ต่อ รธน เท่านั้น ไม่รวมกรณีกระบวนการตราไม่ชอบ (ต่างจาก ม.148 ที่ตรวจได้ทั้งสอง)'},
+    r231:{law:'ม.231',v:'ผู้ตรวจการแผ่นดินส่งเรื่อง',color:C.green,irac:'มีผู้ร้องต่อผู้ตรวจการแผ่นดิน · ถ้าเป็น "บทบัญญัติแห่งกฎหมาย" → ส่งศาล รธน (ม.231(1)) · ถ้าเป็น "กฎ/คำสั่ง/การกระทำ" ของหน่วยงานรัฐ → ส่งศาลปกครอง (ม.231(2))'},
+  }},
+  act:{name:'✊ การกระทำ/สิทธิถูกละเมิด',start:'q1',nodes:{
+    q1:{q:'ลักษณะเรื่องคืออะไร?',opts:[
+      {t:'"การกระทำ" ละเมิดสิทธิเสรีภาพ ขัด รธน',go:'r213'},
+      {t:'มีการใช้สิทธิ "ล้มล้างการปกครอง"',go:'r49'},
+      {t:'ถูกละเมิดสิทธิจากเอกชนด้วยกัน',go:'rprivate'}]},
+  },results:{
+    r213:{law:'ม.213',v:'ยื่นผู้ตรวจการแผ่นดินภายใน 90 วัน → ศาล รธน',color:C.green,irac:'ผู้ถูกละเมิดสิทธิยื่นผู้ตรวจการแผ่นดินภายใน 90 วัน · ผู้ตรวจการยื่นศาล รธน + ความเห็นภายใน 60 วัน · ถ้าผู้ตรวจการไม่ยื่น/ไม่ทันกำหนด ผู้ถูกละเมิดยื่นตรงต่อศาล รธน ได้ (ม.46-48 พรป.ว่าด้วยวิธีพิจารณาของศาล รธน)'},
+    r49:{law:'ม.49',v:'ร้องอัยการสูงสุด → ศาล รธน',color:C.green,irac:'บุคคลจะใช้สิทธิ/เสรีภาพล้มล้างการปกครองระบอบประชาธิปไตยอันมี King เป็นประมุขไม่ได้ (ว.1) · ผู้ทราบมีสิทธิร้องอัยการสูงสุดเพื่อร้องศาล รธน ให้เลิกการกระทำ (ว.2) · ถ้าอัยการไม่ดำเนินการใน 15 วัน ยื่นศาล รธน เองได้ (ว.3)'},
+    rprivate:{law:'ม.25 (ไม่เข้า)',v:'การกล่าวอ้างตาม รธน จำกัดเฉพาะถูกละเมิดจากอำนาจรัฐ',color:C.red,irac:'ข้อควรระวัง: การยกบทบัญญัติ รธน เพื่อใช้สิทธิทางศาลตาม ม.25 ว.3 จำกัดเฉพาะการถูกละเมิดจาก "การใช้อำนาจรัฐ" เท่านั้น กรณีเอกชนละเมิดกันเองต้องใช้กฎหมายแพ่ง/อาญาทั่วไป'},
+  }},
+  amend:{name:'✏️ แก้ไข รธน ได้แค่ไหน',start:'q1',nodes:{
+    q1:{q:'ต้องการแก้เรื่องใด?',opts:[
+      {t:'เปลี่ยนรูปแบบรัฐ (ม.1) หรือการปกครอง (ม.2)',go:'r255'},
+      {t:'แก้หมวด 1/หมวด 2/หมวด 15/คุณสมบัติ/อำนาจศาล-องค์กรอิสระ',go:'r2568'},
+      {t:'แก้เรื่องทั่วไปอื่น ๆ',go:'r256'}]},
+  },results:{
+    r255:{law:'ม.255',v:'ห้ามแก้เด็ดขาด',color:C.red,irac:'ม.255 ห้ามแก้ไขเพิ่มเติมในลักษณะที่เปลี่ยนแปลงรูปแบบรัฐ (ม.1 รัฐเดี่ยว) หรือรูปแบบการปกครอง (ม.2 ประชาธิปไตยอันมี King เป็นประมุข) → ทำไม่ได้ทุกกรณี'},
+    r2568:{law:'ม.256(8)',v:'แก้ได้แต่ต้องทำ "ประชามติ" ก่อน',color:C.green,irac:'การแก้หมวด 1 บททั่วไป · หมวด 2 พระมหากษัตริย์ · หมวด 15 การแก้ไข · คุณสมบัติผู้ดำรงตำแหน่ง · หน้าที่อำนาจศาล/องค์กรอิสระ → ต้องผ่าน 3 วาระ แล้วจัดออกเสียงประชามติก่อนนายกนำขึ้นทูลเกล้าฯ'},
+    r256:{law:'ม.256',v:'แก้ได้ผ่าน 3 วาระ',color:C.green,irac:'ผ่าน 3 วาระ (รับหลักการ >1/2 + สว ≥1/3 → เรียงมาตรา เสียงข้างมาก → ลงมติ >1/2 + สว ≥1/3 + สส ฝ่ายไม่เป็นรัฐบาล >20%) · ก่อนทูลเกล้าฯ อาจส่งศาล รธน ตรวจสอบได้'},
+  }},
+};
+function DiagnosisTab(){
+  const [topic,setTopic]=React.useState(null); const [nodeId,setNodeId]=React.useState(null);
+  const [path,setPath]=React.useState([]); const [result,setResult]=React.useState(null);
+  const start=(k)=>{setTopic(k);setNodeId(trees[k].start);setPath([]);setResult(null);};
+  const choose=(o)=>{const t=trees[topic];setPath(p=>[...p,{q:t.nodes[nodeId].q,a:o.t}]); o.go.startsWith('r')?setResult(t.results[o.go]):setNodeId(o.go);};
+  const reset=()=>{setTopic(null);setNodeId(null);setPath([]);setResult(null);};
+  if(!topic)return(<div className="fadeUp">
+    <Alert type="success" showIcon style={{borderRadius:12,marginBottom:16}} message="ผังช่วยจำกระบวนการ — ตอบทีละขั้น ระบบจะบอกมาตรา + ช่องทาง + แนวเขียนตอบ"/>
+    <Row gutter={12}>{Object.keys(trees).map(k=>(<Col xs={24} md={8} key={k} style={{marginBottom:12}}>
+      <Card hoverable className="qc" onClick={()=>start(k)} style={{borderRadius:16,border:'2px solid '+C.border,background:C.white,textAlign:'center'}}>
+        <div style={{fontSize:34}}>{trees[k].name.split(' ')[0]}</div>
+        <Title level={5} style={{margin:'8px 0 0'}}>{trees[k].name.substring(trees[k].name.indexOf(' ')+1)}</Title>
+        <Text type="secondary">เริ่ม →</Text>
+      </Card></Col>))}</Row>
+  </div>);
+  const t=trees[topic];
+  return(<div className="fadeUp">
+    <Flex justify="space-between" align="center" style={{marginBottom:12}}>
+      <Tag color="blue" style={{fontSize:14,padding:'4px 10px'}}>{t.name}</Tag>
+      <Button size="small" onClick={reset}>↺ เลือกหัวข้อใหม่</Button>
+    </Flex>
+    {path.length>0&&<Card style={box(C.surface,C.border)} bodyStyle={{padding:12}}>
+      <Steps direction="vertical" size="small" current={path.length} items={path.map(p=>({title:p.q,description:<Tag color="blue">{p.a}</Tag>,status:'finish'}))}/>
+    </Card>}
+    {!result&&<Card className="fadeUp pulse" style={{...box(C.white,C.blue),marginTop:12}} bodyStyle={{padding:18}}>
+      <Title level={5} style={{marginTop:0}}>{t.nodes[nodeId].q}</Title>
+      <Space direction="vertical" style={{width:'100%'}}>
+        {t.nodes[nodeId].opts.map((o,i)=>(<Button key={i} block size="large" onClick={()=>choose(o)} style={{textAlign:'left',height:'auto',whiteSpace:'normal',padding:'10px 14px',borderColor:C.border}}>{o.t}</Button>))}
+      </Space>
+    </Card>}
+    {result&&<div className="fadeUp">
+      <Result status={result.color===C.green?'success':'error'} title={result.v} subTitle={<Tag color={result.color===C.green?'green':'red'} style={{fontSize:15,marginTop:6}}>{result.law}</Tag>}/>
+      <Card style={box(C.gold2,C.gold)} bodyStyle={{padding:16}}>
+        <Text strong style={{color:C.goldDark}}>📝 แนวเขียนตอบ:</Text>
+        <Paragraph style={{marginTop:8,marginBottom:0,color:C.text2}}>{result.irac}</Paragraph>
+      </Card>
+      <Flex gap={10} style={{marginTop:14}} justify="center">
+        <Button onClick={()=>start(topic)}>↻ เริ่มหัวข้อนี้ใหม่</Button>
+        <Button type="primary" style={{background:C.blue,borderColor:C.blue}} onClick={reset}>เลือกหัวข้ออื่น</Button>
+      </Flex>
+    </div>}
+  </div>);
+}
+
+/* =================== EXAM SIM =================== */
+const examSets={
+  'ซ่อม 2/2567':[
+    {n:1,topic:'เสมอภาค vs เสรีภาพ',q:'หากพิจารณาถึงรัฐธรรมนูญภายใต้การปกครองระบอบประชาธิปไตย ให้อธิบายความสัมพันธ์ระหว่าง "หลักความเสมอภาค" กับ "หลักเสรีภาพ" ว่าสัมพันธ์กันหรือไม่ อย่างไร และหลักความเสมอภาคซึ่งต้องปฏิบัติต่อบุคคลอย่างเท่าเทียม แต่บางครั้งอาจปฏิบัติแตกต่างกัน (Positive Discrimination) การเลือกปฏิบัติที่เป็นธรรมมีเงื่อนไข/หลักเกณฑ์อย่างไร',
+      key:'เสรีภาพ = อำนาจตัดสินใจกระทำการได้ตามเจตจำนงในกรอบที่กฎหมายรับรอง · เสมอภาค = ทุกคนได้รับการปฏิบัติเท่าเทียมภายใต้กฎหมายเดียวกัน ทั้งสองสัมพันธ์และเกื้อกูลกัน (เสมอภาคเป็นหลักประกันให้ทุกคนใช้เสรีภาพได้เท่าเทียม) · Positive Discrimination = การปฏิบัติต่างกันที่ชอบธรรม ทำได้เมื่อ: มีเหตุผลอันสมควร/มีความแตกต่างในสาระสำคัญจริง เพื่อลดความเหลื่อมล้ำช่วยผู้ด้อยโอกาสให้เข้าถึงสิทธิเท่าเทียม (เช่น ทางลาดคนพิการ ที่นั่งสตรีมีครรภ์ โควตาผู้ด้อยโอกาส) และต้องได้สัดส่วนพอสมควรแก่เหตุ → ไม่ถือว่าขัดหลักเสมอภาค'},
+    {n:2,topic:'อำนาจอธิปไตย',q:'จงอธิบายความหมายของอำนาจอธิปไตย และหลักการใช้อำนาจอธิปไตยพร้อมหลักกฎหมายที่เกี่ยวข้องตามรัฐธรรมนูญแห่งราชอาณาจักรไทย พ.ศ.2560',
+      key:'อำนาจอธิปไตย = อำนาจสูงสุดในการปกครองประเทศ เป็นของปวงชนชาวไทย (ม.3 ว.1) · King ผู้ทรงเป็นประมุขทรงใช้อำนาจนั้นผ่าน 3 องค์กร: รัฐสภา (นิติบัญญัติ) ครม (บริหาร) ศาล (ตุลาการ) ตามหลักแบ่งแยกอำนาจของมงเตสกิเออ เพื่อถ่วงดุลตรวจสอบและประกันสิทธิเสรีภาพ · การใช้อำนาจต้องเป็นไปตาม รธน กฎหมาย และหลักนิติธรรม เพื่อประโยชน์ส่วนรวมและความผาสุกของประชาชน (ม.3 ว.2) · เชื่อมโยง ม.2 (ประชาธิปไตยอันมี King เป็นประมุข)'},
+    {n:3,topic:'ม.5 + ม.50(7) King ไม่เลือกตั้ง',q:'รัฐธรรมนูญเป็นกฎหมายสูงสุด (ม.5) และปวงชนชาวไทยมีหน้าที่ไปใช้สิทธิเลือกตั้ง (ม.50(7)) แต่พระมหากษัตริย์และพระบรมวงศานุวงศ์ตั้งแต่ชั้นหม่อมเจ้าขึ้นไปไม่ต้องไปใช้สิทธิเลือกตั้งหรือลงประชามติ ขอให้อธิบายเหตุผลว่าเหตุใด และไม่เป็นการขัดหรือแย้งต่อรัฐธรรมนูญ',
+      key:'ม.5 รธน เป็นกฎหมายสูงสุด แต่ต้องตีความอย่างสอดคล้องทั้งฉบับ · แม้ ม.50(7) กำหนดหน้าที่ปวงชนต้องไปเลือกตั้ง แต่ King ทรงดำรงสถานะเป็นกลางทางการเมือง อยู่เหนือการเมือง และทรงเป็นที่เคารพสักการะผู้ใดละเมิดมิได้ตาม ม.6 (The King Can Do No Wrong) · การไปใช้สิทธิเลือกตั้งย่อมเป็นการแสดงออกฝักใฝ่ทางการเมืองฝ่ายใดฝ่ายหนึ่ง ขัดกับหลักความเป็นกลาง จึงไม่ต้องไปใช้สิทธิ · เป็นการยกเว้นโดยหลักการของ รธน เอง (ม.6) ไม่ถือว่าขัด/แย้งต่อ รธน'},
+    {n:4,topic:'ศาล รธน 3/2567 + The King Can Do No Wrong',q:'คำวินิจฉัยศาลรัฐธรรมนูญที่ 3/2567 วางหลักเกี่ยวกับการเสนอแก้ไข ม.112 ประมวลกฎหมายอาญา โดยลดอัตราโทษและเปลี่ยนจากความผิดเกี่ยวกับความมั่นคงเป็นความผิดอันยอมความได้ กระทบต่อความเป็นกลางทางการเมืองและหลัก "The King Can Do No Wrong" ให้อธิบายหลักนี้ตาม ม.6 ในปัจจุบันถึงที่มาโดยสังเขปพร้อมยกตัวอย่าง',
+      key:'หลัก "The King Can Do No Wrong" = องค์พระมหากษัตริย์ทรงดำรงอยู่ในฐานะอันเป็นที่เคารพสักการะ ผู้ใดจะละเมิด กล่าวหา หรือฟ้องร้องในทางใด ๆ มิได้ (ม.6) · ที่มา: หลักการรัฐธรรมนูญนิยมที่ King ทรงเป็นกลางอยู่เหนือการเมือง ทรงใช้อำนาจผ่าน 3 องค์กรที่รับผิดชอบแทน (ผู้ลงนามรับสนองพระบรมราชโองการเป็นผู้รับผิดชอบ) · การเสนอแก้ ม.112 ให้ลดโทษ/ยอมความได้ ทำให้สถาบันเป็นคู่ขัดแย้ง/ถูกวิพากษ์วิจารณ์ทางการเมือง กระทบสถานะความเป็นที่เคารพสักการะและความเป็นกลาง → ศาล รธน วินิจฉัยว่าเข้าข่ายล้มล้างการปกครองระบอบประชาธิปไตยอันมี King เป็นประมุข (เชื่อม ม.49) · ตัวอย่าง: การลงนามรับสนองฯ ของนายกฯ/ประธานสภา ทำให้ King ไม่ต้องรับผิดชอบทางการเมืองโดยตรง'},
+  ],
+  'ภูมิภาค 2/2567':[
+    {n:1,topic:'เสมอภาค vs เสรีภาพ + บัญญัติใน รธน',q:'ให้อธิบายความสัมพันธ์ระหว่าง "หลักความเสมอภาค" กับ "หลักเสรีภาพ" ว่าสัมพันธ์กันหรือไม่ อย่างไร และรัฐธรรมนูญ 2560 มีการนำหลักทั้งสองมาบัญญัติไว้หรือไม่ อย่างไร',
+      key:'ทั้งสองหลักสัมพันธ์เกื้อกูลกัน (เสมอภาคเป็นหลักประกันให้ใช้เสรีภาพได้เท่าเทียม) · รธน 2560 บัญญัติทั้งสองหลักไว้ชัดเจน: ม.4 ศักดิ์ศรีความเป็นมนุษย์ สิทธิ เสรีภาพ และความเสมอภาคย่อมได้รับความคุ้มครอง · ม.27 บุคคลย่อมเสมอภาคกันในกฎหมาย ได้รับความคุ้มครองเท่าเทียม ห้ามเลือกปฏิบัติโดยไม่เป็นธรรม (แต่มาตรการช่วยผู้ด้อยโอกาส/Positive Discrimination ไม่ถือเป็นการเลือกปฏิบัติ) · เสรีภาพบัญญัติกระจายในหมวดสิทธิเสรีภาพ เช่น ม.34 เสรีภาพแสดงความคิดเห็น'},
+    {n:2,topic:'พระราชอำนาจยับยั้งร่างกฎหมาย (veto)',q:'ร่างพระราชบัญญัตินิรโทษกรรมที่ผ่านความเห็นชอบของรัฐสภาแล้ว นายกฯ นำขึ้นทูลเกล้าฯ เพื่อทรงลงพระปรมาภิไธย หากพ้นกำหนด 90 วันแล้วพระมหากษัตริย์มิได้พระราชทานคืนมา ให้วินิจฉัยว่าต้องดำเนินการอย่างไรจึงจะสอดคล้องกับรัฐธรรมนูญ พร้อมยกตัวอย่าง',
+      key:'เป็นเรื่องพระราชอำนาจยับยั้งร่างกฎหมาย (veto) ตาม รธน · เมื่อ King ไม่ทรงเห็นชอบและพระราชทานคืน หรือเมื่อพ้น 90 วันแล้วมิได้พระราชทานคืนมา → รัฐสภาต้องนำร่างนั้นมาปรึกษาพิจารณาใหม่ · ถ้ารัฐสภามีมติ "ยืนยัน" ตามเดิมด้วยคะแนนเสียง > 2/3 ของจำนวนสมาชิกทั้งหมดเท่าที่มีอยู่ของทั้งสองสภา → นายกฯ นำร่างขึ้นทูลเกล้าฯ อีกครั้ง · หากยังมิได้ทรงลงพระปรมาภิไธยและพระราชทานคืนภายในกำหนด นายกฯ ประกาศในราชกิจจานุเบกษาให้ใช้บังคับเป็นกฎหมายได้เสมือนทรงลงพระปรมาภิไธยแล้ว · ตัวอย่าง: หากร่าง พ.ร.บ.นิรโทษกรรมถูกยับยั้ง รัฐสภายืนยันด้วยเสียง 2/3 จึงจะเดินหน้าประกาศใช้ได้'},
+    {n:3,topic:'ม.5 + ม.50(7) King ไม่เลือกตั้ง',q:'รัฐธรรมนูญเป็นกฎหมายสูงสุด (ม.5) และปวงชนชาวไทยมีหน้าที่ไปใช้สิทธิเลือกตั้ง (ม.50(7)) แต่พระมหากษัตริย์และพระบรมวงศานุวงศ์ตั้งแต่ชั้นหม่อมเจ้าขึ้นไปไม่ต้องไปใช้สิทธิเลือกตั้ง จงอธิบายเหตุผลและว่าไม่เป็นการขัด/แย้งต่อ รธน อย่างไร พร้อมยกตัวอย่าง',
+      key:'(เหมือนซ่อมข้อ 3) King ทรงเป็นกลางทางการเมือง อยู่เหนือการเมือง เป็นที่เคารพสักการะ ผู้ใดละเมิดมิได้ ตาม ม.6 · การไปเลือกตั้ง = แสดงการฝักใฝ่ทางการเมือง ขัดความเป็นกลาง · จึงเป็นข้อยกเว้นตามหลักการของ รธน เอง ไม่ขัด/แย้งต่อ รธน · ตัวอย่าง: เช่นเดียวกับที่ King ไม่ทรงแสดงความเห็นทางการเมืองหรือฝักใฝ่พรรคใด เพื่อรักษาสถานะประมุขที่เป็นกลางของคนทั้งชาติ'},
+    {n:4,topic:'ศาล รธน 3/2567 + Supreme Law',q:'คำวินิจฉัยศาลรัฐธรรมนูญที่ 3/2567 เกี่ยวกับการเสนอแก้ ม.112 ในฐานะที่ท่านศึกษากฎหมายรัฐธรรมนูญ ขอให้อธิบายให้ความรู้ (Educate) ถึงหลักความเป็นกฎหมายสูงสุดของรัฐธรรมนูญ (Supreme Law) ตามที่ปรากฏใน ม.5 วรรคแรก',
+      key:'หลักความเป็นกฎหมายสูงสุด (Supreme Law) ม.5 ว.1: รธน เป็นกฎหมายสูงสุดของประเทศ บทบัญญัติของกฎหมาย กฎ ข้อบังคับ หรือการกระทำใดขัดหรือแย้งต่อ รธน = ใช้บังคับมิได้ · องค์ประกอบการคุ้มครองความเป็นกฎหมายสูงสุด 4 ข้อ: ① บัญญัติการแบ่งแยกอำนาจ (ม.3) ② บัญญัติสิทธิต่อต้านการล้มล้าง (ม.49) ③ มีการตรวจสอบความชอบด้วย รธน ของกฎหมาย (ศาล รธน) ④ ทำให้แก้ไขยาก (ม.256) · เชื่อมโยงคดี: การเสนอแก้ ม.112 ต้องไม่ขัดหลักการพื้นฐานของ รธน หากขัดต่อระบอบประชาธิปไตยอันมี King เป็นประมุข ย่อมกระทำมิได้ตามหลักความเป็นกฎหมายสูงสุด'},
+  ]
+};
+function ExamSimTab(){
+  const [setKey,setSetKey]=React.useState(null); const [qi,setQi]=React.useState(0);
+  const [reveal,setReveal]=React.useState(false); const [secs,setSecs]=React.useState(0); const [running,setRunning]=React.useState(false);
+  React.useEffect(()=>{if(!running)return; const t=setInterval(()=>setSecs(s=>s+1),1000); return ()=>clearInterval(t);},[running]);
+  const begin=(k)=>{setSetKey(k);setQi(0);setReveal(false);setSecs(0);setRunning(true);};
+  const fmt=(s)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  if(!setKey)return(<div className="fadeUp">
+    <Alert type="warning" showIcon style={{borderRadius:12,marginBottom:16}} message="โหมดจำลองข้อสอบจริง LAW2104 — จับเวลา (จริง 2.5 ชม./4 ข้อ ≈ 37 นาที/ข้อ) เขียนตอบในกระดาษก่อน แล้วกด 'ดูแนวคำตอบ'"/>
+    <Row gutter={12}>{Object.keys(examSets).map(k=>(<Col xs={24} md={12} key={k} style={{marginBottom:12}}>
+      <Card hoverable className="qc" onClick={()=>begin(k)} style={{borderRadius:16,border:'2px solid '+C.blue,background:C.white}}>
+        <Flex align="center" gap={12}><div style={{fontSize:34}}>📝</div><div>
+          <Title level={4} style={{margin:0}}>ข้อสอบ {k}</Title>
+          <Text type="secondary">อัตนัย 4 ข้อ · LAW2104 ม.รามคำแหง</Text>
+        </div></Flex>
+      </Card></Col>))}</Row>
+  </div>);
+  const set=examSets[setKey]; const cur=set[qi];
+  return(<div className="fadeUp">
+    <Flex justify="space-between" align="center" wrap gap={8} style={{marginBottom:12}}>
+      <Space><Tag color="blue">{setKey}</Tag><Tag>ข้อ {cur.n}/4</Tag></Space>
+      <Space><Tag color={running?'green':'default'} style={{fontSize:15,fontFamily:'monospace'}}>⏱ {fmt(secs)}</Tag>
+        <Button size="small" onClick={()=>setRunning(r=>!r)}>{running?'พัก':'เดินเวลา'}</Button>
+        <Button size="small" danger onClick={()=>{setSetKey(null);setRunning(false);}}>ออก</Button></Space>
+    </Flex>
+    <Card style={box(C.white,C.border)} bodyStyle={{padding:20}}>
+      <Tag color="purple" style={{marginBottom:8}}>{cur.topic}</Tag>
+      <Paragraph className="serif" style={{fontSize:17,lineHeight:1.9,color:C.text}}>{cur.q}</Paragraph>
+    </Card>
+    {!reveal&&<Card style={{...box(C.surface,C.border),marginTop:12}} bodyStyle={{padding:16}}>
+      <Text strong>✍️ เขียนตอบ: วางหลัก(มาตรา) → อธิบายเหตุผล → ยกตัวอย่าง → สรุป</Text>
+      <div><Button type="primary" style={{background:C.blue,borderColor:C.blue,marginTop:12}} onClick={()=>setReveal(true)}>ดูแนวคำตอบ ▼</Button></div>
+    </Card>}
+    {reveal&&<Card className="fadeUp" style={{...box(C.blueBg,C.blue),marginTop:12}} bodyStyle={{padding:18}}>
+      <Text strong style={{color:C.blue,fontSize:15}}>🏳️ แนวคำตอบ</Text>
+      <Paragraph style={{marginTop:8,marginBottom:0,color:C.text2,fontSize:15}}>{cur.key}</Paragraph>
+    </Card>}
+    <Flex justify="space-between" style={{marginTop:16}}>
+      <Button disabled={qi===0} onClick={()=>{setQi(q=>q-1);setReveal(false);}}>◀ ข้อก่อน</Button>
+      {qi<set.length-1?<Button type="primary" style={{background:C.goldDark,borderColor:C.goldDark}} onClick={()=>{setQi(q=>q+1);setReveal(false);}}>ข้อถัดไป ▶</Button>
+        :<Button type="primary" style={{background:C.green,borderColor:C.green}} onClick={()=>setRunning(false)}>จบชุด · หยุดเวลา ✓</Button>}
+    </Flex>
+  </div>);
+}
+
+/* =================== QUICK =================== */
+const quickSections=[
+  {divider:'🔢 ตัวเลขทองที่ต้องจำ'},
+  {s:'รธน 2560',t:'16 หมวด 279 มาตรา',b:'',type:'chunk'},
+  {s:'สส',t:'500 คน (เขต 400 + บัญชี 100) · วาระ 4 ปี',b:'',type:'chunk'},
+  {s:'สว',t:'200 คน (เลือกกันเอง) · วาระ 5 ปี · บทเฉพาะกาล 250',b:'',type:'chunk'},
+  {s:'ครม',t:'นายก + รมต ≤ 35 · แถลงนโยบาย 15 วัน · นายก ≤ 8 ปี',b:'',type:'chunk'},
+  {s:'องค์กรอิสระ',t:'ทุกองค์กร 7 ปี วาระเดียว · กกต/คตง/กสม=7 · ผู้ตรวจการ=3 · ปปช=9',b:'',type:'chunk'},
+  {divider:'🧠 เทคนิคจำ'},
+  {s:'อำนาจ 3',t:'"รัฐสภา–ครม–ศาล"',b:'นิติบัญญัติ=รัฐสภา · บริหาร=ครม · ตุลาการ=ศาล (ม.3)',type:'mnem'},
+  {s:'ประชาธิปไตย 5',t:'"เสมอ–แบ่ง–ร่วม–ใช้–ตรวจ"',b:'เสมอภาค แบ่งแยกอำนาจ มีส่วนร่วม ใช้อำนาจโดยชอบ ตรวจสอบ',type:'mnem'},
+  {s:'3 ระบบ',t:'"US เคร่ง · UK รัฐสภา · FR กึ่ง"',b:'USA แบ่งแยกเคร่งครัด · อังกฤษบริหารจากรัฐสภา · ฝรั่งเศส ปธน+นายก',type:'mnem'},
+  {s:'ม.1–6',t:'"เดี่ยว–ประชาธิปไตย–อธิปไตย–ศักดิ์ศรี–สูงสุด–เคารพ"',b:'ม.1 รัฐเดี่ยว/ม.2 ปชต/ม.3 อธิปไตยปวงชน/ม.4 ศักดิ์ศรี/ม.5 สูงสุด/ม.6 The King Can Do No Wrong',type:'mnem'},
+  {divider:'⚖️ กับดักที่ออกซ้ำ (แดง = ระวัง!)'},
+  {s:'กับดัก 1',t:'ม.148 vs ม.212',b:'148 ก่อนประกาศใช้ (เนื้อหา+กระบวนการ) · 212 หลังประกาศใช้ (เฉพาะขัด/แย้ง ไม่รวมกระบวนการ)',type:'contrast'},
+  {s:'กับดัก 2',t:'ยกสิทธิ รธน = เฉพาะรัฐละเมิด',b:'ม.25 ยกบทบัญญัติ รธน สู้คดีได้เฉพาะถูกละเมิดจากอำนาจรัฐ ไม่รวมเอกชนละเมิดกันเอง',type:'contrast'},
+  {s:'กับดัก 3',t:'ม.151 ลงมติ vs ม.152 ไม่ลงมติ',b:'151 อภิปรายไม่ไว้วางใจ (รมต.อาจพ้น) · 152 ซักถาม ไม่ลงมติ',type:'contrast'},
+  {s:'กับดัก 4',t:'ห้ามแก้ ม.255 vs ต้องประชามติ ม.256(8)',b:'ม.1/ม.2 ห้ามแก้เด็ดขาด · หมวด 1,2,15 แก้ได้แต่ต้องประชามติ',type:'contrast'},
+  {divider:'📝 ประโยคเปิดที่ได้คะแนน'},
+  {s:'โครง',t:'เทมเพลตตอบ',b:'"ตามรัฐธรรมนูญ ม.... วางหลักว่า...(หลัก) ทั้งนี้เพราะ...(เหตุผล) เช่น...(ตัวอย่าง) ดังนั้นในกรณีนี้จึง...(สรุป)"',type:'formula'},
+];
+const qcColor={mnem:C.purple,contrast:C.red,chunk:C.blue,formula:C.gold};
+const qcBg={mnem:C.purpleBg,contrast:C.redBg,chunk:C.blueBg,formula:C.gold2};
+function QuickTab(){
+  return(<div className="fadeUp">
+    {quickSections.map((s,i)=>s.divider
+      ?<Divider key={i} orientation="left" style={{borderColor:C.borderDark,color:C.text2,fontWeight:700,fontSize:15}}>{s.divider}</Divider>
+      :<Card key={i} className="qc" style={{marginBottom:10,borderRadius:14,background:qcBg[s.type],borderLeft:'5px solid '+qcColor[s.type],border:'1px solid '+C.border}} bodyStyle={{padding:'12px 16px'}}>
+        <Flex gap={12} align="flex-start">
+          <Tag color={s.type==='contrast'?'red':(s.type==='mnem'?'purple':(s.type==='chunk'?'blue':'gold'))} style={{marginTop:2}}>{s.s}</Tag>
+          <div style={{flex:1}}><Text strong style={{color:qcColor[s.type],fontSize:15}}>{s.t}</Text>{s.b&&<div style={{color:C.text2,marginTop:2}}>{s.b}</div>}</div>
+        </Flex>
+      </Card>)}
+  </div>);
+}
+
+/* =================== APP =================== */
+function App(){
+  const items=[
+    {key:'basics',label:'🎓 ปูพื้น',children:<BasicsTab/>},
+    {key:'summary',label:'📋 สรุปเนื้อหา',children:<SummaryTab/>},
+    {key:'flash',label:'🃏 แฟลชการ์ด',children:<FlashcardTab/>},
+    {key:'explore',label:'🏛️ เทียบระบบ+องค์กร',children:<ExplorerTab/>},
+    {key:'diag',label:'🔍 ผังตรวจสอบ',children:<DiagnosisTab/>},
+    {key:'exam',label:'📝 จำลองข้อสอบ',children:<ExamSimTab/>},
+    {key:'quick',label:'🎯 การ์ดจำด่วน',children:<QuickTab/>},
+  ];
+  return(<ConfigProvider theme={{algorithm:theme.defaultAlgorithm, token:{
+    colorPrimary:C.blue, colorBgBase:C.bg, colorText:C.text, colorTextSecondary:C.text3,
+    colorBorder:C.border, borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+    colorBgContainer:C.white, colorFillSecondary:C.surface}}}>
+    <Layout style={{background:C.bg,minHeight:'100vh'}}>
+      <Content style={{maxWidth:960,margin:'0 auto',padding:'22px 16px 60px',width:'100%',boxSizing:'border-box'}}>
+        <div style={{textAlign:'center',marginBottom:6}}>
+          <div style={{fontSize:12,letterSpacing:3,color:C.blue,fontWeight:600}}>ห้องเรียนสด · HARVARD STYLE</div>
+          <Title level={2} className="serif" style={{margin:'2px 0',color:C.text}}>⚖️ LAW 2004 / 2104 · กฎหมายรัฐธรรมนูญ</Title>
+          <Text type="secondary">รัฐธรรมนูญและสถาบันการเมือง · ปูพื้น → เข้าใจ → ทดลอง → ติวข้อสอบ | อิงสรุป + รธน 2560</Text>
+        </div>
+        <Alert type="warning" showIcon banner style={{borderRadius:10,margin:'12px 0 18px',background:C.gold2,border:'1px solid '+C.gold}}
+          message={<span style={{fontSize:12.5}}>สื่อช่วยทบทวน อิงสรุป+ตัวบท รธน 2560 และแนวข้อสอบเก่า — ควรตรวจทานกับตัวบท/คำบรรยายอาจารย์อีกครั้งก่อนสอบ</span>}/>
+        <Tabs defaultActiveKey="basics" items={items} centered type="card" size="large"/>
+        <Footer style={{background:'transparent',textAlign:'center',color:C.text3,marginTop:20,fontSize:12}}>
+          สร้างเพื่อทบทวน LAW2004/2104 · 7 โหมด: ปูพื้น · สรุป · แฟลชการ์ด+เกม · เทียบระบบ+องค์กร · ผังตรวจสอบ · จำลองข้อสอบ · การ์ดจำด่วน
+        </Footer>
+      </Content>
+    </Layout>
+  </ConfigProvider>);
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
