@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current Liabilities — เรียนจากศูนย์แบบ Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f2f3f8; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1060px; margin:0 auto; padding:16px 12px 70px; }
+  .hero { background:linear-gradient(135deg,#31386b,#5560a4); border-radius:14px; padding:22px 26px; color:#eef0fc; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#eef0fc; }
+  .hero p { margin:0; opacity:.93; }
+  .sec-card { background:#fff; border:1px solid #dde0ef; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(50,60,110,.07); animation:rise .5s ease both; }
+  @keyframes rise { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+  .sec-card h3 { margin:0 0 10px; color:#31386b; font-size:17px; }
+  .tag-step { display:inline-block; background:#5560a4; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#e4e7f5; color:#2a3060; padding:6px 8px; border:1px solid #ccd2ea; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #dde1f0; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin td.neg { text-align:right; color:#a8071a; }
+  table.fin tr.total td { background:#ebedf9; font-weight:700; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#ebedf9; border-left:4px solid #5560a4; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#f8f9ff; border:1px dashed #97a0d4; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#31386b; }
+  .bignum { font-size:19px; font-weight:700; color:#31386b; transition:all .4s; font-variant-numeric:tabular-nums; }
+  .barfill { transition:width .5s cubic-bezier(.2,.8,.2,1); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Alert, Slider, Steps, Switch, Segmented } = antd;
+const { useState } = React;
+const n0=(x)=> Math.round(x).toLocaleString('en-US');
+
+/* ============ TAB 1 : ปูพื้น + เจ้าหนี้การค้า ============ */
+function BasicTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เริ่มจากศูนย์</span>หนี้สินคืออะไร — และแบบไหนถึงเรียก "หมุนเวียน"</h3>
+      <div className="analogy">🧾 หนี้สิน = "คำสัญญาที่ต้องจ่ายในอนาคต ซึ่งเกิดจากสิ่งที่ทำไปแล้วในอดีต" — สั่งของมาแล้วยังไม่จ่าย กู้เงินมาแล้วต้องคืน รับเงินลูกค้าล่วงหน้าแล้วติดหนี้ "สินค้า/บริการ" เขาอยู่</div>
+      <p>สไลด์แยกหนี้สินเป็น 2 ที่มา: <b>Legal liabilities</b> ผูกพันตามสัญญา/กฎหมาย (เจ้าหนี้การค้า ตั๋วเงินจ่าย ภาษีค้างจ่าย ค่าแรงค้างจ่าย) และ <b>Constructive liabilities</b> ไม่มีกฎหมายบังคับแต่ธรรมเนียมปฏิบัติสร้างความคาดหวังไว้ (เงินโบนัสปลายปี วันหยุดพักร้อนสะสม)</p>
+      <div className="kbox">📏 เป็น<b>หนี้สินหมุนเวียน</b>เมื่อเข้าข้อใดข้อหนึ่ง: ① คาดว่าจะชำระภายในวงจรดำเนินงานปกติ ② ครบกำหนดภายใน 12 เดือนนับจากวันที่ในงบ ③ ถือไว้เพื่อค้า ④ กิจการไม่มีสิทธิเลื่อนชำระออกไปเกิน 12 เดือนแบบไม่มีเงื่อนไข — คู่แฝดกับเกณฑ์ current assets เป๊ะ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 1</span>เจ้าหนี้การค้า (Accounts Payable) — เคสจากสไลด์ทีละวัน</h3>
+      <Alert type="info" showIcon style={{marginBottom:10}} message="โจทย์: 1 ก.ค. ซื้อสินค้า 60,000 เงื่อนไข 2/10, n/30 FOB shipping point จ่ายค่าขนส่งเอง 1,200 | 3 ก.ค. คืนของเสียหาย 6,000 | 10 ก.ค. จ่ายเงิน (periodic + gross method)"/>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'1 ก.ค. ซื้อเชื่อ + จ่ายค่าขนส่ง',description:'Dr ซื้อ 60,000 / Cr เจ้าหนี้ 60,000 และ Dr ค่าขนส่งเข้า (Freight-in) 1,200 / Cr เงินสด 1,200 — FOB shipping point ผู้ซื้อรับภาระขนส่ง และค่าขนส่งไม่มีส่วนลด!'},
+        {title:'3 ก.ค. คืนของ 6,000',description:'Dr เจ้าหนี้ 6,000 / Cr ส่งคืนสินค้า (Purchase Returns) 6,000 → เหลือหนี้ 54,000'},
+        {title:'10 ก.ค. จ่ายภายใน 10 วัน ได้ส่วนลด 2%',description:'ฐานส่วนลด = 54,000 (หลังหักคืนของ ไม่รวมค่าขนส่ง) → ส่วนลด 1,080 | Dr เจ้าหนี้ 54,000 / Cr เงินสด 52,920 + Cr ส่วนลดรับ 1,080'},
+      ]}/>
+      <div className="warn">⚠️ กับดัก 2 ชั้นของเคสนี้: ① ส่วนลดคิดจาก 54,000 ไม่ใช่ 60,000 (ต้องหักของคืนก่อน) ② ค่าขนส่ง 1,200 ไม่เข้าฐานส่วนลด และจ่ายสดไปแล้ว — โยงกลับควิซ Current Assets ข้อ Elkins ที่เพิ่งทำ (9,000 × 2% = 180) หลักเดียวกันเป๊ะ</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : ตั๋วเงินจ่าย + หนี้ถึงกำหนด ============ */
+function NotesTab(){
+  const [m,setM]=useState(2); // เดือนที่ผ่านไปของตั๋ว 40,000
+  const accrued=40000*0.09*m/12;
+  const [yr,setYr]=useState(0); // 0=สิ้นปี 2020, 1=2021, 2=2022
+  const remain=3000000-yr*1000000;
+  const cur=Math.min(1000000,remain);
+  const ncl=remain-cur;
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 2</span>ตั๋วเงินจ่ายแบบมีดอกเบี้ย (Interest-bearing) — ตั๋ว 40,000, 9%, 3 เดือน</h3>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:'1 พ.ย. 2019 กู้เงิน',description:'Dr เงินสด 40,000 / Cr ตั๋วเงินจ่าย 40,000 (ตั๋วมีดอกเบี้ย → บันทึกที่ face value)'},
+        {title:'31 ธ.ค. 2019 ตั้งดอกเบี้ยค้าง (ข้ามปี!)',description:'ผ่านมา 2 เดือน (พ.ย.-ธ.ค.): Dr ดอกเบี้ยจ่าย 600 / Cr ดอกเบี้ยค้างจ่าย 600 (40,000 × 9% × 2/12) — เกณฑ์คงค้าง'},
+        {title:'1 ก.พ. 2020 ครบกำหนดจ่ายทั้งก้อน 40,900',description:'Dr ตั๋วเงินจ่าย 40,000 + Dr ดอกเบี้ยจ่าย 300 (ม.ค. อีก 1 เดือน) + Dr ดอกเบี้ยค้างจ่าย 600 / Cr เงินสด 40,900'},
+      ]}/>
+      <div className="sec-card" style={{background:'#f8f9ff'}}>
+        <h3>🧪 ลากเดือนดูดอกเบี้ยค้างสะสม</h3>
+        <div style={{fontSize:13}}>เดือนที่ผ่านไปตั้งแต่กู้ (1 พ.ย.): <b>{m} เดือน</b> → ดอกเบี้ยค้าง = 40,000 × 9% × {m}/12 = <span className="bignum">{n0(accrued)}</span></div>
+        <Slider min={0} max={3} value={m} onChange={setM} style={{maxWidth:360}}/>
+        <div className="kbox">งานปิดบัญชี 31 ธ.ค. คือหยุดที่ 2 เดือน = 600 | ครบตั๋ว 3 เดือน = 900 (600 ปีเก่า + 300 ปีใหม่) — ข้อสอบชอบถามเฉพาะท่อนที่ตกในแต่ละปี</div>
+      </div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 3</span>ตั๋วไม่มีดอกเบี้ย (Zero-interest) — ดอกเบี้ยซ่อนใน face value</h3>
+      <p>กู้ 1 พ.ย. 2019 ได้เงินจริง 6,000,000 แต่เซ็นตั๋ว 6,135,000 อายุ 3 เดือน → ส่วนต่าง 135,000 คือดอกเบี้ยแฝง เฉลี่ยเดือนละ 45,000</p>
+      <div className="je">1 พ.ย.: Dr เงินสด 6,000,000 / Cr ตั๋วเงินจ่าย 6,000,000<br/>31 ธ.ค. (2 เดือน): Dr ดอกเบี้ยจ่าย 90,000 / Cr ตั๋วเงินจ่าย 90,000 (135,000 × 2/3)<br/>1 ก.พ.: Dr ดอกเบี้ยจ่าย 45,000 / Cr ตั๋วเงินจ่าย 45,000 แล้ว Dr ตั๋วเงินจ่าย 6,135,000 / Cr เงินสด 6,135,000</div>
+      <div className="kbox">🧠 มุมมองเดียวกับตั๋ว 0% ระยะยาว (ไฟล์ Non-Current Liabilities): หนี้เริ่มที่เงินที่ได้จริง แล้ว "โตขึ้น" ด้วยดอกเบี้ยจนถึง face value ณ วันครบกำหนด</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 4</span>หนี้ระยะยาวส่วนที่ถึงกำหนดใน 1 ปี (Current maturities)</h3>
+      <p>กู้ Bangkok Bank 3,000,000 (1 ม.ค. 2020) ผ่อนคืนปีละ 1,000,000 ทุก 1 ก.พ. เริ่มปี 2021 — ทุกวันสิ้นปีต้องแยกงวดที่จะจ่ายในปีหน้าออกมาเป็นหนี้สินหมุนเวียน</p>
+      <div className="sec-card" style={{background:'#f8f9ff'}}>
+        <h3>🧪 เลื่อนดูงบแต่ละสิ้นปี</h3>
+        <Segmented value={yr} onChange={setYr} options={[{label:'31 ธ.ค. 2020',value:0},{label:'31 ธ.ค. 2021',value:1},{label:'31 ธ.ค. 2022',value:2}]}/>
+        <div style={{marginTop:12,maxWidth:560}}>
+          <div style={{fontSize:13,marginBottom:4}}>หนี้คงเหลือ {n0(remain)} — แยกเป็น:</div>
+          <div style={{display:'flex',height:34,borderRadius:8,overflow:'hidden',border:'1px solid #ccd2ea'}}>
+            <div className="barfill" style={{width:`${remain? cur/remain*100:0}%`,background:'#c0564a',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12.5}}>หมุนเวียน {n0(cur)}</div>
+            {ncl>0 && <div className="barfill" style={{width:`${ncl/remain*100}%`,background:'#5560a4',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12.5}}>ไม่หมุนเวียน {n0(ncl)}</div>}
+          </div>
+          <div className="kbox" style={{marginTop:8}}>{yr===0 && 'งวด ก.พ. 2021 (1,000,000) จะจ่ายในปีหน้า → เป็นหนี้สินหมุนเวียน | อีก 2,000,000 เป็นระยะยาว'}
+          {yr===1 && 'จ่ายไปแล้ว 1 งวด เหลือ 2,000,000 → งวด ก.พ. 2022 เป็นหมุนเวียน 1,000,000 | ระยะยาว 1,000,000'}
+          {yr===2 && 'เหลืองวดสุดท้าย 1,000,000 จ่าย ก.พ. 2023 → เป็นหนี้สินหมุนเวียนทั้งก้อน ไม่มีระยะยาวแล้ว'}</div>
+        </div>
+      </div>
+      <div className="warn">⚠️ นี่คือหลักที่ใช้ในข้อสอบ GA510 (แยกเงินกู้ 200,000 เป็นหนี้สั้น) และเคสแสนดี — เจอเงินกู้ระยะยาวเมื่อไร ถามทันทีว่า "งวดหน้าจ่ายเท่าไร"</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : เงินรับล่วงหน้า & Unearned ============ */
+function UnearnedTab(){
+  const [used,setUsed]=useState(60);
+  const unearned=(100-used)*500;
+  const earned=used*500;
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 5</span>เงินมัดจำและเงินรับล่วงหน้าจากลูกค้า</h3>
+      <div className="analogy">🏠 เช่าหอพัก: จ่ายค่ามัดจำ 5,000 — เงินนี้เป็นของหอ "ชั่วคราว" ต้องคืนตอนย้ายออก (ถ้าห้องไม่พัง) → หอบันทึกเป็น<b>หนี้สิน</b> ไม่ใช่รายได้!</div>
+      <div className="je"><b>เงินมัดจำ (Refundable deposits):</b> รับ: Dr เงินสด / Cr เงินมัดจำรับ (หนี้สิน) | คืนเมื่อจบสัญญา: Dr เงินมัดจำรับ / Cr เงินสด</div>
+      <div className="je"><b>เงินรับล่วงหน้า (Customer advances) — เคสสไลด์:</b> ลูกค้าสั่งสร้างเครื่องจักร วางเงิน 5,000 ก่อนเริ่มสร้าง<br/>รับเงิน: Dr เงินสด 5,000 / Cr เงินรับล่วงหน้า 5,000<br/>ส่งมอบปีถัดไป เก็บส่วนที่เหลือ 400,000: Dr เงินสด 400,000 + Dr เงินรับล่วงหน้า 5,000 / Cr รายได้จากการขาย <b>405,000</b></div>
+      <div className="warn">⚠️ รับเงินไม่เท่ากับมีรายได้! รายได้เกิดเมื่อ<b>ส่งมอบ</b> (performance obligation สำเร็จ) — ก่อนหน้านั้นเป็นหนี้สินล้วนๆ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 6</span>รายได้รับล่วงหน้า (Unearned Revenues) — เคสสายการบิน</h3>
+      <p>ขายตั๋ว 100 ใบ ใบละ 500 = รับเงิน 50,000 → ยังไม่ใช่รายได้สักบาท จนกว่าผู้โดยสารจะได้บินจริง</p>
+      <div className="je">วันขายตั๋ว: Dr เงินสด 50,000 / Cr รายได้ค่าโดยสารรับล่วงหน้า 50,000<br/>สิ้นเดือน มีคนบินแล้ว 60 คน: Dr รายได้รับล่วงหน้า 30,000 / Cr รายได้ค่าโดยสาร 30,000 → คงเหลือหนี้สิน 40 × 500 = 20,000</div>
+      <div className="sec-card" style={{background:'#f8f9ff'}}>
+        <h3>🧪 ลากจำนวนผู้โดยสารที่บินแล้ว ดูหนี้สินแปลงร่างเป็นรายได้</h3>
+        <div style={{fontSize:13}}>บินแล้ว: <b>{used}</b> / 100 คน</div>
+        <Slider min={0} max={100} value={used} onChange={setUsed} style={{maxWidth:420}}/>
+        <div style={{display:'flex',height:34,borderRadius:8,overflow:'hidden',border:'1px solid #ccd2ea',maxWidth:560}}>
+          {earned>0 && <div className="barfill" style={{width:`${earned/50000*100}%`,background:'#4a7c46',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12.5}}>รายได้ {n0(earned)}</div>}
+          {unearned>0 && <div className="barfill" style={{width:`${unearned/50000*100}%`,background:'#c98a3d',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12.5}}>หนี้สิน (unearned) {n0(unearned)}</div>}
+        </div>
+        <div className="kbox" style={{marginTop:8}}>เงินสดรับ 50,000 คงที่ตลอด — สิ่งที่เปลี่ยนคือ "สถานะทางบัญชี" ของมัน: จากหนี้สิน → รายได้ ตามบริการที่ส่งมอบ | ตัวอย่างในชีวิตจริง: บัตรกำนัล ค่าสมาชิกฟิตเนส ค่าเทอมรับล่วงหน้า Netflix รายปี</div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : พนักงาน ภาษี ปันผล ============ */
+function PayrollTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 7</span>เงินปันผลค้างจ่าย (Dividends Payable)</h3>
+      <div className="je">23 ส.ค. ประกาศจ่าย 300,000: Dr กำไรสะสม 300,000 / Cr เงินปันผลค้างจ่าย 300,000 (เกิดหนี้ทันทีวันประกาศ)<br/>10 ก.ย. จ่ายจริง: Dr เงินปันผลค้างจ่าย 300,000 / Cr เงินสด 300,000</div>
+      <div className="kbox">ตรงกับ Class 3 (ส่วนของผู้ถือหุ้น) และข้อ (10) ของข้อสอบ GA510 เป๊ะ — ปันผล<b>ไม่ใช่ค่าใช้จ่าย</b> ลดกำไรสะสมโดยตรง และเป็นหนี้สินหมุนเวียนระหว่างรอจ่าย</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 8</span>หนี้สินเกี่ยวกับพนักงาน — เคสเงินเดือนกันยายน 2019</h3>
+      <p>เงินเดือนรวม 340,000 | หักภาษี ณ ที่จ่าย 80,000 | หักค่าสมาชิกสหภาพ 9,000 | ประกันสังคม 8% (ลูกจ้างโดนหัก และนายจ้างสมทบอีกเท่ากัน)</p>
+      <table className="fin">
+        <thead><tr><th colSpan={2}>ขา 1: จ่ายเงินเดือน (ฝั่งลูกจ้าง)</th></tr></thead>
+        <tbody>
+          <tr><td>Dr ค่าใช้จ่ายเงินเดือน</td><td className="num">340,000</td></tr>
+          <tr><td>&nbsp;&nbsp;Cr ภาษีหัก ณ ที่จ่ายค้างจ่าย</td><td className="num">80,000</td></tr>
+          <tr><td>&nbsp;&nbsp;Cr ค่าสมาชิกสหภาพค้างจ่าย</td><td className="num">9,000</td></tr>
+          <tr><td>&nbsp;&nbsp;Cr ประกันสังคมค้างจ่าย (8% × 340,000)</td><td className="num">27,200</td></tr>
+          <tr className="total"><td>&nbsp;&nbsp;Cr เงินสด (เงินเดือนสุทธิเข้ากระเป๋าพนักงาน)</td><td className="num">223,800</td></tr>
+        </tbody>
+      </table>
+      <div className="je"><b>ขา 2: นายจ้างสมทบประกันสังคมอีก 8%:</b> Dr ค่าใช้จ่ายภาษีเงินเดือน (Payroll Tax Expense) 27,200 / Cr ประกันสังคมค้างจ่าย 27,200</div>
+      <div className="warn">⚠️ จุดสอบ: เงินที่หักจากลูกจ้าง (80,000 + 9,000 + 27,200) <b>ไม่ใช่ค่าใช้จ่ายของบริษัท</b> — เป็นแค่เงินที่บริษัท "ถือแทน" รอนำส่งรัฐ/สหภาพ (หนี้สิน) | ค่าใช้จ่ายจริงของบริษัทคือ 340,000 + สมทบ 27,200 | เงินสดจ่ายพนักงานสุทธิ 223,800</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ตัวที่ 9</span>ภาษีเงินได้ค้างจ่าย (Income Tax Payable)</h3>
+      <div className="je">คำนวณภาษีจากกำไร: Dr ค่าใช้จ่ายภาษีเงินได้ 20,000 / Cr ภาษีเงินได้ค้างจ่าย 20,000 — จ่ายจริงงวดถัดไป</div>
+      <div className="kbox">คุ้นไหม? ข้อ (9) ของข้อสอบ GA510: ภาษี 47,500 ค้างจ่าย และเคสสมใจ 44,000 — ตัวเดียวกันเลย</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : Provisions & Contingent (decision lab) ============ */
+function ProvisionTab(){
+  const [c1,setC1]=useState(true);
+  const [c2,setC2]=useState(true);
+  const [c3,setC3]=useState(true);
+  const provision=c1&&c2&&c3;
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ขั้นสูง</span>ประมาณการหนี้สิน (Provisions) — หนี้ที่ "ไม่แน่นอนแต่ต้องรับรู้"</h3>
+      <div className="analogy">🔧 ขายมือถือพร้อมรับประกัน 1 ปี — สิ้นปียังไม่รู้ว่าเครื่องไหนจะพัง ซ่อมเท่าไร แต่<b>รู้แน่ว่าต้องซ่อมแน่ๆ</b> ประเมินจากสถิติได้ → ต้องตั้งหนี้สินไว้เลย นี่คือ provision (หนี้สินที่จำนวนหรือจังหวะเวลาไม่แน่นอน)</div>
+      <p>รับรู้เป็นหนี้สินเมื่อครบ <b>3 เงื่อนไข</b> — ลองสลับสวิตช์ดูผลลัพธ์:</p>
+      <div className="sec-card" style={{background:'#f8f9ff'}}>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <div><Switch checked={c1} onChange={setC1}/> <b style={{marginLeft:8}}>① มีภาระผูกพันปัจจุบันจากเหตุการณ์ในอดีต</b> (ตามกฎหมาย หรือ constructive จากธรรมเนียมที่สร้างความคาดหวัง)</div>
+          <div><Switch checked={c2} onChange={setC2}/> <b style={{marginLeft:8}}>② มีความเป็นไปได้ค่อนข้างแน่ (probable) ว่าต้องจ่ายทรัพยากรออกไป</b></div>
+          <div><Switch checked={c3} onChange={setC3}/> <b style={{marginLeft:8}}>③ ประมาณจำนวนเงินได้อย่างน่าเชื่อถือ</b></div>
+        </div>
+        <div style={{marginTop:14}}>
+          {provision
+            ? <Tag color="red" style={{fontSize:15,padding:'6px 14px'}}>✅ ครบ 3 ข้อ → รับรู้เป็น "ประมาณการหนี้สิน" ในงบ (Dr ค่าใช้จ่าย / Cr ประมาณการหนี้สิน)</Tag>
+            : <Tag color="orange" style={{fontSize:15,padding:'6px 14px'}}>❌ ไม่ครบ → ไม่ตั้งหนี้สิน — พิจารณาเป็น "หนี้สินที่อาจเกิดขึ้น" เปิดเผยในหมายเหตุแทน</Tag>}
+        </div>
+      </div>
+    </div>
+    <div className="sec-card">
+      <h3>⚖️ แยก 3 ระดับให้ขาด: Provision vs Contingent Liability vs Contingent Asset</h3>
+      <table className="fin">
+        <thead><tr><th></th><th>คืออะไร</th><th>ทำอย่างไรในงบ</th><th>ตัวอย่าง</th></tr></thead>
+        <tbody>
+          <tr><td><b>ประมาณการหนี้สิน (Provision)</b></td><td>หนี้แน่ แต่จำนวน/เวลาไม่แน่ (ครบ 3 เงื่อนไข)</td><td style={{color:'#a8071a'}}><b>บันทึกเป็นหนี้สิน</b> ในงบเลย</td><td>ประมาณการค่าซ่อมตามประกันสินค้า</td></tr>
+          <tr><td><b>หนี้สินที่อาจเกิดขึ้น (Contingent liability)</b></td><td>ยังไม่แน่ว่าจะเกิด (รอเหตุการณ์อนาคตยืนยัน) หรือประมาณจำนวนไม่ได้</td><td style={{color:'#c98a3d'}}><b>ไม่บันทึก แต่ต้องเปิดเผย</b>ในหมายเหตุประกอบงบ</td><td>ถูกฟ้องคดี ผลยังไม่ชัดว่าจะแพ้</td></tr>
+          <tr><td><b>สินทรัพย์ที่อาจเกิดขึ้น (Contingent asset)</b></td><td>อาจได้รับเงิน/ผลดีในอนาคต (คดีที่น่าจะชนะ เงินคืนภาษีที่พิพาท)</td><td style={{color:'#4a7c46'}}><b>ไม่บันทึก และไม่ต้องเปิดเผย</b></td><td>ฟ้องคนอื่นแล้วน่าจะชนะ</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">🧠 จำด้วยหลักระมัดระวัง (Prudence): ข่าวร้ายรับรู้ไว (provision ตั้งเลย) ข่าวร้ายที่ยังไม่ชัดก็ต้องบอกไว้ (disclose) แต่ข่าวดีต้องรอให้ชัวร์ก่อน (contingent asset เงียบไว้) — บัญชีไม่ให้ฉลองล่วงหน้า!</div>
+    </div>
+    <div className="sec-card">
+      <h3>⚡ การ์ดจำด่วนท้ายบท</h3>
+      <Row gutter={[10,10]}>
+        {[
+          {c:'#31386b',t:'💳 AP: ส่วนลดหลังหักคืนของ',d:'60,000 − คืน 6,000 = 54,000 × 2% = 1,080 | ค่าขนส่ง 1,200 ไม่มีส่วนลด (จ่ายสดแยก)'},
+          {c:'#7a4a68',t:'📜 ตั๋วข้ามปี: แบ่งดอกเบี้ยตามเดือน',d:'40,000 × 9%: ปี 2019 รับ 2 เดือน = 600 (ตั้งค้าง) ปี 2020 อีก 1 เดือน = 300 | ตั๋ว 0%: ดอกเบี้ย = face − เงินรับ กระจายตามเวลา'},
+          {c:'#9c3d3d',t:'⏳ หนี้ยาวถึงกำหนด = ย้ายเป็นหนี้สั้น',d:'ทุกสิ้นปี งวดที่จะจ่ายในปีหน้าย้ายมา current | 3,000,000 ผ่อนปีละ 1,000,000 → CL 1M / NCL ลดปีละ 1M'},
+          {c:'#4a7c46',t:'💰 รับเงินก่อน ≠ รายได้',d:'มัดจำ เงินล่วงหน้า ตั๋วที่ยังไม่บิน = หนี้สินทั้งหมด | เป็นรายได้เมื่อส่งมอบ (ตั๋วบินแล้ว 60 ใบ → 30,000)'},
+          {c:'#c98a3d',t:'👥 เงินหักพนักงานไม่ใช่ค่าใช้จ่าย',d:'WHT 80,000 + สหภาพ 9,000 + ปกส. 27,200 = เงินถือแทน (หนี้สิน) | ค่าใช้จ่ายบริษัท = 340,000 + สมทบ 27,200'},
+          {c:'#356487',t:'⚖️ Provision 3 เงื่อนไข',d:'ผูกพันจากอดีต + น่าจะต้องจ่าย + ประมาณได้ → ตั้งหนี้ | ขาดข้อไหน → disclose | ฝั่งดี (contingent asset) → เงียบ'},
+        ].map((x,i)=><Col xs={24} md={12} key={i}><div style={{borderRadius:12,padding:'12px 14px',color:'#fff',background:x.c}}><b>{x.t}</b><div style={{fontSize:13,marginTop:4}}>{x.d}</div></div></Col>)}
+      </Row>
+    </div>
+  </div>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>📋 Current Liabilities — หนี้สินหมุนเวียน</h1>
+      <p>ครบ 9 ตัวจากสไลด์ อ.Sannudee: เจ้าหนี้การค้า → ตั๋วเงินจ่าย 2 แบบ → หนี้ยาวถึงกำหนด → ปันผล/มัดจำ/รับล่วงหน้า → เงินเดือน/ภาษี → Provisions & Contingencies พร้อมแล็บทดลองทุกบท</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'📚 ปูพื้น + เจ้าหนี้การค้า',children:<BasicTab/>},
+      {key:'2',label:'📜 ตั๋วเงินจ่าย & หนี้ถึงกำหนด',children:<NotesTab/>},
+      {key:'3',label:'💰 เงินรับล่วงหน้า & Unearned',children:<UnearnedTab/>},
+      {key:'4',label:'👥 ปันผล เงินเดือน ภาษี',children:<PayrollTab/>},
+      {key:'5',label:'⚖️ Provisions & Contingent',children:<ProvisionTab/>},
+    ]}/>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
