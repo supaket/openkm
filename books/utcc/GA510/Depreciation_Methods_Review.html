@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ค่าเสื่อมราคา 4 วิธี — เรียนจากศูนย์แบบ Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f5f2f8; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1060px; margin:0 auto; padding:16px 12px 70px; }
+  .hero { background:linear-gradient(135deg,#4a3a6b,#6d5a96); border-radius:14px; padding:22px 26px; color:#f3effc; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#f3effc; }
+  .hero p { margin:0; opacity:.93; }
+  .sec-card { background:#fff; border:1px solid #e2dcee; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(70,50,110,.07); animation:rise .5s ease both; }
+  @keyframes rise { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+  .sec-card h3 { margin:0 0 10px; color:#4a3a6b; font-size:17px; }
+  .tag-step { display:inline-block; background:#6d5a96; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#e8e2f3; color:#3d2f5c; padding:6px 8px; border:1px solid #d4cbe6; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #e0d9ee; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin tr.total td { background:#efe9f8; font-weight:700; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#efe9f8; border-left:4px solid #6d5a96; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#faf7ff; border:1px dashed #a292c8; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .bar { transition:height .6s cubic-bezier(.2,.8,.2,1), y .6s cubic-bezier(.2,.8,.2,1); }
+  .mcard { border-radius:12px; padding:14px 16px; height:100%; border:2px solid transparent; transition:all .3s; }
+  .mcard:hover { transform:translateY(-3px); box-shadow:0 6px 16px rgba(70,50,110,.18); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Alert, Slider, Radio, Segmented, InputNumber } = antd;
+const { useState } = React;
+const n0=(x)=> Math.round(x).toLocaleString('en-US');
+
+/* ---------- คำนวณ 4 วิธี (โจทย์ MAX Co.) ---------- */
+function schedules(cost,rv,life,totalUnits,unitsPerYear){
+  const base=cost-rv;
+  const sl=Array.from({length:life},()=>base/life);
+  const syd=(()=>{const S=life*(life+1)/2; return Array.from({length:life},(_,i)=>base*(life-i)/S);})();
+  const ddb=(()=>{const r=2/life; let cv=cost; const a=[];
+    for(let i=0;i<life;i++){ let d=cv*r; if(cv-d<rv) d=Math.max(0,cv-rv); a.push(d); cv-=d;} return a;})();
+  return {sl,syd,ddb,base};
+}
+
+/* ============ TAB 1 : ปูพื้น ============ */
+function BasicTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เริ่มจากศูนย์</span>ค่าเสื่อมราคาคืออะไร ทำไมต้องมี</h3>
+      <div className="analogy">📱 ซื้อ iPhone 40,000 บาทมาใช้ทำงาน 4 ปี — ถ้าลงค่าใช้จ่าย 40,000 ทั้งก้อนในปีแรก ปีแรกจะขาดทุนหนัก ปีถัดๆ ไปกำไรเว่อร์ ทั้งที่ใช้เครื่องเท่ากันทุกปี ไม่ยุติธรรม! บัญชีเลย<b>ทยอยตัด</b>ปีละ 10,000 ตามการใช้งาน — การทยอยตัดนี้คือ "ค่าเสื่อมราคา"</div>
+      <p><b>นิยาม:</b> ค่าเสื่อมราคา (Depreciation) คือการปันส่วนราคาทุนของสินทรัพย์มีตัวตน (PPE) ไปเป็นค่าใช้จ่ายในงวดที่ได้ใช้ประโยชน์ — <span className="hl">เป็นการปันส่วนต้นทุน ไม่ใช่การตีมูลค่าตลาด</span> และไม่มีเงินสดจ่ายออกตอนบันทึก</p>
+      <div className="kbox">🧩 ส่วนประกอบ 3 ตัวที่ต้องรู้ก่อนคำนวณ:<br/>① <b>ราคาทุน (Cost)</b> — ทุกต้นทุนที่ทำให้พร้อมใช้<br/>② <b>มูลค่าคงเหลือ (Residual/Salvage value)</b> — คาดว่าจะขายซากได้เท่าไรเมื่อเลิกใช้<br/>③ <b>อายุการใช้งาน (Useful life)</b> — ปี หรือ จำนวนหน่วยผลิต (ไม่ใช่อายุทางกายภาพ! โต๊ะไม้อยู่ได้ 40 ปี แต่กิจการตั้งใจใช้ 10 ปี → ใช้ 10 ปี)<br/>→ <b>ฐานค่าเสื่อม (Depreciable base) = ราคาทุน − มูลค่าคงเหลือ</b></div>
+      <div className="je"><b>บันทึกบัญชีทุกวิธีเหมือนกัน:</b> Dr ค่าเสื่อมราคา (ค่าใช้จ่าย) XX / Cr ค่าเสื่อมราคาสะสม (contra-asset) XX<br/><b>มูลค่าตามบัญชี (Carrying value) = ราคาทุน − ค่าเสื่อมราคาสะสม</b></div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">ภาพรวม</span>4 วิธี ใน 1 ตาราง (โจทย์ MAX Co. จากชีทเฉลย)</h3>
+      <Alert type="info" showIcon style={{marginBottom:10}} message="โจทย์: MAX Co. ซื้อเครื่องจักร 1 ม.ค. 2022 ราคา $600,000 อายุ 10 ปี (หรือ 40,000 หน่วย) มูลค่าคงเหลือ $50,000 ปี 2022 ผลิต 4,000 หน่วย"/>
+      <table className="fin">
+        <thead><tr><th>วิธี</th><th>สูตร</th><th>ค่าเสื่อมปี 2022</th><th>นิสัยของวิธีนี้</th></tr></thead>
+        <tbody>
+          <tr><td><b>① เส้นตรง (Straight-line)</b></td><td>(ทุน − คงเหลือ) ÷ อายุ</td><td className="num">(600,000−50,000)÷10 = <b>55,000</b></td><td>เท่ากันทุกปี — นิยมสุด ง่ายสุด</td></tr>
+          <tr><td><b>② ตามผลผลิต (Activity/Units)</b></td><td>(ทุน − คงเหลือ) × หน่วยปีนี้ ÷ หน่วยทั้งหมด</td><td className="num">13.75 × 4,000 = <b>55,000</b></td><td>ผลิตมากเสื่อมมาก ผลิตน้อยเสื่อมน้อย</td></tr>
+          <tr><td><b>③ ผลรวมจำนวนปี (SYD)</b></td><td>(ทุน − คงเหลือ) × ปีที่เหลือ ÷ ผลรวมปี</td><td className="num">550,000 × 10/55 = <b>100,000</b></td><td>ปีแรกแรง แล้วค่อยๆ ลด (เร่งแบบนุ่ม)</td></tr>
+          <tr><td><b>④ ลดลงทวีคูณ (DDB)</b></td><td>มูลค่าตามบัญชี × (100/อายุ) × 2</td><td className="num">600,000 × 10% × 2 = <b>120,000</b></td><td>ปีแรกแรงสุด — <span className="hl">ไม่หักมูลค่าคงเหลือในสูตร</span> และใช้มูลค่าตามบัญชีเป็นฐาน</td></tr>
+        </tbody>
+      </table>
+      <div className="warn">⚠️ สองกับดักใหญ่: ① DDB คำนวณจาก<b>มูลค่าตามบัญชี</b> (ไม่หักมูลค่าคงเหลือ) แต่ห้ามเสื่อมจนต่ำกว่ามูลค่าคงเหลือ ② SYD ตัวหาร = n(n+1)/2 เช่น 10 ปี → 10×11/2 = 55</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : เจาะทีละวิธี ============ */
+function MethodsTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">วิธี ①</span>เส้นตรง (Straight-line) — จากชีทเฉลย</h3>
+      <div className="je">ค่าเสื่อมราคา = (ราคาทุน − มูลค่าคงเหลือ) ÷ อายุการใช้งาน = (600,000 − 50,000) ÷ 10 = <b>55,000 ทุกปี</b></div>
+      <p>ปี 1: สะสม 55,000 → CV 545,000 | ปี 2: สะสม 110,000 → CV 490,000 | ... | ปี 10: สะสม 550,000 → CV = 50,000 (เท่ามูลค่าคงเหลือพอดี)</p>
+      <div className="kbox">💡 เช็คปลายทางทุกวิธี: ค่าเสื่อมสะสมตลอดอายุต้องรวมได้ 550,000 (ฐานค่าเสื่อม) และ CV สุดท้าย = มูลค่าคงเหลือ 50,000 เสมอ</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">วิธี ②</span>ตามผลผลิต (Activity method)</h3>
+      <div className="je">อัตราต่อหน่วย = (600,000 − 50,000) ÷ 40,000 = <b>13.75 $/หน่วย</b><br/>ปี 2022 ผลิต 4,000 หน่วย → ค่าเสื่อม = 13.75 × 4,000 = <b>55,000</b></div>
+      <p>เหมาะกับเครื่องจักรที่ความสึกหรอขึ้นกับการใช้งานจริง เช่น เครื่องพิมพ์ (นับแผ่น) รถบรรทุก (นับกิโลเมตร) — ปีไหนหยุดผลิต ค่าเสื่อมเป็นศูนย์ได้</p>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">วิธี ③</span>ผลรวมจำนวนปี (Sum-of-the-Years'-Digits)</h3>
+      <div className="je">ผลรวมจำนวนปี = n(n+1)/2 = 10×11/2 = <b>55</b><br/>ปี 1 = 550,000 × 10/55 = <b>100,000</b> | ปี 2 = 550,000 × 9/55 = <b>90,000</b> | ปี 3 = 550,000 × 8/55 = 80,000 ... ลดลงปีละ 10,000</div>
+      <p>ตัวเศษคือ "จำนวนปีที่เหลือ ณ ต้นงวด" นับถอยหลัง 10, 9, 8, ..., 1 — รวมกันได้ 55 พอดี จึงตัดครบ 550,000 อัตโนมัติ</p>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">วิธี ④</span>ลดลงทวีคูณ (Double-Declining Balance)</h3>
+      <div className="je">อัตราเส้นตรง = 100% ÷ 10 = 10% → อัตรา DDB = 10% × 2 = 20%<br/>ปี 1 = 600,000 × 20% = <b>120,000</b> → CV เหลือ 480,000<br/>ปี 2 = 480,000 × 20% = <b>96,000</b> → สะสม 216,000</div>
+      <table className="fin">
+        <thead><tr><th>ปี</th><th>CV ต้นปี</th><th>× 20%</th><th>สะสมปลายปี</th><th>CV ปลายปี</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td className="num">600,000</td><td className="num">120,000</td><td className="num">120,000</td><td className="num">480,000</td></tr>
+          <tr><td>2</td><td className="num">480,000</td><td className="num">96,000</td><td className="num">216,000</td><td className="num">384,000</td></tr>
+          <tr><td>3</td><td className="num">384,000</td><td className="num">76,800</td><td className="num">292,800</td><td className="num">307,200</td></tr>
+        </tbody>
+      </table>
+      <div className="warn">⚠️ จุดสอบ: DDB <b>ไม่หัก</b>มูลค่าคงเหลือตอนคำนวณ (ใช้ 600,000 เต็ม ไม่ใช่ 550,000) แต่ปีท้ายๆ ต้องหยุดไม่ให้ CV ต่ำกว่า 50,000</div>
+    </div>
+    <div className="sec-card">
+      <h3>🧠 เลือกวิธีไหนเมื่อไร (มุมคิดระดับ Advanced)</h3>
+      <p>เส้นตรง = ประโยชน์สม่ำเสมอ (อาคาร เฟอร์นิเจอร์) | ตามผลผลิต = สึกหรอตามการใช้ (เครื่องจักร ยานพาหนะ) | วิธีเร่ง (SYD/DDB) = ประโยชน์กระจุกปีแรกหรือเสี่ยงตกรุ่นเร็ว (คอมพิวเตอร์ เทคโนโลยี) — Matching Concept ตัวเดิมจาก GA510: จับค่าใช้จ่ายให้ตรงกับประโยชน์ที่ได้</p>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : LAB เปรียบเทียบ (animation) ============ */
+function LabTab(){
+  const [cost,setCost]=useState(600000);
+  const [rv,setRv]=useState(50000);
+  const [life,setLife]=useState(10);
+  const [year,setYear]=useState(1);
+  const {sl,syd,ddb}=schedules(cost,rv,life);
+  const maxD=Math.max(...ddb,...syd,...sl)*1.1;
+  const W=720,H=260,pad=40;
+  const bw=Math.min(18,(W-pad*2)/(life*3+life));
+  const cum=(arr,y)=>arr.slice(0,y).reduce((a,b)=>a+b,0);
+  const methods=[{name:'เส้นตรง',arr:sl,c:'#5b8bd0'},{name:'SYD',arr:syd,c:'#c98a3d'},{name:'DDB',arr:ddb,c:'#b05a7a'}];
+  return <div>
+    <div className="sec-card">
+      <h3>🧪 ห้องทดลอง: ลากปรับค่า แล้วดูกราฟ 3 วิธีขยับสดๆ</h3>
+      <Row gutter={[14,8]}>
+        <Col xs={24} md={8}><div style={{fontSize:13}}>ราคาทุน: <b>{n0(cost)}</b></div><Slider min={100000} max={1000000} step={50000} value={cost} onChange={setCost}/></Col>
+        <Col xs={24} md={8}><div style={{fontSize:13}}>มูลค่าคงเหลือ: <b>{n0(rv)}</b></div><Slider min={0} max={200000} step={10000} value={rv} onChange={setRv}/></Col>
+        <Col xs={24} md={8}><div style={{fontSize:13}}>อายุใช้งาน: <b>{life} ปี</b></div><Slider min={3} max={10} value={life} onChange={(v)=>{setLife(v); setYear(Math.min(year,v));}}/></Col>
+      </Row>
+      <div style={{overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${W} ${H+40}`} style={{width:'100%',minWidth:600}}>
+        {[0,0.25,0.5,0.75,1].map((g,i)=><g key={i}>
+          <line x1={pad} x2={W-10} y1={H-g*(H-30)} y2={H-g*(H-30)} stroke="#e5deef"/>
+          <text x={pad-6} y={H-g*(H-30)+4} fontSize="10" textAnchor="end" fill="#8a7fa8">{n0(maxD*g)}</text>
+        </g>)}
+        {Array.from({length:life},(_,y)=> methods.map((m,mi)=>{
+          const v=m.arr[y]; const h=(v/maxD)*(H-30);
+          const x=pad+8+y*((W-pad-20)/life)+mi*(bw+2);
+          return <rect key={m.name+y} className="bar" x={x} y={H-h} width={bw} height={h} rx="2.5"
+            fill={m.c} opacity={y===year-1?1:0.35}/>;
+        }))}
+        {Array.from({length:life},(_,y)=>
+          <text key={y} x={pad+8+y*((W-pad-20)/life)+(bw*3)/2} y={H+16} fontSize="11" textAnchor="middle"
+            fill={y===year-1?'#4a3a6b':'#9a8fb8'} fontWeight={y===year-1?'700':'400'}>ปี{y+1}</text>)}
+        {methods.map((m,i)=><g key={m.name}>
+          <rect x={pad+8+i*150} y={H+26} width="12" height="12" fill={m.c} rx="2"/>
+          <text x={pad+26+i*150} y={H+36} fontSize="12" fill="#4a3a6b">{m.name}</text>
+        </g>)}
+      </svg>
+      </div>
+      <div style={{fontSize:13,marginBottom:4}}>เลือกปีที่จะส่อง: <b>ปี {year}</b></div>
+      <Slider min={1} max={life} value={year} onChange={setYear} style={{maxWidth:420}}/>
+      <Row gutter={[10,10]}>
+        {methods.map(m=><Col xs={24} md={8} key={m.name}>
+          <div className="mcard" style={{background:'#faf8fd',borderColor:m.c}}>
+            <b style={{color:m.c}}>{m.name}</b>
+            <div style={{fontSize:13.5,marginTop:6}}>ค่าเสื่อมปี {year}: <b>{n0(m.arr[year-1]||0)}</b></div>
+            <div style={{fontSize:13.5}}>สะสมถึงสิ้นปี {year}: <b>{n0(cum(m.arr,year))}</b></div>
+            <div style={{fontSize:13.5}}>มูลค่าตามบัญชี: <b>{n0(cost-cum(m.arr,year))}</b></div>
+          </div>
+        </Col>)}
+      </Row>
+      <div className="kbox">🔍 สังเกต: ปีแรก DDB สูงสุด → แล้วสลับต่ำกว่าเส้นตรงในปีท้ายๆ | รวมทั้งอายุ ทุกวิธีตัดเท่ากัน (= ฐานค่าเสื่อม {n0(cost-rv)}) ต่างกันแค่ "จังหวะเวลา" — นี่คือประเด็นเดียวที่ข้อสอบเล่นได้ไม่รู้จบ</div>
+    </div>
+    <div className="sec-card">
+      <h3>⏱️ โบนัส: ซื้อกลางปีทำอย่างไร (โยงข้อสอบ GA510)</h3>
+      <p>คิดตามสัดส่วนเดือน: ค่าเสื่อมทั้งปี × n/12 — เช่น เครื่อง Martin เสื่อมปีละ 2,000 ขายวันที่ 1 ต.ค. → ปีสุดท้ายคิดแค่ 9 เดือน = 1,500 ก่อนคำนวณกำไรขาดทุนจากการขาย (เรื่อง Disposal อยู่ในไฟล์ Non-Current Assets)</p>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : เฉลยชีท + Flashcard ============ */
+const CARDS=[
+  {q:'ฐานค่าเสื่อม (depreciable base) คืออะไร?',a:'ราคาทุน − มูลค่าคงเหลือ เช่น 600,000 − 50,000 = 550,000 — เป็นยอดรวมที่จะตัดตลอดอายุ (ทุกวิธียกเว้นสูตร DDB ระหว่างทาง)'},
+  {q:'อายุการใช้งาน ต่างจากอายุทางกายภาพอย่างไร?',a:'ใช้อายุที่กิจการตั้งใจใช้ประโยชน์ ไม่ใช่อายุจริงของวัตถุ — โต๊ะไม้อยู่ 40 ปี แต่ตั้งใจใช้ 10 ปี → คิด 10 ปี (เหตุผล: ปัจจัยกายภาพ + ปัจจัยเศรษฐกิจ เช่น ตกรุ่น)'},
+  {q:'สูตรวิธีเส้นตรง?',a:'(ราคาทุน − มูลค่าคงเหลือ) ÷ อายุการใช้งาน = (600,000−50,000)÷10 = 55,000 ต่อปี เท่ากันทุกปี'},
+  {q:'สูตรวิธีตามผลผลิต?',a:'(ทุน − คงเหลือ) ÷ หน่วยผลิตทั้งหมด × หน่วยที่ผลิตปีนั้น = 13.75 × 4,000 = 55,000'},
+  {q:'SYD ปี 2 ของโจทย์ MAX (10 ปี)?',a:'550,000 × 9/55 = 90,000 (ตัวเศษ = ปีที่เหลือ ณ ต้นงวด, ตัวหาร = 10×11/2 = 55)'},
+  {q:'DDB ปี 2 ของโจทย์ MAX?',a:'CV ต้นปี 2 = 600,000−120,000 = 480,000 → 480,000 × 20% = 96,000 (อัตรา = 100/10 × 2)'},
+  {q:'DDB หักมูลค่าคงเหลือไหม?',a:'ไม่หักในสูตร! ใช้มูลค่าตามบัญชีเต็มๆ × อัตราคู่ แต่ห้ามตัดจน CV ต่ำกว่ามูลค่าคงเหลือ'},
+  {q:'บันทึกค่าเสื่อมอย่างไร ใช้เงินสดไหม?',a:'Dr ค่าเสื่อมราคา / Cr ค่าเสื่อมราคาสะสม (contra-asset) — ไม่มีเงินสดเกี่ยวข้องเลย'},
+  {q:'มูลค่าตามบัญชี (carrying value) คือ?',a:'ราคาทุน − ค่าเสื่อมราคาสะสม (− ขาดทุนจากการด้อยค่าสะสม ถ้ามี)'},
+  {q:'ทุกวิธีจบที่เดียวกันคือ?',a:'ค่าเสื่อมสะสมรวม = ฐานค่าเสื่อม และ CV สุดท้าย = มูลค่าคงเหลือ — ต่างแค่จังหวะเวลาในแต่ละปี'},
+];
+function AnswerTab(){
+  const [flip,setFlip]=useState({});
+  return <div>
+    <div className="sec-card">
+      <h3>📝 เฉลยชีท MAX Co. ครบ 4 ข้อ (ตรงตามเอกสาร "ค่าเสื่อมราคาและคำตอบ")</h3>
+      <table className="fin">
+        <thead><tr><th>ข้อ</th><th>วิธี</th><th>คำนวณ</th><th>คำตอบปี 2022</th></tr></thead>
+        <tbody>
+          <tr><td>a</td><td>เส้นตรง</td><td>(600,000 − 50,000) ÷ 10</td><td className="num"><b>55,000</b></td></tr>
+          <tr><td>b</td><td>ตามผลผลิต</td><td>550,000 ÷ 40,000 = 13.75 → × 4,000</td><td className="num"><b>55,000</b></td></tr>
+          <tr><td>c</td><td>SYD</td><td>550,000 × 10/55 (ปี 2: × 9/55 = 90,000)</td><td className="num"><b>100,000</b></td></tr>
+          <tr><td>d</td><td>DDB</td><td>600,000 × 10% × 2 (ปี 2: 480,000 × 20% = 96,000 สะสม 216,000)</td><td className="num"><b>120,000</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div className="sec-card">
+      <h3>🃏 Flashcard ทวนไว (แตะเพื่อพลิก)</h3>
+      <Row gutter={[10,10]}>
+        {CARDS.map((c,i)=><Col xs={24} sm={12} lg={8} key={i}>
+          <div onClick={()=>setFlip({...flip,[i]:!flip[i]})} style={{cursor:'pointer',minHeight:150,borderRadius:12,padding:14,
+            background:flip[i]?'#4a3a6b':'#fff',color:flip[i]?'#f3effc':'#3d2f5c',border:'2px solid #a292c8',
+            display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',fontSize:14,transition:'all .35s',fontWeight:flip[i]?400:600}}>
+            {flip[i]? CARDS[i].a : CARDS[i].q}
+          </div>
+        </Col>)}
+      </Row>
+    </div>
+  </div>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>📉 ค่าเสื่อมราคา 4 วิธี</h1>
+      <p>เส้นตรง · ตามผลผลิต · ผลรวมจำนวนปี · ลดลงทวีคูณ — เรียนจากศูนย์ด้วยโจทย์ MAX Co. จากชีทเฉลย พร้อมห้องทดลองลากปรับค่าดูกราฟขยับสด</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'📚 ปูพื้นจากศูนย์',children:<BasicTab/>},
+      {key:'2',label:'🔬 เจาะทีละวิธี',children:<MethodsTab/>},
+      {key:'3',label:'🧪 ห้องทดลองกราฟ',children:<LabTab/>},
+      {key:'4',label:'📝 เฉลยชีท & Flashcard',children:<AnswerTab/>},
+    ]}/>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

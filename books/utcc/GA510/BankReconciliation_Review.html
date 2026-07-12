@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>งบกระทบยอดเงินฝากธนาคาร — เรียนจากศูนย์แบบ Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f2f6f5; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1060px; margin:0 auto; padding:16px 12px 70px; }
+  .hero { background:linear-gradient(135deg,#215a5f,#2f8f97); border-radius:14px; padding:22px 26px; color:#eefcfd; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#eefcfd; }
+  .hero p { margin:0; opacity:.93; }
+  .sec-card { background:#ffffff; border:1px solid #d9e6e4; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(30,70,70,.07); animation:rise .5s ease both; }
+  @keyframes rise { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+  .sec-card h3 { margin:0 0 10px; color:#215a5f; font-size:17px; }
+  .tag-step { display:inline-block; background:#2f8f97; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#dcecea; color:#1d4d51; padding:6px 8px; border:1px solid #c2dbd8; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #d8e7e5; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin td.neg { text-align:right; color:#a8071a; }
+  table.fin tr.total td { background:#e5f2f0; font-weight:700; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#e5f2f0; border-left:4px solid #2f8f97; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .bignum { font-size:20px; font-weight:700; color:#215a5f; transition:all .4s; font-variant-numeric:tabular-nums; }
+  .pulse { animation:pulse 0.6s ease; }
+  @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.15); color:#1c7f38} 100%{transform:scale(1)} }
+  .chip { display:inline-block; border:2px solid #2f8f97; color:#215a5f; border-radius:10px; padding:6px 12px; margin:4px; cursor:pointer; font-size:13.5px; background:#fff; transition:all .25s; user-select:none; }
+  .chip:hover { transform:translateY(-2px); box-shadow:0 3px 8px rgba(40,110,115,.25); }
+  .chip.done { opacity:.45; border-style:dashed; cursor:default; transform:none; box-shadow:none; }
+  .slot { min-height:120px; border:2px dashed #9fc4c1; border-radius:12px; padding:8px; background:#f7fbfa; transition:background .3s; }
+  .slot.good { background:#e9f7ec; border-color:#57a55a; }
+  .stepnum { display:inline-flex; width:26px; height:26px; border-radius:50%; background:#2f8f97; color:#fff; align-items:center; justify-content:center; font-size:14px; margin-right:8px; flex-shrink:0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Alert, Steps, Radio, Segmented, Drawer, FloatButton, message } = antd;
+const { useState, useEffect } = React;
+const fmt=(x)=> x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ============ TAB 1 : ปูพื้นจากศูนย์ ============ */
+function BasicTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เริ่มจากศูนย์</span>ทำไมยอดเงินในสมุดเรา ไม่เท่ากับยอดของธนาคาร?</h3>
+      <div className="analogy">📱 นึกภาพ: คุณจดรายรับ-จ่ายในแอปของตัวเอง แล้วเปิดแอปธนาคารเทียบ — ตัวเลขมักไม่ตรงกัน! ไม่ใช่เพราะใครโกง แต่เพราะ<b>ต่างคนต่างรู้ไม่เท่ากัน ณ เวลานั้น</b> เช่น เพื่อนยังไม่เอาเช็คที่เราจ่ายไปขึ้นเงิน (เรารู้แล้ว ธนาคารยังไม่รู้) หรือธนาคารหักค่าธรรมเนียมไปแล้ว (ธนาคารรู้ เรายังไม่รู้)</div>
+      <p><b>งบกระทบยอดเงินฝากธนาคาร (Bank Reconciliation)</b> คือการวิเคราะห์ผลต่างระหว่างยอดเงินตามสมุดบัญชีกิจการ (book) กับยอดตามใบแจ้งยอดธนาคาร (bank statement) แล้วปรับทั้งสองฝั่งให้มาบรรจบที่ <span className="hl">ยอดเงินสดที่ถูกต้อง</span> ตัวเดียวกัน — เป็นเครื่องมือควบคุมภายในเรื่องเงินสดที่สำคัญที่สุดตัวหนึ่ง</p>
+      <div className="kbox">🔑 หลักจำข้อเดียวที่ใช้ได้ทั้งบท: <b>"ใครยังไม่รู้ ปรับฝั่งคนนั้น"</b><br/>— สิ่งที่กิจการทำแล้วแต่ธนาคารยังไม่บันทึก → ปรับ<b>ฝั่งธนาคาร</b><br/>— สิ่งที่ธนาคารทำแล้วแต่กิจการยังไม่บันทึก → ปรับ<b>ฝั่งกิจการ</b> (และต้องลงบัญชีปรับปรุงด้วย เพราะสมุดเราไม่ครบ)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">คลังรายการ</span>รายการยอดฮิต 7 ตัว อยู่ฝั่งไหน บวกหรือลบ</h3>
+      <table className="fin">
+        <thead><tr><th>รายการ</th><th>ใครรู้แล้ว</th><th>ปรับฝั่ง</th><th>+/−</th><th>เหตุผล</th></tr></thead>
+        <tbody>
+          <tr><td>เงินฝากระหว่างทาง (Deposit in transit)</td><td>กิจการ</td><td>ธนาคาร</td><td style={{textAlign:'center',color:'#1c7f38'}}>+</td><td>ฝากปลายงวด ธนาคารยังไม่ลงรายการ</td></tr>
+          <tr><td>เงินสดในมือ (ยังไม่นำฝาก)</td><td>กิจการ</td><td>ธนาคาร</td><td style={{textAlign:'center',color:'#1c7f38'}}>+</td><td>เงินของกิจการที่ statement ไม่เห็น</td></tr>
+          <tr><td>เช็คค้างจ่าย (Outstanding checks)</td><td>กิจการ</td><td>ธนาคาร</td><td style={{textAlign:'center',color:'#a8071a'}}>−</td><td>จ่ายแล้วแต่ผู้รับยังไม่ขึ้นเงิน</td></tr>
+          <tr><td>ตั๋วเงิน/ดอกเบี้ยที่ธนาคารเก็บให้</td><td>ธนาคาร</td><td>กิจการ</td><td style={{textAlign:'center',color:'#1c7f38'}}>+</td><td>เงินเข้าแล้วแต่เรายังไม่จด</td></tr>
+          <tr><td>เช็คคืน / NSF (เช็คเด้ง)</td><td>ธนาคาร</td><td>กิจการ</td><td style={{textAlign:'center',color:'#a8071a'}}>−</td><td>เคยจดว่ารับเงิน แต่เงินไม่เข้าจริง</td></tr>
+          <tr><td>ค่าธรรมเนียมธนาคาร</td><td>ธนาคาร</td><td>กิจการ</td><td style={{textAlign:'center',color:'#a8071a'}}>−</td><td>ธนาคารหักไปแล้วเราไม่รู้</td></tr>
+          <tr><td>บันทึกผิดพลาด (error)</td><td>แล้วแต่ใครพลาด</td><td>ฝั่งคนพลาด</td><td style={{textAlign:'center'}}>±</td><td>แก้ให้ตรงความจริง</td></tr>
+        </tbody>
+      </table>
+      <div className="warn">⚠️ สำคัญมาก: หลังทำงบกระทบยอดเสร็จ ต้อง<b>บันทึกบัญชีปรับปรุงเฉพาะรายการฝั่งกิจการ</b> (ตั๋วเก็บให้ เช็คคืน ค่าธรรมเนียม error ของเรา) ส่วนรายการฝั่งธนาคารไม่ต้องลงบัญชีอะไร — เดี๋ยวธนาคารตามทันเอง</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : เคสจริงจากชีท (ทีละขั้น) ============ */
+function CaseTab(){
+  const [step,setStep]=useState(0);
+  const bankSteps=[
+    {t:'ตั้งต้น: ยอดตามใบแจ้งยอดธนาคาร',v:12461.15,run:12461.15},
+    {t:'+ เงินฝากระหว่างทาง (เราฝากแล้ว ธนาคารยังไม่ลง)',v:1142.87,run:13604.02},
+    {t:'+ เงินสดในมือ (เงินกิจการที่ยังไม่ได้นำฝาก)',v:327.40,run:13931.42},
+    {t:'− เช็คค้างจ่าย (จ่ายแล้ว ยังไม่มีใครขึ้นเงิน)',v:-506.62,run:13424.80},
+  ];
+  const bookSteps=[
+    {t:'ตั้งต้น: ยอดตามสมุดบัญชีของกิจการ',v:12437.94,run:12437.94},
+    {t:'+ ตั๋วเงินรับที่ธนาคารเก็บให้ 1,200 + ดอกเบี้ย 12',v:1212.00,run:13649.94},
+    {t:'− เช็คคืน (เช็คเด้ง)',v:-138.14,run:13511.80},
+    {t:'− ค่าธรรมเนียมธนาคาร',v:-15.00,run:13496.80},
+    {t:'− แก้บันทึกผิด: สั่งจ่ายเช็ค 91.20 แต่จดแค่ 19.20 (จดจ่ายขาดไป 72)',v:-72.00,run:13424.80},
+  ];
+  const total=bankSteps.length+bookSteps.length;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="โจทย์จากชีท: งบกระทบยอดเงินฝากธนาคาร" description="สมุดกิจการ 12,437.94 | ใบแจ้งยอดธนาคาร 12,461.15 | ธนาคารเก็บตั๋ว 1,200 + ดอกเบี้ย 12 | เช็คคืน 138.14 | ค่าธรรมเนียม 15 | เงินฝากระหว่างทาง 1,142.87 | เงินสดในมือ 327.40 | เช็คค้างจ่าย 506.62 | สั่งจ่ายเช็ค 91.20 แต่บันทึก 19.20"/>
+    <div className="sec-card">
+      <h3>▶️ กดปุ่มเดินทีละขั้น แล้วดูตัวเลขวิ่งเข้าหากัน</h3>
+      <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
+        <Button type="primary" style={{background:'#2f8f97'}} disabled={step>=total} onClick={()=>setStep(step+1)}>ขั้นถัดไป ({step}/{total})</Button>
+        <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+        {step>=total && <Tag color="green" style={{fontSize:14,padding:'4px 10px'}}>🎉 สองฝั่งเท่ากันที่ 13,424.80 — กระทบยอดสำเร็จ!</Tag>}
+      </div>
+      <Row gutter={[12,12]}>
+        <Col xs={24} md={12}>
+          <Card size="small" title={<span>🏦 ฝั่งธนาคาร → <span className="bignum">{fmt(step>0? bankSteps[Math.min(step,bankSteps.length)-1].run : 12461.15)}</span></span>}>
+            {bankSteps.map((s,i)=> i<step &&
+              <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'6px 4px',borderBottom:'1px dashed #d8e7e5',animation:'rise .4s ease both'}}>
+                <span style={{fontSize:13.5}}>{s.t}</span>
+                <b style={{color:s.v<0?'#a8071a':'#1c7f38',whiteSpace:'nowrap',marginLeft:8}}>{s.v<0?`(${fmt(-s.v)})`:fmt(s.v)}</b>
+              </div>)}
+            {step>=bankSteps.length && <div className="kbox" style={{marginTop:8}}>ยอดเงินสดที่ถูกต้อง = <b>13,424.80</b></div>}
+          </Card>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" title={<span>📒 ฝั่งสมุดกิจการ → <span className="bignum">{fmt(step>bankSteps.length? bookSteps[Math.min(step-bankSteps.length,bookSteps.length)-1].run : 12437.94)}</span></span>}>
+            {bookSteps.map((s,i)=> i<step-bankSteps.length &&
+              <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'6px 4px',borderBottom:'1px dashed #d8e7e5',animation:'rise .4s ease both'}}>
+                <span style={{fontSize:13.5}}>{s.t}</span>
+                <b style={{color:s.v<0?'#a8071a':'#1c7f38',whiteSpace:'nowrap',marginLeft:8}}>{s.v<0?`(${fmt(-s.v)})`:fmt(s.v)}</b>
+              </div>)}
+            {step>=total && <div className="kbox" style={{marginTop:8}}>ยอดเงินสดที่ถูกต้อง = <b>13,424.80</b> ✓ ตรงกับฝั่งธนาคาร</div>}
+          </Card>
+        </Col>
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3>🔍 จุดคิดสำคัญของเคสนี้ (ระดับข้อสอบ)</h3>
+      <Collapse items={[
+        {key:'1',label:'① "เงินสดในมือ 327.40" ทำไมไปฝั่งธนาคาร?',children:<div>เงินสดในมือคือเงินของกิจการที่<b>ยังไม่ได้นำฝาก</b> — ยอดเงินสดที่ถูกต้องของกิจการต้องรวมเงินก้อนนี้ แต่ statement ธนาคารไม่มีทางเห็น จึงต้อง<b>บวกเข้าฝั่งธนาคาร</b> เหมือน deposit in transit (ต่างกันแค่ยังไม่ได้เดินทางไปธนาคารเลย)</div>},
+        {key:'2',label:'② ทำไมตั๋วเงินรับบวก 1,212 ไม่ใช่ 1,200?',children:<div>ธนาคารเก็บเงินตามตั๋วให้ 1,200 <b>พร้อมดอกเบี้ยอีก 12</b> → เงินเข้าบัญชีจริง 1,212 แต่กิจการยังไม่ได้บันทึกทั้งสองก้อน จึงบวกเข้าฝั่งสมุดกิจการทั้ง 1,212</div>},
+        {key:'3',label:'③ Error 91.20 vs 19.20 คิดยังไงให้ไม่งง',children:<div>ถามตัวเอง 2 คำถาม: <b>ใครพลาด?</b> กิจการ (ธนาคารจ่ายตามเช็คจริง 91.20 ถูกต้องแล้ว) → ปรับฝั่งกิจการ | <b>พลาดทางไหน?</b> จดรายจ่ายไว้แค่ 19.20 น้อยกว่าจริง 72 → เงินในสมุดโป่งเกินจริง → <b>หักออก 72</b><br/><br/>สูตรลัด: ผลต่าง = 91.20 − 19.20 = 72 | จดจ่าย<b>น้อย</b>ไป → ลบออกจากสมุด (ถ้าจดจ่ายเกินจริง → บวกคืน)</div>},
+        {key:'4',label:'④ รายการไหนต้องลงบัญชีปรับปรุงหลังกระทบยอด?',children:<div>เฉพาะ<b>ฝั่งสมุดกิจการ</b> 4 รายการ:<br/>• Dr เงินฝากธนาคาร 1,212 / Cr ตั๋วเงินรับ 1,200, Cr ดอกเบี้ยรับ 12<br/>• Dr ลูกหนี้ 138.14 / Cr เงินฝากธนาคาร 138.14 (เช็คคืน — กลับไปเป็นลูกหนี้ใหม่)<br/>• Dr ค่าธรรมเนียมธนาคาร 15 / Cr เงินฝากธนาคาร 15<br/>• Dr เจ้าหนี้ (หรือบัญชีที่เกี่ยวข้อง) ... แก้ error: Cr เงินฝากธนาคาร 72<br/>ฝั่งธนาคาร (ฝากระหว่างทาง เช็คค้างจ่าย เงินสดในมือ) <b>ไม่ต้องลงบัญชี</b></div>},
+      ]}/>
+    </div>
+    <div className="sec-card">
+      <h3>📄 งบกระทบยอดฉบับเต็ม (รูปแบบที่ใช้ตอบข้อสอบ)</h3>
+      <Row gutter={[12,12]}>
+        <Col xs={24} md={12}>
+          <table className="fin"><tbody>
+            <tr><td>ยอดเงินฝากตามใบแจ้งยอดธนาคาร</td><td className="num">12,461.15</td></tr>
+            <tr><td>บวก เงินฝากระหว่างทาง</td><td className="num">1,142.87</td></tr>
+            <tr><td>บวก เงินสดในมือ</td><td className="num">327.40</td></tr>
+            <tr><td>หัก เช็คค้างจ่าย</td><td className="neg">(506.62)</td></tr>
+            <tr className="total"><td>ยอดเงินสดที่ถูกต้อง</td><td className="num">13,424.80</td></tr>
+          </tbody></table>
+        </Col>
+        <Col xs={24} md={12}>
+          <table className="fin"><tbody>
+            <tr><td>ยอดเงินฝากตามสมุดบัญชีของกิจการ</td><td className="num">12,437.94</td></tr>
+            <tr><td>บวก ตั๋วเงินรับ 1,200 + ดอกเบี้ย 12</td><td className="num">1,212.00</td></tr>
+            <tr><td>หัก เช็คคืน</td><td className="neg">(138.14)</td></tr>
+            <tr><td>หัก ค่าธรรมเนียมธนาคาร</td><td className="neg">(15.00)</td></tr>
+            <tr><td>หัก บันทึกผิดพลาด (91.20 − 19.20)</td><td className="neg">(72.00)</td></tr>
+            <tr className="total"><td>ยอดเงินสดที่ถูกต้อง</td><td className="num">13,424.80</td></tr>
+          </tbody></table>
+        </Col>
+      </Row>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : เกมจัดฝั่ง ============ */
+const ITEMS=[
+  {id:1,label:'เงินฝากระหว่างทาง 1,142.87',side:'bank',sign:1,v:1142.87},
+  {id:2,label:'เงินสดในมือ 327.40',side:'bank',sign:1,v:327.40},
+  {id:3,label:'เช็คค้างจ่าย 506.62',side:'bank',sign:-1,v:506.62},
+  {id:4,label:'ตั๋วเงินรับ+ดอกเบี้ย 1,212',side:'book',sign:1,v:1212},
+  {id:5,label:'เช็คคืน 138.14',side:'book',sign:-1,v:138.14},
+  {id:6,label:'ค่าธรรมเนียมธนาคาร 15',side:'book',sign:-1,v:15},
+  {id:7,label:'จดเช็คจ่าย 91.20 เป็น 19.20 (ต่าง 72)',side:'book',sign:-1,v:72},
+];
+function GameTab(){
+  const [placed,setPlaced]=useState({});   // id -> 'bank+'|'bank-'|'book+'|'book-'
+  const [sel,setSel]=useState(null);
+  const [result,setResult]=useState(null);
+  const bank = 12461.15 + ITEMS.reduce((a,it)=>{const p=placed[it.id]; if(!p||!p.startsWith('bank'))return a; return a+(p==='bank+'?it.v:-it.v);},0);
+  const book = 12437.94 + ITEMS.reduce((a,it)=>{const p=placed[it.id]; if(!p||!p.startsWith('book'))return a; return a+(p==='book+'?it.v:-it.v);},0);
+  const allPlaced = ITEMS.every(it=>placed[it.id]);
+  const check=()=>{
+    const wrong = ITEMS.filter(it=>{ const want=(it.side==='bank'?'bank':'book')+(it.sign>0?'+':'-'); return placed[it.id]!==want; });
+    setResult(wrong.length===0? {ok:true} : {ok:false,wrong:wrong.map(w=>w.label)});
+  };
+  const assign=(slot)=>{ if(sel==null) return; setPlaced({...placed,[sel]:slot}); setSel(null); setResult(null); };
+  return <div>
+    <div className="sec-card">
+      <h3>🎮 เกมจัดฝั่ง: แตะรายการ แล้วเลือกช่องที่คิดว่าถูก — ทำให้สองฝั่งเท่ากันที่ 13,424.80</h3>
+      <p style={{fontSize:13.5}}>① แตะรายการด้านล่างให้ขึ้นสีน้ำเงิน ② แตะช่องปลายทาง (ฝั่ง+เครื่องหมาย) ③ ครบ 7 รายการแล้วกดตรวจ</p>
+      <div style={{marginBottom:10}}>
+        {ITEMS.map(it=> <span key={it.id}
+          className={'chip'+(placed[it.id]?' done':'')}
+          style={sel===it.id?{background:'#215a5f',color:'#fff'}:{}}
+          onClick={()=>{ if(!placed[it.id]) setSel(sel===it.id?null:it.id); else { const p={...placed}; delete p[it.id]; setPlaced(p); setResult(null);} }}>
+          {placed[it.id]? '↩️ ':''}{it.label}{placed[it.id]? ` → ${placed[it.id].replace('bank','ธนาคาร').replace('book','สมุด')}`:''}
+        </span>)}
+      </div>
+      <Row gutter={[12,12]}>
+        <Col xs={24} md={12}>
+          <Card size="small" title={<span>🏦 ฝั่งธนาคาร (เริ่ม 12,461.15) → <span className={'bignum'+(Math.abs(bank-13424.80)<0.01?' pulse':'')}>{fmt(bank)}</span></span>}>
+            <Row gutter={8}>
+              <Col span={12}><div className="slot" onClick={()=>assign('bank+')}><b style={{color:'#1c7f38'}}>+ บวกฝั่งธนาคาร</b><div style={{fontSize:12.5,color:'#888'}}>แตะเพื่อวางรายการที่เลือก</div>
+                {ITEMS.filter(it=>placed[it.id]==='bank+').map(it=><div key={it.id} style={{fontSize:12.5,marginTop:4}}>• {it.label}</div>)}</div></Col>
+              <Col span={12}><div className="slot" onClick={()=>assign('bank-')}><b style={{color:'#a8071a'}}>− หักฝั่งธนาคาร</b><div style={{fontSize:12.5,color:'#888'}}>แตะเพื่อวางรายการที่เลือก</div>
+                {ITEMS.filter(it=>placed[it.id]==='bank-').map(it=><div key={it.id} style={{fontSize:12.5,marginTop:4}}>• {it.label}</div>)}</div></Col>
+            </Row>
+          </Card>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" title={<span>📒 ฝั่งสมุดกิจการ (เริ่ม 12,437.94) → <span className={'bignum'+(Math.abs(book-13424.80)<0.01?' pulse':'')}>{fmt(book)}</span></span>}>
+            <Row gutter={8}>
+              <Col span={12}><div className="slot" onClick={()=>assign('book+')}><b style={{color:'#1c7f38'}}>+ บวกฝั่งสมุด</b><div style={{fontSize:12.5,color:'#888'}}>แตะเพื่อวางรายการที่เลือก</div>
+                {ITEMS.filter(it=>placed[it.id]==='book+').map(it=><div key={it.id} style={{fontSize:12.5,marginTop:4}}>• {it.label}</div>)}</div></Col>
+              <Col span={12}><div className="slot" onClick={()=>assign('book-')}><b style={{color:'#a8071a'}}>− หักฝั่งสมุด</b><div style={{fontSize:12.5,color:'#888'}}>แตะเพื่อวางรายการที่เลือก</div>
+                {ITEMS.filter(it=>placed[it.id]==='book-').map(it=><div key={it.id} style={{fontSize:12.5,marginTop:4}}>• {it.label}</div>)}</div></Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+      <div style={{marginTop:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+        <Button type="primary" style={{background:'#2f8f97'}} disabled={!allPlaced} onClick={check}>ตรวจคำตอบ</Button>
+        <Button onClick={()=>{setPlaced({});setSel(null);setResult(null);}}>ล้างกระดาน</Button>
+        {result && (result.ok
+          ? <Tag color="green" style={{fontSize:14,padding:'4px 10px'}}>🎉 ถูกทั้งหมด! สองฝั่ง = 13,424.80</Tag>
+          : <Tag color="red" style={{fontSize:13,padding:'4px 10px'}}>ยังผิด {result.wrong.length} รายการ: {result.wrong.join(' | ')}</Tag>)}
+      </div>
+      <div className="kbox">💡 ติดขัดเมื่อไร ท่องว่า "ใครยังไม่รู้ ปรับฝั่งคนนั้น" แล้วถามต่อว่ารายการนั้นทำให้เงิน<b>จริง</b>มากขึ้นหรือน้อยลง</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : สูตร + ข้อสอบเก่า ============ */
+function FormulaTab(){
+  return <div>
+    <div className="sec-card">
+      <h3>🧮 แม่แบบสูตร (ท่องได้เลย)</h3>
+      <Row gutter={[12,12]}>
+        <Col xs={24} md={12}><Card size="small" title="ฝั่งธนาคาร">ยอดตาม statement<br/>+ เงินฝากระหว่างทาง / เงินสดในมือ<br/>− เช็คค้างจ่าย<br/>± ข้อผิดพลาดของธนาคาร<br/><b>= ยอดเงินสดที่ถูกต้อง</b></Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="ฝั่งสมุดกิจการ">ยอดตามสมุดบัญชี<br/>+ ตั๋วเงิน/ดอกเบี้ยที่ธนาคารเก็บให้<br/>− เช็คคืน (NSF) − ค่าธรรมเนียม<br/>± ข้อผิดพลาดของกิจการ<br/><b>= ยอดเงินสดที่ถูกต้อง (ต้องเท่าฝั่งซ้าย)</b></Card></Col>
+      </Row>
+      <div className="kbox">🎯 เทคนิค error: ผลต่าง = |ตัวเลขจริง − ตัวเลขที่จด| แล้วถามว่า "สมุดเราตอนนี้สูงไปหรือต่ำไป" — จดจ่ายน้อยไป/จดรับเกินไป → สมุดสูงเกิน → ลบ | จดจ่ายเกินไป/จดรับน้อยไป → สมุดต่ำไป → บวก</div>
+    </div>
+    <div className="sec-card">
+      <h3>📝 ลองทำข้อสอบเก่า 2 ข้อ (จากควิซ Current Assets)</h3>
+      <Collapse items={[
+        {key:'1',label:'Kirk, Inc.: bank statement 39,140 | NSF 450 | deposit in transit 5,000 | outstanding checks 5,200 | ค่าธรรมเนียม 20 — ยอดที่ถูกต้อง?',children:<div>
+          <p>โจทย์ให้เริ่มจากฝั่ง<b>ธนาคาร</b> → ใช้เฉพาะรายการฝั่งธนาคาร: 39,140 + 5,000 − 5,200 = <span className="hl">38,940</span></p>
+          <div className="warn">NSF 450 กับค่าธรรมเนียม 20 เป็นรายการฝั่งสมุด (ธนาคารหักไปแล้ว) — เอามาหักซ้ำจะได้ 38,470 ผิด!</div></div>},
+        {key:'2',label:'ยอดสมุด 45,000 | deposit in transit 2,300 | ธนาคารเก็บให้ 940 | NSF 320 | เช็ครับ 450 จดเป็น 540 | เช็คจ่าย 79 จดเป็น 97 — ยอดที่ถูกต้อง?',children:<div>
+          <p>เริ่มฝั่ง<b>สมุด</b>: 45,000 + 940 − 320 − 90 + 18 = <span className="hl">45,548</span></p>
+          <p style={{fontSize:13.5}}>เช็ครับจดเกิน 90 → ลบ | เช็คจ่ายจดเกิน 18 → บวกคืน | deposit in transit เป็นฝั่งธนาคาร ไม่เกี่ยว</p></div>},
+      ]}/>
+    </div>
+  </div>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>🏦 งบกระทบยอดเงินฝากธนาคาร</h1>
+      <p>เรียนจากศูนย์ → เคสจริงจากชีทแบบกดดูทีละขั้น → เกมจัดฝั่งฝึกมือ → สูตรและข้อสอบเก่า | ยอดเป้าหมายของเคสนี้: 13,424.80 บาท</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'📚 ปูพื้นจากศูนย์',children:<BasicTab/>},
+      {key:'2',label:'🎬 เคสจากชีท (ทีละขั้น)',children:<CaseTab/>},
+      {key:'3',label:'🎮 เกมจัดฝั่ง',children:<GameTab/>},
+      {key:'4',label:'🧮 สูตร & ข้อสอบเก่า',children:<FormulaTab/>},
+    ]}/>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA511 — ตรวจสอบรายได้และค่าใช้จ่าย (Revenue & Expense)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f7f0f2; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1080px; margin:0 auto; padding:16px 12px 60px; }
+  .hero { background:linear-gradient(135deg,#9b3b57,#c05f79); border-radius:14px; padding:22px 26px; color:#fdeef2; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:23px; color:#fdeef2; }
+  .hero p { margin:0; opacity:.94; }
+  .sec-card { background:#fffdf9; border:1px solid #ecdde2; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(90,30,50,.06); }
+  .sec-card h3 { margin:0 0 10px; color:#9b3b57; font-size:17px; }
+  .tag-step { display:inline-block; background:#9b3b57; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#efd9e0; color:#6e2439; padding:6px 8px; border:1px solid #e2c3cd; text-align:center; }
+  table.fin td { padding:6px 8px; border:1px solid #ecd9df; vertical-align:top; }
+  table.fin tr.total td { background:#f5e6ea; font-weight:700; }
+  table.fin tr.head td { background:#f7ecf0; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#f5e6ea; border-left:4px solid #9b3b57; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#faf3f5; border:1px dashed #ce9aab; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#9b3b57; }
+  .flip-card { perspective:1000px; cursor:pointer; height:210px; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; }
+  .flip-front { background:#fffdf9; border:2px solid #d9a9b8; color:#6e2439; font-weight:600; font-size:14.5px; }
+  .flip-back { background:#9b3b57; color:#fdeef2; transform:rotateY(180deg); font-size:12.5px; line-height:1.5; overflow:auto; }
+  .qcard { border-radius:12px; padding:14px 16px; color:#fff; margin-bottom:10px; }
+  .qcard h4 { color:#fff; margin:0 0 6px; font-size:15.5px; }
+  .qcard div { font-size:13.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Progress, Alert, Steps, Drawer, FloatButton, Segmented, Radio } = antd;
+const { useState } = React;
+
+/* ============ TAB 1 : overview + assertion ============ */
+function OverviewTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.1</span>บัญชีที่เกี่ยวข้อง</h3>
+      <Row gutter={[8,8]}>
+        {[['รายได้','รายได้จากการขาย/บริการ · รายได้อื่น · ดอกเบี้ยรับ · เงินปันผลรับ'],['ค่าใช้จ่าย','ต้นทุนขาย/บริการ · ค่าใช้จ่ายในการขาย · ค่าใช้จ่ายในการบริหาร · ค่าใช้จ่ายทางการเงิน · ภาษีจ่าย']].map((r,i)=>
+          <Col xs={24} md={12} key={i}><Card size="small" title={r[0]} style={{height:'100%',background:'#f7ecf0'}}>{r[1]}</Card></Col>)}
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.2</span>Assertion ที่เน้น — จำให้แม่น!</h3>
+      <div className="warn">🔥 <b>รายได้เป็นพื้นที่เสี่ยงสูง</b> — เสี่ยงทั้ง<b>ทุจริต</b>และ<b>การบันทึกผิดงวด</b> (wrong-period recognition)</div>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="💰 รายได้ → Occurrence (เกิดขึ้นจริง)" style={{height:'100%',background:'#f7ecf0'}}>
+          กังวลว่ารายได้ที่บันทึก<b>เกิดขึ้นจริงไหม</b> (กลัวแสดง<b>เกินจริง</b> / รายได้ผี / บันทึกเร็วเกินไป)</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🧾 ค่าใช้จ่าย → Completeness (ครบถ้วน)" style={{height:'100%',background:'#eef7ee'}}>
+          กังวลว่าค่าใช้จ่าย<b>บันทึกครบไหม</b> (กลัวแสดง<b>ต่ำเกินจริง</b> / ซ่อนค่าใช้จ่ายเพื่อให้กำไรดูดี)</Card></Col>
+      </Row>
+      <div className="kbox">🧠 คู่ตรงข้าม: <b>รายได้กลัวเกิน (occurrence) · ค่าใช้จ่ายกลัวขาด (completeness)</b> — เพราะกิจการอยากให้<b>กำไรดูดี</b> (รายได้สูง ค่าใช้จ่ายต่ำ)<br/>🧪 กดปุ่มลอย "ทดลอง" → <b>Occurrence/Completeness + Vouch/Trace</b></div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">1.3</span>Test of Control — ตรวจวงจรไหน</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>รายได้</b></td><td>ตรวจการควบคุมภายในของ<b>วงจรขายและรับชำระเงิน</b> (sales & collection cycle)</td></tr>
+        <tr><td><b>ค่าใช้จ่าย & ต้นทุนขาย</b></td><td>ตรวจ<b>วงจรซื้อและชำระเงิน · วงจรเงินเดือน · วงจรสินค้าคงเหลือ</b> (acquisition &amp; payment, payroll, inventory cycles)</td></tr>
+      </tbody></table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 2 : sales controls ============ */
+function ControlTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">2.1</span>กิจกรรมควบคุมสำคัญของการขาย</h3>
+      <Collapse items={[
+        {key:'1',label:'① แบ่งแยกหน้าที่ให้เพียงพอ (Separation of duties)',children:<div style={{fontSize:13.5}}>
+          <b>ผู้เข้าถึงเงินสด ≠ ผู้บันทึกการรับเงิน</b> (cash access vs recording receipts)<br/><b>ผู้ให้เครดิต ≠ ฝ่ายขาย</b> (credit granting vs sales)</div>},
+        {key:'2',label:'② การอนุมัติที่เหมาะสม (Proper authorization)',children:<div style={{fontSize:13.5}}>
+          อนุมัติ<b>เครดิตก่อนขาย</b> · อนุมัติ<b>การส่งของก่อนส่ง</b> · <b>ราคา เงื่อนไข ส่วนลด</b> ต้องได้รับอนุมัติ</div>},
+        {key:'3',label:'③ เอกสารระบุเลขที่ล่วงหน้า (Pre-numbered documents)',children:<div style={{fontSize:13.5}}>
+          ป้องกันทั้ง<b>การลืมออกบิล/ลืมบันทึก</b> และ<b>การออกบิล/บันทึกซ้ำ</b> (prevent failure to bill/record AND duplicate)</div>},
+        {key:'4',label:'④ ส่ง statement รายเดือนให้ลูกค้า',children:<div style={{fontSize:13.5}}>
+          ส่งโดย<b>บุคคลที่เป็นอิสระ</b> (ไม่รับผิดชอบเงินสดหรือบันทึกขาย/ลูกหนี้)</div>},
+        {key:'5',label:'⑤ วิธีตรวจสอบภายใน (Internal verification)',children:<div style={{fontSize:13.5}}>
+          โดยโปรแกรมคอมพิวเตอร์หรือบุคคลอิสระ · มีเอกสารและบันทึกที่เพียงพอ (adequate documents and records)</div>},
+      ]}/>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 3 : tests of details - revenue ============ */
+function RevDetailTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.1</span>Tests of Details — รายได้</h3>
+      <Row gutter={[8,8]}>
+        {['ส่งจดหมายยืนยันยอดลูกหนี้','ทำ sales cut-off (ตัดยอดขาย)','ทดสอบการคำนวณและการรวมยอด','ตรวจเอกสารประกอบรายได้อื่น','คำนวณกำไรต่อหุ้น (EPS) ใหม่','อ่านรายงานการประชุม','เรียงเลขที่รายการขายดูว่ามีบันทึกซ้ำไหม','เทียบราคาขายในใบแจ้งหนี้กับ price list','เทียบยอดในใบแจ้งหนี้กับใบส่งของ','ตรวจการบันทึกเข้า stock card','ค่าเช่า → ดูสัญญาเช่า','ชนยอดกับงบทดลองและ GL'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><div style={{fontSize:13,padding:'6px 10px',background:'#f7ecf0',borderRadius:6,border:'1px solid #ecd9df'}}>✓ {t}</div></Col>)}
+      </Row>
+      <div className="kbox">🎯 <b>2 ทิศทางที่ต้องแยก:</b><br/>• <b>Vouch</b> รายการในสมุดขาย → เอกสารส่งของ/สนับสนุน = ทดสอบ <b>Occurrence</b> (เกิดจริง กันบันทึกเกิน)<br/>• <b>Trace</b> เอกสารส่งของ → สมุดขาย = ทดสอบ <b>Completeness</b> (ครบถ้วน กันบันทึกขาด)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">3.2</span>เอกสารสนับสนุนรายได้เฉพาะประเภท</h3>
+      <table className="fin">
+        <thead><tr><th>ประเภทรายได้</th><th>เอกสารที่ต้องตรวจ</th></tr></thead>
+        <tbody>
+          <tr><td><b>เงินปันผลรับ</b></td><td>ประกาศจ่ายเงินปันผล (dividend announcement) · หนังสือรับรองหักภาษี ณ ที่จ่าย · pay-in slip · bank statement (เงินต้องเข้าจริง)</td></tr>
+          <tr><td><b>ดอกเบี้ยรับ</b></td><td>bank statement หรือ pay-in slip · หนังสือรับรองหักภาษี ณ ที่จ่าย</td></tr>
+          <tr><td><b>กำไร/ขาดทุนจากการขาย PPE</b></td><td>การอนุมัติการจำหน่ายก่อนขาย · คำนวณกำไร/ขาดทุนใหม่ · ใบเสร็จ/ใบแจ้งหนี้ (สำเนา) · ใบนำฝาก (pay-in slip)</td></tr>
+          <tr><td><b>ค่าเช่ารับ</b></td><td>สัญญาเช่า (rental agreement)</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">💡 ถ้าลูกค้าจ่ายเงินแล้ว → ตรวจกับ bank statement ว่า<b>เงินเข้าจริง</b> · 🧪 กดปุ่มลอย → <b>จับคู่เอกสารรายได้</b></div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : revenue concerns ============ */
+function ConcernTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.1</span>ประเด็นที่ควรระวังเกี่ยวกับรายได้</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="👻 Fictitious revenue" style={{height:'100%',background:'#fbf3f5'}}>รายได้ที่ไม่ได้เกิดขึ้นจริง (บันทึกรายการขายปลอม)</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="↩️ Return on sales" style={{height:'100%',background:'#fbf3f5'}}>การส่งคืนสินค้า — ระวังไม่บันทึกรับคืนเพื่อให้ยอดขายดูสูง</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🔗 Related party transactions" style={{height:'100%',background:'#fbf3f5'}}>รายการขายกับกิจการที่เกี่ยวข้องกัน (อาจไม่ใช่รายการค้าปกติ)</Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="📦 Channel stuffing" style={{height:'100%',background:'#fbf3f5'}}>ยัดสินค้าให้ช่องทางจัดจำหน่าย/ลูกค้าเกินความต้องการช่วงปลายงวด เพื่อดันยอดขาย (มักตามด้วยการรับคืนงวดถัดไป)</Card></Col>
+      </Row>
+      <div className="warn">⚠️ ทั้ง 4 ประเด็นโยงกับ<b>การแสดงรายได้เกินจริง / ผิดงวด</b> ซึ่งเป็นเหตุผลที่รายได้เน้น assertion <b>Occurrence</b> และต้องทำ <b>sales cut-off</b> ให้ดี</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">4.2</span>ตรวจซ้ำ (duplicate) และ cut-off</h3>
+      <table className="fin"><tbody>
+        <tr><td><b>ตรวจบันทึกซ้ำ</b></td><td>เรียงเลขที่รายการขายที่บันทึก ดูว่ามีเลขซ้ำหรือไม่ (กันการบันทึกขายมากกว่าหนึ่งครั้ง)</td></tr>
+        <tr><td><b>Sales cut-off</b></td><td>ตรวจว่ารายได้บันทึกตรงงวด ไม่รับรู้เร็วเกินไป (โยงกับ A/R และ inventory cut-off)</td></tr>
+      </tbody></table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 5 : expense details ============ */
+function ExpDetailTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.1</span>Tests of Details — ค่าใช้จ่ายและต้นทุน</h3>
+      <Row gutter={[8,8]}>
+        {['ส่งจดหมายยืนยันยอดเจ้าหนี้','ทำ purchase cut-off','ทดสอบการคำนวณและการรวมยอด','ตรวจเอกสารประกอบค่าใช้จ่ายอื่น','อ่านรายงานการประชุม','สอบสวนค่าใช้จ่ายที่ติดลบ (negative expenses)','สอบทานการจ่ายให้บุคคลที่เกี่ยวข้องกัน','ค่าจ้างทั้งหมด กระทบยอดกับ ภงด.1 และรายงานเงินเดือน','ตรวจการจ่ายเงินออกจากธนาคารว่าตรงกับบัญชี','รายได้ขาย/บริการ กระทบยอดกับ ภพ.30 (VAT)','สอบทานค่ารับรอง (entertainment)','สอบทานการคำนวณภาษี + ใบเสร็จจากสรรพากร'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><div style={{fontSize:13,padding:'6px 10px',background:'#f7ecf0',borderRadius:6,border:'1px solid #ecd9df'}}>✓ {t}</div></Col>)}
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.2</span>3-Way vs 2-Way Matching</h3>
+      <Row gutter={[10,10]}>
+        <Col xs={24} md={12}><Card size="small" title="📦 ซื้อสินค้า → 3-Way Matching" style={{height:'100%',background:'#eef7ee'}}>
+          จับคู่ 3 เอกสาร:<br/>① <b>ใบสั่งซื้อ (Purchase Order)</b><br/>② <b>ใบแจ้งหนี้ผู้ขาย (Vendor's Invoice)</b><br/>③ <b>ใบรับสินค้า (GRN / Receiving Report)</b></Card></Col>
+        <Col xs={24} md={12}><Card size="small" title="🛠️ ซื้อบริการ → 2-Way Matching" style={{height:'100%',background:'#f0f5fa'}}>
+          จับคู่ 2 เอกสาร: <b>ใบสั่งซื้อ + ใบแจ้งหนี้</b><br/><span style={{fontSize:12.5,color:'#666'}}>ไม่มีใบรับสินค้า เพราะบริการไม่มีของให้รับเข้าคลัง</span></Card></Col>
+      </Row>
+      <div className="kbox">🔑 เหตุผล: ซื้อ<b>ของ</b>ต้องมีหลักฐาน "ได้รับของจริง" (GRN) จึงจับ 3 ทาง | ซื้อ<b>บริการ</b>ไม่มีของเข้าคลัง จับแค่ 2 ทาง<br/>🧪 กดปุ่มลอย → <b>3-way / 2-way matching</b></div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">5.3</span>ควบคุมการจ่ายเงินและบัญชีต้องสงสัย</h3>
+      <table className="fin"><tbody>
+        <tr><td>①</td><td>ตรวจ<b>ลายเซ็นอนุมัติในใบสั่งซื้อ</b> (อนุมัติก่อนซื้อ) · เทียบยอดใบแจ้งหนี้กับ GRN · ตรวจการบันทึกรับเข้า stock card</td></tr>
+        <tr><td>②</td><td>ใบสำคัญจ่าย (payment voucher) ต้องมี<b>ใบเสร็จตัวจริง</b>แนบ · ประทับตรา <b>"PAID / จ่ายแล้ว"</b> บนเอกสารทุกใบ (กันจ่ายซ้ำ)</td></tr>
+        <tr><td>③</td><td>Vouch <b>ค่าใช้จ่ายส่วนตัว</b> · สอบทานบัญชี<b>เบ็ดเตล็ด (miscellaneous)</b> และบัญชีที่มี<b>เลขที่/ชื่อแปลกๆ</b> เช่น 99999</td></tr>
+      </tbody></table>
+      <div className="analogy">💡 กระทบยอดกับเอกสารภาษี 2 ตัว: <b>ค่าจ้าง ↔ ภงด.1</b> (ภาษีหัก ณ ที่จ่ายเงินเดือน) และ <b>ยอดขาย ↔ ภพ.30</b> (VAT) — ตัวเลขต้องสอดคล้องกัน</div>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 6 : analytical ============ */
+function AnalyticalTab(){
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">6.1</span>4 วิธีวิเคราะห์เปรียบเทียบสำหรับรายได้</h3>
+      <Row gutter={[8,8]}>
+        {['Trend analysis (วิเคราะห์แนวโน้ม)','Ratio analysis (วิเคราะห์อัตราส่วน)','Reasonable test (ทดสอบความสมเหตุสมผล)','Structural modeling analysis (วิเคราะห์แบบจำลองโครงสร้าง)'].map((t,i)=>
+          <Col xs={24} md={12} key={i}><Card size="small" style={{background:'#f7ecf0'}}>{i+1}. {t}</Card></Col>)}
+      </Row>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">6.2</span>เปรียบเทียบกับอะไร และดูอัตราส่วนใด</h3>
+      <table className="fin">
+        <thead><tr><th>เปรียบเทียบกับ</th><th>อัตราส่วน/ตัวเลขที่ดู</th><th>แยกเปรียบเทียบตาม</th></tr></thead>
+        <tbody>
+          <tr><td rowSpan={2}>ปีก่อน · อุตสาหกรรม · งบประมาณ</td><td><b>รายได้:</b> อัตรากำไรขั้นต้น · สินค้ารับคืนและส่วนลด · สัดส่วนรายได้-ค่าใช้จ่าย · อัตราดอกเบี้ยเฉลี่ย</td><td rowSpan={2}>เดือน · ไตรมาส · ผลิตภัณฑ์ · ส่วนงานภูมิศาสตร์</td></tr>
+          <tr><td><b>ค่าใช้จ่าย:</b> ยอดรวม · อัตรากำไรขั้นต้น · การหมุนของสินค้า · ต้นทุนต่อหน่วย · ต้นทุนการผลิต · สัดส่วนรายได้-ค่าใช้จ่าย · เงินเดือนเฉลี่ย · จำนวนพนักงาน</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">📌 ถ้าวิเคราะห์แล้วพบความผันผวน/ความสัมพันธ์ที่<b>ไม่สอดคล้อง</b>หรือ<b>ต่างจากที่คาดอย่างมีนัยสำคัญ</b> → ผู้สอบต้อง (1) <b>สอบถามผู้บริหาร</b>และหาหลักฐานว่าคำตอบเป็นจริงไหม (2) ใช้วิธีตรวจสอบอื่นตามความจำเป็น</div>
+    </div>
+  </div>;
+}
+
+/* ============ FLASHCARDS ============ */
+const CARDS=[
+  {q:'รายได้เน้น assertion ใด และทำไม?',a:'Occurrence (เกิดขึ้นจริง) — เพราะกิจการมักอยากแสดงรายได้เกินจริง/บันทึกเร็วเกินไป (เสี่ยงทุจริต+ผิดงวด)'},
+  {q:'ค่าใช้จ่ายเน้น assertion ใด และทำไม?',a:'Completeness (ครบถ้วน) — เพราะกิจการมักอยากซ่อน/แสดงค่าใช้จ่ายต่ำเกินไปเพื่อให้กำไรดูดี'},
+  {q:'Test of control ของรายได้ ตรวจวงจรไหน?',a:'วงจรขายและรับชำระเงิน (sales & collection cycle)'},
+  {q:'Test of control ของค่าใช้จ่าย/ต้นทุน ตรวจวงจรไหน?',a:'วงจรซื้อและชำระเงิน · วงจรเงินเดือน · วงจรสินค้าคงเหลือ'},
+  {q:'การแบ่งแยกหน้าที่สำคัญในการขาย?',a:'ผู้เข้าถึงเงินสด ≠ ผู้บันทึกการรับเงิน | ผู้ให้เครดิต ≠ ฝ่ายขาย'},
+  {q:'เอกสารระบุเลขที่ล่วงหน้า (pre-numbered) ป้องกันอะไร?',a:'ป้องกันทั้งการลืมออกบิล/ลืมบันทึก และการออกบิล/บันทึกซ้ำ'},
+  {q:'Vouch สมุดขาย → เอกสารส่งของ ทดสอบ assertion ใด?',a:'Occurrence (เกิดจริง) — กันการบันทึกรายได้เกิน'},
+  {q:'Trace เอกสารส่งของ → สมุดขาย ทดสอบ assertion ใด?',a:'Completeness (ครบถ้วน) — กันการบันทึกรายได้ขาด'},
+  {q:'ตรวจเงินปันผลรับ ดูเอกสารอะไร?',a:'ประกาศจ่ายปันผล, หนังสือรับรองหักภาษี ณ ที่จ่าย, pay-in slip, bank statement (เงินเข้าจริง)'},
+  {q:'ตรวจดอกเบี้ยรับ ดูเอกสารอะไร?',a:'bank statement หรือ pay-in slip และหนังสือรับรองหักภาษี ณ ที่จ่าย'},
+  {q:'ตรวจกำไร/ขาดทุนจากการขาย PPE ดูอะไร?',a:'อนุมัติการจำหน่ายก่อนขาย, คำนวณกำไร/ขาดทุนใหม่, ใบเสร็จ/ใบแจ้งหนี้, ใบนำฝาก'},
+  {q:'ตรวจค่าเช่ารับ ดูเอกสารอะไร?',a:'สัญญาเช่า (rental agreement)'},
+  {q:'ประเด็นระวังของรายได้ 4 อย่าง?',a:'Fictitious revenue, Return on sales, Related party transactions, Channel stuffing'},
+  {q:'Channel stuffing คืออะไร?',a:'ยัดสินค้าให้ช่องทาง/ลูกค้าเกินความต้องการช่วงปลายงวดเพื่อดันยอดขาย (มักตามด้วยรับคืนงวดถัดไป)'},
+  {q:'ตรวจการบันทึกซ้ำของยอดขายทำอย่างไร?',a:'เรียงเลขที่รายการขายที่บันทึก ดูว่ามีเลขซ้ำหรือไม่'},
+  {q:'3-way matching ใช้กับอะไร และมีเอกสารใด?',a:'ซื้อสินค้า — ใบสั่งซื้อ (PO) + ใบแจ้งหนี้ผู้ขาย + ใบรับสินค้า (GRN)'},
+  {q:'2-way matching ใช้กับอะไร?',a:'ซื้อบริการ — ใบสั่งซื้อ + ใบแจ้งหนี้ (ไม่มีใบรับสินค้า เพราะบริการไม่มีของเข้าคลัง)'},
+  {q:'ทำไมต้องประทับตรา "PAID" บนเอกสารจ่าย?',a:'กันการนำเอกสารเดิมมาเบิกจ่ายซ้ำ (duplicate payment)'},
+  {q:'บัญชีเลข 99999 หรือชื่อแปลกๆ ทำไมต้องระวัง?',a:'อาจเป็นบัญชีเบ็ดเตล็ด/บัญชีที่ตั้งขึ้นผิดปกติเพื่อซ่อนรายการทุจริต → ต้องสอบทาน'},
+  {q:'ค่าจ้างกระทบยอดกับเอกสารภาษีใด?',a:'ภงด.1 และรายงานเงินเดือน'},
+  {q:'ยอดขาย/บริการกระทบยอดกับเอกสารภาษีใด?',a:'ภพ.30 (แบบแสดงรายการภาษีมูลค่าเพิ่ม VAT)'},
+  {q:'4 วิธีวิเคราะห์เปรียบเทียบสำหรับรายได้?',a:'Trend analysis, Ratio analysis, Reasonable test, Structural modeling analysis'},
+  {q:'ถ้า analytical procedures พบตัวเลขผิดปกติ ต้องทำอะไร?',a:'(1) สอบถามผู้บริหารและหาหลักฐานว่าคำตอบจริงไหม (2) ใช้วิธีตรวจสอบอื่นตามจำเป็น'},
+  {q:'ตัวอย่างอัตราส่วนวิเคราะห์ค่าใช้จ่าย?',a:'อัตรากำไรขั้นต้น, การหมุนสินค้า, ต้นทุนต่อหน่วย, ต้นทุนการผลิต, เงินเดือนเฉลี่ย, จำนวนพนักงาน'},
+];
+function FlashTab(){
+  const [order,setOrder]=useState(CARDS.map((_,i)=>i));const [flipped,setFlipped]=useState({});const [score,setScore]=useState({know:0,dunno:0});
+  const shuffle=()=>{setOrder([...order].sort(()=>Math.random()-.5));setFlipped({});setScore({know:0,dunno:0});};
+  return <div>
+    <div style={{marginBottom:12,display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+      <Button type="primary" style={{background:'#9b3b57'}} onClick={shuffle}>🔀 สับการ์ด</Button>
+      <Tag color="green">รู้แล้ว {score.know}</Tag><Tag color="red">ยังไม่รู้ {score.dunno}</Tag>
+      <Progress percent={Math.round((score.know+score.dunno)/CARDS.length*100)} size="small" style={{width:180}} strokeColor="#9b3b57"/>
+    </div>
+    <Row gutter={[10,10]}>
+      {order.map(i=><Col xs={24} sm={12} lg={8} key={i}>
+        <div className={'flip-card'+(flipped[i]?' flipped':'')} onClick={()=>setFlipped({...flipped,[i]:!flipped[i]})}>
+          <div className="flip-inner">
+            <div className="flip-face flip-front">{CARDS[i].q}</div>
+            <div className="flip-face flip-back"><div>{CARDS[i].a}
+              <div style={{marginTop:8}} onClick={e=>e.stopPropagation()}>
+                <Button size="small" style={{marginRight:6}} onClick={()=>setScore(s=>({...s,know:s.know+1}))}>✅</Button>
+                <Button size="small" danger onClick={()=>setScore(s=>({...s,dunno:s.dunno+1}))}>❌</Button>
+              </div></div></div>
+          </div>
+        </div>
+      </Col>)}
+    </Row>
+  </div>;
+}
+
+/* ============ QUICK ============ */
+function QuickTab(){
+  const cards=[
+    {c:'#9b3b57',t:'💰 รายได้กลัวเกิน / ค่าใช้จ่ายกลัวขาด',d:'รายได้ → Occurrence (แสดงเกิน) | ค่าใช้จ่าย → Completeness (ซ่อน/ต่ำเกิน) | ทั้งคู่เพื่อทำให้กำไรดูดี'},
+    {c:'#356e6a',t:'🔀 Vouch vs Trace',d:'Vouch สมุดขาย→เอกสาร = Occurrence (กันเกิน) | Trace เอกสาร→สมุดขาย = Completeness (กันขาด)'},
+    {c:'#8a5a2b',t:'🔒 คุมการขาย',d:'เงินสด ≠ บันทึก | เครดิต ≠ ขาย | อนุมัติเครดิต+ส่งของ+ราคาก่อน | เอกสารเลขรันต่อเนื่อง กันลืม+กันซ้ำ'},
+    {c:'#4a7c46',t:'🔗 3-way vs 2-way',d:'ซื้อของ = 3-way (PO + Invoice + GRN) | ซื้อบริการ = 2-way (PO + Invoice) ไม่มี GRN'},
+    {c:'#3a6b7a',t:'🧾 เอกสารรายได้เฉพาะ',d:'ปันผล: ประกาศ+WHT+เงินเข้า | ดอกเบี้ย: statement+WHT | ขาย PPE: อนุมัติ+คำนวณ+ใบเสร็จ | ค่าเช่า: สัญญา'},
+    {c:'#9c3d3d',t:'⚠️ ระวังรายได้ 4 อย่าง',d:'Fictitious · Return on sales · Related party · Channel stuffing → ทำ sales cut-off ให้ดี'},
+    {c:'#7a4f6d',t:'🖋️ กันจ่ายซ้ำ',d:'ใบสำคัญจ่ายต้องมีใบเสร็จจริง + ประทับ "PAID" ทุกใบ | ระวังบัญชีเบ็ดเตล็ด/เลขแปลก 99999'},
+    {c:'#5a5a7a',t:'📑 กระทบยอดภาษี',d:'ค่าจ้าง ↔ ภงด.1 + รายงานเงินเดือน | ยอดขาย ↔ ภพ.30 (VAT) | ภาษี ↔ ใบเสร็จสรรพากร'},
+    {c:'#6b7a3a',t:'📊 4 วิธีวิเคราะห์รายได้',d:'Trend · Ratio · Reasonable test · Structural modeling | เทียบปีก่อน/อุตสาหกรรม/งบประมาณ ตามเดือน/ไตรมาส/ผลิตภัณฑ์/พื้นที่'},
+    {c:'#2f6d5f',t:'🔎 เจอผิดปกติจาก AP',d:'สอบถามผู้บริหาร + หาหลักฐานว่าคำตอบจริงไหม → แล้วใช้วิธีตรวจอื่นเพิ่ม'},
+  ];
+  return <Row gutter={[10,10]}>{cards.map((x,i)=><Col xs={24} md={12} key={i}><div className="qcard" style={{background:x.c}}><h4>{x.t}</h4><div>{x.d}</div></div></Col>)}</Row>;
+}
+
+/* ============ LAB 1 : occurrence/completeness + vouch/trace ============ */
+const AQUIZ=[
+  {q:'ตรวจสอบรายได้จากการขาย ผู้สอบกังวล assertion ใดเป็นหลัก?',opts:['Occurrence','Completeness'],ans:0,ex:'รายได้เสี่ยงแสดงเกินจริง/บันทึกเร็วเกินไป → เน้น Occurrence'},
+  {q:'ตรวจสอบค่าใช้จ่าย ผู้สอบกังวล assertion ใดเป็นหลัก?',opts:['Occurrence','Completeness'],ans:1,ex:'ค่าใช้จ่ายเสี่ยงถูกซ่อน/แสดงต่ำเกิน → เน้น Completeness'},
+  {q:'Vouch จากรายการในสมุดขาย → ไปหาเอกสารส่งของ ทดสอบ assertion ใด?',opts:['Occurrence','Completeness'],ans:0,ex:'เริ่มจากบัญชีย้อนไปเอกสาร = พิสูจน์ว่ารายการเกิดจริง (Occurrence) กันบันทึกเกิน'},
+  {q:'Trace จากเอกสารส่งของ → ไปหารายการในสมุดขาย ทดสอบ assertion ใด?',opts:['Occurrence','Completeness'],ans:1,ex:'เริ่มจากเอกสารต้นทางตามไปบัญชี = พิสูจน์ว่าบันทึกครบ (Completeness) กันบันทึกขาด'},
+  {q:'อยากตรวจว่ามี "รายได้ผี" (fictitious) ที่บันทึกเกินหรือไม่ ควรทดสอบทิศทางใด?',opts:['Vouch (Occurrence)','Trace (Completeness)'],ans:0,ex:'รายได้ผี = บันทึกเกิน → Vouch สมุดขายไปหาเอกสาร (Occurrence)'},
+];
+function AssertLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=AQUIZ[i];
+  const choose=(n)=>{if(picked!==null)return;setPicked(n);if(n===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<AQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>🎯</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {AQUIZ.length}</div>
+    <Button type="primary" style={{background:'#9b3b57'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="magenta">ข้อ {i+1}/{AQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <div className="sec-card" style={{marginBottom:10}}><b>{q.q}</b></div>
+    <Row gutter={[8,8]}>{q.opts.map((o,n)=>{let b='#d9d9d9',bg='#fff';if(picked!==null){if(n===q.ans){b='#237804';bg='#eaf6ea';}else if(n===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={12} key={n}><div onClick={()=>choose(n)} style={{cursor:picked!==null?'default':'pointer',padding:'12px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontWeight:700,fontSize:13.5}}>{o}</div></Col>;})}</Row>
+    {picked!==null && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700,marginBottom:4}}>{picked===q.ans?'✅ ถูกต้อง':'❌ คำตอบคือ '+q.opts[q.ans]}</div>{q.ex}
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#9b3b57'}} onClick={next}>{i+1<AQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ LAB 2 : matching ============ */
+const MQUIZ=[
+  {s:'ซื้อวัตถุดิบเข้าคลังจาก supplier',ans:'3-way'},
+  {s:'จ้างบริษัทที่ปรึกษากฎหมาย (บริการ)',ans:'2-way'},
+  {s:'ซื้อเครื่องคอมพิวเตอร์มาใช้ในสำนักงาน',ans:'3-way'},
+  {s:'จ่ายค่าบริการทำความสะอาดรายเดือน',ans:'2-way'},
+  {s:'ซื้อสินค้าสำเร็จรูปมาเพื่อขายต่อ',ans:'3-way'},
+];
+function MatchLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=MQUIZ[i];const opts=['3-way','2-way'];
+  const choose=(v)=>{if(picked)return;setPicked(v);if(v===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<MQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>🔗</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {MQUIZ.length}</div>
+    <Button type="primary" style={{background:'#9b3b57'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="ควรใช้ matching แบบใด?" description="ซื้อของ = 3-way (PO+Invoice+GRN) | ซื้อบริการ = 2-way (PO+Invoice)"/>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><Tag color="magenta">ข้อ {i+1}/{MQUIZ.length}</Tag><Tag color="green">คะแนน {score}</Tag></div>
+    <div className="sec-card" style={{marginBottom:10,textAlign:'center',fontSize:15,fontWeight:600}}>{q.s}</div>
+    <Row gutter={[8,8]}>{opts.map(v=>{let b='#d9d9d9',bg='#fff';if(picked){if(v===q.ans){b='#237804';bg='#eaf6ea';}else if(v===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={12} key={v}><div onClick={()=>choose(v)} style={{cursor:picked?'default':'pointer',padding:'14px',borderRadius:8,border:'2px solid '+b,background:bg,textAlign:'center',fontWeight:700,fontSize:15}}>{v==='3-way'?'📦 3-way':'🛠️ 2-way'}</div></Col>;})}</Row>
+    {picked && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700}}>{picked===q.ans?'✅ ถูกต้อง — '+q.ans:'❌ คำตอบคือ '+q.ans}</div>
+      <div style={{marginTop:4}}>{q.ans==='3-way'?'ซื้อของมีการรับเข้าคลัง → ต้องมี GRN → จับ 3 ทาง':'ซื้อบริการไม่มีของเข้าคลัง → ไม่มี GRN → จับ 2 ทาง'}</div>
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#9b3b57'}} onClick={next}>{i+1<MQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+/* ============ LAB 3 : revenue doc matcher ============ */
+const DQUIZ=[
+  {s:'เงินปันผลรับ',ans:'ประกาศจ่ายปันผล + หนังสือหักภาษี ณ ที่จ่าย + เงินเข้าบัญชี'},
+  {s:'ดอกเบี้ยรับ',ans:'bank statement / pay-in slip + หนังสือหักภาษี ณ ที่จ่าย'},
+  {s:'กำไรจากการขายสินทรัพย์ถาวร',ans:'อนุมัติการจำหน่าย + คำนวณกำไร/ขาดทุนใหม่ + ใบเสร็จ/ใบแจ้งหนี้ + ใบนำฝาก'},
+  {s:'ค่าเช่ารับ',ans:'สัญญาเช่า (rental agreement)'},
+];
+function DocLab(){
+  const [i,setI]=useState(0);const [picked,setPicked]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);
+  const q=DQUIZ[i];const opts=DQUIZ.map(x=>x.ans);
+  const choose=(v)=>{if(picked)return;setPicked(v);if(v===q.ans)setScore(score+1);};
+  const next=()=>{if(i+1<DQUIZ.length){setI(i+1);setPicked(null);}else setDone(true);};
+  if(done)return <div style={{textAlign:'center',padding:20}}><div style={{fontSize:40}}>📄</div>
+    <div style={{fontSize:18,fontWeight:700,margin:'8px 0'}}>ได้ {score} / {DQUIZ.length}</div>
+    <Button type="primary" style={{background:'#9b3b57'}} onClick={()=>{setI(0);setPicked(null);setScore(0);setDone(false);}}>เริ่มใหม่</Button></div>;
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="รายได้นี้ตรวจด้วยเอกสารสนับสนุนชุดใด?" description={q.s}/>
+    <div style={{display:'flex',justifyContent:'flex-end',marginBottom:8}}><Tag color="green">คะแนน {score} · ข้อ {i+1}/{DQUIZ.length}</Tag></div>
+    <Row gutter={[8,8]}>{opts.map((v,n)=>{let b='#d9d9d9',bg='#fff';if(picked){if(v===q.ans){b='#237804';bg='#eaf6ea';}else if(v===picked){b='#c0564a';bg='#fff1f0';}}
+      return <Col xs={24} key={n}><div onClick={()=>choose(v)} style={{cursor:picked?'default':'pointer',padding:'10px 12px',borderRadius:8,border:'2px solid '+b,background:bg,fontSize:12.5,fontWeight:500}}>{v}</div></Col>;})}</Row>
+    {picked && <div className={picked===q.ans?'analogy':'warn'} style={{marginTop:10,fontSize:13}}>
+      <div style={{fontWeight:700}}>{picked===q.ans?'✅ ถูกต้อง':'❌ ยังไม่ใช่'}</div>
+      <div style={{marginTop:8}}><Button type="primary" size="small" style={{background:'#9b3b57'}} onClick={next}>{i+1<DQUIZ.length?'ข้อถัดไป →':'ดูคะแนน'}</Button></div>
+    </div>}
+  </div>;
+}
+
+function FloatingLab(){
+  const [open,setOpen]=useState(false);const [seg,setSeg]=useState('assert');
+  const w=typeof window!=='undefined'?Math.min(560,window.innerWidth-16):560;
+  return <React.Fragment>
+    <FloatButton type="primary" onClick={()=>setOpen(true)} description="ทดลอง" shape="square" style={{right:24,bottom:24,width:58,height:58}} icon={<span style={{fontSize:20}}>🧪</span>}/>
+    <Drawer open={open} onClose={()=>setOpen(false)} width={w} title="🧪 ห้องทดลองแบบโต้ตอบ" styles={{body:{paddingTop:12}}}>
+      <Segmented block value={seg} onChange={setSeg} style={{marginBottom:14}} options={[{label:'🎯 Assertion/ทิศ',value:'assert'},{label:'🔗 Matching',value:'match'},{label:'📄 เอกสารรายได้',value:'doc'}]}/>
+      {seg==='assert'&&<AssertLab/>}
+      {seg==='match'&&<MatchLab/>}
+      {seg==='doc'&&<DocLab/>}
+    </Drawer>
+  </React.Fragment>;
+}
+
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>💰 GA511 — ตรวจสอบรายได้และค่าใช้จ่าย</h1>
+      <p>Note 7: รายได้=Occurrence / ค่าใช้จ่าย=Completeness → คุมการขาย → Tests of details → ประเด็นระวัง → 3-way/2-way → Analytical | อิงสไลด์ GA511</p>
+      <p style={{marginTop:8,fontSize:13.5,background:'rgba(255,255,255,0.15)',padding:'6px 12px',borderRadius:8,display:'inline-block'}}>🧪 ปุ่มลอย "ทดลอง" — Assertion/ทิศทาง · 3-way/2-way · จับคู่เอกสารรายได้</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'💰 ภาพรวม & Assertion',children:<OverviewTab/>},
+      {key:'2',label:'🔒 คุมการขาย',children:<ControlTab/>},
+      {key:'3',label:'🔍 Tests รายได้',children:<RevDetailTab/>},
+      {key:'4',label:'⚠️ ระวังรายได้',children:<ConcernTab/>},
+      {key:'5',label:'🧾 Tests ค่าใช้จ่าย',children:<ExpDetailTab/>},
+      {key:'6',label:'📊 Analytical',children:<AnalyticalTab/>},
+      {key:'7',label:'🃏 Flashcard',children:<FlashTab/>},
+      {key:'8',label:'⚡ การ์ดจำด่วน',children:<QuickTab/>},
+    ]}/>
+  </div>;
+}
+function Root(){ return <React.Fragment><App/><FloatingLab/></React.Fragment>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>

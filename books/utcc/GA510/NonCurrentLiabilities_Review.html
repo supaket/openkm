@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Non-Current Liabilities — เรียนจากศูนย์แบบ Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { background:#f8f3f0; font-family:'Noto Sans Thai',sans-serif; margin:0; }
+  * { font-family:'Noto Sans Thai',sans-serif !important; }
+  .wrap { max-width:1060px; margin:0 auto; padding:16px 12px 70px; }
+  .hero { background:linear-gradient(135deg,#6b3a2e,#9b5a44); border-radius:14px; padding:22px 26px; color:#fdf1ec; margin-bottom:14px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; color:#fdf1ec; }
+  .hero p { margin:0; opacity:.93; }
+  .sec-card { background:#fff; border:1px solid #ecdcd4; border-radius:12px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(110,60,45,.07); animation:rise .5s ease both; }
+  @keyframes rise { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+  .sec-card h3 { margin:0 0 10px; color:#6b3a2e; font-size:17px; }
+  .tag-step { display:inline-block; background:#9b5a44; color:#fff; border-radius:20px; padding:1px 12px; font-size:12.5px; margin-right:8px; }
+  table.fin { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  table.fin th { background:#f3e2da; color:#5c3125; padding:6px 8px; border:1px solid #e3cabe; text-align:center; }
+  table.fin td { padding:5px 8px; border:1px solid #ecd8ce; }
+  table.fin td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  table.fin td.neg { text-align:right; color:#a8071a; }
+  table.fin tr.total td { background:#f6e9e2; font-weight:700; }
+  table.fin tr.cur td { background:#fff3bf; font-weight:600; }
+  .hl { background:#fff3bf; padding:0 4px; border-radius:4px; font-weight:600; }
+  .kbox { background:#f6e9e2; border-left:4px solid #9b5a44; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .analogy { background:#eef7ee; border-left:4px solid #4a7c46; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .warn { background:#fdf1f0; border-left:4px solid #c0564a; border-radius:8px; padding:10px 14px; margin:10px 0; font-size:14px; }
+  .je { background:#fdf8f5; border:1px dashed #c99a82; border-radius:8px; padding:8px 14px; font-size:13.5px; margin:8px 0; }
+  .je b { color:#6b3a2e; }
+  .bignum { font-size:19px; font-weight:700; color:#6b3a2e; transition:all .4s; font-variant-numeric:tabular-nums; }
+  .seesaw { transition:transform .6s cubic-bezier(.2,.8,.2,1); transform-origin:center; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { Tabs, Card, Collapse, Tag, Button, Row, Col, Alert, Slider, Steps, Segmented } = antd;
+const { useState } = React;
+const n0=(x)=> Math.round(x).toLocaleString('en-US');
+
+/* ============ TAB 1 : ปูพื้นหุ้นกู้ ============ */
+function BasicTab(){
+  const [mkt,setMkt]=useState(10);
+  const stated=10;
+  const status = mkt<stated? 'premium' : (mkt>stated? 'discount':'par');
+  const tilt = mkt<stated? -7 : (mkt>stated? 7 : 0);
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เริ่มจากศูนย์</span>หุ้นกู้ (Bonds Payable) คืออะไร</h3>
+      <div className="analogy">💌 หุ้นกู้ = "สัญญากู้เงินฉบับแบ่งขาย" — บริษัทอยากกู้เงินก้อนใหญ่ เลยหั่นเป็นใบย่อยๆ ขายให้นักลงทุนหลายคน โดยสัญญา 2 อย่าง: ① จ่ายดอกเบี้ยเป็นงวดตามอัตราที่พิมพ์ไว้หน้าตั๋ว ② คืนเงินต้น (face value) เมื่อครบกำหนด</div>
+      <table className="fin">
+        <thead><tr><th>ศัพท์</th><th>ความหมาย</th></tr></thead>
+        <tbody>
+          <tr><td><b>Face/Par value</b> มูลค่าที่ตราไว้</td><td>เงินต้นที่จะคืน ณ วันครบกำหนด</td></tr>
+          <tr><td><b>Maturity date</b> วันครบกำหนด</td><td>วันคืนเงินต้น</td></tr>
+          <tr><td><b>Stated/Coupon rate</b> อัตราที่ตราไว้</td><td>อัตราดอกเบี้ยที่<b>สัญญาจะจ่ายเป็นเงินสด</b>ทุกงวด (× face value)</td></tr>
+          <tr><td><b>Market/Yield rate</b> อัตราตลาด</td><td>ผลตอบแทนที่นักลงทุน "เรียกร้อง" — ใช้คำนวณ<b>ดอกเบี้ยจ่ายทางบัญชี</b> (× carrying value)</td></tr>
+        </tbody>
+      </table>
+      <div className="kbox">📰 อ่านตารางหุ้นกู้จริงจากสไลด์: PTT | Coupon 4% | Maturity 2021/11/15 | Price 103.6% | Yield 3.45% | Rating AAA → ราคาซื้อขาย 103.6% ของราคาหน้าตั๋ว (สูงกว่า par เพราะ yield ตลาด 3.45% ต่ำกว่า coupon 4%)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">กติกาทอง</span>Stated vs Market — ใครสูงใครต่ำ ตัดสินราคาขาย</h3>
+      <p>ลากอัตราตลาดดู (ตราไว้คงที่ 8% ตามตัวอย่างสไลด์):</p>
+      <div style={{fontSize:13}}>อัตราตลาด: <b>{mkt}%</b></div>
+      <Slider min={4} max={14} step={0.5} value={mkt} onChange={setMkt} style={{maxWidth:420}}/>
+      <svg viewBox="0 0 560 150" style={{width:'100%',maxWidth:560}}>
+        <polygon points="280,120 260,145 300,145" fill="#9b5a44"/>
+        <g className="seesaw" style={{transform:`rotate(${tilt}deg)`,transformBox:'fill-box',transformOrigin:'center'}}>
+          <rect x="60" y="112" width="440" height="10" rx="5" fill="#c99a82"/>
+          <rect x="70" y="70" width="150" height="40" rx="8" fill="#5b8bd0"/>
+          <text x="145" y="95" textAnchor="middle" fontSize="14" fill="#fff">Stated 8%</text>
+          <rect x="340" y="70" width="150" height="40" rx="8" fill="#b05a7a"/>
+          <text x="415" y="95" textAnchor="middle" fontSize="14" fill="#fff">Market {mkt}%</text>
+        </g>
+        <text x="280" y="30" textAnchor="middle" fontSize="16" fontWeight="700"
+          fill={status==='premium'?'#1c7f38':(status==='discount'?'#a8071a':'#6b3a2e')}>
+          {status==='premium'? 'ขายได้ราคา PREMIUM (สูงกว่า par)' : status==='discount'? 'ขายได้ราคา DISCOUNT (ต่ำกว่า par)' : 'ขายได้ที่ PAR (เท่าราคาตราไว้)'}
+        </text>
+      </svg>
+      <div className="kbox">🧠 เข้าใจด้วยเหตุผล ไม่ต้องท่อง: หุ้นกู้จ่ายดอกเบี้ยเงินสดตายตัว 8% — ถ้าตลาดเรียกร้องแค่ 6% ตั๋วใบนี้ "จ่ายดีเกินตลาด" คนแย่งซื้อ → ราคาพุ่งเกิน par (premium) | ถ้าตลาดเรียกร้อง 10% ตั๋วนี้ "จ่ายน้อยไป" ต้องลดราคาจูงใจ → ต่ำกว่า par (discount)</div>
+      <div className="je"><b>สองสูตรที่ห้ามสลับกัน:</b><br/>ดอกเบี้ยจ่ายเป็นเงินสด (Cash paid) = Stated rate × <b>Face value</b> (เท่ากันทุกงวด)<br/>ดอกเบี้ยจ่ายทางบัญชี (Interest expense) = Market rate × <b>Carrying value</b> (เปลี่ยนทุกงวด)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เคสง่ายสุด</span>ออกที่ Par — UTCC $10,000 คูปอง 10% ตลาด 10%</h3>
+      <div className="je">วันออก: Dr เงินสด 10,000 / Cr หุ้นกู้ 10,000<br/>สิ้นปี ตั้งดอกเบี้ยค้าง: Dr ดอกเบี้ยจ่าย 1,000 / Cr ดอกเบี้ยค้างจ่าย 1,000 (10,000 × 10%)<br/>วันจ่ายจริงปีถัดไป: Dr ดอกเบี้ยค้างจ่าย 1,000 / Cr เงินสด 1,000</div>
+      <p>ออกที่ par ไม่มีส่วนลด/ส่วนเกินให้ตัดจำหน่าย — ดอกเบี้ยเงินสด = ดอกเบี้ยบัญชี ทุกงวดตลอดอายุ</p>
+    </div>
+  </div>;
+}
+
+/* ============ ตาราง amortization (ตัวเลขตรงจากสไลด์ 100%) ============ */
+const SCHED_DISCOUNT=[ // BCG 92,639 → 100,000
+  {i:1,cash:5000,exp:5558,amort:558,cv:93197},{i:2,cash:5000,exp:5592,amort:592,cv:93789},
+  {i:3,cash:5000,exp:5627,amort:627,cv:94416},{i:4,cash:5000,exp:5665,amort:665,cv:95081},
+  {i:5,cash:5000,exp:5705,amort:705,cv:95786},{i:6,cash:5000,exp:5747,amort:747,cv:96533},
+  {i:7,cash:5000,exp:5792,amort:792,cv:97325},{i:8,cash:5000,exp:5840,amort:840,cv:98165},
+  {i:9,cash:5000,exp:5890,amort:890,cv:99055},{i:10,cash:5000,exp:5945,amort:945,cv:100000}];
+const SCHED_PREMIUM=[ // 638,780 → 600,000
+  {i:1,cash:36000,exp:31939,amort:4061,cv:634719},{i:2,cash:36000,exp:31736,amort:4264,cv:630455},
+  {i:3,cash:36000,exp:31523,amort:4477,cv:625978},{i:4,cash:36000,exp:31299,amort:4701,cv:621277},
+  {i:5,cash:36000,exp:31064,amort:4936,cv:616341},{i:6,cash:36000,exp:30817,amort:5183,cv:611158},
+  {i:7,cash:36000,exp:30558,amort:5442,cv:605716},{i:8,cash:36000,exp:30284,amort:5716,cv:600000}];
+const SCHED_ZERO=[ // 95,326 → 150,000
+  {i:1,cash:0,exp:11440,amort:11440,cv:106766},{i:2,cash:0,exp:12812,amort:12812,cv:119576},
+  {i:3,cash:0,exp:14350,amort:14350,cv:133926},{i:4,cash:0,exp:16074,amort:16074,cv:150000}];
+const SCHED_IB=[ // BMG 62,990 → 80,000
+  {i:1,cash:4000,exp:7558,amort:3558,cv:66548},{i:2,cash:4000,exp:7986,amort:3986,cv:70534},
+  {i:3,cash:4000,exp:8464,amort:4464,cv:74998},{i:4,cash:4000,exp:9002,amort:5002,cv:80000}];
+function DiscountTab(){
+  const rows=SCHED_DISCOUNT;
+  const [upto,setUpto]=useState(1);
+  const cur=rows[upto-1];
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เคส BCG (สไลด์): หุ้นกู้ 5 ปี face 100,000 คูปอง 10% จ่ายครึ่งปี (งวดละ 5%) ตลาด 12% (งวดละ 6%) → ขายได้ 92,639" description="Discount = 100,000 − 92,639 = 7,361 → ทยอยตัดด้วยวิธีดอกเบี้ยที่แท้จริง (effective-interest) 10 งวด"/>
+    <div className="sec-card">
+      <h3>🎬 ไล่ตารางตัดจำหน่ายทีละงวด (ลากดู carrying value ไต่ขึ้นหา 100,000)</h3>
+      <div style={{fontSize:13}}>แสดงถึงงวดที่: <b>{upto}</b> / 10 | Carrying value ล่าสุด: <span className="bignum">{n0(cur.cv)}</span></div>
+      <Slider min={1} max={10} value={upto} onChange={setUpto} style={{maxWidth:420}}/>
+      <svg viewBox="0 0 640 90" style={{width:'100%',maxWidth:640}}>
+        <rect x="20" y="35" width="600" height="16" rx="8" fill="#f0ddd3"/>
+        <rect x="20" y="35" width={600*((cur.cv-92639)/(100000-92639))} height="16" rx="8" fill="#9b5a44" style={{transition:'width .5s'}}/>
+        <text x="20" y="25" fontSize="12" fill="#6b3a2e">92,639 (วันออก)</text>
+        <text x="620" y="25" fontSize="12" textAnchor="end" fill="#6b3a2e">100,000 (ครบกำหนด)</text>
+        <text x="320" y="72" fontSize="13" textAnchor="middle" fill="#6b3a2e">ส่วนลดถูก "เติม" กลับเข้าหนี้ทีละงวด งวดละโตขึ้นเรื่อยๆ</text>
+      </svg>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th>งวด</th><th>เงินสดจ่าย (5% × 100,000)</th><th>ดอกเบี้ยบัญชี (6% × CV)</th><th>ตัดส่วนลด</th><th>Carrying value</th></tr></thead>
+        <tbody>
+          <tr><td>วันออก</td><td></td><td></td><td></td><td className="num">92,639</td></tr>
+          {rows.slice(0,upto).map(r=><tr key={r.i} className={r.i===upto?'cur':''}>
+            <td>{r.i}</td><td className="num">{n0(r.cash)}</td><td className="num">{n0(r.exp)}</td><td className="num">{n0(r.amort)}</td><td className="num">{n0(r.cv)}</td>
+          </tr>)}
+        </tbody>
+      </table>
+      </div>
+      <div className="kbox">✅ เทียบสไลด์: งวด 1 = 5,000 / 5,558 / 558 / 93,197 ... งวดسุดท้าย CV = 100,000 พอดี | สังเกต: ดอกเบี้ยบัญชี<b>โตขึ้นทุกงวด</b> เพราะฐาน CV โตขึ้น</div>
+      <div className="je"><b>บันทึกบัญชี:</b><br/>วันออก: Dr เงินสด 92,639 / Cr หุ้นกู้ 92,639<br/>งวดแรก: Dr ดอกเบี้ยจ่าย 5,558 / Cr หุ้นกู้ 558 + Cr เงินสด 5,000 ← <span className="hl">ตัดส่วนลด = เพิ่มหนี้</span><br/>ครบกำหนด: จ่ายดอกงวดสุดท้าย แล้ว Dr หุ้นกู้ 100,000 / Cr เงินสด 100,000</div>
+      <div className="warn">⚠️ หัวใจ: ออกต่ำกว่า par → ตลอดอายุต้องรับภาระ "ส่วนลด 7,361" เป็นดอกเบี้ยเพิ่ม — การตัดส่วนลดจึง<b>เพิ่ม</b>ดอกเบี้ยจ่าย (5,558 &gt; 5,000)</div>
+    </div>
+  </div>;
+}
+function PremiumTab(){
+  const rows=SCHED_PREMIUM;
+  const [upto,setUpto]=useState(1);
+  const cur=rows[upto-1];
+  return <div>
+    <Alert type="info" showIcon style={{marginBottom:10}} message="เคสสไลด์: หุ้นกู้ 600,000 คูปอง 12% จ่ายครึ่งปี (งวดละ 6% = 36,000) ตลาด 10% (งวดละ 5%) → ขายได้ 638,780" description="Premium = 638,780 − 600,000 = 38,780 → ทยอยตัดให้ CV ลดลงหา 600,000 ใน 8 งวด"/>
+    <div className="sec-card">
+      <h3>🎬 ฝั่ง Premium: carrying value ไหลลงหา 600,000</h3>
+      <div style={{fontSize:13}}>แสดงถึงงวดที่: <b>{upto}</b> / 8 | Carrying value ล่าสุด: <span className="bignum">{n0(cur.cv)}</span></div>
+      <Slider min={1} max={8} value={upto} onChange={setUpto} style={{maxWidth:420}}/>
+      <svg viewBox="0 0 640 60" style={{width:'100%',maxWidth:640}}>
+        <rect x="20" y="20" width="600" height="16" rx="8" fill="#f0ddd3"/>
+        <rect x="20" y="20" width={600*((cur.cv-600000)/(638780-600000))} height="16" rx="8" fill="#4a7c46" style={{transition:'width .5s'}}/>
+        <text x="20" y="14" fontSize="12" fill="#2e5b3f">638,780 (วันออก)</text>
+        <text x="620" y="14" fontSize="12" textAnchor="end" fill="#2e5b3f">600,000 (ครบกำหนด)</text>
+      </svg>
+      <div style={{overflowX:'auto'}}>
+      <table className="fin">
+        <thead><tr><th>งวด</th><th>เงินสดจ่าย (6% × 600,000)</th><th>ดอกเบี้ยบัญชี (5% × CV)</th><th>ตัดส่วนเกิน</th><th>Carrying value</th></tr></thead>
+        <tbody>
+          <tr><td>วันออก</td><td></td><td></td><td></td><td className="num">638,780</td></tr>
+          {rows.slice(0,upto).map(r=><tr key={r.i} className={r.i===upto?'cur':''}>
+            <td>{r.i}</td><td className="num">{n0(r.cash)}</td><td className="num">{n0(r.exp)}</td><td className="num">{n0(r.amort)}</td><td className="num">{n0(r.cv)}</td>
+          </tr>)}
+        </tbody>
+      </table>
+      </div>
+      <div className="kbox">✅ เทียบสไลด์: งวด 1 = 36,000 / 31,939 / 4,061 / 634,719 | ฝั่งนี้กลับด้านทุกอย่าง: ดอกเบี้ยบัญชี<b>ต่ำกว่า</b>เงินสดจ่าย และ<b>ลดลงทุกงวด</b></div>
+      <div className="je"><b>บันทึกบัญชี:</b><br/>วันออก: Dr เงินสด 638,780 / Cr หุ้นกู้ 638,780<br/>งวดแรก: Dr ดอกเบี้ยจ่าย 31,939 + Dr หุ้นกู้ 4,061 / Cr เงินสด 36,000 ← <span className="hl">ตัดส่วนเกิน = ลดหนี้ ลดดอกเบี้ย</span></div>
+    </div>
+    <div className="sec-card">
+      <h3>📊 สรุปเทียบ 3 กรณีในตารางเดียว (ออกสอบบ่อยสุด)</h3>
+      <table className="fin">
+        <thead><tr><th></th><th>Discount (ตลาด &gt; ตราไว้)</th><th>Par (เท่ากัน)</th><th>Premium (ตลาด &lt; ตราไว้)</th></tr></thead>
+        <tbody>
+          <tr><td>ราคาขาย</td><td>ต่ำกว่า face (92,639)</td><td>= face</td><td>สูงกว่า face (638,780)</td></tr>
+          <tr><td>ดอกเบี้ยบัญชี vs เงินสด</td><td>สูงกว่า (5,558 &gt; 5,000)</td><td>เท่ากัน</td><td>ต่ำกว่า (31,939 &lt; 36,000)</td></tr>
+          <tr><td>การตัดจำหน่าย</td><td>เพิ่ม CV ขึ้นหา face</td><td>—</td><td>ลด CV ลงหา face</td></tr>
+          <tr><td>ดอกเบี้ยบัญชีแต่ละงวด</td><td>โตขึ้นเรื่อยๆ</td><td>คงที่</td><td>ลดลงเรื่อยๆ</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>;
+}
+
+/* ============ TAB 4 : ตั๋วเงินจ่ายระยะยาว ============ */
+function NotesTab(){
+  const zero=SCHED_ZERO;
+  const ib=SCHED_IB;
+  return <div>
+    <div className="sec-card">
+      <h3><span className="tag-step">หลักเดียวกัน</span>ตั๋วเงินจ่ายระยะยาว (Long-term Notes Payable)</h3>
+      <p>เหมือนหุ้นกู้เกือบทุกอย่าง: วัดมูลค่าด้วย present value และตัดส่วนลด/ส่วนเกินด้วยวิธีดอกเบี้ยที่แท้จริง — ต่างแค่มักเป็นสัญญากับเจ้าหนี้รายเดียว (เช่น ธนาคาร)</p>
+      <div className="je"><b>เคสง่าย — ออกที่ face:</b> UTCC ออกตั๋ว 200,000 อายุ 4 ปี ดอกเบี้ย 10% ให้ BKK Bank<br/>Dr เงินสด 200,000 / Cr ตั๋วเงินจ่าย 200,000 | ทุกสิ้นปี: Dr ดอกเบี้ยจ่าย 20,000 / Cr เงินสด 20,000</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เคสพิเศษ 1</span>ตั๋วไม่มีดอกเบี้ย (Zero-interest-bearing) — "ดอกเบี้ยซ่อนอยู่ในส่วนลด"</h3>
+      <div className="analogy">🎁 "ผ่อน 0%" มีจริงเหรอ? — UTCC ออกตั๋ว 150,000 แลกเงินสดแค่ 95,326 ส่วนต่าง 54,674 นั่นแหละคือดอกเบี้ยตลอด 4 ปี (อัตราแฝง 12%) แค่ไม่จ่ายเป็นงวด แต่ไปจ่ายรวบตอนคืน 150,000</div>
+      <table className="fin">
+        <thead><tr><th>ปี</th><th>เงินสดจ่าย (0%)</th><th>ดอกเบี้ยบัญชี (12% × CV)</th><th>ตัดส่วนลด</th><th>Carrying value</th></tr></thead>
+        <tbody>
+          <tr><td>วันออก</td><td></td><td></td><td></td><td className="num">95,326</td></tr>
+          {zero.map(r=><tr key={r.i}><td>{r.i}</td><td className="num">0</td><td className="num">{n0(r.exp)}</td><td className="num">{n0(r.amort)}</td><td className="num">{n0(r.cv)}</td></tr>)}
+        </tbody>
+      </table>
+      <div className="je">ปี 1: Dr ดอกเบี้ยจ่าย 11,440 / Cr ตั๋วเงินจ่าย 11,440 (ไม่มีเงินสดออกเลย — หนี้โตขึ้นเอง 95,326 → 106,766 → ... → 150,000)</div>
+    </div>
+    <div className="sec-card">
+      <h3><span className="tag-step">เคสพิเศษ 2</span>ตั๋วดอกเบี้ยต่ำกว่าตลาด — BMG แลกคอมพิวเตอร์</h3>
+      <p>BMG ออกตั๋ว 80,000 ดอกเบี้ย 5% (จ่ายปีละ 4,000) แลกคอมพิวเตอร์มูลค่าจริง 62,990 | ตลาด 12% → บันทึกทุกอย่างที่<b>มูลค่ายุติธรรม 62,990</b> ส่วนต่าง 17,010 คือส่วนลดรอตัด</p>
+      <table className="fin">
+        <thead><tr><th>ปี</th><th>เงินสดจ่าย (5% × 80,000)</th><th>ดอกเบี้ยบัญชี (12% × CV)</th><th>ตัดส่วนลด</th><th>Carrying value</th></tr></thead>
+        <tbody>
+          <tr><td>วันออก</td><td></td><td></td><td></td><td className="num">62,990</td></tr>
+          {ib.map(r=><tr key={r.i}><td>{r.i}</td><td className="num">{n0(r.cash)}</td><td className="num">{n0(r.exp)}</td><td className="num">{n0(r.amort)}</td><td className="num">{n0(r.cv)}</td></tr>)}
+        </tbody>
+      </table>
+      <div className="je">วันออก: Dr คอมพิวเตอร์ 62,990 / Cr ตั๋วเงินจ่าย 62,990<br/>ปี 1: Dr ดอกเบี้ยจ่าย 7,558 / Cr เงินสด 4,000 + Cr ตั๋วเงินจ่าย 3,558</div>
+      <div className="warn">⚠️ ตรงเฉลยสไลด์ทุกบรรทัด (7,558 / 7,986 / 8,464 / 9,002 จบที่ 80,000) — ถ้าข้อสอบให้ตาราง จำไว้ว่า <b>คอลัมน์ดอกเบี้ยบัญชีมาจาก อัตราตลาด × CV ต้นงวดเสมอ</b></div>
+    </div>
+    <div className="sec-card">
+      <h3>⚡ การ์ดจำด่วนท้ายบท</h3>
+      <Row gutter={[10,10]}>
+        {[
+          {c:'#6b3a2e',t:'⚖️ กติกาไม้กระดก',d:'ตลาด > ตราไว้ → Discount | ตลาด < ตราไว้ → Premium | เท่ากัน → Par (จำจากเหตุผล: จ่ายดีเกินตลาดคนแย่งซื้อ)'},
+          {c:'#4a7c46',t:'💵 สองสูตรห้ามสลับ',d:'เงินสดจ่าย = stated × FACE (คงที่) | ดอกเบี้ยบัญชี = market × CV (เปลี่ยนทุกงวด)'},
+          {c:'#356487',t:'📈 Discount: ทุกอย่างวิ่งขึ้น',d:'CV ไต่ขึ้นหา face | ดอกเบี้ยบัญชีโตทุกงวด | ตัดส่วนลด = Cr หุ้นกู้ (เพิ่มหนี้)'},
+          {c:'#7a4a68',t:'📉 Premium: ทุกอย่างวิ่งลง',d:'CV ไหลลงหา face | ดอกเบี้ยบัญชีลดทุกงวด | ตัดส่วนเกิน = Dr หุ้นกู้ (ลดหนี้)'},
+          {c:'#8a5a2b',t:'🎁 ตั๋ว 0% ไม่ฟรี',d:'ส่วนลด 150,000−95,326 = 54,674 คือดอกเบี้ยแฝง 12% — หนี้โตเองทุกปีโดยไม่มีเงินสดออก'},
+          {c:'#9c3d3d',t:'🖥️ แลกของ ให้บันทึกที่มูลค่ายุติธรรม',d:'BMG: คอม 62,990 ไม่ใช่ 80,000 — ส่วนต่างคือส่วนลดรอตัดเป็นดอกเบี้ย'},
+        ].map((x,i)=><Col xs={24} md={12} key={i}><div style={{borderRadius:12,padding:'12px 14px',color:'#fff',background:x.c}}><b>{x.t}</b><div style={{fontSize:13,marginTop:4}}>{x.d}</div></div></Col>)}
+      </Row>
+    </div>
+  </div>;
+}
+
+/* ============ APP ============ */
+function App(){
+  return <div className="wrap">
+    <div className="hero">
+      <h1>🏦 Non-Current Liabilities — หนี้สินไม่หมุนเวียน</h1>
+      <p>หุ้นกู้จากศูนย์ → ไม้กระดก Premium/Par/Discount → ตาราง effective-interest แบบลากดูทีละงวด → ตั๋วเงินจ่ายระยะยาว (รวมตั๋ว 0%) | อิงสไลด์ อ.Sannudee ทุกตัวเลข</p>
+    </div>
+    <Tabs size="large" items={[
+      {key:'1',label:'📚 หุ้นกู้จากศูนย์ + ไม้กระดก',children:<BasicTab/>},
+      {key:'2',label:'📈 ออกต่ำกว่า par (Discount)',children:<DiscountTab/>},
+      {key:'3',label:'📉 ออกสูงกว่า par (Premium)',children:<PremiumTab/>},
+      {key:'4',label:'📜 ตั๋วเงินจ่ายระยะยาว',children:<NotesTab/>},
+    ]}/>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
