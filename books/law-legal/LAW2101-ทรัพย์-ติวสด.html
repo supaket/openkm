@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW2101 ว่าด้วยทรัพย์ · ห้องเรียนสด (Harvard style)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'Noto Sans Thai', sans-serif; }
+  body { background:#F5F0E8; line-height:1.85; margin:0; color:#3D3229; }
+  .serif { font-family:'Noto Serif Thai', serif; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:6px; }
+  .ant-table-cell { line-height:1.9 !important; }
+  /* flipcard */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; min-height:270px; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; display:flex; flex-direction:column; justify-content:center; padding:26px; box-sizing:border-box; box-shadow:0 8px 26px rgba(120,100,70,.16); }
+  .fc-back { transform:rotateY(180deg); }
+  .qc { transition:transform .18s, box-shadow .18s; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(120,100,70,.18); }
+  /* animations */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fadeUp { animation:fadeUp .5s ease both; }
+  @keyframes pulseGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(184,92,92,.35);} 50%{ box-shadow:0 0 0 10px rgba(184,92,92,0);} }
+  .pulse { animation:pulseGlow 1.8s infinite; }
+  @keyframes growBar { from{ width:0; } }
+  .growBar { animation:growBar 1s ease both; }
+  @keyframes floaty { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .floaty { animation:floaty 3s ease-in-out infinite; }
+  .hl { background:linear-gradient(transparent 62%, #E8DCA8 62%); padding:0 2px; font-weight:600; }
+  .mnum { display:inline-block; background:#8B7355; color:#FAF7F2; border-radius:7px; padding:1px 8px; font-weight:600; font-size:.9em; }
+  .stepdot { width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff; }
+  .tl-track { position:relative; height:26px; border-radius:14px; background:#E5DFD4; overflow:hidden; }
+  .tl-fill { position:absolute; left:0; top:0; height:100%; border-radius:14px; transition:width .6s ease; }
+  .diagram-box { border:2px solid #C4B49A; border-radius:14px; padding:14px; background:#FAF7F2; text-align:center; font-weight:600; transition:.3s; }
+  .arrow { font-size:24px; color:#8B7355; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Segmented, Progress, Radio, Steps, Result, Collapse, Slider, Tooltip, Badge } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { Header, Content, Footer } = Layout;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  amber:'#B5986A', amberDark:'#7A6548',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62', white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+  gold2:'#F5EFDD'
+};
+
+const M = (n) => <span className="mnum">ม.{n}</span>;
+const box = (bg,bd) => ({background:bg, border:'1px solid '+bd, borderRadius:14, padding:'14px 16px', marginBottom:12});
+const Stars = ({n}) => <span style={{color:C.amber,letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+/* =================== BASICS TAB (ปูพื้น) =================== */
+function BasicsTab(){
+  const [ex,setEx]=React.useState('house');
+  const svarn = {
+    house:{title:'บ้าน + ที่ดิน', parts:'ตัวบ้าน (โรงเรือน) ติดตรึงถาวรกับที่ดิน', res:'บ้านเป็น "ส่วนควบ" ของที่ดิน โดยจารีตประเพณี → เจ้าของที่ดินเป็นเจ้าของบ้าน', law:'144, 146', is:true},
+    watch:{title:'นาฬิกา + เข็ม/ลาน', parts:'ถอดเข็ม/ลานออก นาฬิกาเดินไม่ได้', res:'เข็ม/ลาน เป็นส่วนควบโดยสภาพ → ขาดแล้วทรัพย์เสียสภาวะ', law:'144', is:true},
+    tree:{title:'ที่ดิน + ต้นมะม่วง', parts:'ไม้ยืนต้น (อายุขัยเกิน 3 ปี)', res:'เป็นส่วนควบกับที่ดิน แม้เพิ่งปลูก 1 ปี (ดูอายุ "พันธุ์ไม้")', law:'145 ว.1', is:true},
+    rice:{title:'ที่ดิน + ต้นข้าว', parts:'ไม้ล้มลุก/ธัญชาติ เก็บเกี่ยวรายปี', res:'ไม่เป็นส่วนควบ → เจ้าของต้นข้าวไม่ใช่เจ้าของที่ดิน', law:'145 ว.2', is:false},
+    ac:{title:'บ้าน + เครื่องปรับอากาศ', parts:'ของประดับ/อำนวยความสะดวก', res:'ไม่เป็นส่วนควบ เพราะไม่ใช่สาระสำคัญในความเป็นอยู่ของบ้าน', law:'144', is:false}
+  };
+  const cur = svarn[ex];
+  return (
+  <div className="fadeUp">
+    <Alert type="success" showIcon style={{marginBottom:16, borderRadius:12}}
+      message="เริ่มจากศูนย์ — อ่านหน้านี้ก่อนถ้ายังไม่มีพื้นกฎหมาย"
+      description="วิชานี้คือ 'กฎหมายทรัพย์' (ป.พ.พ. บรรพ 4) ว่าด้วยว่า 'ของ' เป็นของใคร ได้มายังไง และใครเถียงใครได้ หน้านี้ปูศัพท์+ตรรกะพื้นฐานให้ก่อน แล้วค่อยไปแท็บสรุป"/>
+
+    <Card style={{...box(C.blueBg,C.blue), marginBottom:16}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.blue}}>① คู่แรกที่ต้องแยกให้ออก: สังหาฯ vs อสังหาฯ</Title>
+      <Row gutter={12}>
+        <Col xs={24} md={12}>
+          <div className="diagram-box floaty" style={{borderColor:C.blue}}>
+            <div style={{fontSize:30}}>🏠🌳🌊</div>
+            <div style={{color:C.blue,fontSize:18}}>อสังหาริมทรัพย์</div>
+            <Text type="secondary">ที่ดิน + ทรัพย์ติดที่ดินถาวร + ทรัพยสิทธิเกี่ยวกับที่ดิน<br/>เช่น บ้าน, ตึก, ไม้ยืนต้น {M('139')}</Text>
+          </div>
+        </Col>
+        <Col xs={24} md={12}>
+          <div className="diagram-box" style={{borderColor:C.gold}}>
+            <div style={{fontSize:30}}>⌚📱🚗</div>
+            <div style={{color:C.goldDark,fontSize:18}}>สังหาริมทรัพย์</div>
+            <Text type="secondary">ทรัพย์ที่เหลือทั้งหมด (เคลื่อนที่ได้)<br/>เช่น นาฬิกา, รถ, โทรศัพท์</Text>
+          </div>
+        </Col>
+      </Row>
+      <Alert style={{marginTop:12,borderRadius:10}} type="info" showIcon message="ทำไมต้องแยก? เพราะ 'อสังหาฯ' มีกฎเข้มกว่า เช่น การได้มาต้อง 'ทำเป็นหนังสือ + จดทะเบียน' และครอบครองปรปักษ์ใช้ 10 ปี (สังหาฯ 5 ปี)"/>
+    </Card>
+
+    <Card style={{...box(C.purpleBg,C.purple), marginBottom:16}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.purple}}>② หัวใจที่ออกสอบทุกปี: บุคคลสิทธิ ⚔ ทรัพยสิทธิ</Title>
+      <Row gutter={12}>
+        <Col xs={24} md={12}>
+          <div style={box(C.white,C.border)}>
+            <Tag color="purple">บุคคลสิทธิ</Tag>
+            <div style={{fontWeight:600,margin:'6px 0'}}>สิทธิเหนือ "ตัวบุคคล"</div>
+            <Text>ใช้ยันได้เฉพาะ <span className="hl">คู่สัญญา/ลูกหนี้</span> เท่านั้น<br/>เกิดจากสัญญา/ละเมิด เช่น สิทธิเจ้าหนี้เงินกู้, สิทธิผู้เช่า</Text>
+          </div>
+        </Col>
+        <Col xs={24} md={12}>
+          <div style={box(C.greenBg,C.green)}>
+            <Tag color="green">ทรัพยสิทธิ</Tag>
+            <div style={{fontWeight:600,margin:'6px 0'}}>สิทธิเหนือ "ตัวทรัพย์"</div>
+            <Text>ใช้ยันได้กับ <span className="hl">คนทั้งโลก</span> (ตกติดตัวทรัพย์)<br/>ก่อตั้งได้เฉพาะที่กฎหมายรับรอง เช่น กรรมสิทธิ์, ครอบครอง, จำนอง, ภาระจำยอม</Text>
+          </div>
+        </Col>
+      </Row>
+      <Alert style={{marginTop:10,borderRadius:10}} type="warning" showIcon
+        message="สูตรทองข้อสอบ: ได้อสังหาฯ 'โดยนิติกรรม' แต่ไม่จดทะเบียน → ยังไม่บริบูรณ์เป็น 'ทรัพยสิทธิ' แต่ยังใช้เป็น 'บุคคลสิทธิ' ยันคู่สัญญาได้"/>
+    </Card>
+
+    <Card style={{...box(C.cyanBg,C.cyan)}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.cyan}}>③ ลองเล่น: อะไรเป็น "ส่วนควบ" (ทดลองคลิกดู)</Title>
+      <Text type="secondary">ส่วนควบ = สิ่งที่รวมกับทรัพย์จนเป็น "สาระสำคัญ" แยกไม่ได้เว้นแต่ทำลาย → เจ้าของทรัพย์หลักได้กรรมสิทธิ์ในส่วนควบด้วย {M('144')}</Text>
+      <div style={{margin:'12px 0'}}>
+        <Space wrap>
+          {Object.keys(svarn).map(k=>(
+            <Button key={k} type={ex===k?'primary':'default'} onClick={()=>setEx(k)}
+              style={ex===k?{background:C.gold,borderColor:C.gold}:{}}>{svarn[k].title}</Button>
+          ))}
+        </Space>
+      </div>
+      <div key={ex} className="fadeUp" style={box(cur.is?C.greenBg:C.redBg, cur.is?C.green:C.red)}>
+        <Flex align="center" gap={10} wrap>
+          <div className="stepdot" style={{background:cur.is?C.green:C.red, minWidth:34}}>{cur.is?'✓':'✕'}</div>
+          <div style={{flex:1,minWidth:220}}>
+            <div style={{fontWeight:700,fontSize:16,color:cur.is?C.green:C.red}}>{cur.is?'เป็นส่วนควบ':'ไม่เป็นส่วนควบ'}</div>
+            <Text>{cur.res}</Text>
+          </div>
+          <Tag color={cur.is?'green':'red'}>มาตรา {cur.law}</Tag>
+        </Flex>
+      </div>
+    </Card>
+
+    <Card style={{...box(C.gold2,C.gold), marginTop:16}} bodyStyle={{padding:18}}>
+      <Title level={4} style={{marginTop:0,color:C.goldDark}}>④ วิธีอ่านคำถามข้อสอบ (IRAC) — เข็มทิศตอบทุกข้อ</Title>
+      <Steps direction="vertical" size="small" current={-1} items={[
+        {title:<b>I — Issue (ประเด็น)</b>, description:'ข้อเท็จจริงนี้มีปัญหากฎหมายอะไร? เช่น "อนันต์ต้องรื้อบ้านที่รุกล้ำหรือไม่"'},
+        {title:<b>R — Rule (หลักกฎหมาย)</b>, description:'ยกตัวบท/มาตราที่เกี่ยว + อธิบายหลัก เช่น ม.1312 สร้างรุกล้ำโดยสุจริต'},
+        {title:<b>A — Application (ปรับบท)</b>, description:'เอาข้อเท็จจริงจับกับหลัก ทีละองค์ประกอบ (สุจริตไหม? รุกล้ำส่วนน้อยไหม?)'},
+        {title:<b>C — Conclusion (สรุป)</b>, description:'ฟันธงคำตอบให้ตรงคำถาม + ระบุผลทางกฎหมาย'},
+      ]}/>
+      <Alert type="success" showIcon style={{borderRadius:10}} message="ไปแท็บ '🔍 วินิจฉัยเคส' เพื่อฝึกเดินตาม IRAC แบบมีระบบช่วยไกด์"/>
+    </Card>
+  </div>);
+}
+
+/* =================== SUMMARY DATA =================== */
+const summaryData = [
+  {
+    key:'map', title:'🗺️ แผนที่วิชา + โครงข้อสอบ (อ่านก่อนเสมอ)',
+    tags:[['ออกทุกครั้ง','volcano']],
+    content:()=>(
+      <div>
+        <Alert style={{marginBottom:12,borderRadius:10}} type="info" showIcon
+          message="รูปแบบข้อสอบ LAW2101: อัตนัย 4 ข้อ ข้อละ 25 คะแนน · เขียนตอบแบบ IRAC · เปิดตัวบทไม่ได้ (ท่องมาตราให้แม่น)"/>
+        <Table size="small" pagination={false} bordered
+          columns={[
+            {title:'ข้อ', dataIndex:'q', width:56},
+            {title:'มักออกเรื่อง', dataIndex:'t'},
+            {title:'มาตราหลัก', dataIndex:'m'},
+            {title:'ความถี่', dataIndex:'s', render:v=><Stars n={v}/>, width:80}
+          ]}
+          dataSource={[
+            {key:1,q:'ข้อ 1',t:'ได้มาซึ่งอสังหาฯ / บุคคลสิทธิ-ทรัพยสิทธิ / ส่วนควบ',m:'1299 (144–146)',s:3},
+            {key:2,q:'ข้อ 2',t:'กรรมสิทธิ์: สาธารณสมบัติ · สร้าง/รุกล้ำ · ซื้อสุจริต · กรรมสิทธิ์รวม',m:'1304–1332, 1358–1362',s:3},
+            {key:3,q:'ข้อ 3',t:'ครอบครองปรปักษ์ / สิทธิครอบครอง',m:'1367, 1382, 1384',s:3},
+            {key:4,q:'ข้อ 4',t:'ทางจำเป็น / ภาระจำยอม',m:'1349–1350, 1387–1401',s:3},
+          ]}/>
+        <div style={{...box(C.gold2,C.gold),marginTop:12}}>
+          <b>สังเกตจากข้อสอบจริง 1/2567 &amp; 1/2568:</b> ข้อ 1 = 1299/รุกล้ำ · ข้อ 2 = กรรมสิทธิ์รวม/รุกล้ำ · ข้อ 3 = ปรปักษ์ (มีกับดักสาธารณสมบัติ &amp; ที่ดิน น.ส.3) · ข้อ 4 = ทางจำเป็น/ภาระจำยอม
+        </div>
+      </div>
+    )
+  },
+  {
+    key:'p1', title:'📦 พาร์ท 1 · ส่วนควบ + การได้มาซึ่งอสังหาฯ + สาธารณสมบัติ',
+    tags:[['ข้อ 1','geekblue'],['ออกบ่อย','volcano']],
+    content:()=>(
+      <div>
+        <Title level={5} style={{color:C.green}}>ก. ส่วนควบ {M('144')}{M('145')}{M('146')}</Title>
+        <div style={box(C.greenBg,C.green)}>
+          <b>องค์ประกอบส่วนควบ (3 ข้อ):</b> ① ทรัพย์ตั้งแต่ 2 สิ่งมารวมกัน ② เป็นสาระสำคัญในความเป็นอยู่ (โดยสภาพ หรือ โดยจารีตประเพณี) ③ แยกไม่ได้เว้นแต่ทำลาย/บุบสลาย/เปลี่ยนรูป → <b>ผล:</b> เจ้าของทรัพย์ได้กรรมสิทธิ์ในส่วนควบ {M('144 ว.2')}
+        </div>
+        <Table size="small" pagination={false} style={{marginBottom:12}}
+          columns={[{title:'กรณี',dataIndex:'a',width:150},{title:'เป็นส่วนควบ?',dataIndex:'b',width:120,render:v=><Tag color={v==='ใช่'?'green':'red'}>{v}</Tag>},{title:'มาตรา',dataIndex:'c'}]}
+          dataSource={[
+            {key:1,a:'ไม้ยืนต้น (อายุพันธุ์ >3 ปี)',b:'ใช่',c:'145 ว.1'},
+            {key:2,a:'ไม้ล้มลุก/ธัญชาติ (ข้าว)',b:'ไม่',c:'145 ว.2 (ข้อยกเว้น)'},
+            {key:3,a:'ทรัพย์ติดที่ดินชั่วคราว (นั่งร้าน)',b:'ไม่',c:'146'},
+            {key:4,a:'โรงเรือนที่ผู้มีสิทธิในที่ดินผู้อื่นสร้าง (ผู้เช่า)',b:'ไม่',c:'146'},
+          ]}/>
+        <Title level={5} style={{color:C.blue}}>ข. การได้มาซึ่งอสังหาฯ/ทรัพยสิทธิ {M('1299')}</Title>
+        <div style={box(C.blueBg,C.blue)}>
+          <b>วรรคหนึ่ง — โดยนิติกรรม:</b> ต้อง <span className="hl">ทำเป็นหนังสือ + จดทะเบียน</span> จึงบริบูรณ์เป็นทรัพยสิทธิ · ถ้าไม่จด → ไม่บริบูรณ์เป็นทรัพยสิทธิ แต่ยังเป็นบุคคลสิทธิยันคู่สัญญาได้ (ฟ้องบังคับให้ไปจดไม่ได้ เว้นแต่ตกลงไว้/สัญญาต่างตอบแทน)
+        </div>
+        <div style={box(C.purpleBg,C.purple)}>
+          <b>วรรคสอง — โดยทางอื่น (3 กรณี):</b> ① ผลของกฎหมาย/อายุความ (ปรปักษ์ 1382, ภาระจำยอม 1401) ② รับมรดก (1599) ③ คำพิพากษาศาล<br/>
+          <b>กับดัก:</b> สิทธิที่ได้มายังไม่จดทะเบียน <span className="hl">ยกขึ้นต่อสู้บุคคลภายนอกผู้สุจริต + เสียค่าตอบแทน + จดทะเบียนโดยสุจริต ไม่ได้</span>
+        </div>
+        <Title level={5} style={{color:C.red}}>ค. สาธารณสมบัติของแผ่นดิน {M('1304')}–{M('1307')}</Title>
+        <div style={box(C.redBg,C.red)}>
+          3 ประเภท {M('1304')}: (1) ที่รกร้าง/เวนคืน/ทอดทิ้ง (2) ทรัพย์พลเมืองใช้ร่วมกัน (ชายตลิ่ง ทางน้ำ ทางหลวง) (3) ใช้เพื่อประโยชน์แผ่นดินโดยเฉพาะ (ป้อม เรือรบ)<br/>
+          <b>ผลเด็ด:</b> โอนไม่ได้ {M('1305')} · ครอบครองปรปักษ์นานเท่าไรก็ไม่ได้กรรมสิทธิ์ {M('1306')} · ห้ามยึด {M('1307')}<br/>
+          <b>เทียบ:</b> "ทรัพย์สินของแผ่นดินธรรมดา" (โต๊ะ เก้าอี้ราชการ) → โอน/ปรปักษ์ได้
+        </div>
+      </div>
+    )
+  },
+  {
+    key:'p2', title:'🏗️ พาร์ท 2 · สร้าง/รุกล้ำโรงเรือน + ซื้อโดยสุจริต',
+    tags:[['ข้อ 1–2','geekblue'],['ออกบ่อยมาก','volcano']],
+    content:()=>(
+      <div>
+        <Table size="small" pagination={false} style={{marginBottom:12}}
+          columns={[
+            {title:'มาตรา',dataIndex:'m',width:70,render:v=><b>{v}</b>},
+            {title:'สถานการณ์',dataIndex:'s'},
+            {title:'ผลทางกฎหมาย',dataIndex:'r'}
+          ]}
+          dataSource={[
+            {key:1,m:'1310',s:'สร้างโรงเรือน "ทั้งหลัง" ในที่ดินคนอื่น โดยสุจริต',r:'เจ้าของที่ดินได้กรรมสิทธิ์บ้าน (ส่วนควบ) แต่ต้องใช้ค่าที่ดินที่เพิ่มขึ้นให้ผู้สร้าง · ถ้าเจ้าของไม่ประมาท → บอกปัด/ให้รื้อ/ให้ซื้อที่ดินได้ (ว.2)'},
+            {key:2,m:'1311',s:'สร้างทั้งหลัง โดย "ไม่สุจริต"',r:'ผู้สร้างต้องรื้อ+ทำที่ดินคืนเดิม · เว้นแต่เจ้าของเลือกเก็บไว้แล้วใช้ราคาบ้าน/ค่าที่ดินที่เพิ่ม'},
+            {key:3,m:'1312',s:'สร้างโรงเรือน "รุกล้ำ" (ส่วนน้อย) โดยสุจริต',r:'ผู้สร้างเป็นเจ้าของส่วนรุกล้ำ (ยกเว้นเรื่องส่วนควบ) แต่ต้องเสียเงินค่าใช้ที่ดิน + จดทะเบียนภาระจำยอม · ถ้าไม่สุจริต → รื้อถอน'},
+            {key:4,m:'1314',s:'สร้างสิ่งอื่นติดที่ดิน / ปลูกต้นไม้-ธัญชาติ',r:'ใช้ 1310/1311 อนุโลม · ข้อยกเว้น: ข้าว/ธัญชาติเก็บเกี่ยวรายปี ให้ผู้ปลูกสุจริตอยู่จนเก็บเกี่ยว (จ่ายค่าเช่า) หรือเจ้าของเข้าครองทันทีแต่จ่ายค่าทดแทน'},
+            {key:5,m:'1332',s:'ซื้อทรัพย์โดยสุจริต จากขายทอดตลาด/ท้องตลาด/พ่อค้า',r:'ไม่ต้องคืนเจ้าของแท้จริง เว้นแต่เจ้าของชดใช้ราคาที่ซื้อมา'},
+          ]}/>
+        <Alert type="error" showIcon style={{borderRadius:10,marginBottom:10}}
+          message="กับดักที่ต้องแยก: 1310/1311 = สร้าง 'ทั้งหลัง' ในที่ดินคนอื่น · 1312 = 'รุกล้ำ' ส่วนน้อย (ตัวบ้านอยู่ที่ตัวเอง ล้ำไปนิด)"/>
+        <div style={box(C.gold2,C.gold)}>
+          <b>เส้นแบ่ง "สุจริต":</b> สุจริต = เข้าใจว่าที่ดินเป็นของตน · ต้องสุจริต <span className="hl">ตั้งแต่เริ่มสร้างจนสร้างเสร็จทั้งหลัง</span> · ถ้ารู้ตอนสร้างยังไม่เสร็จแล้วยังสร้างต่อ = ไม่สุจริต (⚠ ตรงกับข้อสอบ 1/2568 ข้อ 2 ที่รู้ตอนสร้างไป 70%)
+        </div>
+      </div>
+    )
+  },
+  {
+    key:'p3', title:'🚶 พาร์ท 3 · ทางจำเป็น · กรรมสิทธิ์รวม · สิทธิครอบครอง · ปรปักษ์',
+    tags:[['ข้อ 2–3','geekblue']],
+    content:()=>(
+      <div>
+        <Title level={5} style={{color:C.cyan}}>ก. ทางจำเป็น {M('1349')}{M('1350')}</Title>
+        <div style={box(C.cyanBg,C.cyan)}>
+          ที่ดินถูกล้อมจน "ไม่มีทางออกสู่ทางสาธารณะ" → ผ่านที่ดินที่ล้อมได้ทันที (ผลของกฎหมาย ไม่ต้องจดทะเบียน ไม่ต้องรออายุความ) แต่ต้องเลือกทางเสียหายน้อยสุด + จ่ายค่าทดแทน<br/>
+          <b>1350 (แบ่งแยกที่ดิน):</b> ถ้าแบ่งแยก/โอนจนแปลงหนึ่งไม่มีทางออก → เรียกผ่านได้เฉพาะแปลงที่แบ่งแยกกัน และ <span className="hl">ไม่ต้องจ่ายค่าทดแทน</span><br/>
+          <b>กับดัก:</b> มีทางออกแล้วแต่ "ไม่สะดวก/อ้อม" → ไม่ใช่ทางจำเป็น
+        </div>
+        <Title level={5} style={{color:C.purple}}>ข. กรรมสิทธิ์รวม {M('1357')}–{M('1362')}</Title>
+        <div style={box(C.purpleBg,C.purple)}>
+          สันนิษฐานส่วนเท่ากัน {M('1357')} · จัดการทรัพย์ {M('1358')}: ธรรมดา=เสียงข้างมาก(คน) · สาระสำคัญ=ข้างมากที่ถือส่วนเกินครึ่งค่าทรัพย์ · เปลี่ยนวัตถุประสงค์=เอกฉันท์<br/>
+          <b>{M('1361')} คีย์ข้อสอบ:</b> เจ้าของรวมขาย/จำนอง "เฉพาะส่วนของตน" ได้ · แต่จะขาย/จำนอง <span className="hl">"ตัวทรัพย์ทั้งอัน" ต้องได้ความยินยอมทุกคน</span>
+        </div>
+        <Title level={5} style={{color:C.gold}}>ค. สิทธิครอบครอง {M('1367')}{M('1368')}{M('1374')}{M('1375')}{M('1377')}{M('1381')}</Title>
+        <div style={box(C.gold2,C.gold)}>
+          ได้สิทธิครอบครองโดย "ยึดถือ + เจตนายึดถือเพื่อตน" {M('1367')} · ให้คนอื่นยึดถือแทนได้ {M('1368')}<br/>
+          ถูกรบกวน → ปลดเปลื้องได้ ฟ้องใน 1 ปี {M('1374')} · ถูกแย่งการครอบครอง → ฟ้องเอาคืนใน 1 ปี {M('1375')}<br/>
+          ผู้ยึดถือแทน จะอ้างปรปักษ์ไม่ได้ เว้นแต่ "บอกกล่าวเปลี่ยนลักษณะยึดถือ" {M('1381')} (อายุความเริ่มนับใหม่ตั้งแต่บอกกล่าว)
+        </div>
+        <Title level={5} style={{color:C.red}}>ง. ครอบครองปรปักษ์ {M('1382')}{M('1384')}</Title>
+        <div style={box(C.redBg,C.red)}>
+          <b>องค์ประกอบ:</b> ① ทรัพย์ของผู้อื่น (อสังหาฯ ต้อง "มีโฉนด"/มีกรรมสิทธิ์) ② สงบ + เปิดเผย + เจตนาเป็นเจ้าของ ③ ต่อเนื่อง อสังหาฯ <b>10 ปี</b> / สังหาฯ <b>5 ปี</b><br/>
+          <b>กับดักทองข้อสอบ:</b> ที่ดิน น.ส.3 / ส.ค.1 มีแค่ "สิทธิครอบครอง" ไม่มีกรรมสิทธิ์ → <span className="hl">ครอบครองปรปักษ์ไม่ได้</span> (แต่แย่งสิทธิครอบครองได้) · ขาดครอบครองไม่สมัครใจ กลับมาใน 1 ปี ไม่สะดุด {M('1384')}
+        </div>
+      </div>
+    )
+  },
+  {
+    key:'p4', title:'🔗 พาร์ท 4 · ภาระจำยอม',
+    tags:[['ข้อ 4','geekblue']],
+    content:()=>(
+      <div>
+        <div style={box(C.greenBg,C.green)}>
+          <b>นิยาม {M('1387')}:</b> อสังหาฯ หนึ่ง (ภารยทรัพย์) ต้องรับกรรม/งดใช้สิทธิ เพื่อประโยชน์ของอสังหาฯ อีกอันหนึ่ง (สามยทรัพย์) · เป็น <b>ทรัพยสิทธิ</b> ตกติดกับตัวทรัพย์เสมอ<br/>
+          <b>จำ:</b> <span className="hl">สามย = ได้ประโยชน์</span> · <span className="hl">ภารย = แบกภาระ</span>
+        </div>
+        <div style={box(C.blueBg,C.blue)}>
+          <b>องค์ประกอบ:</b> ① มีอสังหาฯ 2 อัน ② เจ้าของต่างกัน ③ อันหนึ่งรับภาระเพื่อประโยชน์ "ตัวทรัพย์" อีกอัน (ไม่ใช่ประโยชน์ส่วนตัวบุคคล)
+        </div>
+        <div style={box(C.purpleBg,C.purple)}>
+          <b>ได้มา 3 ทาง:</b> ① นิติกรรม (ต้องหนังสือ+จดทะเบียน 1299 ว.1 มิฉะนั้นเป็นแค่บุคคลสิทธิ) ② อายุความปรปักษ์ 10 ปี {M('1401')}+{M('1382')} ③ ผลกฎหมาย (รุกล้ำสุจริต {M('1312')})<br/>
+          <b>เทียบปรปักษ์ vs ภาระจำยอมโดยอายุความ:</b> ปรปักษ์ต้องที่ดิน "มีกรรมสิทธิ์" + เจตนาเป็นเจ้าของ · ภาระจำยอมจะเป็น น.ส.3/ส.ค.1 ก็ได้ + เจตนาแค่ "ได้ภาระจำยอม"
+        </div>
+        <div style={box(C.redBg,C.red)}>
+          <b>สิ้นภาระจำยอม:</b> ทรัพย์สลายทั้งหมด {M('1397')} · ตกเป็นเจ้าของคนเดียว {M('1398')} · ไม่ใช้ 10 ปีติดต่อกัน {M('1399')} · หมดประโยชน์แก่สามยทรัพย์ {M('1400')}
+        </div>
+      </div>
+    )
+  }
+];
+function SummaryTab(){
+  return (<div className="fadeUp"><Collapse defaultActiveKey={['map']} accordion
+    style={{background:'transparent',border:'none'}}
+    items={summaryData.map(s=>({
+      key:s.key,
+      label:<span style={{fontWeight:600,fontSize:15}}>{s.title} {s.tags.map((t,i)=><Tag key={i} color={t[1]} style={{marginLeft:4}}>{t[0]}</Tag>)}</span>,
+      children:<div>{s.content()}</div>,
+      style:{marginBottom:12,borderRadius:14,border:'1px solid '+C.border,background:C.white,overflow:'hidden'}
+    }))}/></div>);
+}
+
+/* =================== FLASHCARDS + MATCH GAME =================== */
+const flashcards = [
+  {q:'ส่วนควบมีองค์ประกอบกี่ข้อ อะไรบ้าง?',a:'3 ข้อ',d:'① ทรัพย์ ≥2 สิ่งมารวมกัน ② เป็นสาระสำคัญในความเป็นอยู่ (โดยสภาพ/จารีต) ③ แยกไม่ได้เว้นแต่ทำลาย ผลคือเจ้าของทรัพย์ได้กรรมสิทธิ์ในส่วนควบ (ม.144)',star:3,exam:false},
+  {q:'ปลูกต้นมะม่วงได้ 1 ปี เป็นส่วนควบกับที่ดินไหม?',a:'เป็น',d:'ไม้ยืนต้นดู "อายุพันธุ์ไม้" ไม่ใช่ระยะเวลาปลูก มะม่วงอายุขัย >3 ปี จึงเป็นไม้ยืนต้น = ส่วนควบ (ม.145 ว.1)',star:2,exam:false},
+  {q:'ต้นข้าว/ธัญชาติ เป็นส่วนควบกับที่ดินไหม?',a:'ไม่เป็น',d:'ไม้ล้มลุก/ธัญชาติเก็บเกี่ยวรายปี ยกเว้นไม่เป็นส่วนควบ (ม.145 ว.2)',star:2,exam:false},
+  {q:'บุคคลสิทธิ ต่างจาก ทรัพยสิทธิ อย่างไร?',a:'ยันคู่สัญญา vs ยันคนทั้งโลก',d:'บุคคลสิทธิ=สิทธิเหนือตัวบุคคล ใช้ยันได้แค่คู่สัญญา/ลูกหนี้ · ทรัพยสิทธิ=สิทธิเหนือตัวทรัพย์ ใช้ยันได้ทั่วไป ตกติดตัวทรัพย์ ก่อตั้งได้เฉพาะที่กฎหมายรับรอง',star:3,exam:false},
+  {q:'ได้อสังหาฯ โดยนิติกรรม แต่ไม่จดทะเบียน มีผลอย่างไร?',a:'ไม่บริบูรณ์เป็นทรัพยสิทธิ แต่เป็นบุคคลสิทธิ',d:'ม.1299 ว.1 ต้องทำหนังสือ+จดทะเบียน จึงบริบูรณ์เป็นทรัพยสิทธิ ถ้าไม่จด ยังใช้ยันคู่สัญญาได้ในฐานะบุคคลสิทธิ',star:3,exam:false},
+  {q:'ม.1299 ว.2 คุ้มครองบุคคลภายนอกเมื่อใด?',a:'สุจริต + เสียค่าตอบแทน + จดทะเบียนโดยสุจริต',d:'สิทธิที่ได้มาโดยทางอื่นแต่ยังไม่จดทะเบียน จะยกขึ้นต่อสู้บุคคลภายนอกที่ครบ 3 เงื่อนไขนี้ไม่ได้',star:3,exam:true},
+  {q:'[ข้อสอบ 1/2568 ข้อ 1] นายหนึ่งทำสัญญาประนีประนอมยกที่ดินรุกล้ำ 20 ตร.วา ให้นายสอง (ยังไม่จดทะเบียน) ต่อมาขายทั้งแปลงให้นายสามซึ่งจดทะเบียนโดยสุจริต ใครมีสิทธิดีกว่า?',a:'นายสาม (บุคคลภายนอกสุจริต) ดีกว่า',d:'สิทธิของนายสองได้มาโดยทางอื่น (สัญญาประนีประนอม) แต่ยังไม่จดทะเบียน จึงยกขึ้นต่อสู้นายสามผู้สุจริต เสียค่าตอบแทน และจดทะเบียนแล้วไม่ได้ (ม.1299 ว.2) → นายสองยกสัญญาต่อสู้นายสามไม่ได้',star:3,exam:true},
+  {q:'สาธารณสมบัติของแผ่นดิน ครอบครองปรปักษ์ได้ไหม?',a:'ไม่ได้ นานเท่าไรก็ไม่ได้กรรมสิทธิ์',d:'ม.1306 ห้ามยกอายุความต่อสู้แผ่นดิน · ม.1305 โอนไม่ได้ · ม.1307 ห้ามยึด',star:3,exam:false},
+  {q:'แยก 1310/1311 กับ 1312 อย่างไร?',a:'1310/1311=สร้างทั้งหลังในที่คนอื่น · 1312=รุกล้ำส่วนน้อย',d:'1310 สุจริต→เจ้าของที่ดินได้บ้านแต่จ่ายค่าที่ดินเพิ่ม · 1311 ไม่สุจริต→รื้อ · 1312 รุกล้ำสุจริต→ผู้สร้างได้ส่วนรุกล้ำ+จ่ายค่าที่ดิน+จดภาระจำยอม',star:3,exam:true},
+  {q:'[ข้อสอบ 1/2567 ข้อ 1] อนันต์สร้างบ้าน+อ่างปูนรุกล้ำที่ดินอำนาจ 30 ซม.โดยสุจริต ต่อมาเอนกซื้อที่ดินอำนาจจากขายทอดตลาดโดยสุจริต จะให้อนันต์รื้อได้ไหม?',a:'บ้าน (ส่วนรุกล้ำ) ไม่ต้องรื้อ · อ่างปูนต้องรื้อ',d:'บ้านรุกล้ำโดยสุจริต ม.1312 อนันต์เป็นเจ้าของส่วนรุกล้ำ ได้ภาระจำยอม เอนกรับโอนที่ดินก็ต้องรับภาระจำยอมที่ตกติดที่ดิน · แต่ "อ่างปูน" ไม่ใช่โรงเรือน 1312 ใช้ไม่ได้ → รื้อถอน',star:3,exam:true},
+  {q:'"สุจริต" ในการสร้างโรงเรือน ต้องมีเมื่อใด?',a:'ตั้งแต่เริ่มสร้างจนสร้างเสร็จทั้งหลัง',d:'ถ้ารู้ว่าเป็นที่ดินคนอื่นตอนสร้างยังไม่เสร็จ แล้วยังสร้างต่อ = ไม่สุจริต',star:3,exam:true},
+  {q:'[ข้อสอบ 1/2568 ข้อ 2] นายเอกสร้างบ้าน รู้ตอนสร้างไป 70% ว่าคานล้ำที่ดินนายโท แต่สร้างต่อจนเสร็จ ถือว่าสุจริตไหม?',a:'ไม่สุจริต',d:'ความสุจริตต้องมีตลอดจนเสร็จ เมื่อรู้ตอน 70% แล้วยังสร้างต่อ = ไม่สุจริต → นายโทเรียกให้รื้อส่วนรุกล้ำได้ (ม.1312 ว.2)',star:3,exam:true},
+  {q:'ซื้อทรัพย์โดยสุจริตจากท้องตลาด/ขายทอดตลาด/พ่อค้า ต้องคืนเจ้าของแท้จริงไหม?',a:'ไม่ต้อง เว้นแต่เจ้าของชดใช้ราคา',d:'ม.1332 คุ้มครองผู้ซื้อสุจริต 3 องค์ประกอบ (เป็นการซื้อ + สุจริต + ซื้อจากแหล่งที่กำหนด)',star:2,exam:false},
+  {q:'เจ้าของรวมจะขาย "ตัวทรัพย์ทั้งอัน" ต้องทำอย่างไร?',a:'ต้องได้ความยินยอมเจ้าของรวมทุกคน',d:'ม.1361 ขายเฉพาะส่วนตนได้ แต่ขาย/จำนองตัวทรัพย์ทั้งหมดต้องเอกฉันท์',star:3,exam:true},
+  {q:'[ข้อสอบ 1/2567 ข้อ 2] เอก(10%) โท ตรี เป็นเจ้าของรวมสวนผลไม้ โท+ตรีจะขายที่ดินทั้งแปลงให้จันทร์ เอกห้ามได้ไหม?',a:'ห้ามได้ (การขายตัวทรัพย์ทั้งอันต้องเอกฉันท์)',d:'ม.1361 ว.2 การจำหน่ายตัวทรัพย์ทั้งหมดต้องได้ความยินยอมทุกคน แม้เอกมีส่วนน้อย 10% ก็มีสิทธิยับยั้ง → โท+ตรีขายไม่ได้ถ้าเอกไม่ยอม',star:3,exam:true},
+  {q:'องค์ประกอบครอบครองปรปักษ์ ม.1382?',a:'ทรัพย์คนอื่น(มีกรรมสิทธิ์) + สงบ เปิดเผย เจตนาเป็นเจ้าของ + 10 ปี(อสังหาฯ)/5 ปี(สังหาฯ)',d:'ต้องเข้าทำประโยชน์จริง ไม่ใช่แค่จอง/กั้นรั้ว',star:3,exam:true},
+  {q:'ที่ดิน น.ส.3 ครอบครองปรปักษ์ได้ไหม?',a:'ไม่ได้',d:'ปรปักษ์ต้องเป็นที่ดิน "มีกรรมสิทธิ์/โฉนด" เท่านั้น น.ส.3/ส.ค.1 มีแค่สิทธิครอบครอง → แย่งการครอบครองได้ แต่ปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้',star:3,exam:true},
+  {q:'[ข้อสอบ 1/2568 ข้อ 3] นายดำสร้างอาคารจอดรถในที่ดิน น.ส.3 ของนายแดง 12 ปี อ้างปรปักษ์ได้ไหม?',a:'อ้างปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้',d:'ที่ดิน น.ส.3 เป็นเพียงหนังสือรับรองการทำประโยชน์ นายแดงมีแค่สิทธิครอบครอง ไม่มีกรรมสิทธิ์ นายดำจึงครอบครองปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้ (ม.1382) แต่แย่งการครอบครองตาม ม.1367/1375 ได้',star:3,exam:true},
+  {q:'ถูกแย่งการครอบครอง ต้องฟ้องเอาคืนภายในกี่ปี?',a:'1 ปี นับแต่ถูกแย่ง',d:'ม.1375 · ถูกรบกวน ก็ฟ้องใน 1 ปี ม.1374',star:3,exam:false},
+  {q:'ผู้ยึดถือแทน จะเปลี่ยนเป็นครอบครองปรปักษ์ได้อย่างไร?',a:'บอกกล่าวเปลี่ยนลักษณะยึดถือไปยังเจ้าของ',d:'ม.1381 ต้องบอกกล่าวชัดแจ้ง อายุความเริ่มนับใหม่ตั้งแต่บอกกล่าว ไม่รวมเวลายึดถือแทนเดิม',star:2,exam:false},
+  {q:'ทางจำเป็น ม.1349 เกิดเมื่อไร และต้องจดทะเบียนไหม?',a:'ที่ดินถูกล้อมไม่มีทางออก · ไม่ต้องจดทะเบียน',d:'เป็นผลของกฎหมาย ใช้ได้ทันทีไม่ต้องรออายุความ ยันบุคคลภายนอกได้เสมอ แต่ต้องจ่ายค่าทดแทน + เลือกทางเสียหายน้อยสุด',star:3,exam:true},
+  {q:'มีทางออกแล้วแต่อ้อม/ไม่สะดวก ขอเปิดทางจำเป็นได้ไหม?',a:'ไม่ได้',d:'ทางจำเป็นใช้เฉพาะกรณี "ไม่มีทางออกสู่สาธารณะ" เท่านั้น ความไม่สะดวกไม่พอ',star:3,exam:true},
+  {q:'[ข้อสอบ 1/2567 ข้อ 4] ตี๋น้อยมีทางออกแล้วแต่ใช้ทางลัดผ่านที่ดินนางใน 10 ปี ที่ดินนางในตกภาระจำยอมไหม?',a:'ไม่เป็นภาระจำยอมโดยอายุความ (การใช้ไม่ต่อเนื่อง/ขาดเจตนา)',d:'ตี๋น้อยมีทางออกอยู่แล้วจึงไม่ใช่ทางจำเป็น · การได้ภาระจำยอมโดยอายุความต้องใช้สงบ เปิดเผย เจตนาได้ภาระจำยอม ต่อเนื่อง 10 ปี เมื่อการใช้ถูกขัดจังหวะ/ไม่ครบเงื่อนไข จึงไม่ได้ภาระจำยอม',star:3,exam:true},
+  {q:'สามยทรัพย์ กับ ภารยทรัพย์ คืออะไร?',a:'สามย=ได้ประโยชน์ · ภารย=แบกภาระ',d:'ม.1387 อสังหาฯที่ได้ประโยชน์=สามยทรัพย์ · อสังหาฯที่ถูกจำกัดสิทธิ=ภารยทรัพย์',star:3,exam:false},
+  {q:'ภาระจำยอมโดยนิติกรรม ไม่จดทะเบียน มีผลอย่างไร?',a:'เป็นบุคคลสิทธิ ยันได้แค่คู่สัญญา',d:'ถ้าภารยทรัพย์ถูกโอนให้คนอื่น เจ้าของสามยทรัพย์บังคับผู้รับโอนไม่ได้ · ถ้าจดทะเบียนเป็นทรัพยสิทธิ ตกติดที่ดินไปด้วยเสมอ',star:2,exam:false},
+  {q:'ภาระจำยอมสิ้นไปเมื่อไม่ใช้กี่ปี?',a:'10 ปีติดต่อกัน',d:'ม.1399 · และสิ้นเมื่อทรัพย์สลายทั้งหมด(1397) ตกเป็นเจ้าของคนเดียว(1398) หมดประโยชน์(1400)',star:2,exam:false},
+  {q:'ครอบครองปรปักษ์ vs ได้ภาระจำยอมโดยอายุความ ต่างกันตรงไหน?',a:'ปรปักษ์=มีกรรมสิทธิ์+เจตนาเป็นเจ้าของ · ภาระจำยอม=น.ส.3ก็ได้+เจตนาแค่ได้ภาระจำยอม',d:'ทั้งคู่ใช้ 10 ปี แต่ปรปักษ์ให้ "กรรมสิทธิ์" ต้องที่ดินมีโฉนด+เจตนาเป็นเจ้าของ · ภาระจำยอมให้แค่ "สิทธิใช้ประโยชน์" ที่ดินมีสิทธิครอบครองก็พอ',star:3,exam:true},
+  {q:'ขาดการครอบครองโดยไม่สมัครใจ กลับมาครองภายในกี่ปี ถือว่าไม่สะดุด?',a:'1 ปี',d:'ม.1384 เช่น ถูกจำคุก เกณฑ์ทหาร ภัยธรรมชาติ · แต่ไปบวช/ย้ายราชการ ไม่ถือว่าไม่สมัครใจ (ให้คนอื่นยึดถือแทนได้)',star:2,exam:false},
+  {q:'[ข้อสอบ 1/2567 ข้อ 3] ศาลเจ้าถูกทิ้งร้าง 10 ปี นายแดงสร้างคาเฟ่ครอบครอง 12 ปี ได้สิทธิไหม?',a:'ต้องดูสถานะที่ดินศาลเจ้า (ถ้าเป็นสาธารณสมบัติ → ปรปักษ์ไม่ได้)',d:'ประเด็น: ที่ดินศาลเจ้าเป็นสาธารณสมบัติ/ทรัพย์นอกพาณิชย์หรือไม่ ถ้าใช่ ครอบครองนานเท่าไรก็ไม่ได้กรรมสิทธิ์ (ม.1306) · ถ้าเป็นที่ดินเอกชนมีโฉนดและครบองค์ประกอบ 1382 ครบ 10 ปี จึงได้กรรมสิทธิ์',star:3,exam:true},
+];
+function FlashcardTab(){
+  const [mode,setMode]=React.useState('การ์ด');
+  return (
+    <div className="fadeUp">
+      <Segmented block value={mode} onChange={setMode}
+        options={['การ์ด','เกมจับคู่']} style={{marginBottom:16}}/>
+      {mode==='การ์ด'? <FlashDeck/> : <MatchGame/>}
+    </div>
+  );
+}
+function FlashDeck(){
+  const [filter,setFilter]=React.useState('ทั้งหมด');
+  const pool = React.useMemo(()=>{
+    let p=flashcards.map((c,i)=>({...c,i}));
+    if(filter==='ข้อสอบจริง') p=p.filter(c=>c.exam);
+    if(filter==='★★★') p=p.filter(c=>c.star===3);
+    return p;
+  },[filter]);
+  const [order,setOrder]=React.useState(()=>flashcards.map((_,i)=>i));
+  const [idx,setIdx]=React.useState(0);
+  const [flip,setFlip]=React.useState(false);
+  const [score,setScore]=React.useState({c:0,w:0});
+  React.useEffect(()=>{setIdx(0);setFlip(false);},[filter]);
+  const list = pool;
+  const card = list[idx] || list[0];
+  const shuffle=()=>{const a=[...list].sort(()=>Math.random()-0.5);/*noop keep*/ setIdx(0);setFlip(false);};
+  const next=(dir)=>{setFlip(false);setTimeout(()=>setIdx(p=>(p+dir+list.length)%list.length),120);};
+  const mark=(ok)=>{setScore(s=>({c:s.c+(ok?1:0),w:s.w+(ok?0:1)}));next(1);};
+  if(!card) return <Alert message="ไม่มีการ์ดในหมวดนี้"/>;
+  return (
+    <div>
+      <Flex justify="space-between" align="center" wrap gap={8} style={{marginBottom:12}}>
+        <Segmented value={filter} onChange={setFilter} options={['ทั้งหมด','ข้อสอบจริง','★★★']}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag><Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={()=>{setScore({c:0,w:0});}}>รีเซ็ต</Button>
+        </Space>
+      </Flex>
+      <Text type="secondary">การ์ด {idx+1}/{list.length} · แตะการ์ดเพื่อพลิกดูเฉลย</Text>
+      <div className="fc-perspective" style={{marginTop:10}}>
+        <div className={'fc-card'+(flip?' flipped':'')} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white,border:'2px solid '+C.border}}>
+            <Space style={{marginBottom:8}}>{card.exam&&<Tag color="volcano">ข้อสอบจริง</Tag>}<Stars n={card.star}/></Space>
+            <div className="serif" style={{fontSize:19,color:C.text,lineHeight:1.7}}>{card.q}</div>
+            <Text type="secondary" style={{marginTop:14}}>👆 แตะเพื่อดูคำตอบ</Text>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.greenBg,border:'2px solid '+C.green}}>
+            <Tag color="green" style={{alignSelf:'flex-start'}}>คำตอบ</Tag>
+            <div style={{fontSize:18,fontWeight:700,color:C.green,margin:'6px 0'}}>{card.a}</div>
+            <Text style={{color:C.text2}}>{card.d}</Text>
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" gap={10} style={{marginTop:16}} wrap>
+        <Button onClick={()=>next(-1)}>◀ ก่อนหน้า</Button>
+        <Button danger onClick={()=>mark(false)}>ยังไม่แม่น</Button>
+        <Button type="primary" style={{background:C.green,borderColor:C.green}} onClick={()=>mark(true)}>จำได้ ✓</Button>
+        <Button onClick={()=>next(1)}>ถัดไป ▶</Button>
+      </Flex>
+    </div>
+  );
+}
+const matchPairs=[
+  {m:'144',t:'ส่วนควบ — เจ้าของทรัพย์ได้กรรมสิทธิ์ในส่วนควบ'},
+  {m:'1299',t:'ได้อสังหาฯ โดยนิติกรรม ต้องหนังสือ+จดทะเบียน'},
+  {m:'1306',t:'ห้ามยกอายุความต่อสู้แผ่นดิน (ปรปักษ์สาธารณสมบัติไม่ได้)'},
+  {m:'1310',t:'สร้างโรงเรือนทั้งหลังในที่ดินคนอื่นโดยสุจริต'},
+  {m:'1312',t:'สร้างโรงเรือนรุกล้ำโดยสุจริต → จดภาระจำยอม'},
+  {m:'1332',t:'ซื้อโดยสุจริตจากท้องตลาด/ขายทอดตลาด ไม่ต้องคืน'},
+  {m:'1361',t:'ขายตัวทรัพย์รวมทั้งอัน ต้องยินยอมทุกคน'},
+  {m:'1349',t:'ทางจำเป็น — ที่ดินถูกล้อมไม่มีทางออก'},
+  {m:'1382',t:'ครอบครองปรปักษ์ 10 ปี (อสังหาฯ) / 5 ปี (สังหาฯ)'},
+  {m:'1387',t:'ภาระจำยอม — สามยทรัพย์/ภารยทรัพย์'},
+];
+function MatchGame(){
+  const [rounds,setRounds]=React.useState(0);
+  const [pool]=React.useState(()=>matchPairs.slice().sort(()=>Math.random()-.5).slice(0,6));
+  const [rights]=React.useState(()=>pool.map(p=>p.t).sort(()=>Math.random()-.5));
+  const [sel,setSel]=React.useState(null);
+  const [matched,setMatched]=React.useState({});
+  const [wrong,setWrong]=React.useState(null);
+  const done=Object.keys(matched).length===pool.length;
+  const pick=(t)=>{
+    if(!sel) return;
+    if(sel.t===t){ setMatched(m=>({...m,[sel.m]:true})); setSel(null); }
+    else { setWrong(t); setTimeout(()=>setWrong(null),500); setSel(null); }
+  };
+  return (
+    <div>
+      <Alert type="info" showIcon style={{borderRadius:10,marginBottom:12}}
+        message="วิธีเล่น: คลิก 'เลขมาตรา' ทางซ้าย แล้วคลิก 'หลักกฎหมาย' ทางขวาที่คู่กัน จับให้ครบทุกคู่"/>
+      {done && <Result status="success" title="จับคู่ครบแล้ว! 🎉" subTitle="แม่นมาตราขึ้นเยอะเลย ลองสุ่มชุดใหม่ดู"
+        extra={<Button type="primary" style={{background:C.gold,borderColor:C.gold}} onClick={()=>setRounds(r=>r+1)} key="r">เล่นชุดใหม่</Button>}/>}
+      {!done && <Row gutter={12}>
+        <Col span={9}>
+          <Space direction="vertical" style={{width:'100%'}}>
+            {pool.map(p=>(
+              <div key={p.m} onClick={()=>!matched[p.m]&&setSel(p)}
+                style={{...box(matched[p.m]?C.greenBg:(sel&&sel.m===p.m?C.gold:C.white), matched[p.m]?C.green:(sel&&sel.m===p.m?C.goldDark:C.border)),
+                  cursor:matched[p.m]?'default':'pointer',textAlign:'center',opacity:matched[p.m]?.55:1,marginBottom:0,
+                  color:sel&&sel.m===p.m?'#fff':C.text}}>
+                <span className="mnum" style={sel&&sel.m===p.m?{background:'#fff',color:C.goldDark}:{}}>ม.{p.m}</span> {matched[p.m]&&'✓'}
+              </div>
+            ))}
+          </Space>
+        </Col>
+        <Col span={15}>
+          <Space direction="vertical" style={{width:'100%'}}>
+            {rights.map((t,i)=>{
+              const isM=Object.keys(matched).some(k=>pool.find(p=>p.m===k&&p.t===t));
+              return (<div key={i} onClick={()=>!isM&&pick(t)}
+                style={{...box(isM?C.greenBg:(wrong===t?C.redBg:C.white), isM?C.green:(wrong===t?C.red:C.border)),
+                  cursor:isM?'default':'pointer',opacity:isM?.55:1,marginBottom:0,fontSize:13}}>
+                {t} {isM&&'✓'}
+              </div>);
+            })}
+          </Space>
+        </Col>
+      </Row>}
+    </div>
+  );
+}
+
+/* =================== TIMELINE (อายุความ) =================== */
+const timelineData=[
+  {label:'ครอบครองปรปักษ์ · อสังหาริมทรัพย์', years:10, color:C.red, m:'1382', note:'สงบ เปิดเผย เจตนาเป็นเจ้าของ ต่อเนื่อง 10 ปี → ได้กรรมสิทธิ์'},
+  {label:'ครอบครองปรปักษ์ · สังหาริมทรัพย์', years:5, color:C.purple, m:'1382', note:'สังหาฯ ใช้เพียง 5 ปี'},
+  {label:'ได้ภาระจำยอมโดยอายุความ', years:10, color:C.blue, m:'1401', note:'ใช้สงบ เปิดเผย เจตนาได้ภาระจำยอม 10 ปี (ที่ดิน น.ส.3 ก็ได้)'},
+  {label:'ภาระจำยอมสิ้นไปเพราะไม่ใช้', years:10, color:C.gold, m:'1399', note:'ไม่ใช้ 10 ปีติดต่อกัน → ภาระจำยอมหมดสิ้น'},
+  {label:'ฟ้องเอาคืน/ปลดเปลื้องการครอบครอง', years:1, color:C.green, m:'1374/1375', note:'ถูกรบกวน/แย่ง ต้องฟ้องภายใน 1 ปี'},
+  {label:'ขาดครอบครองไม่สมัครใจ · กลับมาได้ใน', years:1, color:C.cyan, m:'1384', note:'กลับเข้าครอง/ฟ้องภายใน 1 ปี → ไม่ถือว่าสะดุด'},
+];
+function TimelineTab(){
+  const [yr,setYr]=React.useState(0);
+  const maxY=12;
+  return (
+    <div className="fadeUp">
+      <Alert type="warning" showIcon style={{borderRadius:12,marginBottom:16}}
+        message="เลื่อนแถบ 'จำนวนปี' แล้วดูว่าแต่ละอายุความ 'ครบกำหนด' เมื่อไร — สีเต็มแท่ง = สิทธิเกิด/หมดผลแล้ว"/>
+      <Card style={box(C.white,C.border)} bodyStyle={{padding:18}}>
+        <Flex align="center" gap={12} wrap>
+          <Text strong style={{fontSize:16}}>⏱️ จำนวนปีที่ผ่านไป:</Text>
+          <div style={{background:C.gold,color:'#fff',borderRadius:10,padding:'2px 16px',fontSize:22,fontWeight:700}}>{yr} ปี</div>
+        </Flex>
+        <Slider min={0} max={maxY} value={yr} onChange={setYr} marks={{0:'0',1:'1',5:'5',10:'10',12:'12+'}}
+          styles={{track:{background:C.gold},handle:{borderColor:C.goldDark}}} style={{marginTop:10}}/>
+      </Card>
+      <div style={{marginTop:16}}>
+        {timelineData.map((t,i)=>{
+          const pct=Math.min(100, (yr/t.years)*100);
+          const reached=yr>=t.years;
+          return (
+            <Card key={i} style={{...box(reached?C.greenBg:C.white, reached?C.green:C.border),marginBottom:12}} bodyStyle={{padding:'14px 16px'}}>
+              <Flex justify="space-between" align="center" wrap gap={6}>
+                <Text strong>{t.label} <span className="mnum">ม.{t.m}</span></Text>
+                <Tag color={reached?'green':'default'}>{reached?'✓ ครบ '+t.years+' ปี':'ต้องการ '+t.years+' ปี'}</Tag>
+              </Flex>
+              <div className="tl-track" style={{marginTop:8}}>
+                <div className="tl-fill" style={{width:pct+'%', background:reached?C.green:t.color}}></div>
+              </div>
+              {reached && <Text className="fadeUp" style={{color:C.green,display:'block',marginTop:8,fontSize:13}}>⚖️ {t.note}</Text>}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* =================== CASE DIAGNOSIS (วินิจฉัยเคส) =================== */
+const caseTrees={
+  build:{
+    name:'🏗️ สร้าง/รุกล้ำโรงเรือน',
+    start:'q1',
+    nodes:{
+      q1:{q:'ลักษณะการก่อสร้างเป็นแบบใด?',opts:[
+        {t:'สร้างโรงเรือน "ทั้งหลัง" ในที่ดินคนอื่น',go:'q2'},
+        {t:'สร้างบ้านในที่ตัวเอง แต่ส่วนน้อย "รุกล้ำ" ที่ดินคนอื่น',go:'q3'},
+        {t:'รุกล้ำด้วย "สิ่งอื่น" ที่ไม่ใช่โรงเรือน (อ่างปูน/รั้ว/ต้นไม้)',go:'r_other'}]},
+      q2:{q:'ผู้สร้าง "สุจริต" (เข้าใจว่าที่ดินเป็นของตน) ตลอดจนสร้างเสร็จหรือไม่?',opts:[
+        {t:'สุจริต',go:'r1310'},{t:'ไม่สุจริต (รู้ก่อนสร้างเสร็จแล้วยังสร้างต่อ)',go:'r1311'}]},
+      q3:{q:'ผู้สร้าง "สุจริต" ตลอดจนสร้างเสร็จหรือไม่?',opts:[
+        {t:'สุจริต',go:'r1312a'},{t:'ไม่สุจริต',go:'r1312b'}]},
+    },
+    results:{
+      r1310:{law:'ม.1310',verdict:'เจ้าของที่ดินได้กรรมสิทธิ์บ้าน แต่ต้องจ่ายค่าที่ดินที่เพิ่มขึ้น',color:C.green,
+        irac:'R: ม.1310 สร้างโรงเรือนทั้งหลังโดยสุจริต บ้านเป็นส่วนควบ เจ้าของที่ดินได้กรรมสิทธิ์ · A: ครบองค์ประกอบ (ทั้งหลัง+สุจริต) · C: เจ้าของที่ดินได้บ้านแต่ต้องใช้ค่าที่ดินที่เพิ่มให้ผู้สร้าง — เว้นแต่เจ้าของไม่ประมาทเลินเล่อ อาจบอกปัดให้รื้อ/ให้ซื้อที่ดินได้ (ว.2)'},
+      r1311:{law:'ม.1311',verdict:'ผู้สร้างต้องรื้อถอน ทำที่ดินคืนเดิม',color:C.red,
+        irac:'R: ม.1311 สร้างทั้งหลังโดยไม่สุจริต · A: ผู้สร้างรู้ว่าที่ดินคนอื่น · C: ต้องรื้อถอน+คืนที่ดินตามเดิม เว้นแต่เจ้าของเลือกเก็บบ้านไว้แล้วใช้ราคาบ้าน/ค่าที่ดินที่เพิ่ม'},
+      r1312a:{law:'ม.1312 ว.1',verdict:'ผู้สร้างเป็นเจ้าของส่วนรุกล้ำ (ไม่ต้องรื้อ) แต่จ่ายค่าที่ดิน + จดภาระจำยอม',color:C.green,
+        irac:'R: ม.1312 ว.1 รุกล้ำโดยสุจริต เป็นข้อยกเว้นเรื่องส่วนควบ · A: รุกล้ำส่วนน้อย+สุจริต · C: ผู้สร้างได้ส่วนรุกล้ำ ต้องเสียเงินค่าใช้ที่ดิน และมีสิทธิให้เจ้าของที่ดินจดทะเบียนภาระจำยอม (ตกติดที่ดิน แม้โอนต่อ)'},
+      r1312b:{law:'ม.1312 ว.2',verdict:'เจ้าของที่ดินเรียกให้รื้อถอนส่วนรุกล้ำได้',color:C.red,
+        irac:'R: ม.1312 ว.2 รุกล้ำโดยไม่สุจริต · A: ผู้สร้างรู้ว่ารุกล้ำ · C: เจ้าของที่ดินเรียกให้รื้อถอน+ทำที่ดินคืนเดิม โดยผู้สร้างออกค่าใช้จ่าย'},
+      r_other:{law:'ไม่เข้า ม.1312',verdict:'ต้องรื้อถอนออกไป (1312 ใช้เฉพาะ "โรงเรือน")',color:C.red,
+        irac:'R: ม.1312 คุ้มครองเฉพาะ "โรงเรือน" และส่วนควบของโรงเรือน · A: อ่างปูน/รั้ว/ต้นไม้ ไม่ใช่โรงเรือน · C: ไม่ได้รับยกเว้นเรื่องส่วนควบ → ต้องรื้อถอนออกไป (ตรงข้อสอบ 1/2567 ข้อ 1 กรณีอ่างปูน)'},
+    }
+  },
+  possess:{
+    name:'⏳ ครอบครองปรปักษ์',
+    start:'q1',
+    nodes:{
+      q1:{q:'ที่ดินที่เข้าไปครอบครองมีสถานะใด?',opts:[
+        {t:'ที่ดินเอกชน "มีโฉนด" (มีกรรมสิทธิ์)',go:'q2'},
+        {t:'ที่ดิน น.ส.3 / ส.ค.1 (มีแค่สิทธิครอบครอง)',go:'r_nosor'},
+        {t:'สาธารณสมบัติของแผ่นดิน',go:'r_public'}]},
+      q2:{q:'ครอบครองแบบ สงบ + เปิดเผย + เจตนาเป็นเจ้าของ ต่อเนื่องครบ 10 ปีหรือไม่?',opts:[
+        {t:'ครบทุกองค์ประกอบ ครบ 10 ปี',go:'r_win'},
+        {t:'ครองโดยอาศัยสิทธิเจ้าของ/ยึดถือแทน/ได้รับอนุญาต',go:'r_agent'},
+        {t:'ยังไม่ครบ 10 ปี',go:'r_short'}]},
+    },
+    results:{
+      r_win:{law:'ม.1382',verdict:'ได้กรรมสิทธิ์โดยการครอบครองปรปักษ์',color:C.green,
+        irac:'R: ม.1382 ครอบครองที่ดินมีกรรมสิทธิ์ของผู้อื่น สงบ เปิดเผย เจตนาเป็นเจ้าของ 10 ปี · A: ครบทุกองค์ประกอบ · C: ได้กรรมสิทธิ์ (แต่การได้มาโดยทางอื่น ยังต้องระวัง ม.1299 ว.2 ต่อบุคคลภายนอกผู้สุจริตที่จดทะเบียน)'},
+      r_nosor:{law:'ม.1382 (ใช้ไม่ได้)',verdict:'ปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้ (ที่ดินไม่มีกรรมสิทธิ์)',color:C.red,
+        irac:'R: ปรปักษ์ต้องเป็นที่ดิน "มีกรรมสิทธิ์" · A: น.ส.3/ส.ค.1 เจ้าของมีแค่สิทธิครอบครอง · C: ครอบครองปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้ แต่อาจแย่งสิทธิครอบครองตาม ม.1367/1375 ได้ (ตรงข้อสอบ 1/2568 ข้อ 3)'},
+      r_public:{law:'ม.1306',verdict:'ครองนานเท่าไรก็ไม่ได้กรรมสิทธิ์',color:C.red,
+        irac:'R: ม.1306 ห้ามยกอายุความต่อสู้แผ่นดิน · A: ที่ดินเป็นสาธารณสมบัติ · C: ครอบครองปรปักษ์นานเท่าไรก็ไม่ได้กรรมสิทธิ์ (พิจารณาก่อนว่าที่ดินนั้นเป็นสาธารณสมบัติจริงหรือเป็นที่เอกชน — ตรงข้อสอบ 1/2567 ข้อ 3 ศาลเจ้า)'},
+      r_agent:{law:'ม.1368/1381',verdict:'ไม่มีเจตนาเป็นเจ้าของ → ไม่เป็นปรปักษ์',color:C.red,
+        irac:'R: การครองโดยอาศัยสิทธิเจ้าของ/ยึดถือแทน ไม่ใช่เจตนาเป็นเจ้าของ · A: ต้องบอกกล่าวเปลี่ยนลักษณะยึดถือ ม.1381 ก่อน อายุความจึงเริ่มนับ · C: ยังไม่ได้กรรมสิทธิ์'},
+      r_short:{law:'ม.1382',verdict:'ยังไม่ครบอายุความ → ยังไม่ได้กรรมสิทธิ์',color:C.gold,
+        irac:'C: ยังไม่ครบ 10 ปี ยังไม่ได้กรรมสิทธิ์ · หากขาดครอบครองไม่สมัครใจต้องกลับมาใน 1 ปี (ม.1384) มิฉะนั้นสะดุด'},
+    }
+  },
+  way:{
+    name:'🚶 ทางจำเป็น / ภาระจำยอม',
+    start:'q1',
+    nodes:{
+      q1:{q:'ที่ดินมีทางออกสู่ทางสาธารณะหรือไม่?',opts:[
+        {t:'ไม่มีทางออกเลย (ถูกล้อมรอบ)',go:'q2'},
+        {t:'มีทางออกแล้ว แต่ไม่สะดวก/อ้อม',go:'r_nonecessary'},
+        {t:'มีทางออก แต่อยากได้สิทธิใช้ทางในที่ดินคนอื่นถาวร',go:'q3'}]},
+      q2:{q:'ที่ดินถูกล้อมเพราะเหตุใด?',opts:[
+        {t:'ถูกที่ดินแปลงอื่นล้อมตามธรรมชาติ',go:'r_way1349'},
+        {t:'เกิดจากการแบ่งแยก/แบ่งโอนที่ดินกันเอง',go:'r_way1350'}]},
+      q3:{q:'ได้สิทธิมาอย่างไร?',opts:[
+        {t:'ตกลงกับเจ้าของ (นิติกรรม) + จดทะเบียน',go:'r_serv_nit'},
+        {t:'ใช้ทางสงบ เปิดเผย เจตนาได้ภาระจำยอม 10 ปี',go:'r_serv_age'}]},
+    },
+    results:{
+      r_way1349:{law:'ม.1349',verdict:'เปิดทางจำเป็นได้ (จ่ายค่าทดแทน)',color:C.green,
+        irac:'R: ม.1349 ที่ดินถูกล้อมไม่มีทางออก ผ่านที่ดินที่ล้อมได้ · A: ถูกล้อมจริง · C: เปิดทางจำเป็นได้ทันที (ผลกฎหมาย ไม่ต้องจดทะเบียน) เลือกทางเสียหายน้อยสุด + จ่ายค่าทดแทน'},
+      r_way1350:{law:'ม.1350',verdict:'เปิดทางได้เฉพาะแปลงที่แบ่งแยก + ไม่ต้องจ่ายค่าทดแทน',color:C.green,
+        irac:'R: ม.1350 แบ่งแยก/โอนจนไม่มีทางออก · A: ถูกล้อมเพราะแบ่งแยกเอง · C: เรียกผ่านได้เฉพาะแปลงที่แบ่งแยกกัน และไม่ต้องเสียค่าทดแทน'},
+      r_nonecessary:{law:'ม.1349 (ไม่เข้า)',verdict:'ขอทางจำเป็นไม่ได้',color:C.red,
+        irac:'R: ทางจำเป็นใช้เฉพาะกรณี "ไม่มีทางออกสู่สาธารณะ" · A: มีทางออกแล้วเพียงไม่สะดวก/อ้อม · C: ไม่เข้าเงื่อนไข ขอเปิดทางจำเป็นไม่ได้ (ตรงข้อสอบ 1/2567 ข้อ 4)'},
+      r_serv_nit:{law:'ม.1387+1299',verdict:'ได้ภาระจำยอมเป็นทรัพยสิทธิ (ตกติดที่ดิน)',color:C.green,
+        irac:'R: ภาระจำยอมโดยนิติกรรม ต้องหนังสือ+จดทะเบียน (ม.1299 ว.1) · A: จดทะเบียนแล้ว · C: เป็นทรัพยสิทธิ ตกติดที่ดิน แม้ภารยทรัพย์ถูกโอน สามยทรัพย์ยังบังคับผู้รับโอนได้'},
+      r_serv_age:{law:'ม.1401+1382',verdict:'ได้ภาระจำยอมโดยอายุความ 10 ปี',color:C.green,
+        irac:'R: ม.1401 ประกอบ 1382 ใช้ทางสงบ เปิดเผย เจตนาได้ภาระจำยอม 10 ปี · A: ครบเงื่อนไข (ที่ดิน น.ส.3 ก็ได้ ต่างจากปรปักษ์) · C: ได้ภาระจำยอมโดยอายุความ · ระวัง: ถ้าเจ้าของอนุญาต = เป็นนิติกรรม ไม่ใช่อายุความ'},
+    }
+  }
+};
+function CaseDiagnosisTab(){
+  const [topic,setTopic]=React.useState(null);
+  const [nodeId,setNodeId]=React.useState(null);
+  const [path,setPath]=React.useState([]);
+  const [result,setResult]=React.useState(null);
+  const start=(k)=>{setTopic(k);setNodeId(caseTrees[k].start);setPath([]);setResult(null);};
+  const choose=(opt)=>{
+    const tree=caseTrees[topic];
+    setPath(p=>[...p,{q:tree.nodes[nodeId].q,a:opt.t}]);
+    if(opt.go.startsWith('r')){ setResult(tree.results[opt.go]); }
+    else setNodeId(opt.go);
+  };
+  const reset=()=>{setTopic(null);setNodeId(null);setPath([]);setResult(null);};
+  if(!topic) return (
+    <div className="fadeUp">
+      <Alert type="success" showIcon style={{borderRadius:12,marginBottom:16}}
+        message="เครื่องมือช่วยวินิจฉัย — ตอบคำถามทีละขั้น ระบบจะไล่ตาม IRAC แล้วบอกมาตราที่ใช้ + แนวคำตอบ"/>
+      <Row gutter={12}>
+        {Object.keys(caseTrees).map(k=>(
+          <Col xs={24} md={8} key={k} style={{marginBottom:12}}>
+            <Card hoverable className="qc" onClick={()=>start(k)}
+              style={{borderRadius:16,border:'2px solid '+C.border,background:C.white,textAlign:'center'}}>
+              <div style={{fontSize:34}}>{caseTrees[k].name.split(' ')[0]}</div>
+              <Title level={5} style={{margin:'8px 0 0'}}>{caseTrees[k].name.substring(caseTrees[k].name.indexOf(' ')+1)}</Title>
+              <Text type="secondary">เริ่มวินิจฉัย →</Text>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </div>
+  );
+  const tree=caseTrees[topic];
+  return (
+    <div className="fadeUp">
+      <Flex justify="space-between" align="center" style={{marginBottom:12}}>
+        <Tag color="gold" style={{fontSize:14,padding:'4px 10px'}}>{tree.name}</Tag>
+        <Button size="small" onClick={reset}>↺ เลือกหัวข้อใหม่</Button>
+      </Flex>
+      {path.length>0 && <Card style={box(C.surface,C.border)} bodyStyle={{padding:12}}>
+        <Steps direction="vertical" size="small" current={path.length}
+          items={path.map(p=>({title:p.q,description:<Tag color="blue">{p.a}</Tag>,status:'finish'}))}/>
+      </Card>}
+      {!result && <Card className="fadeUp pulse" style={{...box(C.white,C.gold),marginTop:12}} bodyStyle={{padding:18}}>
+        <Title level={5} style={{marginTop:0}}>{tree.nodes[nodeId].q}</Title>
+        <Space direction="vertical" style={{width:'100%'}}>
+          {tree.nodes[nodeId].opts.map((o,i)=>(
+            <Button key={i} block size="large" onClick={()=>choose(o)}
+              style={{textAlign:'left',height:'auto',whiteSpace:'normal',padding:'10px 14px',borderColor:C.border}}>{o.t}</Button>
+          ))}
+        </Space>
+      </Card>}
+      {result && <div className="fadeUp">
+        <Result status={result.color===C.green?'success':(result.color===C.red?'error':'warning')}
+          title={<span>{result.verdict}</span>}
+          subTitle={<Tag color={result.color===C.green?'green':(result.color===C.red?'red':'gold')} style={{fontSize:15,marginTop:6}}>{result.law}</Tag>}/>
+        <Card style={box(C.gold2,C.gold)} bodyStyle={{padding:16}}>
+          <Text strong style={{color:C.goldDark}}>📝 แนวเขียนตอบ (IRAC):</Text>
+          <Paragraph style={{marginTop:8,marginBottom:0,color:C.text2}}>{result.irac}</Paragraph>
+        </Card>
+        <Flex gap={10} style={{marginTop:14}} justify="center">
+          <Button onClick={()=>start(topic)}>↻ วินิจฉัยเคสนี้ใหม่</Button>
+          <Button type="primary" style={{background:C.gold,borderColor:C.gold}} onClick={reset}>เลือกหัวข้ออื่น</Button>
+        </Flex>
+      </div>}
+    </div>
+  );
+}
+
+/* =================== EXAM SIMULATOR (จำลองข้อสอบจับเวลา) =================== */
+const examSets={
+  '1/2567':[
+    {n:1,topic:'รุกล้ำ + ซื้อขายทอดตลาด',q:'อนันต์และอำนาจเป็นเจ้าของที่ดินโฉนด 2 แปลงติดกัน อนันต์สร้างบ้าน + ก่ออ่างปูนเก็บน้ำ (1.50×2.00 ม.) รังวัดแล้ว แต่สร้างเสร็จพบว่า คานล่างและฝาผนังบ้านรุกล้ำที่ดินอำนาจ ~30 ซม. ตลอดแนว และอ่างปูนก็รุกล้ำ ~30 ซม. อำนาจยังไม่รู้ ต่อมาที่ดินอำนาจถูกบังคับคดีขายทอดตลาด เอนกซื้อโดยสุจริต แล้วให้อนันต์รื้อบ้านและอ่างปูน วินิจฉัยว่าอนันต์ต้องรื้อหรือไม่ เพราะเหตุใด',
+      key:'บ้าน: ม.1312 ว.1 รุกล้ำโดยสุจริต อนันต์เป็นเจ้าของส่วนรุกล้ำ ไม่ต้องรื้อ แต่ต้องเสียเงินค่าใช้ที่ดิน+ให้จดภาระจำยอม ซึ่งเป็นทรัพยสิทธิตกติดที่ดิน แม้เอนกรับโอนจากขายทอดตลาดก็ต้องรับภาระนั้น · อ่างปูน: ไม่ใช่ "โรงเรือน" ม.1312 ใช้ไม่ได้ ไม่ได้ยกเว้นเรื่องส่วนควบ → อนันต์ต้องรื้ออ่างปูนออกไป'},
+    {n:2,topic:'กรรมสิทธิ์รวม',q:'ปี 2540 เอก โท ตรี ซื้อที่ดินสวนผลไม้จากมกรา 1,000,000 บาท ลงทุน 100k/200k/600k เก็บเกี่ยวแบ่งตามสัดส่วน ปี 2567 โท+ตรี จะขายที่ดินทั้งแปลงให้จันทร์ 10,000,000 บาท เอก (ลงทุน 10%) จะห้ามไม่ให้ขายได้หรือไม่',
+      key:'ม.1361 เจ้าของรวมขาย/จำนอง "เฉพาะส่วนของตน" ได้ แต่การจำหน่าย "ตัวทรัพย์ทั้งอัน" ต้องได้ความยินยอมเจ้าของรวมทุกคน · เอกแม้มีส่วนน้อย 10% ก็เป็นเจ้าของรวม มีสิทธิยับยั้ง → โท+ตรี ขายที่ดินทั้งแปลงให้จันทร์โดยเอกไม่ยินยอมไม่ได้ เอกห้ามได้'},
+    {n:3,topic:'ปรปักษ์ + สาธารณสมบัติ',q:'ศาลเจ้าย่านปทุมธานีถูกทิ้งร้างไม่มีใครดูแล >10 ปี นายแดง (มีที่ดินโฉนดติดกัน) เห็นว่าไม่มีใครดูแล จึงสร้างร้าน "ศาลเจ้าคาเฟ่" คนทั่วไปเข้าใจว่าแดงเป็นเจ้าของ ทำประโยชน์ 12 ปี นายแดงมีสิทธิในที่ดินศาลเจ้าหรือไม่',
+      key:'ประเด็นแรก: ที่ดินศาลเจ้าเป็นสาธารณสมบัติ/ทรัพย์นอกพาณิชย์หรือไม่ ถ้าเป็น → ม.1306 ห้ามยกอายุความต่อสู้แผ่นดิน ครอบครองนานเท่าไรก็ไม่ได้กรรมสิทธิ์ · หากพิสูจน์ได้ว่าเป็นที่ดินเอกชนมีกรรมสิทธิ์และแดงครอบครองสงบ เปิดเผย เจตนาเป็นเจ้าของครบ 10 ปี (ม.1382) จึงได้กรรมสิทธิ์ · ธงหลัก: ที่ทิ้งร้างที่ไม่มีเจ้าของเอกชน มักเป็นที่รกร้าง = สาธารณสมบัติ (ม.1304(1)) → แดงไม่ได้กรรมสิทธิ์'},
+    {n:4,topic:'ทางจำเป็น/ภาระจำยอม',q:'ตี๋น้อยมีที่ดินติดกับนางใน ที่ดินตี๋น้อยมีทางออกสาธารณะแล้วแต่ทางรถสัญจรไม่สะดวก จึงใช้ที่ดินนางในเป็นทางลัด 10 ปี ต่อมาราชการตัดถนนใหญ่หลังที่ดินตี๋น้อย ตี๋น้อยเลยไม่ได้ใช้ทางลัด 5 ปี ภายหลังราชการปรับปรุงท่อระบายน้ำทำให้ใช้ถนนไม่สะดวก ตี๋น้อยจะกลับมาใช้ทางลัด แต่นางในกั้นรั้ว ตี๋น้อยฟ้องขอให้รื้อรั้วอ้างว่าที่ดินนางในตกภาระจำยอม วินิจฉัย',
+      key:'ที่ดินตี๋น้อยมีทางออกสาธารณะอยู่แล้ว จึงไม่ใช่ "ทางจำเป็น" ม.1349 (ความไม่สะดวกไม่พอ) · ภาระจำยอมโดยอายุความ ม.1401+1382 ต้องใช้สงบ เปิดเผย เจตนาได้ภาระจำยอม ต่อเนื่อง 10 ปี · การใช้ 10 ปีแรกอาจครบ แต่ต่อมาไม่ใช้ 5 ปี (เกิน 10 ปีไม่ใช้ = สิ้นภาระจำยอม ม.1399 ถ้าเคยได้มา) และการใช้ไม่ต่อเนื่อง → ตี๋น้อยไม่ได้ภาระจำยอม จึงบังคับให้นางในรื้อรั้วไม่ได้'},
+  ],
+  '1/2568':[
+    {n:1,topic:'ม.1299 ว.2 บุคคลภายนอกสุจริต',q:'นายหนึ่ง-นายสอง เจ้าของที่ดินโฉนดคนละแปลงติดกัน พิพาทแนวเขต นายสองอ้างว่าหนึ่งสร้างรั้วรุกล้ำ ทำสัญญาประนีประนอมเป็นหนังสือ "ยกที่ดินส่วนรุกล้ำ 20 ตร.วา ให้เป็นของนายสอง" ตกลงจะไปจดทะเบียนแบ่งแยกภายหลัง ต่อมานายหนึ่งขายที่ดินทั้งแปลง (รวม 20 ตร.วา) ให้นายสาม ทำหนังสือ+จดทะเบียนถูกต้อง นายสามไม่เคยรู้เรื่องพิพาท เมื่อนายสามพบว่านายสองครอบครอง 20 ตร.วา จึงให้ออก นายสองยันว่าตนมีสิทธิดีกว่า วินิจฉัยว่านายสองยกสัญญาต่อสู้นายสามได้หรือไม่',
+      key:'สิทธิของนายสองได้มาโดย "ทางอื่นนอกจากนิติกรรม" (สัญญาประนีประนอม) แต่ยังไม่จดทะเบียน · ม.1299 ว.2 สิทธิที่ยังไม่จดทะเบียน ยกขึ้นต่อสู้บุคคลภายนอกผู้ได้สิทธิมาโดยสุจริต เสียค่าตอบแทน และจดทะเบียนโดยสุจริตไม่ได้ · นายสามซื้อ (เสียค่าตอบแทน) สุจริต จดทะเบียนแล้ว → นายสองยกสัญญาต่อสู้นายสามไม่ได้ นายสามมีสิทธิดีกว่า'},
+    {n:2,topic:'รุกล้ำ + สุจริตตลอดหรือไม่',q:'นายเอกเจ้าของที่ดินโฉนด 12345 ปลูกบ้าน แต่คานชั้นบนล้ำเข้าไปในที่ดินโฉนด 12346 ของนายโท นายเอกทราบภายหลังตอนสร้างไปแล้วมากกว่า 70% แต่ตัดสินใจสร้างต่อจนเสร็จ (ค่าใช้จ่าย ~800,000) นายโทอยากได้บ้านนายเอกโดยเสียเงินน้อยที่สุด ทนายจะแนะนำนายโทอย่างไร',
+      key:'ม.1312 การรุกล้ำ · ความสุจริตต้องมีตลอดจนสร้างเสร็จ นายเอกรู้ตอนสร้างไป 70% แล้วยังสร้างต่อ = ไม่สุจริต → เข้า ม.1312 ว.2 · เจ้าของที่ดิน (นายโท) มีสิทธิเรียกให้นายเอกรื้อถอนส่วนรุกล้ำและทำที่ดินคืนเดิม โดยนายเอกออกค่าใช้จ่าย · หากนายโทอยากได้บ้าน ต้องเจรจาซื้อ ไม่มีสิทธิบังคับเอาบ้านฟรีตามกฎหมายรุกล้ำไม่สุจริต'},
+    {n:3,topic:'ปรปักษ์ที่ดิน น.ส.3',q:'นายแดงมีที่ดินเป็น "หนังสือรับรองการทำประโยชน์ (น.ส.3)" ไม่มีเวลาดูแล นายดำเข้าไปสร้างอาคารจอดรถ ใช้ประโยชน์ >12 ปี คนทั่วไปเข้าใจว่านายดำเป็นเจ้าของ นายดำจะอ้างครอบครองปรปักษ์ในที่ดินส่วนที่สร้างอาคารจอดรถได้หรือไม่',
+      key:'ม.1382 การครอบครองปรปักษ์ให้ได้ "กรรมสิทธิ์" ต้องเป็นที่ดินที่ผู้อื่น "มีกรรมสิทธิ์" (มีโฉนด) · ที่ดิน น.ส.3 เป็นเพียงหนังสือรับรองการทำประโยชน์ นายแดงมีเพียง "สิทธิครอบครอง" ไม่มีกรรมสิทธิ์ → นายดำครอบครองปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้ · แต่นายดำอาจได้ "สิทธิครอบครอง" โดยการแย่งการครอบครองตาม ม.1367/1375 (นายแดงต้องฟ้องเอาคืนใน 1 ปี)'},
+    {n:4,topic:'รุกล้ำต่อเติม + ภาระจำยอมตกติดที่ดิน',q:'นายตี๋น้อยเจ้าของที่ดิน+บ้าน ต่อเติมระเบียงบ้านล้ำเข้าไปเหนือที่ดินนายแมน โดยสุจริต (เข้าใจว่าอยู่ในที่ตนทั้งหมด) ทั้งคู่ไม่ทราบเรื่องรุกล้ำ 10 ปี ต่อมานายแมนขายที่ดินให้นายโบนัส จดทะเบียนถูกต้อง นายโบนัสตรวจพบว่าระเบียงรุกล้ำ จึงให้ตี๋น้อยรื้อ (อ้างว่าตนรับโอนโดยสุจริตไม่ทราบเรื่อง) นายตี๋น้อยต้องรื้อหรือไม่',
+      key:'ม.1312 ว.1 สร้าง(ต่อเติม)รุกล้ำโดยสุจริต เป็นส่วนควบของโรงเรือน (ระเบียง) ตี๋น้อยเป็นเจ้าของส่วนรุกล้ำ ไม่ต้องรื้อ แต่ต้องเสียเงินค่าใช้ที่ดินและมีสิทธิให้จดทะเบียนภาระจำยอม · ภาระจำยอมที่เกิดตาม 1312 เป็นทรัพยสิทธิที่เกิดโดยผลกฎหมาย ตกติดที่ดิน แม้ยังไม่จดทะเบียนก็ก่อสิทธิ/หน้าที่ · นายโบนัสรับโอนที่ดินก็ต้องรับภาระจำยอมนั้น → ตี๋น้อยไม่ต้องรื้อระเบียง'},
+  ]
+};
+function ExamSimTab(){
+  const [setKey,setSetKey]=React.useState(null);
+  const [qi,setQi]=React.useState(0);
+  const [reveal,setReveal]=React.useState(false);
+  const [secs,setSecs]=React.useState(0);
+  const [running,setRunning]=React.useState(false);
+  React.useEffect(()=>{
+    if(!running) return;
+    const t=setInterval(()=>setSecs(s=>s+1),1000);
+    return ()=>clearInterval(t);
+  },[running]);
+  const begin=(k)=>{setSetKey(k);setQi(0);setReveal(false);setSecs(0);setRunning(true);};
+  const fmt=(s)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  if(!setKey) return (
+    <div className="fadeUp">
+      <Alert type="warning" showIcon style={{borderRadius:12,marginBottom:16}}
+        message="โหมดจำลองข้อสอบจริง — จับเวลาเหมือนห้องสอบ (จริง 2.5 ชม./4 ข้อ ≈ 37 นาที/ข้อ) เขียนตอบในกระดาษก่อน แล้วค่อยกด 'ดูแนวคำตอบ'"/>
+      <Row gutter={12}>
+        {Object.keys(examSets).map(k=>(
+          <Col xs={24} md={12} key={k} style={{marginBottom:12}}>
+            <Card hoverable className="qc" onClick={()=>begin(k)} style={{borderRadius:16,border:'2px solid '+C.gold,background:C.white}}>
+              <Flex align="center" gap={12}>
+                <div style={{fontSize:34}}>📝</div>
+                <div>
+                  <Title level={4} style={{margin:0}}>ข้อสอบไล่ภาค {k}</Title>
+                  <Text type="secondary">อัตนัย 4 ข้อ · LAW2101 ม.รามคำแหง</Text>
+                </div>
+              </Flex>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <Alert type="info" showIcon style={{borderRadius:10}} message="มีข้อสอบภูมิภาคด้วย (ธ.ค.) เนื้อหาแนวเดียวกัน — ฝึกชุดหลักให้แม่นก่อน"/>
+    </div>
+  );
+  const set=examSets[setKey];
+  const cur=set[qi];
+  return (
+    <div className="fadeUp">
+      <Flex justify="space-between" align="center" wrap gap={8} style={{marginBottom:12}}>
+        <Space><Tag color="gold">ไล่ภาค {setKey}</Tag><Tag>ข้อ {cur.n}/4</Tag></Space>
+        <Space>
+          <Tag color={running?'green':'default'} style={{fontSize:15,fontFamily:'monospace'}}>⏱ {fmt(secs)}</Tag>
+          <Button size="small" onClick={()=>setRunning(r=>!r)}>{running?'พัก':'เดินเวลา'}</Button>
+          <Button size="small" danger onClick={()=>{setSetKey(null);setRunning(false);}}>ออก</Button>
+        </Space>
+      </Flex>
+      <Card style={box(C.white,C.border)} bodyStyle={{padding:20}}>
+        <Tag color="blue" style={{marginBottom:8}}>{cur.topic}</Tag>
+        <Paragraph className="serif" style={{fontSize:17,lineHeight:1.9,color:C.text}}>{cur.q}</Paragraph>
+      </Card>
+      {!reveal && <Card style={{...box(C.surface,C.border),marginTop:12}} bodyStyle={{padding:16}}>
+        <Text strong>✍️ เขียนตอบตาม IRAC:</Text>
+        <div style={{marginTop:8,color:C.text3,fontSize:13}}>Issue (ประเด็น) → Rule (มาตรา+หลัก) → Application (ปรับข้อเท็จจริง) → Conclusion (ฟันธง)</div>
+        <Button type="primary" style={{background:C.gold,borderColor:C.gold,marginTop:12}} onClick={()=>setReveal(true)}>ดูแนวคำตอบ (ธง) ▼</Button>
+      </Card>}
+      {reveal && <Card className="fadeUp" style={{...box(C.greenBg,C.green),marginTop:12}} bodyStyle={{padding:18}}>
+        <Text strong style={{color:C.green,fontSize:15}}>🏳️ แนวคำตอบ (ธงคำตอบ)</Text>
+        <Paragraph style={{marginTop:8,marginBottom:0,color:C.text2,fontSize:15}}>{cur.key}</Paragraph>
+      </Card>}
+      <Flex justify="space-between" style={{marginTop:16}}>
+        <Button disabled={qi===0} onClick={()=>{setQi(q=>q-1);setReveal(false);}}>◀ ข้อก่อน</Button>
+        {qi<set.length-1
+          ? <Button type="primary" style={{background:C.goldDark,borderColor:C.goldDark}} onClick={()=>{setQi(q=>q+1);setReveal(false);}}>ข้อถัดไป ▶</Button>
+          : <Button type="primary" style={{background:C.green,borderColor:C.green}} onClick={()=>{setRunning(false);}}>จบชุด · หยุดเวลา ✓</Button>}
+      </Flex>
+    </div>
+  );
+}
+
+/* =================== QUICK REFERENCE =================== */
+const quickSections=[
+  {divider:'🎯 สูตรฟันธงข้อสอบ (1 ข้อ 1 การ์ด)'},
+  {s:'ข้อ 1',t:'ได้มาซึ่งอสังหาฯ',b:'นิติกรรม→หนังสือ+จดทะเบียน(1299ว.1) · ทางอื่น→ระวังบุคคลภายนอกสุจริต+จดทะเบียน(1299ว.2)',type:'formula'},
+  {s:'ข้อ 2',t:'กรรมสิทธิ์',b:'สาธารณสมบัติ(1304-7) / สร้าง-รุกล้ำ(1310-14) / ซื้อสุจริต(1332) / กรรมสิทธิ์รวม(1358-62)',type:'formula'},
+  {s:'ข้อ 3',t:'ครอบครอง',b:'ปรปักษ์ต้อง "มีโฉนด"(1382) · น.ส.3 ปรปักษ์ไม่ได้ · ฟ้องคืนใน 1 ปี(1375)',type:'formula'},
+  {s:'ข้อ 4',t:'ทาง/ภาระจำยอม',b:'ไม่มีทางออก→ทางจำเป็น(1349) · ใช้ทาง 10 ปี→ภาระจำยอม(1401) · แค่ไม่สะดวก=ไม่เข้า',type:'formula'},
+  {divider:'🧠 เทคนิคจำ (Mnemonic)'},
+  {s:'ส่วนควบ',t:'"รวม–สาระ–แยกไม่ได้"',b:'3 องค์ประกอบ ม.144: ① ทรัพย์รวมกัน ② เป็นสาระสำคัญ ③ แยกไม่ได้เว้นแต่ทำลาย',type:'mnem'},
+  {s:'สามย/ภารย',t:'"สามย-สบาย · ภารย-แบก"',b:'สามยทรัพย์ได้ประโยชน์(สบาย) · ภารยทรัพย์แบกภาระ',type:'mnem'},
+  {s:'ปรปักษ์',t:'"สงบ–เปิด–เป็นเจ้าของ × เวลา"',b:'สงบ+เปิดเผย+เจตนาเป็นเจ้าของ × อสังหาฯ10/สังหาฯ5 ปี',type:'mnem'},
+  {s:'1299ว.2',t:'"สุจริต–จ่าย–จด"',b:'บุคคลภายนอกชนะเมื่อ สุจริต+เสียค่าตอบแทน+จดทะเบียนสุจริต',type:'mnem'},
+  {divider:'⚖️ กับดักที่ออกซ้ำ (แดง = ระวัง!)'},
+  {s:'กับดัก 1',t:'น.ส.3 ≠ ปรปักษ์',b:'ที่ดิน น.ส.3/ส.ค.1 มีแค่สิทธิครอบครอง → ครอบครองปรปักษ์ให้ได้กรรมสิทธิ์ไม่ได้',type:'contrast'},
+  {s:'กับดัก 2',t:'อ่างปูน/รั้ว ≠ โรงเรือน',b:'ม.1312 คุ้มครองเฉพาะ "โรงเรือน" สิ่งอื่นรุกล้ำต้องรื้อ',type:'contrast'},
+  {s:'กับดัก 3',t:'มีทางแล้ว ≠ ทางจำเป็น',b:'ทางจำเป็นเฉพาะ "ไม่มีทางออก" ความไม่สะดวก/อ้อมไม่พอ',type:'contrast'},
+  {s:'กับดัก 4',t:'สุจริตต้องมีตลอด',b:'รู้ตอนสร้างยังไม่เสร็จแล้วสร้างต่อ = ไม่สุจริต (ข้อสอบ 68 ข้อ 2)',type:'contrast'},
+  {s:'กับดัก 5',t:'ขายรวมทั้งอัน ≠ ขายส่วนตน',b:'ม.1361 ขายส่วนตนได้ แต่ขายตัวทรัพย์ทั้งหมดต้องยินยอมทุกคน',type:'contrast'},
+  {divider:'🔢 ตัวเลขทองที่ต้องจำ'},
+  {s:'10 ปี',t:'ปรปักษ์อสังหาฯ · ภาระจำยอม · ไม่ใช้ภาระจำยอม',b:'1382 / 1401 / 1399',type:'chunk'},
+  {s:'5 ปี',t:'ปรปักษ์สังหาริมทรัพย์',b:'ม.1382',type:'chunk'},
+  {s:'1 ปี',t:'ฟ้องคืน/ปลดเปลื้องครอบครอง · ขาดครองไม่สมัครใจกลับมาได้',b:'1374/1375 · 1384',type:'chunk'},
+  {s:'3 ปี',t:'เกณฑ์อายุ "ไม้ยืนต้น" (ดูอายุพันธุ์)',b:'ม.145',type:'chunk'},
+  {divider:'📝 เทมเพลตขึ้นต้นคำตอบ'},
+  {s:'โครง',t:'ประโยคเปิดที่ได้คะแนน',b:'"ประเด็นคือ...(Issue) หลักกฎหมายตามมาตรา...(Rule) เมื่อพิจารณาข้อเท็จจริงที่ว่า...(Application) จึงวินิจฉัยได้ว่า...(Conclusion)"',type:'formula'},
+];
+const qcColor={mnem:C.purple,flow:C.cyan,contrast:C.red,chunk:C.blue,formula:C.gold};
+const qcBg={mnem:C.purpleBg,flow:C.cyanBg,contrast:C.redBg,chunk:C.blueBg,formula:C.gold2};
+function QuickTab(){
+  return (
+    <div className="fadeUp">
+      {quickSections.map((s,i)=> s.divider
+        ? <Divider key={i} orientation="left" style={{borderColor:C.borderDark,color:C.text2,fontWeight:700,fontSize:15}}>{s.divider}</Divider>
+        : <Card key={i} className="qc" style={{marginBottom:10,borderRadius:14,background:qcBg[s.type],borderLeft:'5px solid '+qcColor[s.type],border:'1px solid '+C.border}} bodyStyle={{padding:'12px 16px'}}>
+            <Flex gap={12} align="flex-start">
+              <Tag color={s.type==='contrast'?'red':(s.type==='mnem'?'purple':(s.type==='chunk'?'blue':'gold'))} style={{marginTop:2}}>{s.s}</Tag>
+              <div style={{flex:1}}>
+                <Text strong style={{color:qcColor[s.type],fontSize:15}}>{s.t}</Text>
+                <div style={{color:C.text2,marginTop:2}}>{s.b}</div>
+              </div>
+            </Flex>
+          </Card>
+      )}
+    </div>
+  );
+}
+
+/* =================== APP =================== */
+function App(){
+  const items=[
+    {key:'basics',label:'🎓 ปูพื้น',children:<BasicsTab/>},
+    {key:'summary',label:'📋 สรุปเนื้อหา',children:<SummaryTab/>},
+    {key:'flash',label:'🃏 แฟลชการ์ด',children:<FlashcardTab/>},
+    {key:'timeline',label:'⏱️ ไทม์ไลน์อายุความ',children:<TimelineTab/>},
+    {key:'diag',label:'🔍 วินิจฉัยเคส',children:<CaseDiagnosisTab/>},
+    {key:'exam',label:'📝 จำลองข้อสอบ',children:<ExamSimTab/>},
+    {key:'quick',label:'🎯 การ์ดจำด่วน',children:<QuickTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{algorithm:theme.defaultAlgorithm, token:{
+      colorPrimary:C.gold, colorBgBase:C.bg, colorText:C.text, colorTextSecondary:C.text3,
+      colorBorder:C.border, borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+      colorBgContainer:C.white, colorFillSecondary:C.surface
+    }}}>
+      <Layout style={{background:C.bg,minHeight:'100vh'}}>
+        <Content style={{maxWidth:960,margin:'0 auto',padding:'22px 16px 60px',width:'100%',boxSizing:'border-box'}}>
+          <div style={{textAlign:'center',marginBottom:6}}>
+            <div style={{fontSize:12,letterSpacing:3,color:C.gold,fontWeight:600}}>ห้องเรียนสด · HARVARD STYLE</div>
+            <Title level={2} className="serif" style={{margin:'2px 0',color:C.text}}>⚖️ LAW 2101 · ว่าด้วยทรัพย์</Title>
+            <Text type="secondary">ป.พ.พ. บรรพ 4 · ปูพื้น → เข้าใจ → ทดลอง → ติวข้อสอบ | สรุปโดยอิงเอกสาร ม.รามคำแหง</Text>
+          </div>
+          <Alert type="warning" showIcon banner style={{borderRadius:10,margin:'12px 0 18px',background:C.gold2,border:'1px solid '+C.gold}}
+            message={<span style={{fontSize:12.5}}>ไฟล์นี้เป็น "สื่อช่วยทบทวน" อ้างอิงตัวบท ป.พ.พ. และแนวข้อสอบเก่า — ควรตรวจทานกับตัวบท/คำบรรยายอาจารย์อีกครั้งก่อนสอบ</span>}/>
+          <Tabs defaultActiveKey="basics" items={items} centered type="card" size="large"/>
+          <Footer style={{background:'transparent',textAlign:'center',color:C.text3,marginTop:20,fontSize:12}}>
+            สร้างเพื่อการทบทวน LAW2101 · 7 โหมด: ปูพื้น · สรุป · แฟลชการ์ด+เกม · ไทม์ไลน์ · วินิจฉัยเคส · จำลองข้อสอบ · การ์ดจำด่วน
+          </Footer>
+        </Content>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
