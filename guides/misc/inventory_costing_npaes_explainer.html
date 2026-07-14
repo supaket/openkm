@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="สื่ออธิบายการตีราคาสินค้าคงเหลือ White Oil ตาม TFRS for NPAEs">
+  <title>Inventory Costing under TFRS for NPAEs</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+    :root {
+      --paper: #f4f3ef;
+      --surface: #ffffff;
+      --ink: #191b1a;
+      --muted: #656b68;
+      --line: #c7cbc8;
+      --line-strong: #202321;
+      --green: #13795b;
+      --green-soft: #d9eee6;
+      --yellow: #e9b949;
+      --yellow-soft: #fff2c8;
+      --red: #c83e4d;
+      --red-soft: #f9dfe2;
+      --blue: #2674a6;
+      --blue-soft: #dcecf5;
+      --lot-old: #e96b3c;
+      --lot-new: #29966f;
+      --shadow: 0 14px 34px rgba(25, 27, 26, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --paper: #171a19;
+      --surface: #212523;
+      --ink: #eef1ef;
+      --muted: #abb2ae;
+      --line: #444b47;
+      --line-strong: #e6ebe8;
+      --green: #5fc49f;
+      --green-soft: #193b30;
+      --yellow: #f0c45f;
+      --yellow-soft: #493b19;
+      --red: #ef7985;
+      --red-soft: #4b262a;
+      --blue: #72b7e4;
+      --blue-soft: #1d3647;
+      --lot-old: #ff8b5d;
+      --lot-new: #55c89d;
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        var(--paper);
+      background-size: 32px 32px;
+      font-family: "IBM Plex Sans Thai", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--blue); }
+    .mono { font-family: "IBM Plex Mono", monospace; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 2px solid var(--line-strong);
+      background: color-mix(in srgb, var(--paper) 94%, transparent);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar-inner {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 62px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--green);
+      font-family: "IBM Plex Mono", monospace;
+      border: 2px solid var(--line-strong);
+    }
+
+    .icon-button {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+
+    main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+
+    .hero {
+      min-height: min(650px, calc(100vh - 62px));
+      padding: 56px 0 44px;
+      display: grid;
+      align-content: center;
+      gap: 36px;
+      border-bottom: 2px solid var(--line-strong);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 940px;
+      margin-bottom: 18px;
+      font-size: clamp(38px, 7vw, 82px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 780px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 23px);
+    }
+
+    .decision-strip {
+      display: grid;
+      border: 2px solid var(--line-strong);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .decision-cell { padding: 20px; border-bottom: 1px solid var(--line); }
+    .decision-cell:last-child { border-bottom: 0; }
+    .decision-cell strong { display: block; font-size: 19px; }
+    .decision-cell span { color: var(--muted); }
+    .decision-cell.recommend { background: var(--green-soft); }
+
+    section { padding: 72px 0; border-bottom: 2px solid var(--line-strong); }
+    .section-head {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+    .section-head h2 { margin: 0; font-size: clamp(28px, 4vw, 48px); line-height: 1.18; }
+    .section-head p { max-width: 760px; margin: 0; color: var(--muted); font-size: 18px; }
+
+    .lab {
+      border: 2px solid var(--line-strong);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .lab-toolbar {
+      padding: 16px;
+      border-bottom: 2px solid var(--line-strong);
+      display: grid;
+      gap: 14px;
+      background: var(--paper);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr;
+      border: 1px solid var(--line-strong);
+    }
+
+    .segmented button {
+      min-height: 48px;
+      padding: 8px 14px;
+      border: 0;
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--surface);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .segmented button:last-child { border-bottom: 0; }
+    .segmented button[aria-pressed="true"] { color: #fff; background: var(--ink); }
+
+    .run-button {
+      min-height: 48px;
+      padding: 10px 18px;
+      border: 2px solid var(--line-strong);
+      color: #fff;
+      background: var(--green);
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 4px 4px 0 var(--line-strong);
+    }
+    .run-button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--line-strong); }
+
+    .process-stage {
+      position: relative;
+      min-height: 480px;
+      padding: 26px 18px;
+      overflow: hidden;
+      display: grid;
+      gap: 24px;
+    }
+
+    .stock-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tank {
+      position: relative;
+      min-height: 190px;
+      padding: 18px 14px;
+      border: 2px solid var(--line-strong);
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .tank::before {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 60%;
+      background: var(--tank-color);
+      opacity: .26;
+      transition: height 700ms cubic-bezier(.2,.8,.2,1);
+    }
+    .tank.drain-old::before { height: 20%; }
+    .tank.drain-new::before { height: 28%; }
+    .tank h3, .tank p { position: relative; z-index: 1; }
+    .tank h3 { margin-bottom: 4px; font-size: 20px; }
+    .tank p { margin: 0; }
+    .tank .qty { margin-top: 42px; font-size: 30px; font-weight: 700; }
+    .old { --tank-color: var(--lot-old); }
+    .new { --tank-color: var(--lot-new); }
+
+    .conveyor {
+      position: relative;
+      height: 72px;
+      border-top: 5px solid var(--line-strong);
+      border-bottom: 5px solid var(--line-strong);
+      background: repeating-linear-gradient(90deg, var(--line) 0 16px, transparent 16px 32px);
+      overflow: hidden;
+    }
+
+    .cargo {
+      position: absolute;
+      top: 10px;
+      left: -70px;
+      width: 54px;
+      height: 42px;
+      border: 2px solid var(--line-strong);
+      background: var(--cargo-color);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0;
+    }
+    .cargo.old-cargo { --cargo-color: var(--lot-old); }
+    .cargo.new-cargo { --cargo-color: var(--lot-new); }
+    .process-stage.running .cargo { animation: ship 5s linear forwards; }
+    .process-stage.running .cargo:nth-child(2) { animation-delay: .55s; }
+    .process-stage.running .cargo:nth-child(3) { animation-delay: 1.1s; }
+    .process-stage.running .cargo:nth-child(4) { animation-delay: 1.65s; }
+    .process-stage.running .cargo:nth-child(5) { animation-delay: 2.2s; }
+    @keyframes ship {
+      0% { left: -70px; opacity: 0; transform: rotate(-2deg); }
+      8% { opacity: 1; }
+      92% { opacity: 1; }
+      100% { left: calc(100% + 12px); opacity: 0; transform: rotate(2deg); }
+    }
+
+    .result-zone { display: grid; gap: 12px; }
+    .metric {
+      padding: 16px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+    }
+    .metric .label { color: var(--muted); font-size: 14px; }
+    .metric .value { display: block; font-family: "IBM Plex Mono", monospace; font-size: 28px; line-height: 1.25; }
+    .metric.primary { background: var(--yellow-soft); }
+    .method-note { padding: 16px; border-left: 6px solid var(--blue); background: var(--blue-soft); }
+    .method-note p { margin: 0; }
+
+    .comparison { margin-top: 24px; overflow-x: auto; border: 2px solid var(--line-strong); }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; background: var(--surface); }
+    th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); background: var(--paper); font-size: 14px; }
+    tr:last-child td { border-bottom: 0; }
+    tr.active-row td { background: var(--green-soft); font-weight: 600; }
+
+    .nrv-board { display: grid; border: 2px solid var(--line-strong); background: var(--surface); }
+    .formula-panel, .warning-panel { padding: 24px; }
+    .formula-panel { border-bottom: 2px solid var(--line-strong); }
+    .formula {
+      display: grid;
+      gap: 10px;
+      margin: 20px 0;
+      font-family: "IBM Plex Mono", monospace;
+    }
+    .formula-line { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+    .formula-total { color: var(--red); font-size: 23px; font-weight: 700; }
+    .warning-panel { background: var(--yellow-soft); }
+    .warning-panel strong { display: block; margin-bottom: 8px; font-size: 21px; }
+
+    .portfolio-flow { display: grid; gap: 18px; align-items: stretch; }
+    .project-ledger {
+      position: relative;
+      padding: 22px;
+      border: 2px solid var(--line-strong);
+      background: var(--surface);
+    }
+    .project-ledger h3 { margin-bottom: 20px; }
+    .project-ledger.loss { border-top: 10px solid var(--red); }
+    .project-ledger.profit { border-top: 10px solid var(--green); }
+    .ledger-number { font-family: "IBM Plex Mono", monospace; font-size: 38px; font-weight: 700; }
+    .loss .ledger-number { color: var(--red); }
+    .profit .ledger-number { color: var(--green); }
+
+    .combine-arrow {
+      min-height: 70px;
+      display: grid;
+      place-items: center;
+      font-size: 36px;
+      font-weight: 700;
+    }
+    .portfolio-total { padding: 24px; border: 3px solid var(--line-strong); background: var(--green-soft); }
+    .portfolio-total .ledger-number { color: var(--green); }
+
+    .allocation-toggle {
+      margin-top: 24px;
+      padding: 18px;
+      border: 2px solid var(--line-strong);
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .switch {
+      position: relative;
+      width: 62px;
+      height: 34px;
+      flex: 0 0 auto;
+    }
+    .switch input { position: absolute; opacity: 0; }
+    .switch span {
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--line-strong);
+      background: var(--line);
+      cursor: pointer;
+    }
+    .switch span::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      top: 3px;
+      left: 4px;
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      transition: transform 220ms ease;
+    }
+    .switch input:checked + span { background: var(--red); }
+    .switch input:checked + span::after { transform: translateX(27px); }
+    .allocation-alert { display: none; margin-top: 14px; padding: 16px; background: var(--red-soft); border-left: 6px solid var(--red); }
+    .allocation-alert.show { display: block; animation: reveal 260ms ease; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .odoo-map { display: grid; gap: 0; border: 2px solid var(--line-strong); background: var(--surface); }
+    .odoo-step { padding: 20px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 50px 1fr; gap: 16px; }
+    .odoo-step:last-child { border-bottom: 0; }
+    .step-no { width: 42px; height: 42px; display: grid; place-items: center; color: #fff; background: var(--ink); font-family: "IBM Plex Mono", monospace; }
+    .odoo-step h3 { margin: 0 0 4px; font-size: 18px; }
+    .odoo-step p { margin: 0; color: var(--muted); }
+
+    .policy-box { padding: 28px; border: 3px solid var(--line-strong); background: var(--green-soft); }
+    .policy-box h2 { font-size: clamp(27px, 4vw, 44px); }
+    .policy-grid { display: grid; gap: 14px; margin-top: 24px; }
+    .policy-item { padding: 16px; background: var(--surface); border: 1px solid var(--line-strong); }
+    .policy-item strong { display: block; }
+
+    footer { padding: 38px 0 56px; color: var(--muted); }
+    .sources { display: grid; gap: 8px; }
+    .sources a { overflow-wrap: anywhere; }
+
+    @media (min-width: 720px) {
+      .decision-strip { grid-template-columns: repeat(3, 1fr); }
+      .decision-cell { border-bottom: 0; border-right: 1px solid var(--line); }
+      .decision-cell:last-child { border-right: 0; }
+      .section-head { grid-template-columns: minmax(260px, .8fr) 1.2fr; align-items: end; }
+      .lab-toolbar { grid-template-columns: 1fr auto; align-items: center; }
+      .segmented { grid-template-columns: repeat(3, 1fr); }
+      .segmented button { border-bottom: 0; border-right: 1px solid var(--line-strong); }
+      .segmented button:last-child { border-right: 0; }
+      .process-stage { grid-template-columns: 1.15fr .85fr; align-items: center; padding: 32px; }
+      .conveyor { grid-column: 1 / -1; }
+      .result-zone { grid-template-columns: repeat(3, 1fr); }
+      .method-note { grid-column: 1 / -1; }
+      .nrv-board { grid-template-columns: 1.15fr .85fr; }
+      .formula-panel { border-bottom: 0; border-right: 2px solid var(--line-strong); }
+      .portfolio-flow { grid-template-columns: 1fr 1fr 84px 1fr; }
+      .policy-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-mark">C</span><span>INVENTORY / COST LAB</span></div>
+      <button class="icon-button" id="themeButton" type="button" title="เปลี่ยนโหมดสี" aria-label="เปลี่ยนโหมดสี">◐</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">TFRS FOR NPAEs / INVENTORY POLICY</p>
+        <h1>White Oil ราคาผันผวน<br>ใช้ต้นทุนเฉลี่ยให้สม่ำเสมอ</h1>
+        <p class="hero-copy">คำแนะนำสำหรับสินค้าลักษณะเหมือนกันและสับเปลี่ยนทดแทนกันได้: ใช้วิธีถัวเฉลี่ยถ่วงน้ำหนัก เพื่อให้ต้นทุนขายและกำไรขั้นต้นไม่แกว่งตาม Lot ที่ซื้อ</p>
+      </div>
+      <div class="decision-strip" aria-label="ข้อสรุปเบื้องต้น">
+        <div class="decision-cell recommend"><strong>วิธีที่แนะนำ: AVCO</strong><span>ต้นทุนเฉลี่ย 44 บาท/ตัน และใช้สม่ำเสมอ</span></div>
+        <div class="decision-cell"><strong>เลือกทุน 3 + 7</strong><span>ไม่ควรใช้กำหนด GP ทางบัญชี</span></div>
+        <div class="decision-cell"><strong>ข้าม Project</strong><span>ดูผลรวมผ่าน Analytic Report ไม่ย้ายต้นทุน</span></div>
+      </div>
+    </section>
+
+    <section id="cost-lab">
+      <div class="section-head">
+        <div><p class="eyebrow">01 / RECOMMENDED COST METHOD</p><h2>Weighted Average สำหรับ White Oil</h2></div>
+        <p>ทดลองขาย 10 ตันจากสต็อก 200 ตัน เพื่อเปรียบเทียบว่า AVCO ช่วยลดความผันผวนของต้นทุนขายเมื่อเทียบกับ FIFO และการเลือกทุนเองอย่างไร</p>
+      </div>
+
+      <div class="lab">
+        <div class="lab-toolbar">
+          <div class="segmented" role="group" aria-label="เลือกวิธีคำนวณต้นทุน">
+            <button type="button" data-method="avco" aria-pressed="true">AVCO (แนะนำ)</button>
+            <button type="button" data-method="fifo" aria-pressed="false">FIFO</button>
+            <button type="button" data-method="specific" aria-pressed="false">เลือกทุน 3 + 7</button>
+          </div>
+          <button class="run-button" id="runSimulation" type="button">จำลองการขาย →</button>
+        </div>
+
+        <div class="process-stage" id="processStage">
+          <div class="stock-zone">
+            <article class="tank old" id="oldTank"><h3>LOT-OLD</h3><p>100 ตัน @ 50 บาท</p><p class="qty">5,000</p><p>มูลค่าสต็อก</p></article>
+            <article class="tank new" id="newTank"><h3>LOT-NEW</h3><p>100 ตัน @ 38 บาท</p><p class="qty">3,800</p><p>มูลค่าสต็อก</p></article>
+          </div>
+          <div class="result-zone">
+            <div class="metric"><span class="label">ปริมาณขาย</span><span class="value">10 ตัน</span></div>
+            <div class="metric primary"><span class="label">ต้นทุนขาย</span><span class="value" id="cogsValue">440</span></div>
+            <div class="metric"><span class="label">สต็อกคงเหลือ</span><span class="value" id="stockValue">8,360</span></div>
+            <div class="method-note"><p id="methodNote"><strong>AVCO (แนะนำ):</strong> ต้นทุนเฉลี่ย = (5,000 + 3,800) ÷ 200 = 44 บาท/ตัน ดังนั้นต้นทุนขาย = 10 × 44 = 440 บาท</p></div>
+          </div>
+          <div class="conveyor" aria-hidden="true" id="conveyor">
+            <span class="cargo old-cargo">OLD</span><span class="cargo new-cargo">NEW</span><span class="cargo new-cargo">NEW</span><span class="cargo new-cargo">NEW</span><span class="cargo new-cargo">NEW</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison">
+        <table>
+          <thead><tr><th>วิธี</th><th>หลักการตัดต้นทุน</th><th>ต้นทุนขาย 10 ตัน</th><th>มูลค่าสต็อกคงเหลือ</th><th>เหมาะเมื่อ</th></tr></thead>
+          <tbody>
+            <tr data-row="avco" class="active-row"><td>AVCO (แนะนำ)</td><td>ต้นทุนเฉลี่ย 44 บาท/ตัน</td><td>440</td><td>8,360</td><td>สินค้าเหมือนกันและราคาซื้อผันผวน</td></tr>
+            <tr data-row="fifo"><td>FIFO</td><td>10×50 จากของเก่าก่อน</td><td>500</td><td>8,300</td><td>นโยบายตัดต้นทุนเก่าก่อนอย่างสม่ำเสมอ</td></tr>
+            <tr data-row="specific"><td>เลือกทุน 3 + 7</td><td>3×50 + 7×38</td><td>416</td><td>8,384</td><td>ตัวอย่างเพื่อการบริหาร ไม่แนะนำใช้กำหนด GP ทางบัญชี</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sku-workaround">
+      <div class="section-head">
+        <div><p class="eyebrow">02 / SELECTING 3 + 7 TONS</p><h2>เลือกทุนราย Lot เอง ไม่ใช่แนวทางหลัก</h2></div>
+        <p>สำหรับกรณีนี้ Odoo ใช้ FIFO หรือ Average ในการคำนวณต้นทุน และไม่ควรเปิดให้ผู้ขายเลือกต้นทุน 50 หรือ 38 ตามกำไรที่ต้องการ</p>
+      </div>
+      <div class="nrv-board">
+        <div class="formula-panel">
+          <h3>ทางเลือกเชิงปฏิบัติ: แยกเป็น 2 SKU</h3>
+          <div class="formula">
+            <div class="formula-line"><span>WHITE-OIL-50</span><span>3 ตัน × 50 = 150</span></div>
+            <div class="formula-line"><span>WHITE-OIL-38</span><span>7 ตัน × 38 = 266</span></div>
+            <div class="formula-line formula-total"><span>ต้นทุนสมมติ</span><span>416 บาท</span></div>
+          </div>
+          <p>ทำได้ในเชิงควบคุมภายใน แต่ SO จะมีสินค้า 2 SKU ชื่อใกล้เคียงกันและราคาขายเท่ากัน ผู้ตั้งรหัส ผู้ขาย และคลังต้องเข้าใจตรงกัน</p>
+        </div>
+        <aside class="warning-panel"><strong>ข้อควรระวังทางบัญชี</strong><p>White Oil ที่มีลักษณะเหมือนกันสามารถสับเปลี่ยนทดแทนกันได้ จึงไม่เหมาะกับการเลือก “ราคาเจาะจง” เพื่อกำหนดกำไร ควรใช้ AVCO เป็นนโยบายบัญชี และใช้การแยก SKU เฉพาะมุมบริหารเมื่อมีเหตุผลรองรับ</p></aside>
+      </div>
+    </section>
+
+    <section id="portfolio">
+      <div class="section-head">
+        <div><p class="eyebrow">03 / PROJECT PROFITABILITY</p><h2>ชดเชยผลประกอบการได้ แต่ห้ามย้ายต้นทุนจริง</h2></div>
+        <p>บัญชีต้องแสดงรายได้และต้นทุนตามสินค้าจริง ไม่ย้ายต้นทุนข้ามสินค้า แต่สามารถใช้มิติ Project หรือ Analytic Account ดูกำไรรวมของ Project ที่มีทั้ง White Oil และ Alcohol ได้</p>
+      </div>
+      <div class="portfolio-flow">
+        <article class="project-ledger loss"><h3>Project: White Oil</h3><div class="ledger-number">−100</div><p>Actual GP / ขาดทุนจริง</p></article>
+        <article class="project-ledger profit"><h3>Project: Alcohol</h3><div class="ledger-number">+200</div><p>Actual GP / กำไรจริง</p></article>
+        <div class="combine-arrow" aria-hidden="true">→</div>
+        <article class="portfolio-total"><h3>Analytic Project</h3><div class="ledger-number">+100</div><p>กำไรรวมจริงของ Project</p></article>
+      </div>
+      <div class="allocation-toggle">
+        <div><strong>ทดลอง “ย้ายขาดทุน 100 ไป Alcohol”</strong><br><span style="color:var(--muted)">ดูว่าทำไมไม่ควรใช้เป็นบัญชี Actual GP</span></div>
+        <label class="switch"><input id="allocationSwitch" type="checkbox" aria-label="ทดลองย้ายขาดทุน"><span></span></label>
+      </div>
+      <div class="allocation-alert" id="allocationAlert"><strong>ไม่แนะนำ:</strong> White Oil จะดูเหมือนไม่ขาดทุน และ Alcohol เหลือกำไรเพียง 100 ทำให้ GP รายสินค้าและ Audit Trail ไม่ตรงกับธุรกรรมจริง ให้ดูผลรวมผ่าน Analytic Project หรือ Management Portfolio Report แทน</div>
+    </section>
+
+    <section id="odoo">
+      <div class="section-head">
+        <div><p class="eyebrow">04 / CHANGE OF COST METHOD</p><h2>เปลี่ยนวิธีได้ แต่ต้องทำสองส่วนควบคู่กัน</h2></div>
+        <p>การเปลี่ยน Costing Method ใน Odoo ไม่ได้ทำให้วิธีใหม่ใช้ทางบัญชีและภาษีได้โดยอัตโนมัติ ต้องมีการอนุมัติ กระทบยอด และเก็บ Audit Trail ให้ครบ</p>
+      </div>
+      <div class="odoo-map">
+        <article class="odoo-step"><span class="step-no">01</span><div><h3>Business Reason</h3><p>จัดทำเหตุผลว่าวิธีใหม่สะท้อนลักษณะสินค้าและให้ข้อมูลที่น่าเชื่อถือกว่าอย่างไร ไม่ใช่เปลี่ยนเพื่อปรับกำไร</p></div></article>
+        <article class="odoo-step"><span class="step-no">02</span><div><h3>Accounting Approval</h3><p>ขออนุมัติจากกรรมการและหารือผู้สอบบัญชี เพราะถือเป็นการเปลี่ยนนโยบายบัญชี</p></div></article>
+        <article class="odoo-step"><span class="step-no">03</span><div><h3>Retrospective Adjustment</h3><p>คำนวณผลย้อนหลัง ปรับต้นทุน สินค้าคงเหลือ กำไรสะสม และข้อมูลเปรียบเทียบตามที่ปฏิบัติได้</p></div></article>
+        <article class="odoo-step"><span class="step-no">04</span><div><h3>Revenue Department Approval</h3><p>ยื่นขออนุมัติต่ออธิบดีกรมสรรพากรตามมาตรา 65 ทวิ (6) ก่อนถือว่าวิธีใหม่ใช้ทางภาษีได้</p></div></article>
+        <article class="odoo-step"><span class="step-no">05</span><div><h3>Odoo Cut-off</h3><p>สำรองรายงาน ตรวจนับสต็อก ทดสอบใน Staging แล้วจึงเปลี่ยน Costing Method ณ วันที่ Cut-off ที่อนุมัติ</p></div></article>
+        <article class="odoo-step"><span class="step-no">06</span><div><h3>Accounting–Tax Reconciliation</h3><p>จัดทำกระดาษทำการกระทบยอดต้นทุนทางบัญชีกับทางภาษี และเก็บหลักฐานก่อน/หลังเปลี่ยนไว้ตรวจสอบ</p></div></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="policy-box">
+        <p class="eyebrow">RECOMMENDED POLICY</p>
+        <h2>นโยบายสินค้าคงเหลือที่เสนอ</h2>
+        <div class="policy-grid">
+          <div class="policy-item"><strong>White Oil</strong>ใช้ Weighted Average เพื่อให้ COGS และ GP สม่ำเสมอ</div>
+          <div class="policy-item"><strong>เลือกทุน 3 + 7</strong>ไม่ใช้กำหนดกำไรทางบัญชี; 2 SKU ใช้เฉพาะมุมบริหารอย่างระมัดระวัง</div>
+          <div class="policy-item"><strong>กำไรข้ามสินค้า/Project</strong>ดูผ่าน Analytic Project ไม่ย้ายต้นทุนจริง</div>
+          <div class="policy-item"><strong>เปลี่ยนวิธี</strong>ปรับ Odoo ควบคู่บัญชีย้อนหลังและขออนุมัติทางภาษี</div>
+        </div>
+        <p style="margin:22px 0 0">ก่อนใช้งานจริงควรให้ผู้สอบบัญชีรับรองนโยบาย และตรวจผลทางภาษีกรณีเปลี่ยนวิธีคำนวณต้นทุนสินค้าคงเหลือ</p>
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>แหล่งอ้างอิง</strong></p>
+      <div class="sources">
+        <a href="https://acpro-std.tfac.or.th/standard/2/-NPAEs" target="_blank" rel="noopener">สภาวิชาชีพบัญชี: TFRS for NPAEs</a>
+        <a href="https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/inventory/inventory_valuation/cheat_sheet.html" target="_blank" rel="noopener">Odoo 19: Inventory Valuation and Costing Methods</a>
+        <a href="https://www.odoo.com/documentation/19.0/applications/finance/accounting/reporting/analytic_accounting.html" target="_blank" rel="noopener">Odoo 19: Analytic Accounting</a>
+        <a href="https://www.rd.go.th/828.html" target="_blank" rel="noopener">กรมสรรพากร: เงื่อนไขตามมาตรา 65 ทวิ</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const methods = {
+      specific: {
+        cogs: '416', stock: '8,384', oldClass: 'drain-old', newClass: 'drain-new',
+        note: '<strong>เลือกทุน 3 + 7 (ไม่แนะนำทางบัญชี):</strong> ผลสมมติ 3 × 50 + 7 × 38 = 416 บาท ต้องแยก 2 SKU เพื่อควบคุมภายใน และไม่ควรใช้เลือกกำไรของรายการขาย',
+        cargo: ['old-cargo', 'new-cargo', 'new-cargo', 'new-cargo', 'new-cargo']
+      },
+      avco: {
+        cogs: '440', stock: '8,360', oldClass: 'drain-old', newClass: 'drain-new',
+        note: '<strong>AVCO (แนะนำ):</strong> ต้นทุนเฉลี่ย = (5,000 + 3,800) ÷ 200 = 44 บาท/ตัน ดังนั้นต้นทุนขาย = 10 × 44 = 440 บาท ช่วยให้ COGS และ GP ไม่แกว่งตาม Lot ที่ซื้อ',
+        cargo: ['old-cargo', 'new-cargo', 'old-cargo', 'new-cargo', 'old-cargo']
+      },
+      fifo: {
+        cogs: '500', stock: '8,300', oldClass: 'drain-old', newClass: '',
+        note: '<strong>FIFO:</strong> ตัดต้นทุนของเก่าก่อนทั้งหมด 10 ตัน ต้นทุนขาย = 10 × 50 = 500 บาท ไม่สามารถเลือก 3 ตันเก่า + 7 ตันใหม่เพื่อปรับ GP',
+        cargo: ['old-cargo', 'old-cargo', 'old-cargo', 'old-cargo', 'old-cargo']
+      }
+    };
+
+    let currentMethod = 'avco';
+    const methodButtons = [...document.querySelectorAll('[data-method]')];
+    const stage = document.getElementById('processStage');
+    const cargo = [...document.querySelectorAll('.cargo')];
+
+    function setMethod(method) {
+      currentMethod = method;
+      methodButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.method === method)));
+      document.querySelectorAll('[data-row]').forEach(row => row.classList.toggle('active-row', row.dataset.row === method));
+      runSimulation();
+    }
+
+    function runSimulation() {
+      const data = methods[currentMethod];
+      stage.classList.remove('running');
+      document.getElementById('oldTank').className = `tank old ${data.oldClass}`;
+      document.getElementById('newTank').className = `tank new ${data.newClass}`;
+      document.getElementById('cogsValue').textContent = data.cogs;
+      document.getElementById('stockValue').textContent = data.stock;
+      document.getElementById('methodNote').innerHTML = data.note;
+      cargo.forEach((box, index) => box.className = `cargo ${data.cargo[index]}`);
+      void stage.offsetWidth;
+      stage.classList.add('running');
+      window.setTimeout(() => {
+        document.getElementById('oldTank').classList.remove('drain-old');
+        document.getElementById('newTank').classList.remove('drain-new');
+      }, 7400);
+    }
+
+    methodButtons.forEach(button => button.addEventListener('click', () => setMethod(button.dataset.method)));
+    document.getElementById('runSimulation').addEventListener('click', runSimulation);
+    document.getElementById('allocationSwitch').addEventListener('change', event => {
+      document.getElementById('allocationAlert').classList.toggle('show', event.target.checked);
+    });
+    document.getElementById('themeButton').addEventListener('click', () => {
+      const root = document.documentElement;
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    });
+    window.setTimeout(runSimulation, 450);
+  </script>
+</body>
+</html>
