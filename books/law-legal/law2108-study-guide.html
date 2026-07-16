@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LAW2108 — ติวสอบ + Flip Cards</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
@@ -25,7 +25,7 @@ body {
   font-family: 'Sarabun', sans-serif;
   background: #edf2f7;
   color: var(--dark);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.65;
   min-height: 100vh;
 }
@@ -317,7 +317,12 @@ body {
   .cback { position: static; transform: none; }
   .cfront { display: none; }
 }
-</style>
+
+        /* responsive tables (UX audit 2026-07): กันตารางดันหน้าล้นจอบนมือถือ */
+        @media (max-width: 820px) {
+            table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+        }
+    </style>
 </head>
 <body>
 

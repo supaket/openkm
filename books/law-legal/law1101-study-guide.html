@@ -299,6 +299,11 @@
                 font-size: 1.8em;
             }
         }
+    
+        /* responsive tables (UX audit 2026-07): กันตารางดันหน้าล้นจอบนมือถือ */
+        @media (max-width: 820px) {
+            table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+        }
     </style>
 </head>
 <body>

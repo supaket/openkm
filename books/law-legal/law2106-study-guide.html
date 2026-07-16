@@ -398,7 +398,13 @@
     .tab-btn { padding: 10px 14px; font-size: 0.82rem; }
     .section { padding: 18px 16px; }
   }
-</style>
+
+        /* responsive tables (UX audit 2026-07): กันตารางดันหน้าล้นจอบนมือถือ */
+        @media (max-width: 820px) {
+            table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            .tabs { flex-wrap: wrap; }
+        }
+    </style>
 </head>
 <body>
 

@@ -83,7 +83,12 @@
   .ant-tabs-tab-active .ant-tabs-tab-btn{color:#5C3D1E !important;font-weight:800 !important}
   .ant-tabs-ink-bar{background:#C9A96E !important}
   .ant-tabs-nav{border-bottom:2px solid #DDD0B8 !important;margin-bottom:20px !important}
-</style>
+
+        /* responsive tables (UX audit 2026-07): กันตารางดันหน้าล้นจอบนมือถือ */
+        @media (max-width: 820px) {
+            table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+        }
+    </style>
 </head>
 <body>
 <div id="root"></div>
