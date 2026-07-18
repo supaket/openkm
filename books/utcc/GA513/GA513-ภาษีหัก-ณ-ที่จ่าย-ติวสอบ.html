@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GA513 ติวสอบ — ภาษีเงินได้หัก ณ ที่จ่าย (Withholding Tax)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+* { font-family: 'Noto Sans Thai', sans-serif; }
+body { background: #F5F0E8; line-height: 1.8; margin: 0; }
+.fc-perspective { perspective: 1200px; }
+.fc-card { position: relative; width: 100%; min-height: 320px; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+.fc-card.flipped { transform: rotateY(180deg); }
+.fc-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px; }
+.fc-back { transform: rotateY(180deg); }
+.qc { transition: transform 0.2s, box-shadow 0.2s; }
+.qc:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(122,101,72,0.18); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #EDE8DF; }
+::-webkit-scrollbar-thumb { background: #C4B49A; border-radius: 5px; }
+::selection { background: #DDD3C1; color: #3D3229; }
+.ant-table-cell { line-height: 1.9 !important; }
+.print-only { display: none; }
+@media print {
+  /* A4 = 210mm; printable width = 210 - (10mm x 2) = 190mm */
+  @page { size: A4 portrait; margin: 10mm 10mm 12mm; }
+  html, body { width: 190mm; margin: 0 !important; background: #fff !important; }
+  .screen-only { display: none !important; }
+  .print-only {
+    display: block !important;
+    max-width: 190mm !important; width: 100% !important;
+    margin: 0 !important; padding: 0 !important;
+    font-size: 11.5px; line-height: 1.55;
+  }
+  /* scale typography down so blocks fit more per page and never overflow A4 width */
+  .print-only h1, .print-only .ant-typography h1 { font-size: 20px !important; }
+  .print-only h2, .print-only .ant-typography h2 { font-size: 18px !important; margin: 6px 0 !important; }
+  .print-only h3 { font-size: 15px !important; margin: 10px 0 6px !important; }
+  .print-only h4 { font-size: 13px !important; margin: 8px 0 4px !important; }
+  .print-only .ant-typography, .print-only .ant-alert-description, .print-only li { font-size: 11.5px !important; }
+  .print-only .ant-card { margin-bottom: 6px !important; }
+  .print-only .ant-card .ant-card-head { min-height: 0 !important; padding: 2px 10px !important; }
+  .print-only .ant-card .ant-card-head-title { padding: 4px 0 !important; font-size: 12px !important; }
+  .print-only .ant-card .ant-card-body { padding: 8px 10px !important; }
+  .print-only .ant-alert { padding: 6px 10px !important; margin-bottom: 6px !important; }
+  .print-only ul, .print-only ol { margin: 0 !important; padding-left: 16px !important; }
+  /* tables: never wider than the page, compact cells, repeat header on every page */
+  .print-only .ant-table { font-size: 10.5px !important; }
+  .print-only .ant-table-cell { padding: 3px 6px !important; line-height: 1.5 !important; word-break: break-word; }
+  .print-only table { width: 100% !important; table-layout: fixed; }
+  .print-only thead { display: table-header-group; }
+  /* antd Row gutter uses negative margins that spill past the A4 width — neutralize */
+  .print-only .ant-row { margin-left: 0 !important; margin-right: 0 !important; }
+  .print-only .ant-col { padding-left: 0 !important; padding-right: 0 !important; }
+  .print-only .ant-tag { font-size: 10px !important; padding: 0 4px !important; line-height: 1.6 !important; margin-right: 4px !important; }
+  /* page-break control */
+  .no-break, .ant-card, .ant-alert, tr { break-inside: avoid; }
+  .pv-divider { break-after: avoid; }
+  .pv-section-title { break-after: avoid; }
+  .pv-page-start { break-before: page; }
+  .ant-card { box-shadow: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState } = React;
+
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  amber: '#B5986A', amberDark: '#7A6548',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+
+const MiniCard = ({ color, bg, title, children }) => (
+  <Card size="small" style={{ background: bg, borderColor: color, borderLeftWidth: 4, marginBottom: 12 }}
+    title={<Text strong style={{ color }}>{title}</Text>}>
+    <div style={{ color: C.text }}>{children}</div>
+  </Card>
+);
+
+/* ============================================================
+   1. SUMMARY DATA
+   ============================================================ */
+const summaryData = [
+  {
+    key: 'concept',
+    title: '💡 Concept & เจตนารมณ์ของภาษีหัก ณ ที่จ่าย',
+    tags: [['หลักการพื้นฐาน','purple'],['ออกสอบแนวคิด','volcano']],
+    content: () => (
+      <div>
+        <Alert type="info" showIcon message={<Text strong>สมการหลัก (ทั้งบุคคลธรรมดาและนิติบุคคล)</Text>}
+          description={<Text>เงินภาษีที่ต้องจ่ายสำหรับปี <strong>หัก</strong> (ภาษีครึ่งปี + ภาษีหัก ณ ที่จ่าย) <strong>เท่ากับ</strong> ภาษีที่ต้องเสียเพิ่ม / ขอคืน</Text>}
+          style={{ marginBottom: 16 }} />
+        <MiniCard color={C.red} bg={C.redBg} title="ข้อยกเว้น — Final Tax (หักแล้วเลือกจบได้ ไม่ต้องนำมารวมปลายปี)">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>เงินปันผล</strong> (หัก 10%)</li>
+            <li><strong>ดอกเบี้ย</strong> (หัก 15%)</li>
+            <li><strong>การขายอสังหาริมทรัพย์</strong></li>
+            <li><strong>เงินได้ที่นายจ้างจ่ายให้ครั้งเดียวเพราะเหตุออกจากงาน</strong></li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.green} bg={C.greenBg} title="เจตนารมณ์ 3 ข้อ ที่กรมสรรพากรให้ผู้จ่ายเงินหักภาษีของผู้รับไว้ล่วงหน้า">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เป็นมาตรการ<strong>ป้องกันการหลบ (Tax Evasion — ผิดกฎหมาย)</strong> และ/หรือ <strong>การเลี่ยงภาษี (Tax Avoidance — ถูกกฎหมาย)</strong></li>
+            <li>เพิ่มประสิทธิภาพในการ<strong>ตรวจสอบ (Auditing)</strong> และ<strong>การบริหารจัดเก็บ (Administration)</strong></li>
+            <li><strong>ผลทางจิตวิทยา</strong> — บรรเทาภาระในการคำนวณและเสียภาษีสิ้นรอบบัญชี (ทยอยจ่าย ไม่จ่ายก้อนเดียว)</li>
+          </ol>
+        </MiniCard>
+        <MiniCard color={C.blue} bg={C.blueBg} title="Evasion vs Avoidance (จุดที่อาจารย์เน้นในชีท)">
+          <Table size="small" pagination={false} bordered
+            columns={[
+              { title: 'Tax Evasion (หลบ)', dataIndex: 'e', key: 'e' },
+              { title: 'Tax Avoidance (เลี่ยง)', dataIndex: 'a', key: 'a' },
+            ]}
+            dataSource={[
+              { key: 1, e: 'ผิดกฎหมาย', a: 'ถูกกฎหมาย' },
+              { key: 2, e: 'ซ่อน / ปกปิด ไม่ยื่นรายได้', a: 'วางแผนใช้สิทธิลดหย่อน / ใช้ช่องกฎหมายให้เสียน้อยลง' },
+            ]} />
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'framework',
+    title: '🧭 กรอบคิด 3 คำถาม + เลือกแบบยื่น (ภ.ง.ด. 1 / 2 / 3 / 53)',
+    tags: [['หัวใจของเรื่อง','volcano'],['ต้องท่องได้','gold']],
+    content: () => (
+      <div>
+        <Alert type="warning" showIcon style={{ marginBottom: 16 }}
+          message={<Text strong>ทุกครั้งที่หัก ณ ที่จ่าย ต้องตอบ 3 คำถาม</Text>}
+          description={<Text><strong>1) ใครจ่าย?</strong> (บุคคลธรรมดา / นิติบุคคล) → <strong>2) จ่ายค่าอะไร?</strong> (เงินได้ 40(1)–(8)) → <strong>3) จ่ายให้ใคร?</strong> (บุคคลธรรมดา / นิติบุคคล) แล้วจึงรู้ว่า<strong>หักเท่าไร และใช้แบบอะไรยื่น</strong></Text>} />
+        <Table size="small" pagination={false} bordered style={{ marginBottom: 16 }}
+          columns={[
+            { title: 'ประเภทเงินได้ที่จ่าย', dataIndex: 'income', key: 'income' },
+            { title: 'ผู้รับ (ผู้ถูกหัก)', dataIndex: 'to', key: 'to' },
+            { title: 'แบบยื่น', dataIndex: 'form', key: 'form', render: (t) => <Tag color="purple" style={{ fontSize: 14 }}>{t}</Tag> },
+          ]}
+          dataSource={[
+            { key: 1, income: '40(1) และ 40(2) — เงินเดือน / รับทำงานให้', to: 'บุคคลธรรมดา', form: 'ภ.ง.ด. 1' },
+            { key: 2, income: '40(3) และ 40(4) — ค่าสิทธิ / ดอกเบี้ย เงินปันผล', to: 'บุคคลธรรมดา', form: 'ภ.ง.ด. 2' },
+            { key: 3, income: '40(5) ถึง 40(8) — ค่าเช่า วิชาชีพ รับเหมา อื่น ๆ', to: 'บุคคลธรรมดา', form: 'ภ.ง.ด. 3' },
+            { key: 4, income: '40(2) ถึง 40(8)', to: 'นิติบุคคล', form: 'ภ.ง.ด. 53' },
+          ]} />
+        <Row gutter={12}>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.blue} bg={C.blueBg} title='ผู้รับเป็น "บุคคลธรรมดา" รวมถึงใครบ้าง'>
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>บุคคลธรรมดา</li>
+                <li>ผู้ถึงแก่ความตายระหว่างปีภาษี</li>
+                <li>กองมรดกที่ยังไม่ได้แบ่ง</li>
+                <li>ห้างหุ้นส่วนสามัญ</li>
+                <li>คณะบุคคลที่มิใช่นิติบุคคล</li>
+              </ul>
+            </MiniCard>
+          </Col>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.purple} bg={C.purpleBg} title='ผู้รับเป็น "นิติบุคคล" รวมถึงใครบ้าง'>
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>ห้างหุ้นส่วนสามัญนิติบุคคล</li>
+                <li>ห้างหุ้นส่วนจำกัด</li>
+                <li>บริษัทจำกัด / บริษัทมหาชนจำกัด</li>
+                <li>กิจการร่วมค้า (Joint Venture)</li>
+                <li>มูลนิธิหรือสมาคม</li>
+              </ul>
+            </MiniCard>
+          </Col>
+        </Row>
+        <MiniCard color={C.cyan} bg={C.cyanBg} title='"จ่ายค่าอะไร" — เงินได้พึงประเมิน 40(1)–40(8) รวมถึง 5 รูปแบบ'>
+          <Text>1) เงิน &nbsp;2) ทรัพย์สิน &nbsp;3) ประโยชน์ส่วนเพิ่ม &nbsp;4) ภาษีที่ผู้จ่ายออกให้ &nbsp;5) เครดิตเงินปันผล{'\n'}</Text>
+          <Text strong style={{ color: C.red }}>เงื่อนไข: ต้องไม่ได้รับยกเว้นตามมาตรา 42 และกฎกระทรวง ฉบับที่ 126</Text>
+        </MiniCard>
+        <MiniCard color={C.gold} bg={C.surface3} title="องค์ประกอบกฎหมายที่เกี่ยวข้อง (ดูจากผู้ถูกหัก)">
+          <Table size="small" pagination={false} bordered
+            columns={[
+              { title: 'ผู้มีเงินได้ (ผู้ถูกหัก)', dataIndex: 'who', key: 'who' },
+              { title: 'มาตราที่ใช้', dataIndex: 'law', key: 'law' },
+            ]}
+            dataSource={[
+              { key: 1, who: 'บุคคลธรรมดา', law: 'มาตรา 50 และ มาตรา 3 เตรส (ท.ป. 4/2528)' },
+              { key: 2, who: 'นิติบุคคล', law: 'มาตรา 3 เตรส, 69 ทวิ, 69 ตรี, 70, 70 ทวิ' },
+            ]} />
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'rate-individual',
+    title: '📊 ตารางอัตราหัก — ผู้ถูกหักเป็น "บุคคลธรรมดา"',
+    tags: [['ตารางอัตรา','volcano'],['ท่องสอบ','gold']],
+    content: () => (
+      <div>
+        <Text strong style={{ color: C.purple }}>ก. ตามมาตรา 50 (ผู้ถูกหักอยู่ในไทย)</Text>
+        <Table size="small" pagination={false} bordered style={{ margin: '8px 0 16px' }}
+          columns={[
+            { title: 'เงินได้', dataIndex: 'i', key: 'i', width: '30%' },
+            { title: 'อัตรา / วิธี', dataIndex: 'r', key: 'r' },
+            { title: 'แบบยื่น', dataIndex: 'f', key: 'f', width: 90, render: (t) => <Tag color="purple">{t}</Tag> },
+          ]}
+          dataSource={[
+            { key: 1, i: '40(1) เงินเดือน + 40(2)', r: 'อัตราก้าวหน้า วิธีคำนวณตามอัตราภาษีเงินได้บุคคลธรรมดา (รวมกรณีเงินได้จ่ายครั้งเดียวเพราะออกจากงาน)', f: 'ภ.ง.ด.1' },
+            { key: 2, i: '40(3)', r: 'อัตราก้าวหน้า (คำนวณตามอัตราภาษีเงินได้บุคคลธรรมดา ตั้งแต่บาทแรก)', f: 'ภ.ง.ด.2' },
+            { key: 3, i: '40(4)', r: 'ดอกเบี้ย หัก 15% / เงินปันผล หัก 10%', f: 'ภ.ง.ด.2' },
+            { key: 4, i: '40(5)(6) — ผู้รับมิได้อยู่ในไทย', r: 'หัก 15%', f: 'ภ.ง.ด.3' },
+            { key: 5, i: '40(5)–(8) — ผู้จ่ายเป็นราชการ จ่ายตั้งแต่ 10,000 บาท', r: 'หัก 1%', f: 'ภ.ง.ด.3' },
+            { key: 6, i: '40(8) ขายอสังหาริมทรัพย์ (มรดก/เสน่หา หรือทางการค้า)', r: 'คำนวณ WHT ตาม ม.48(1) และ (ข)', f: 'ภ.ง.ด.3' },
+          ]} />
+        <Text strong style={{ color: C.purple }}>ข. ตามมาตรา 3 เตรส (ท.ป. 4/2528)</Text>
+        <Table size="small" pagination={false} bordered style={{ margin: '8px 0 16px' }}
+          columns={[
+            { title: 'เงินได้', dataIndex: 'i', key: 'i', width: '55%' },
+            { title: 'อัตรา', dataIndex: 'r', key: 'r', render: (t) => <Tag color="volcano" style={{ fontSize: 14 }}>{t}</Tag> },
+          ]}
+          dataSource={[
+            { key: 1, i: '40(5)(ก) การให้เช่าทรัพย์สินทุกชนิด', r: '5%' },
+            { key: 2, i: '40(5)(ก) เช่าเรือเดินทะเล (ตาม กม.พาณิชยนาวี)', r: '1%' },
+            { key: 3, i: '40(6) วิชาชีพอิสระ', r: '3%' },
+            { key: 4, i: '40(7)(8) รับเหมาที่ผู้รับเหมาจัดหาสัมภาระ และค่าจ้างทำของ', r: '3%' },
+            { key: 5, i: '40(8) เงินรางวัลในการประกวด แข่งขัน ชิงโชค', r: '5%' },
+            { key: 6, i: '40(8) นักแสดงสาธารณะ', r: '5%' },
+            { key: 7, i: '40(8) ค่าโฆษณา', r: '2%' },
+            { key: 8, i: '40(8) รางวัล ส่วนลด หรือประโยชน์จากการส่งเสริมการขาย', r: '3%' },
+            { key: 9, i: '40(8) ค่าขนส่งที่ไม่ใช่ขนส่งสาธารณะ', r: '1%' },
+            { key: 10, i: '40(8) ค่าบริการอื่น ๆ ที่ไม่ใช่ค่าบริการโรงแรม ภัตตาคาร และค่าเบี้ยประกัน', r: '3%' },
+          ]} />
+        <Alert type="error" showIcon message={<Text strong>กรณีผู้ถูกหักเป็นบุคคลธรรมดา "ไม่อยู่ในไทย"</Text>}
+          description={<Text>เงินได้ ม.40(2) – 40(6) → หัก <strong>15%</strong></Text>} />
+      </div>
+    )
+  },
+  {
+    key: 'rate-corporate',
+    title: '🏢 ตารางอัตราหัก — ผู้ถูกหักเป็น "นิติบุคคล" (ภ.ง.ด.53)',
+    tags: [['ตารางอัตรา','volcano'],['ม.3 เตรส','purple']],
+    content: () => (
+      <div>
+        <Table size="small" pagination={false} bordered style={{ marginBottom: 16 }}
+          columns={[
+            { title: 'เงินได้', dataIndex: 'i', key: 'i', width: '60%' },
+            { title: 'อัตรา', dataIndex: 'r', key: 'r', render: (t) => <Tag color="volcano" style={{ fontSize: 14 }}>{t}</Tag> },
+          ]}
+          dataSource={[
+            { key: 1, i: '40(2) การรับทำงานให้ ค่านายหน้า ฯลฯ', r: '3%' },
+            { key: 2, i: '40(3) ค่า Goodwill ลิขสิทธิ์ ฯลฯ', r: '3%' },
+            { key: 3, i: '40(4)(ก) ดอกเบี้ยต่าง ๆ', r: '1%' },
+            { key: 4, i: '40(4)(ข) เงินปันผล', r: '10%' },
+            { key: 5, i: '40(5)(ก) การให้เช่าทุกชนิด', r: '5%' },
+            { key: 6, i: '40(5)(ก) เช่าเรือเดินทะเล (กม.พาณิชยนาวี)', r: '1%' },
+            { key: 7, i: '40(6) วิชาชีพอิสระ', r: '3%' },
+            { key: 8, i: '40(7)(8) รับเหมาที่ผู้รับเหมาจัดหาสัมภาระ และค่าจ้างทำของ', r: '3%' },
+            { key: 9, i: '40(8) เงินรางวัลในการประกวด แข่งขัน ชิงโชค', r: '5%' },
+            { key: 10, i: '40(8) ค่าโฆษณา', r: '2%' },
+            { key: 11, i: '40(8) ค่าบริการอื่นที่ไม่ใช่ค่าบริการโรงแรม ภัตตาคาร และค่าเบี้ยประกันชีวิต', r: '3%' },
+            { key: 12, i: '40(8) รางวัล ส่วนลด ประโยชน์จากการส่งเสริมการขาย', r: '3%' },
+            { key: 13, i: '40(8) ค่าเบี้ยประกันวินาศภัย', r: '1%' },
+            { key: 14, i: '40(8) ค่าขนส่งที่ไม่ใช่ขนส่งสาธารณะ', r: '1%' },
+            { key: 15, i: '40(8) ซื้อสินค้า 7 ชนิด: ยางแผ่น/ยางพารา มันสำปะหลัง ปอ ข้าวโพด อ้อย เมล็ดกาแฟ ผลปาล์มน้ำมัน', r: '0.75%' },
+            { key: 16, i: '40(8) ซื้อข้าว', r: '0.50%' },
+            { key: 17, i: 'ขายอสังหาริมทรัพย์ (ม.69 ตรี)', r: '1%' },
+          ]} />
+        <Row gutter={12}>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.purple} bg={C.purpleBg} title="ผู้รับเป็นมูลนิธิ / สมาคม">
+              <Text>หัก <strong style={{ color: C.red }}>10%</strong> (ทุกประเภทเงินได้ในตาราง)</Text>
+            </MiniCard>
+          </Col>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.blue} bg={C.blueBg} title="ผู้จ่ายเป็นราชการ (ม.69 ทวิ)">
+              <Text>หัก <strong style={{ color: C.red }}>1%</strong> เมื่อจ่ายเงินได้ <strong>500 บาทขึ้นไป</strong></Text>
+            </MiniCard>
+          </Col>
+        </Row>
+        <Alert type="info" showIcon message="ทั้งหมดนี้ยื่นด้วยแบบ ภ.ง.ด.53" />
+      </div>
+    )
+  },
+  {
+    key: 'duty',
+    title: '📋 หน้าที่ผู้หัก / หนังสือรับรอง / การยื่นแบบ / บทลงโทษ',
+    tags: [['ต้องจำตัวเลข','gold'],['7 วัน · 4 ฉบับ · 1.5%','blue']],
+    content: () => (
+      <div>
+        <MiniCard color={C.green} bg={C.greenBg} title="ผู้มีหน้าที่หักภาษีต้องทำ 4 อย่าง">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>ขอข้อมูล</strong>ผู้ถูกหัก: เลขประจำตัวผู้เสียภาษีอากร ชื่อ ที่อยู่</li>
+            <li><strong>หักภาษีทุกครั้ง</strong>ที่จ่ายเงินได้ ตามอัตราที่ประมวลรัษฎากรกำหนด</li>
+            <li><strong>ออกหนังสือรับรองหัก ณ ที่จ่าย</strong> ให้ผู้ถูกหักทุกครั้งที่ทำการหัก</li>
+            <li><strong>ยื่นแบบ + นำส่งภาษีที่หักไว้ ภายใน 7 วันนับแต่วันสิ้นเดือน</strong>ของเดือนที่จ่ายเงิน</li>
+          </ol>
+        </MiniCard>
+        <MiniCard color={C.blue} bg={C.blueBg} title="หนังสือรับรองหัก ณ ที่จ่าย — ออกอย่างน้อย 4 ฉบับ">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>ต้นฉบับ + สำเนาฉบับแรก → ให้ผู้ถูกหัก</strong> (ใช้ขอคืนภาษี 1 ฉบับ + เก็บเป็นหลักฐาน 1 ฉบับ)</li>
+            <li><strong>สำเนาฉบับที่ 2 และ 3 → ผู้หักเก็บไว้</strong> (ฉบับที่ 2 แนบตอนยื่นชำระภาษี, ฉบับที่ 3 เก็บเป็นหลักฐาน)</li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.cyan} bg={C.cyanBg} title="ช่องทางยื่นแบบ">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li>ยื่นด้วยตนเอง ณ สำนักงานสรรพากรพื้นที่สาขา ในท้องที่ที่ผู้หักมีสำนักงานตั้งอยู่</li>
+            <li>ยื่น<strong>ออนไลน์</strong> → ได้สิทธิพิเศษ<strong>ขยายเวลายื่นแบบและชำระออกไปอีก 8 วัน</strong></li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.red} bg={C.redBg} title="ถ้าไม่ทำตามหน้าที่ — บทลงโทษ">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>หักไม่ครบ/ไม่หัก → ผู้จ่าย<strong>ร่วมรับผิดกับผู้มีเงินได้</strong> ตามจำนวนที่มิได้หักหรือนำส่งขาด</li>
+            <li>ไม่นำส่งภายในกำหนดเวลา → <strong>เงินเพิ่ม 1.5% ต่อเดือน</strong> (เศษของเดือนนับเป็น 1 เดือน)</li>
+            <li>ไม่ยื่นแบบภายในกำหนด (ไม่มีเหตุสุดวิสัย) → <strong>ระวางโทษปรับไม่เกิน 2,000 บาท</strong></li>
+            <li><strong>เจตนา</strong>ไม่ยื่นเพื่อหลีกเลี่ยงภาษี → <strong>จำคุกไม่เกิน 1 ปี หรือปรับไม่เกิน 200,000 บาท หรือทั้งจำทั้งปรับ</strong></li>
+          </ol>
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'pnd1',
+    title: '🧮 ภ.ง.ด.1 — วิธีคำนวณหักภาษีเงินเดือน 40(1) และค่าแรง 40(2)',
+    tags: [['คำนวณ','volcano'],['ออกสอบแน่','red'],['ม.50(1) + ม.48(5)','purple']],
+    content: () => (
+      <div>
+        <Alert type="warning" showIcon style={{ marginBottom: 16 }}
+          message={<Text strong>หลักการ: "เสมือนจ่ายทั้งปี" — คำนวณใหม่ทุกครั้งที่มีเงินได้เพิ่ม</Text>}
+          description={<Text>นำเงินได้ที่<strong>คาดว่าจะได้รับทั้งปี</strong> มาหักค่าใช้จ่ายและค่าลดหย่อน → เงินได้สุทธิ → คำนวณภาษีตามบัญชีอัตราก้าวหน้า → ได้ภาษีทั้งปี → <strong>หารด้วยจำนวนคราวที่จ่าย</strong> = ภาษีที่หักแต่ละครั้ง</Text>} />
+        <MiniCard color={C.gold} bg={C.surface3} title="ขั้นตอนมาตรฐาน 7 ขั้น (ตามชีทหน้า 17)">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เงินได้ 40(1) × คราวที่จ่าย = <strong>เสมือนทั้งปี</strong></li>
+            <li>หัก <strong>ค่าใช้จ่ายเหมา 50% ไม่เกิน 100,000 บาท</strong></li>
+            <li>หัก <strong>ค่าลดหย่อน</strong> (ส่วนตัว/ครอบครัว, กลุ่มประกัน, เงินออม-ลงทุน, อสังหาฯ, บริจาค, มาตรการกระตุ้นเศรษฐกิจ)</li>
+            <li>เหลือ <strong>เงินได้สุทธิ</strong></li>
+            <li>คูณ <strong>อัตราภาษีเงินได้บุคคลธรรมดา</strong> (ขั้นบันได)</li>
+            <li>ได้ <strong>ภาษีทั้งปี</strong></li>
+            <li><strong>ภาษีหัก ณ ที่จ่าย = ภาษีทั้งปี ÷ จำนวนคราวที่จ่าย</strong></li>
+          </ol>
+        </MiniCard>
+        <MiniCard color={C.cyan} bg={C.cyanBg} title="ตัวอย่าง 1 — เงินเดือน 70,000 บาท/เดือน (นายเอก)">
+          <Paragraph style={{ marginBottom: 8 }}>ภรรยาไม่มีเงินได้ · บุตรเรียนมัธยม 2 คน · เบี้ยประกันชีวิต 89,000 · ดอกเบี้ยกู้ซื้อบ้านทั้งปี 130,000 (เพดาน 100,000)</Paragraph>
+          <Table size="small" pagination={false}
+            columns={[{ title: 'รายการ', dataIndex: 'l', key: 'l' }, { title: 'บาท', dataIndex: 'v', key: 'v', align: 'right' }]}
+            dataSource={[
+              { key: 1, l: 'เงินเดือนเสมือนทั้งปี (70,000 × 12)', v: '840,000' },
+              { key: 2, l: 'หัก ค่าใช้จ่าย 50% ไม่เกิน 100,000', v: '(100,000)' },
+              { key: 3, l: 'หัก ลดหย่อน: ส่วนตัว 60,000 + คู่สมรส 60,000 + บุตร 2 คน 60,000 + ประกันชีวิต 89,000 + ดอกเบี้ยบ้าน 100,000 + ประกันสังคม 10,500', v: '(379,500)' },
+              { key: 4, l: 'เงินได้สุทธิ', v: '360,500' },
+              { key: 5, l: 'ภาษีทั้งปี = (300,000−150,000)×5% + 60,500×10%', v: '13,550' },
+              { key: 6, l: 'หักแต่ละเดือน = 13,550 ÷ 12', v: '1,129.16' },
+              { key: 7, l: 'เดือนธันวาคม (ปรับเศษ) = 13,550 − (1,129.16 × 11)', v: '1,129.24' },
+            ]} />
+          <Alert type="info" showIcon style={{ marginTop: 8 }} message="เดือนสุดท้าย (ธ.ค.) หักส่วนที่เหลือเพื่อให้รวมทั้งปีเท่ากับภาษีทั้งปีพอดี" />
+        </MiniCard>
+        <MiniCard color={C.purple} bg={C.purpleBg} title="ตัวอย่าง 1 (เพิ่มเติม) — มีค่าล่วงเวลา (OT) เดือน ม.ค. 13,000 บาท">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li>รวม OT เข้าฐานปี: 840,000 + 13,000 = 853,000 → เงินได้สุทธิ 373,500 → ภาษีทั้งปี = <strong>14,850</strong></li>
+            <li>ภาษีเฉพาะเงินเดือน (ตัวอย่าง 1) = 13,550 → ภาษีของ OT = 14,850 − 13,550 = <strong>1,300</strong></li>
+            <li>เดือน ม.ค. หัก = 1,300 + 1,129.16 = <strong>2,429.16</strong> (ภาษีของเงินได้ก้อนพิเศษ หักทั้งจำนวนในเดือนที่จ่าย)</li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.green} bg={C.greenBg} title="ตัวอย่าง 2 — เริ่มงานระหว่างปี (น.ส.ก้อย โสด เริ่ม 1 เม.ย. เงินเดือน 40,000)">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เสมือนทั้งปี = 40,000 × <strong>9 เดือน</strong> (เม.ย.–ธ.ค.) = 360,000 — <strong>คูณเฉพาะเดือนที่จะได้รับจริง ไม่ใช่ 12</strong></li>
+            <li>หักค่าใช้จ่าย 100,000 → ลดหย่อนส่วนตัว + ประกันสังคม [60,000 + (875×9)] = 67,875</li>
+            <li>เงินได้สุทธิ 192,125 → ภาษีทั้งปี = (192,125−150,000)×5% = <strong>2,106.25</strong></li>
+            <li>หักต่อเดือน = 2,106.25 ÷ <strong>9</strong> = 234.02 · เดือน ธ.ค. = 2,106.25 − (234.02×8) = <strong>234.09</strong></li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.blue} bg={C.blueBg} title="ตัวอย่าง 3 — ปรับฐานเงินเดือนระหว่างปี (นายรามิล 50,000 → 100,000 ตั้งแต่ ต.ค.)">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>เดือนเก่า (ม.ค.–ก.ย.):</strong> ฐานปี 600,000 → สุทธิ 429,500 → ภาษีปี 20,450 → หักเดือนละ 20,450÷12 = <strong>1,704.16</strong></li>
+            <li><strong>เมื่อปรับฐาน:</strong> ฐานปีใหม่ = (50,000×9)+(100,000×3) = 750,000 → สุทธิ 579,500 → ภาษีปีใหม่ = <strong>39,425</strong></li>
+            <li>ถูกหักไปแล้ว 9 เดือน = 1,704.16×9 = 15,337.44 → เหลือต้องหัก 24,087.56 ÷ 3 เดือน = <strong>8,029.18</strong> (ต.ค., พ.ย.)</li>
+            <li>ธ.ค. ปรับเศษ = 39,425 − [15,337.44 + (8,029.18×2)] = <strong>8,029.20</strong></li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.red} bg={C.redBg} title="ตัวอย่าง 4 — คอมมิชชั่น/OT หลายครั้งต่อปี (นายออมเงิน 50,000/เดือน + คอมฯ มี.ค. 100,000, เม.ย. 30,000)">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>Step 1</strong> เดือนปกติ: ภาษีปีฐานเงินเดือน = 20,450 → หักเดือนละ <strong>1,704.16</strong></li>
+            <li><strong>Step 2 (มี.ค.)</strong>: ฐานปี + คอมฯ 100,000 = 700,000 → ภาษีปี 31,925 − 20,450 = ภาษีเพิ่ม 11,475 → หัก มี.ค. = 1,704.16 + 11,475 = <strong>13,179.16</strong></li>
+            <li><strong>Step 3 (เม.ย.)</strong>: ฐานสะสม + 30,000 = 730,000 → ภาษีปี 36,425 − 31,925 = เพิ่ม 4,500 → หัก เม.ย. = 1,704.16 + 4,500 = <strong>6,204.16</strong> (เทียบกับยอด "ก่อนคอมฯ เดือนล่าสุด" เสมอ)</li>
+            <li><strong>ธ.ค.</strong> = 36,425 − ยอดหักสะสม 11 เดือน (34,720.76) = <strong>1,704.24</strong></li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.amberDark} bg={C.surface3} title="ค่าแรง 40(2) — ผู้รับไม่ใช่พนักงานประจำ (นางรินรภัทร นายหน้าขายสินค้า)">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>ม.ค. ได้ค่านายหน้า 400,000:</strong> เสมือนจ่ายทั้งปี = 400,000 (จ่ายครั้งเดียว ไม่คูณ 12) → หัก คชจ. 100,000 → ลดหย่อนส่วนตัว 60,000 → สุทธิ 240,000 → ภาษี = 90,000×5% = <strong>4,500</strong></li>
+            <li><strong>ก.ย. ได้อีก 550,000:</strong> รวมปี 950,000 → สุทธิ 790,000 → ภาษีปี = 73,000 − หักไว้แล้ว 4,500 = หัก ก.ย. <strong>68,500</strong></li>
+            <li><strong>ข้อสังเกต:</strong> ไม่ใช่พนักงานประจำ → <strong>ไม่มีการหักลดหย่อนประกันสังคม</strong></li>
+          </ul>
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'onetime',
+    title: '💼 เงินที่นายจ้างจ่ายให้ครั้งเดียวเพราะเหตุออกจากงาน (ม.48(5), 50(1))',
+    tags: [['คำนวณแยกได้','purple'],['เกณฑ์ 5 ปี','red'],['ออกสอบบ่อย','volcano']],
+    content: () => (
+      <div>
+        <MiniCard color={C.gold} bg={C.surface3} title="เงินได้ 4 ประเภทที่ถือเป็น 'จ่ายครั้งเดียวเพราะออกจากงาน'">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เงินได้ที่คำนวณตามหลักเกณฑ์เดียวกับ<strong>บำเหน็จบำนาญข้าราชการ</strong></li>
+            <li>เงินที่จ่ายจาก<strong>กองทุน</strong> (กองทุนสำรองเลี้ยงชีพ PVD / กบข. / กองทุนรวมเพื่อการเลี้ยงชีพจากการโอน PVD)</li>
+            <li><strong>เงินชดเชยตามกฎหมายแรงงาน</strong></li>
+            <li>เงินได้จ่ายครั้งเดียวที่มี<strong>วิธีคำนวณแตกต่างไปจาก (1)</strong> เช่น เงินก้อนสวัสดิการแม้ลาออกสมัครใจ, เงินบำเหน็จ, Early Retire, ค่าจ้างวันหยุดพักผ่อนที่ไม่ได้ใช้</li>
+          </ol>
+        </MiniCard>
+        <Row gutter={12}>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.green} bg={C.greenBg} title="ทำงานครบ 5 ปี">
+              <Text>เลือกได้ 2 ทาง: รวมคำนวณกับเงินได้อื่น <strong>หรือ แยกคำนวณด้วยวิธีพิเศษ</strong> โดยกรอก "ใบแนบ ภ.ง.ด.90/91 กรณีคำนวณเงินได้ที่นายจ้างจ่ายให้ครั้งเดียวเพราะเหตุออกจากงาน"{'\n'}</Text>
+              <Text type="secondary">(โน้ตอาจารย์: นับวันชนวัน — เศษเกิน 183 วันปัดเป็น 1 ปี เช่น 4 ปี 183 วัน = 4 ปี แต่ถ้าเกิน 183 วัน = 5 ปี)</Text>
+            </MiniCard>
+          </Col>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.red} bg={C.redBg} title="ทำงานไม่ถึง 5 ปี">
+              <Text>ต้องถือเป็นเงินได้ <strong>40(1)</strong> และ<strong>นำไปรวมคำนวณ</strong>กับเงินได้ประเภทอื่น — <strong>แยกคำนวณไม่ได้</strong></Text>
+            </MiniCard>
+          </Col>
+        </Row>
+        <MiniCard color={C.blue} bg={C.blueBg} title="สูตรบำเหน็จ / บำนาญข้าราชการ">
+          <Text>บำเหน็จ = เงินเดือนเดือนสุดท้าย × จำนวนปีที่ทำงาน{'\n'}</Text>
+          <Text>บำนาญ = (เงินเดือนเดือนสุดท้าย × จำนวนปีที่ทำงาน) ÷ 50{'\n'}</Text>
+          <Text strong style={{ color: C.red }}>เศษของปีเกิน 6 เดือน ปัดเป็น 1 ปี</Text>
+        </MiniCard>
+        <MiniCard color={C.purple} bg={C.purpleBg} title="กองทุนสำรองเลี้ยงชีพ (PVD) — เงิน 4 ส่วน">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เงินสะสม (หักจากเงินเดือนพนักงาน)</li>
+            <li>ผลประโยชน์ของเงินสะสม</li>
+            <li>เงินสมทบ (นายจ้างสมทบเพิ่มให้)</li>
+            <li>ผลประโยชน์ของเงินสมทบ</li>
+          </ol>
+          <Alert type="success" showIcon style={{ marginTop: 8 }}
+            message={<Text strong>ยกเว้นภาษีทั้ง 4 ส่วน ถ้าเป็นสมาชิกกองทุนครบ 5 ปี และอายุครบ 55 ปี</Text>} />
+          <div style={{ marginTop: 8 }}>
+            <Text strong>หากผิดเงื่อนไข:</Text>
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              <li>สมาชิกกองทุน<strong>ไม่ครบ 5 ปี</strong> → ส่วน (2)(3)(4) ต้องรวมเป็นเงินได้ 40(1) — <strong>แยกคำนวณไม่ได้</strong></li>
+              <li>ครบ 5 ปี แต่<strong>อายุไม่ครบ 55</strong> → ส่วน (2)(3)(4) เสียภาษี โดย<strong>รวมหรือแยกคำนวณก็ได้</strong> (กรอกใบแนบ ภ.ง.ด.90/91)</li>
+            </ul>
+          </div>
+        </MiniCard>
+        <MiniCard color={C.cyan} bg={C.cyanBg} title="เงินชดเชยตามกฎหมายแรงงาน (ตามอายุงาน · ใช้เงินเดือนล่าสุดคำนวณ)">
+          <Table size="small" pagination={false} bordered
+            columns={[
+              { title: 'อายุงาน', dataIndex: 'y', key: 'y' },
+              { title: 'อัตราชดเชย', dataIndex: 'c', key: 'c' },
+            ]}
+            dataSource={[
+              { key: 1, y: 'ไม่ถึง 120 วัน', c: 'ไม่มีสิทธิได้รับ' },
+              { key: 2, y: '120 วัน แต่ไม่ถึง 1 ปี', c: 'ค่าชดเชย 30 วัน' },
+              { key: 3, y: '1 ปี แต่ไม่ถึง 3 ปี', c: 'ค่าชดเชย 90 วัน' },
+              { key: 4, y: '3 ปี แต่ไม่ถึง 6 ปี', c: 'ค่าชดเชย 180 วัน' },
+              { key: 5, y: '6 ปี แต่ไม่ถึง 10 ปี', c: 'ค่าชดเชย 240 วัน' },
+              { key: 6, y: '10 ปี แต่ไม่ถึง 20 ปี', c: 'ค่าชดเชย 300 วัน' },
+              { key: 7, y: '20 ปีขึ้นไป', c: 'ค่าชดเชย 400 วัน' },
+            ]} />
+          <Alert type="success" showIcon style={{ marginTop: 8 }}
+            message={<Text strong>ยกเว้นภาษี: ค่าจ้างของการทำงาน 400 วันสุดท้าย แต่ไม่เกิน 600,000 บาท</Text>} />
+        </MiniCard>
+        <MiniCard color={C.gold} bg={C.surface3} title="ประเภท (4) เทียบ 2 กรณีก่อนคำนวณ (เลือกจำนวนที่น้อยกว่า)">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เงินเดือน 12 เดือนสุดท้าย<strong>เท่ากัน</strong> → เพดาน = เงินเดือนเดือนสุดท้าย × จำนวนปีที่ทำงาน</li>
+            <li>เงินเดือน 12 เดือนสุดท้าย<strong>ไม่เท่ากัน</strong> → เพดาน = เงินเดือนเฉลี่ย 12 เดือนสุดท้าย × 1.1 × จำนวนปีที่ทำงาน</li>
+            <li><strong>เลือกจำนวนที่น้อยกว่า</strong>ระหว่างเงินที่ได้จริงกับเพดาน มาคำนวณภาษี</li>
+          </ul>
+        </MiniCard>
+        <MiniCard color={C.red} bg={C.redBg} title="สูตรคำนวณภาษีแบบแยก (ใบแนบ)">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>ค่าใช้จ่ายส่วนแรก = <strong>7,000 × จำนวนปีที่ทำงาน</strong></li>
+            <li>ค่าใช้จ่ายส่วนที่สอง = <strong>(เงินก้อน − ส่วนแรก) × 50%</strong></li>
+            <li>เงินได้หลังหักค่าใช้จ่าย → คำนวณภาษีตามขั้นบันได</li>
+          </ol>
+          <Alert type="error" showIcon style={{ marginTop: 8 }}
+            message={<Text strong>จุดต่างสำคัญ: เสียภาษี 5% ตั้งแต่บาทแรก — 150,000 บาทแรก "ไม่ได้รับ" สิทธิยกเว้นภาษี</Text>} />
+        </MiniCard>
+        <MiniCard color={C.cyan} bg={C.cyanBg} title="ตัวอย่างสมบูรณ์ — นายนักคิด (ทำงาน 10 ปี เงินเดือน 60,000 ออกจากงาน)">
+          <Paragraph style={{ marginBottom: 8 }}><strong>ขั้น 1 หาฐานเงินได้:</strong></Paragraph>
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li>เงินชดเชยแรงงาน 700,000 → ยกเว้น 600,000 → เหลือ <strong>100,000</strong></li>
+            <li>เงินจ่ายจาก PVD 1,000,000 → นำมารวมทั้งหมด <strong>1,000,000</strong></li>
+            <li>เงินตอบแทนพิเศษ 500,000 → เทียบเพดาน 60,000×10 = 600,000 → ใช้ค่าน้อยกว่า = <strong>500,000</strong></li>
+            <li>รวมฐาน = <strong>1,600,000</strong></li>
+          </ul>
+          <Paragraph style={{ margin: '8px 0' }}><strong>ขั้น 2 หักค่าใช้จ่าย:</strong> ส่วนแรก 7,000×10 = 70,000 · ส่วนที่สอง (1,600,000−70,000)×50% = 765,000 → รวม 835,000 → เหลือ <strong>765,000</strong></Paragraph>
+          <Paragraph style={{ margin: 0 }}><strong>ขั้น 3 ภาษีขั้นบันได (5% ตั้งแต่บาทแรก):</strong> 300,000×5% = 15,000 · 200,000×10% = 20,000 · 250,000×15% = 37,500 · 15,000×20% = 3,000 → <strong style={{ color: C.red }}>ภาษีรวม 75,500 บาท</strong></Paragraph>
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'pnd2',
+    title: '💰 ภ.ง.ด.2 — ดอกเบี้ย 40(4)(ก) และเงินปันผล 40(4)(ข)',
+    tags: [['Final Tax','red'],['15% / 10%','gold']],
+    content: () => (
+      <div>
+        <Alert type="info" showIcon style={{ marginBottom: 16 }}
+          message={<Text strong>ภ.ง.ด.2 ใช้กับเงินได้ 40(3) ค่ากู๊ดวิลล์ ลิขสิทธิ์ สิทธิอย่างอื่น และ 40(4) ดอกเบี้ย เงินปันผล — ทั้งผู้รับที่อยู่และไม่อยู่ในไทย</Text>} />
+        <MiniCard color={C.blue} bg={C.blueBg} title="ดอกเบี้ยเงินฝาก 40(4)(ก) — หัก 15% แต่มีข้อยกเว้น">
+          <Paragraph style={{ marginBottom: 8 }}>ประเภทบัญชี: เผื่อเรียก/ออมทรัพย์ · ฝากประจำ · กระแสรายวัน (ไม่มีดอกเบี้ย) · ฝากประจำปลอดภาษี</Paragraph>
+          <Text strong style={{ color: C.green }}>ดอกเบี้ยเงินฝากที่ได้รับยกเว้นภาษี:</Text>
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li>ดอกเบี้ยเผื่อเรียกของ<strong>ธนาคารออมสิน</strong></li>
+            <li>ดอกเบี้ยออมทรัพย์ของ <strong>ธ.ก.ส.</strong></li>
+            <li>ดอกเบี้ยออมทรัพย์ของ<strong>สหกรณ์</strong></li>
+            <li><strong>บัญชีฝากประจำปลอดภาษี</strong> (ฝากไม่น้อยกว่า 24 เดือน ฝากเท่ากันไม่เกิน 25,000 บาท/เดือน ยอดรวมไม่เกิน 600,000 บาท)</li>
+            <li>ดอกเบี้ยเผื่อเรียก (ออมทรัพย์) <strong>ไม่เกิน 20,000 บาท</strong></li>
+            <li>ดอกเบี้ยฝากประจำไม่ต่ำกว่า 1 ปี <strong>ไม่เกิน 30,000 บาท</strong> เมื่อผู้รับ<strong>อายุไม่ต่ำกว่า 55 ปี</strong></li>
+          </ul>
+        </MiniCard>
+        <Row gutter={12}>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.purple} bg={C.purpleBg} title="เงินปันผลหุ้น 40(4)(ข)">
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>ภาษีหัก ณ ที่จ่าย <strong>10%</strong> (เลือกเป็น Final Tax ได้)</li>
+                <li><strong>ยกเว้นภาษี</strong> กรณีรับปันผลจากบริษัทที่ได้รับส่งเสริมการลงทุน <strong>(BOI)</strong></li>
+              </ul>
+            </MiniCard>
+          </Col>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.green} bg={C.greenBg} title="กำไรขายหลักทรัพย์ (Capital Gain)">
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>ขายหลักทรัพย์<strong>ในตลาดหลักทรัพย์</strong> → <strong>ยกเว้นภาษี</strong></li>
+                <li>กำไรจากการ<strong>ขายคืนหน่วยลงทุนกองทุน</strong> → ได้รับยกเว้นภาษี</li>
+              </ul>
+            </MiniCard>
+          </Col>
+        </Row>
+        <MiniCard color={C.red} bg={C.redBg} title="เงินปันผลกองทุนรวม — กติกาตั้งแต่ 20 สิงหาคม 2562">
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>วิธีที่ 1:</strong> ถูกหัก 10% แล้วจบ = <strong>Final Tax</strong></li>
+            <li><strong>วิธีที่ 2:</strong> ถูกหัก 10% แล้วนำมารวมยื่นภาษี เพื่อใช้ประโยชน์ทางภาษี (อาจได้เงินคืน/เสียน้อยลง)</li>
+            <li>ตั้งแต่ 20 ส.ค. 2562 เงินปันผลกองทุนถือเป็น<strong>เงินได้ 40(4)</strong> → <strong>แยกยื่นกับปันผลหุ้นไม่ได้</strong> เพราะเป็นเงินได้ประเภทเดียวกัน</li>
+            <li>เลือก Final Tax → ต้องเลือก<strong>เหมือนกันทั้ง</strong>ปันผลหุ้นและปันผลกองทุน · เลือกนำไปรวม → ต้อง<strong>รวมทั้งหมด</strong> แต่<strong>ปันผลกองทุนไม่มีเครดิตภาษี</strong></li>
+          </ul>
+        </MiniCard>
+      </div>
+    )
+  },
+];
+
+/* ============================================================
+   1b. FOUNDATION DATA — ปูพื้นก่อนเข้าเนื้อหา
+   ============================================================ */
+const foundationData = [
+  {
+    key: 'bigpicture',
+    title: '🗺️ ภาพใหญ่: ภาษีหัก ณ ที่จ่าย เกิดมาทำไม (First Principles)',
+    tags: [['เข้าใจก่อนท่อง','green'],['อ่าน 3 นาที','blue']],
+    content: () => (
+      <div>
+        <Paragraph>
+          เริ่มจากปัญหาจริงของรัฐ: ภาษีเงินได้เก็บ<strong>ปีละครั้ง</strong> ถ้ารอสิ้นปีทีเดียวจะเกิด 2 ปัญหา —
+          (1) รัฐไม่มีเงินสดใช้ระหว่างปี และ (2) พอถึงปลายปี คนจำนวนมาก<strong>ไม่มีเงินเหลือจ่าย หรือหนีหายไปแล้ว</strong>
+        </Paragraph>
+        <Alert type="success" showIcon style={{ marginBottom: 12 }}
+          message={<Text strong>ทางแก้ที่ฉลาด: เก็บภาษี ณ จุดที่เงินเปลี่ยนมือ</Text>}
+          description={<Text>สั่งให้<strong>ผู้จ่ายเงิน</strong> (ซึ่งมีเงินอยู่ในมือพอดี และมีตัวตนชัดเจนกว่า) หักภาษีของผู้รับส่งรัฐทันที
+            — แนวคิดเดียวกับระบบ Pay-As-You-Earn (PAYE) ที่ใช้ทั่วโลก เช่น การหัก W-2 withholding ในสหรัฐฯ</Text>} />
+        <MiniCard color={C.blue} bg={C.blueBg} title="ประโยคเดียวที่สรุปทั้งวิชา">
+          <Text style={{ fontSize: 16 }}>ภาษีหัก ณ ที่จ่าย <strong>ไม่ใช่ภาษีชนิดใหม่</strong> — มันคือ<strong>"เงินมัดจำภาษี"</strong> ที่ถูกเก็บล่วงหน้าระหว่างปี
+            แล้วนำไป<strong>เครดิต</strong>ออกจากภาษีจริงตอนยื่นแบบปลายปี (ยกเว้นกลุ่ม Final Tax ที่เลือกให้จบตรงนั้นได้เลย)</Text>
+        </MiniCard>
+        <MiniCard color={C.purple} bg={C.purpleBg} title="แล้วทำไมผู้จ่ายต้องมีหน้าที่และโทษ?">
+          <Text>เพราะกฎหมายแต่งตั้งผู้จ่ายเป็น<strong>"ตัวแทนเก็บภาษีของรัฐ"</strong> (deputized collector) —
+            รัฐยืมมือเอกชนเก็บภาษีให้ฟรี ๆ ดังนั้นถ้าตัวแทนละเลย (ไม่หัก หักขาด ส่งช้า) รัฐจึงให้<strong>ร่วมรับผิด</strong>และมีบทลงโทษกำกับ
+            — นี่คือเหตุผลเบื้องหลัง "หน้าที่ 4 ข้อ + บทลงโทษ" ในแท็บสรุปเนื้อหา ไม่ต้องท่องแบบไร้เหตุผล</Text>
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'income8',
+    title: '📇 เงินได้พึงประเมิน 8 ประเภท (ม.40) — ฉบับภาษาคน',
+    tags: [['หัวใจการวินิจฉัย','volcano'],['ชีทต้นฉบับ assume ว่ารู้แล้ว','red']],
+    content: () => (
+      <div>
+        <Alert type="warning" showIcon style={{ marginBottom: 12 }}
+          message={<Text strong>ทำไมต้องแม่นเรื่องนี้ก่อนเรื่องอื่น</Text>}
+          description={<Text>ทั้งวิชานี้คือเกม "วินิจฉัยประเภทเงินได้" — เพราะ<strong>ประเภทเงินได้เป็นตัวกำหนดทั้งอัตราหักและแบบยื่น</strong>
+            วินิจฉัยประเภทผิดข้อเดียว = หักผิด + ยื่นแบบผิด ทั้งสาย</Text>} />
+        <Table size="small" pagination={false} bordered style={{ marginBottom: 12 }}
+          columns={[
+            { title: 'ม.40', dataIndex: 't', key: 't', width: 70 },
+            { title: 'ชื่อทางการ', dataIndex: 'n', key: 'n', width: '30%' },
+            { title: 'ภาษาคน + ตัวอย่างจริง', dataIndex: 'e', key: 'e' },
+          ]}
+          dataSource={[
+            { key: 1, t: '40(1)', n: 'จ้างแรงงาน', e: 'เป็น "ลูกจ้าง" มีนายจ้าง: เงินเดือน โบนัส OT ค่าเช่าบ้านที่นายจ้างออกให้' },
+            { key: 2, t: '40(2)', n: 'รับทำงานให้', e: 'ทำงานให้แต่ไม่ใช่ลูกจ้าง: ค่านายหน้า ค่าธรรมเนียม เบี้ยประชุม ฟรีแลนซ์ทั่วไป' },
+            { key: 3, t: '40(3)', n: 'ค่าสิทธิ', e: 'ค่ากู๊ดวิลล์ ค่าลิขสิทธิ์ ค่าสิทธิในทรัพย์สินทางปัญญา' },
+            { key: 4, t: '40(4)', n: 'ผลตอบแทนจากทุน', e: 'เงินทำงานแทนเรา: ดอกเบี้ย เงินปันผล ส่วนแบ่งกำไร' },
+            { key: 5, t: '40(5)', n: 'ค่าเช่า', e: 'ให้เช่าทรัพย์สิน: บ้าน รถ ที่ดิน เครื่องจักร' },
+            { key: 6, t: '40(6)', n: 'วิชาชีพอิสระ 6 อาชีพ', e: 'การประกอบโรคศิลปะ (หมอ) กฎหมาย วิศวกรรม สถาปัตยกรรม บัญชี ประณีตศิลปกรรม — 6 อาชีพนี้เท่านั้น!' },
+            { key: 7, t: '40(7)', n: 'รับเหมา', e: 'รับเหมาที่ผู้รับเหมาลงทุนจัดหาสัมภาระเอง เช่น รับเหมาก่อสร้างพร้อมวัสดุ' },
+            { key: 8, t: '40(8)', n: 'อื่น ๆ (ถังรวม)', e: 'ธุรกิจ การพาณิชย์ เกษตร อุตสาหกรรม ขนส่ง นักแสดง รางวัล ขายอสังหาฯ — อะไรที่ไม่เข้า (1)-(7) ตกลงถังนี้' },
+          ]} />
+        <Row gutter={12}>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.gold} bg={C.surface3} title="🧠 ท่องลำดับ 8 ประเภท">
+              <Text style={{ fontSize: 15 }}><strong>"จ้าง – ทำ – สิทธิ – ทุน – เช่า – วิชาชีพ – เหมา – อื่น"</strong>{'\n'}</Text>
+              <Text type="secondary">เรียงจากความสัมพันธ์แน่นแฟ้น (ลูกจ้าง) → หลวมลงเรื่อย ๆ → passive → ถังรวม</Text>
+            </MiniCard>
+          </Col>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.red} bg={C.redBg} title="⚖️ จุดชี้ขาด 40(1) vs 40(2) ที่ข้อสอบชอบถาม">
+              <Text>ดูที่<strong>ความสัมพันธ์นายจ้าง-ลูกจ้าง</strong> ไม่ใช่ชื่อเรียกเงิน — พนักงานขายประจำได้คอมมิชชั่น = 40(1)
+                แต่นายหน้าอิสระได้คอมมิชชั่น = 40(2) (เคสนางรินรภัทรในแท็บสรุป!)</Text>
+            </MiniCard>
+          </Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key: 'ladder',
+    title: '🪜 บันไดอัตราภาษีเงินได้บุคคลธรรมดา — เครื่องมือหลักของ ภงด.1',
+    tags: [['ต้องท่องได้','gold'],['ใช้ทุกโจทย์คำนวณ','volcano']],
+    content: () => (
+      <div>
+        <Table size="small" pagination={false} bordered style={{ marginBottom: 12 }}
+          columns={[
+            { title: 'เงินได้สุทธิ (บาท)', dataIndex: 'r', key: 'r' },
+            { title: 'อัตรา', dataIndex: 'p', key: 'p', width: 90, render: (t) => <Tag color="volcano" style={{ fontSize: 14 }}>{t}</Tag> },
+            { title: 'ภาษีสูงสุดของขั้น', dataIndex: 'm', key: 'm' },
+          ]}
+          dataSource={[
+            { key: 1, r: '0 – 150,000', p: 'ยกเว้น', m: '—' },
+            { key: 2, r: '150,001 – 300,000', p: '5%', m: '7,500' },
+            { key: 3, r: '300,001 – 500,000', p: '10%', m: '20,000' },
+            { key: 4, r: '500,001 – 750,000', p: '15%', m: '37,500' },
+            { key: 5, r: '750,001 – 1,000,000', p: '20%', m: '50,000' },
+            { key: 6, r: '1,000,001 – 2,000,000', p: '25%', m: '250,000' },
+            { key: 7, r: '2,000,001 – 5,000,000', p: '30%', m: '900,000' },
+            { key: 8, r: '5,000,001 ขึ้นไป', p: '35%', m: '—' },
+          ]} />
+        <Alert type="error" showIcon style={{ marginBottom: 12 }}
+          message={<Text strong>Misconception อันดับ 1: "เงินได้สุทธิ 360,500 → เสีย 10% ทั้งก้อน" — ผิด!</Text>}
+          description={<Text>ภาษีเป็นแบบ<strong>ขั้นบันได (marginal rate)</strong> — เฉพาะส่วนที่ "ล้น" เข้าแต่ละขั้นเท่านั้นที่โดนอัตราขั้นนั้น:
+            150,000 แรกยกเว้น + (150,000 × 5% = 7,500) + (60,500 × 10% = 6,050) = <strong>13,550 บาท</strong>
+            (นี่คือที่มาของเลขในตัวอย่างที่ 1 ของแท็บสรุป — ไม่ใช่ 36,050!)</Text>} />
+        <MiniCard color={C.cyan} bg={C.cyanBg} title="เทคนิคคิดเร็วในห้องสอบ (สะสมทีละขั้น)">
+          <Text>จำ "ภาษีสะสมเต็มขั้น": ถึง 300,000 = 7,500 · ถึง 500,000 = 27,500 · ถึง 750,000 = 65,000 · ถึง 1,000,000 = 115,000{'\n'}</Text>
+          <Text>เช่น สุทธิ 579,500 → 27,500 + (79,500 × 15%) = 27,500 + 11,925 = <strong>39,425</strong> (ตรงกับตัวอย่างที่ 3 พอดี)</Text>
+        </MiniCard>
+        <Alert type="info" showIcon message={<Text>ข้อยกเว้นเดียวที่ 150,000 แรก "ไม่ยกเว้น": การ<strong>แยกคำนวณเงินก้อนออกจากงาน</strong> (ใบแนบ) — เสีย 5% ตั้งแต่บาทแรก</Text>} />
+      </div>
+    )
+  },
+  {
+    key: 'deduct',
+    title: '🧾 ค่าใช้จ่าย & ค่าลดหย่อน — ตัวเลขที่โผล่ซ้ำ ๆ ในโจทย์',
+    tags: [['จำตัวเลข','blue']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.green} bg={C.greenBg} title="ค่าใช้จ่าย (หักก่อนลดหย่อน)">
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>เงินได้ 40(1) + 40(2): เหมา <strong>50% ไม่เกิน 100,000 บาท</strong> (รวมกันทั้งสองประเภท)</li>
+                <li>สังเกต: เงินได้ตั้งแต่ 200,000 ขึ้นไปจะชนเพดาน 100,000 เสมอ — โจทย์เกือบทุกข้อจึงหัก 100,000</li>
+              </ul>
+            </MiniCard>
+          </Col>
+          <Col xs={24} md={12}>
+            <MiniCard color={C.blue} bg={C.blueBg} title="ค่าลดหย่อนที่ใช้ในตัวอย่างของชีท">
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>ส่วนตัว <strong>60,000</strong> · คู่สมรสไม่มีเงินได้ <strong>60,000</strong></li>
+                <li>บุตร <strong>30,000/คน</strong> (2 คน = 60,000)</li>
+                <li>เบี้ยประกันชีวิต <strong>ตามจ่ายจริง ไม่เกิน 100,000</strong></li>
+                <li>ดอกเบี้ยกู้ซื้อบ้าน <strong>ตามจ่ายจริง ไม่เกิน 100,000</strong></li>
+                <li>ประกันสังคม <strong>ตามจ่ายจริง</strong> (ในชีทใช้ 875/เดือน = 10,500/ปี)</li>
+              </ul>
+            </MiniCard>
+          </Col>
+        </Row>
+        <Alert type="warning" showIcon message={<Text><strong>จุดเช็คในโจทย์:</strong> ผู้รับเป็นพนักงานประจำหรือไม่? ถ้าไม่ใช่ (เช่น นายหน้าอิสระ 40(2)) จะ<strong>ไม่มีลดหย่อนประกันสังคม</strong></Text>} />
+      </div>
+    )
+  },
+  {
+    key: 'models',
+    title: '🧠 Mental Models 5 ข้อ — คิดแบบนักภาษี ไม่ใช่นักท่องจำ',
+    tags: [['วิธีคิด','purple'],['ใช้ตอบข้อสอบวิเคราะห์','green']],
+    content: () => (
+      <div>
+        <MiniCard color={C.gold} bg={C.surface3} title="Model 1 — เงินมัดจำ & เครดิต (Prepay-then-Credit)">
+          <Text>WHT ทุกบาทคือ "เงินมัดจำ" ไม่ใช่ต้นทุนสุดท้าย → ปลายปีเอามาหักออกจากภาษีจริง เหลือ = จ่ายเพิ่ม, เกิน = ขอคืน{'\n'}</Text>
+          <Text type="secondary">ใช้ตอบ: ทำไมสมการหลักถึงหน้าตาแบบนั้น / ทำไมถูกหักเกินแล้วขอคืนได้</Text>
+        </MiniCard>
+        <MiniCard color={C.purple} bg={C.purpleBg} title="Model 2 — ผู้จ่ายคือตัวแทนรัฐ (Deputized Collector)">
+          <Text>หน้าที่ 4 ข้อ (ขอ-หัก-ออก-ยื่น) + ร่วมรับผิด + เงินเพิ่ม 1.5% ทั้งหมด derive มาจากหลักเดียว: รัฐมอบอำนาจเก็บภาษีให้ผู้จ่าย
+            ความรับผิดจึงตกที่ผู้จ่าย ไม่ใช่ผู้รับ{'\n'}</Text>
+          <Text type="secondary">ใช้ตอบ: ข้อสอบถาม "ใครรับผิดเมื่อหักขาด/ไม่หัก" — ตอบจากหลักนี้ได้โดยไม่ต้องท่อง</Text>
+        </MiniCard>
+        <MiniCard color={C.blue} bg={C.blueBg} title="Model 3 — ประเภทเงินได้คือประตูแรก (Classification First)">
+          <Text>ทุกโจทย์เริ่มที่คำถามเดียว: "เงินก้อนนี้คือเงินได้ ม.40 ประเภทไหน จ่ายให้ใคร" → อัตราและแบบยื่นไหลตามอัตโนมัติ
+            อย่าเริ่มจากจำอัตรา ให้เริ่มจากวินิจฉัยประเภท{'\n'}</Text>
+          <Text type="secondary">ใช้ตอบ: โจทย์เคสยาว ๆ ที่ให้เงินหลายก้อนปน ๆ กัน — แยกทีละก้อน วินิจฉัยทีละประเภท</Text>
+        </MiniCard>
+        <MiniCard color={C.cyan} bg={C.cyanBg} title="Model 4 — เสมือนทั้งปี แล้วปรับจริง (Annualize → True-up)">
+          <Text>การหักภาษีเงินเดือน ภงด.1 คือการ<strong>พยากรณ์</strong>รายได้ทั้งปี หักเฉลี่ยรายเดือน แล้ว<strong>ปรับให้ตรงจริง (true-up)</strong>
+            ทุกครั้งที่มีข้อมูลใหม่ (OT, คอมมิชชั่น, ขึ้นเงินเดือน) และเก็บเศษเดือน ธ.ค. — โครงสร้างเดียวกับหลัก estimate/accrual ในบัญชีที่คุณเรียนมาแล้ว{'\n'}</Text>
+          <Text type="secondary">ใช้ตอบ: ตัวอย่าง 1–4 ทั้งหมดคือ model นี้ตัวเดียว แค่เปลี่ยน input</Text>
+        </MiniCard>
+        <MiniCard color={C.red} bg={C.redBg} title="Model 5 — Final Tax คือ Trade-off ความง่าย vs ความแม่น">
+          <Text>รัฐยอมเก็บอัตราเดียวจบ (10%/15%) แลกกับความง่ายในการจัดเก็บ ผู้เสียภาษีจึงได้<strong>สิทธิเลือก</strong>:
+            ถ้าฐานภาษีตัวเองต่ำกว่าอัตรา Final Tax → เลือกรวมยื่นเพื่อขอคืน / ถ้าสูงกว่า → เลือกจบที่ Final Tax{'\n'}</Text>
+          <Text type="secondary">ใช้ตอบ: ข้อสอบวางแผนภาษี "ควรเลือกรวมหรือแยก" — เปรียบเทียบ marginal rate ตัวเองกับอัตรา Final Tax</Text>
+        </MiniCard>
+      </div>
+    )
+  },
+  {
+    key: 'traps',
+    title: '⚠️ กับดักข้อสอบ 8 จุด — ตอบผิดกันบ่อยที่สุด',
+    tags: [['เช็คก่อนสอบ','red']],
+    content: () => (
+      <div>
+        <Table size="small" pagination={false} bordered
+          columns={[
+            { title: '❌ ความเข้าใจผิด', dataIndex: 'w', key: 'w', width: '46%' },
+            { title: '✅ ที่ถูกต้อง', dataIndex: 'r', key: 'r' },
+          ]}
+          dataSource={[
+            { key: 1, w: 'จ่ายดอกเบี้ยให้นิติบุคคล หัก 15%', r: 'หักแค่ 1% — 15% ใช้กับผู้รับที่เป็นบุคคลธรรมดา (ปันผล 10% เท่ากันทั้งคู่)' },
+            { key: 2, w: 'เริ่มงานกลางปี ก็คูณ 12 เหมือนเดิม', r: 'คูณเฉพาะเดือนที่จะได้รับจริง (เริ่ม เม.ย. → ×9 และ ÷9)' },
+            { key: 3, w: 'เงินก้อนออกจากงานแยกคำนวณ ได้ยกเว้น 150,000 แรก', r: 'ไม่ได้ — เสีย 5% ตั้งแต่บาทแรก (จุดต่างสำคัญของใบแนบ)' },
+            { key: 4, w: 'เงินได้สุทธิโดนอัตราสูงสุดคูณทั้งก้อน', r: 'คิดแบบขั้นบันได (marginal) เฉพาะส่วนที่ล้นแต่ละขั้น' },
+            { key: 5, w: 'ภาษีเดือน ธ.ค. เท่ากับเดือนอื่น', r: 'ธ.ค. คือเดือนเก็บเศษ = ภาษีทั้งปี − ที่หักสะสมมาแล้ว' },
+            { key: 6, w: 'ราชการจ่ายเงิน ใช้เกณฑ์เดียวกันหมด', r: 'จ่ายบุคคลธรรมดา: 1% เมื่อ ≥10,000 · จ่ายนิติบุคคล (ม.69 ทวิ): 1% เมื่อ ≥500' },
+            { key: 7, w: 'อยู่กองทุน PVD ครบ 5 ปี ยกเว้นภาษีแน่นอน', r: 'ต้องครบทั้งคู่: สมาชิกครบ 5 ปี และ อายุครบ 55 ปี' },
+            { key: 8, w: 'ค่าโฆษณาหัก 3% เหมือนบริการทั่วไป', r: 'โฆษณาเป็นอัตราเฉพาะ 2% (บริการอื่น ๆ จึงจะ 3%)' },
+          ]} />
+      </div>
+    )
+  },
+  {
+    key: 'howto',
+    title: '🎓 วิธีใช้ชีทนี้ให้ได้ผล — Evidence-based Study Plan',
+    tags: [['active recall','green'],['spaced repetition','blue']],
+    content: () => (
+      <div>
+        <Paragraph>งานวิจัยด้าน learning science ชี้ตรงกันว่า <strong>การนั่งอ่านซ้ำ (re-reading) คือวิธีที่ได้ผลน้อยที่สุด</strong> —
+          สิ่งที่ได้ผลจริงคือ retrieval practice (บังคับสมองดึงความรู้ออกมา) และการเว้นระยะทวน ชีทนี้จึงออกแบบเป็น 4 แท็บให้ใช้แบบนี้:</Paragraph>
+        <MiniCard color={C.green} bg={C.greenBg} title="แผน 4 รอบ (ปรับตามเวลาที่เหลือ)">
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li><strong>รอบวางฐาน:</strong> อ่านแท็บปูพื้น 1 รอบจนตอบได้ว่า "เงินก้อนนี้คือ 40 อะไร" โดยไม่เปิดดู</li>
+            <li><strong>รอบเนื้อหา:</strong> อ่านแท็บสรุปทีละหัวข้อ แล้ว<strong>ปิดจอ อธิบายให้ตัวเอง/เพื่อนฟัง</strong>ด้วยภาษาตัวเอง (Feynman technique)
+              — ตรงไหนอธิบายไม่ได้ = ตรงนั้นยังไม่เข้าใจจริง กลับไปอ่านเฉพาะจุดนั้น</li>
+            <li><strong>รอบ recall:</strong> เล่น Flashcard โหมด "ทั้งหมด" — ตอบก่อนเปิดเฉลยเสมอ การ์ดที่กด "ยังไม่ได้" ให้วนซ้ำวันถัดไป (spaced repetition)
+              โจทย์คำนวณทั้ง 10 ใบต้อง<strong>ทำซ้ำด้วยมือบนกระดาษ</strong> อย่างน้อย 1 รอบ — สอบจริงมือต้องเคยเขียน</li>
+            <li><strong>รอบโค้งสุดท้าย (คืนก่อนสอบ/เช้าวันสอบ):</strong> ไล่การ์ดจำด่วนอย่างเดียว + ตาราง "กับดัก 8 จุด" ในแท็บปูพื้น</li>
+          </ol>
+        </MiniCard>
+        <Alert type="info" showIcon
+          message={<Text strong>เคล็ดลับข้อสอบเคสยาว</Text>}
+          description={<Text>อ่านโจทย์แล้วขีดแยก "ก้อนเงิน" ทีละก้อน → ตาราง 3 คอลัมน์: ก้อนเงิน / ประเภท ม.40 / อัตรา+แบบยื่น
+            → ค่อยคำนวณ อย่าคำนวณไปวินิจฉัยไป (Model 3: Classification First)</Text>} />
+      </div>
+    )
+  },
+];
+
+/* ============================================================
+   2. FLASHCARDS
+   ============================================================ */
+const flashcards = [
+  { q: 'สมการหลักของภาษีเงินได้หัก ณ ที่จ่าย คืออะไร?', a: 'ภาษีทั้งปี − (ภาษีครึ่งปี + ภาษีหัก ณ ที่จ่าย) = ภาษีที่เสียเพิ่ม / ขอคืน', d: 'ภาษีหัก ณ ที่จ่ายคือการทยอยจ่ายภาษีล่วงหน้า ปลายปีจึงนำมาเครดิตออกจากภาษีที่ต้องเสียจริง ใช้ได้ทั้งบุคคลธรรมดาและนิติบุคคล', star: 3, exam: false },
+  { q: 'Final Tax (หักแล้วเลือกจบ ไม่ต้องรวมปลายปี) มีเงินได้กลุ่มใดบ้าง?', a: 'เงินปันผล + ดอกเบี้ย + ขายอสังหาริมทรัพย์ + เงินที่นายจ้างจ่ายครั้งเดียวเพราะออกจากงาน', d: 'เป็นข้อยกเว้นของสมการหลัก — 4 กลุ่มนี้ผู้มีเงินได้เลือกให้ภาษีที่ถูกหักเป็นภาษีสุดท้ายได้ ไม่ต้องนำไปรวมคำนวณปลายปี', star: 3, exam: false },
+  { q: 'เจตนารมณ์ของการหักภาษี ณ ที่จ่าย 3 ข้อ คืออะไร?', a: '1) ป้องกัน Evasion/Avoidance 2) เพิ่มประสิทธิภาพตรวจสอบ-จัดเก็บ 3) ผลทางจิตวิทยา', d: 'ป้องกันการหลบภาษี (ผิดกฎหมาย) และเลี่ยงภาษี (ถูกกฎหมาย), ช่วย Auditing/Administration ของกรมสรรพากร, และช่วยผู้เสียภาษีทยอยจ่ายไม่หนักตอนสิ้นปี', star: 2, exam: false },
+  { q: 'Tax Evasion ต่างจาก Tax Avoidance อย่างไร?', a: 'Evasion = หลบภาษี ผิดกฎหมาย / Avoidance = เลี่ยงภาษี ถูกกฎหมาย', d: 'Evasion เช่น ซ่อนรายได้ ปกปิดไม่ยื่น · Avoidance เช่น วางแผนใช้สิทธิลดหย่อนตามที่กฎหมายเปิดช่อง', star: 2, exam: false },
+  { q: 'จ่ายเงินได้ 40(1)-(2) ให้บุคคลธรรมดา ยื่นแบบอะไร?', a: 'ภ.ง.ด.1', d: 'เงินเดือน ค่าจ้าง การรับทำงานให้ ที่จ่ายให้บุคคลธรรมดา ใช้ ภ.ง.ด.1 · จำชุด: 40(1)(2)→ภงด.1, 40(3)(4)→ภงด.2, 40(5)-(8)→ภงด.3, จ่ายให้นิติบุคคล→ภงด.53', star: 3, exam: false },
+  { q: 'จ่ายเงินได้ 40(3)-(4) ให้บุคคลธรรมดา ยื่นแบบอะไร?', a: 'ภ.ง.ด.2', d: 'ค่ากู๊ดวิลล์ ลิขสิทธิ์ (40(3)) และดอกเบี้ย เงินปันผล (40(4)) จ่ายให้บุคคลธรรมดา ใช้ ภ.ง.ด.2', star: 3, exam: false },
+  { q: 'จ่ายเงินได้ 40(5)-(8) ให้บุคคลธรรมดา ยื่นแบบอะไร?', a: 'ภ.ง.ด.3', d: 'ค่าเช่า วิชาชีพอิสระ รับเหมา เงินได้อื่น ๆ จ่ายให้บุคคลธรรมดา ใช้ ภ.ง.ด.3', star: 3, exam: false },
+  { q: 'จ่ายเงินได้ 40(2)-(8) ให้นิติบุคคล ยื่นแบบอะไร?', a: 'ภ.ง.ด.53', d: 'ผู้ถูกหักเป็นนิติบุคคล (บจก., หจก., ห้างหุ้นส่วนสามัญนิติบุคคล, กิจการร่วมค้า, มูลนิธิ/สมาคม) ใช้ ภ.ง.ด.53 เสมอ', star: 3, exam: false },
+  { q: 'ผู้ถูกหักเป็นบุคคลธรรมดา ใช้มาตราอะไรบ้าง? ถ้าเป็นนิติบุคคลใช้มาตราอะไร?', a: 'บุคคลธรรมดา: ม.50 + ม.3 เตรส · นิติบุคคล: ม.3 เตรส, 69 ทวิ, 69 ตรี, 70, 70 ทวิ', d: 'ม.50 ใช้กับบุคคลธรรมดาโดยตรง, ม.3 เตรส (ท.ป.4/2528) ใช้ได้ทั้งคู่, ม.69 ทวิ ราชการจ่ายให้นิติบุคคล, ม.69 ตรี ขายอสังหาฯ ของนิติบุคคล', star: 2, exam: false },
+  { q: 'ค่าเช่าทรัพย์สิน หักกี่ % ? เช่าเรือเดินทะเลหักกี่ %?', a: 'เช่าทรัพย์สินทุกชนิด 5% / เช่าเรือเดินทะเล 1%', d: 'ม.3 เตรส: 40(5)(ก) การให้เช่าทุกชนิดหัก 5% ยกเว้นเช่าเรือเดินทะเลตามกฎหมายพาณิชยนาวี หัก 1% — ใช้ทั้งผู้ถูกหักบุคคลธรรมดาและนิติบุคคล', star: 3, exam: false },
+  { q: 'ค่าวิชาชีพอิสระ และค่ารับเหมา/จ้างทำของ หักกี่ %?', a: 'ทั้งคู่หัก 3%', d: '40(6) วิชาชีพอิสระ 3% และ 40(7)(8) รับเหมาที่ผู้รับเหมาจัดหาสัมภาระ/ค่าจ้างทำของ 3% — จำง่าย ๆ ว่างานบริการวิชาชีพและรับจ้างส่วนใหญ่คือ 3%', star: 3, exam: false },
+  { q: 'เงินรางวัลประกวด/แข่งขัน/ชิงโชค และนักแสดงสาธารณะ หักกี่ %?', a: '5% ทั้งคู่', d: '40(8): การประกวด แข่งขัน ชิงโชค หัก 5% · นักแสดงสาธารณะ หัก 5% — กลุ่ม "ความบันเทิง-โชคลาภ" คือ 5%', star: 3, exam: false },
+  { q: 'ค่าโฆษณาหักกี่ %? ค่าขนส่ง (ไม่ใช่สาธารณะ) หักกี่ %?', a: 'โฆษณา 2% / ขนส่ง 1%', d: '2 อัตราที่มักสับสน: ค่าโฆษณา 2% เป็นอัตราเฉพาะตัว ส่วนค่าขนส่งที่ไม่ใช่ขนส่งสาธารณะ 1%', star: 3, exam: false },
+  { q: 'ดอกเบี้ยและเงินปันผล จ่ายให้บุคคลธรรมดา vs นิติบุคคล หักต่างกันอย่างไร?', a: 'บุคคลธรรมดา: ดอกเบี้ย 15% ปันผล 10% / นิติบุคคล: ดอกเบี้ย 1% ปันผล 10%', d: 'จุดหลอกข้อสอบ: ดอกเบี้ยจ่ายให้นิติบุคคลหักเพียง 1% แต่จ่ายให้บุคคลธรรมดาหัก 15% ส่วนเงินปันผล 10% เท่ากันทั้งคู่', star: 3, exam: false },
+  { q: 'ซื้อสินค้าเกษตร 7 ชนิด กับซื้อข้าว นิติบุคคลผู้ขายถูกหักกี่ %?', a: 'สินค้า 7 ชนิด 0.75% / ข้าว 0.50%', d: '7 ชนิด ได้แก่ ยางแผ่น มันสำปะหลัง ปอ ข้าวโพด อ้อย เมล็ดกาแฟ ผลปาล์มน้ำมัน หัก 0.75% ส่วนข้าวหักเพียง 0.50%', star: 2, exam: false },
+  { q: 'ผู้รับเงินเป็นมูลนิธิหรือสมาคม ถูกหักกี่ %?', a: '10%', d: 'มูลนิธิ/สมาคม (ที่ไม่ได้รับประกาศเป็นองค์การกุศลสาธารณะ) ถูกหัก ณ ที่จ่าย 10% ของเงินได้ทุกประเภทตามตาราง ยื่นด้วย ภงด.53', star: 2, exam: false },
+  { q: 'ส่วนราชการจ่ายเงินให้นิติบุคคล หักอย่างไร? (ม.69 ทวิ)', a: 'หัก 1% เมื่อจ่ายตั้งแต่ 500 บาทขึ้นไป', d: 'เทียบกับกรณีราชการจ่ายให้บุคคลธรรมดา (40(5)-(8)): หัก 1% เมื่อจ่ายตั้งแต่ 10,000 บาทขึ้นไป — เกณฑ์ขั้นต่ำต่างกัน (500 vs 10,000)', star: 2, exam: false },
+  { q: 'บุคคลธรรมดาผู้ถูกหักที่ "ไม่อยู่ในไทย" เงินได้ 40(2)-(6) หักกี่ %?', a: '15%', d: 'กรณีผู้มีเงินได้มิได้อยู่ในประเทศไทย เงินได้ ม.40(2)-40(6) หักอัตราเดียว 15% ไม่ใช้อัตราก้าวหน้า', star: 2, exam: false },
+  { q: 'ต้องนำส่งภาษีหัก ณ ที่จ่ายภายในกี่วัน? ยื่นออนไลน์ได้สิทธิอะไร?', a: 'ภายใน 7 วันนับแต่วันสิ้นเดือนที่จ่ายเงิน / ออนไลน์ขยายเวลาอีก 8 วัน', d: 'หน้าที่ข้อ 4 ของผู้หัก: ยื่นแบบพร้อมนำส่งภาษีภายใน 7 วันนับแต่วันสิ้นเดือน การยื่นออนไลน์ได้สิทธิพิเศษขยายเวลายื่นและชำระออกไปอีก 8 วัน', star: 3, exam: false },
+  { q: 'หนังสือรับรองหัก ณ ที่จ่าย ต้องออกอย่างน้อยกี่ฉบับ? แจกอย่างไร?', a: '4 ฉบับ — ต้นฉบับ+สำเนาแรกให้ผู้ถูกหัก / สำเนา 2-3 ผู้หักเก็บ', d: 'ผู้ถูกหักใช้ขอคืนภาษี 1 + เก็บหลักฐาน 1 · ผู้หักใช้แนบยื่นชำระภาษี 1 + เก็บหลักฐาน 1 และต้องออกให้ทุกครั้งที่หัก', star: 3, exam: false },
+  { q: 'นำส่งภาษีล่าช้า เสียเงินเพิ่มเท่าไร? ไม่ยื่นแบบปรับเท่าไร? เจตนาหลีกเลี่ยงโทษเท่าไร?', a: 'เงินเพิ่ม 1.5%/เดือน · ปรับไม่เกิน 2,000 บาท · จำคุกไม่เกิน 1 ปี หรือปรับไม่เกิน 200,000', d: 'สามระดับ: (1) นำส่งช้า = เงินเพิ่ม 1.5% ต่อเดือน เศษของเดือนนับเป็น 1 เดือน (2) ไม่ยื่นแบบใน 7 วัน = ปรับอาญาไม่เกิน 2,000 (3) เจตนาไม่ยื่นเพื่อหลีกเลี่ยง = คุก 1 ปี/ปรับ 200,000 หรือทั้งจำทั้งปรับ และถ้าหักไม่ครบผู้จ่ายร่วมรับผิดกับผู้มีเงินได้', star: 3, exam: false },
+  { q: 'สูตรคำนวณ WHT เงินเดือน 40(1) มี 3 ขั้นหลักอะไรบ้าง?', a: '1) รายได้ต่อปี − คชจ. − ลดหย่อน = เงินได้สุทธิ 2) × อัตราภาษี = ภาษีทั้งปี 3) ÷ จำนวนคราวที่จ่าย = ภาษีหักต่อครั้ง', d: 'ตาม ม.50(1) + ม.48(5): เสมือนได้รับทั้งปี หักค่าใช้จ่าย 50% ไม่เกิน 100,000 หักลดหย่อน คำนวณตามขั้นบันได แล้วหารจำนวนคราวที่จ่าย และต้องคำนวณใหม่ทุกครั้งที่มีเงินได้เพิ่ม', star: 3, exam: true },
+  { q: '[ตัวอย่าง 1] เงินเดือน 70,000/เดือน ลดหย่อนรวม 379,500 — ภาษีหักต่อเดือนเท่าไร และเดือน ธ.ค. เท่าไร?', a: 'เดือนละ 1,129.16 · ธ.ค. 1,129.24', d: '840,000 − 100,000 (คชจ.) − 379,500 = สุทธิ 360,500 → ภาษีปี (150,000×5%)+(60,500×10%) = 13,550 → ÷12 = 1,129.16 → ธ.ค. = 13,550−(1,129.16×11) = 1,129.24 (เดือนสุดท้ายเก็บเศษ)', star: 3, exam: true },
+  { q: '[ตัวอย่าง] ถ้าเดือน ม.ค. มี OT 13,000 บาทเพิ่มจากเงินเดือน — เดือน ม.ค. หักเท่าไร?', a: '2,429.16 (= 1,129.16 ปกติ + 1,300 ภาษีของ OT)', d: 'รวม OT เข้าฐานปี: ภาษีปีใหม่ 14,850 − ภาษีปีเฉพาะเงินเดือน 13,550 = 1,300 คือภาษีของ OT หักทั้งจำนวนในเดือนที่จ่าย บวกกับภาษีเงินเดือนปกติของเดือนนั้น', star: 3, exam: true },
+  { q: 'เริ่มงานกลางปี (เช่น 1 เม.ย.) คำนวณ "เสมือนทั้งปี" อย่างไร?', a: 'คูณเฉพาะจำนวนเดือนที่จะได้รับจริงในปีนั้น (เม.ย.–ธ.ค. = ×9) และหารด้วย 9', d: 'ตัวอย่าง 2: 40,000×9 = 360,000 ไม่ใช่ ×12 เพราะกฎหมายให้ประมาณเงินได้ที่คาดว่าจะได้รับจริงทั้งปี ภาษีปี 2,106.25 ÷ 9 = 234.02/เดือน', star: 3, exam: true },
+  { q: 'ปรับฐานเงินเดือนระหว่างปี (ต.ค. เป็นต้นไป) ต้องคำนวณเดือน ต.ค.–พ.ย. อย่างไร?', a: '(ภาษีปีฐานใหม่ − ภาษีที่ถูกหักสะสมแล้ว) ÷ จำนวนเดือนที่เหลือ', d: 'ตัวอย่าง 3: ภาษีปีใหม่ 39,425 − หักสะสม 9 เดือน 15,337.44 = 24,087.56 ÷ 3 = 8,029.18 ต่อเดือน (ธ.ค. เก็บเศษ 8,029.20) — ฐานปีใหม่คิดจากเงินเดือนจริงแต่ละช่วง (50,000×9)+(100,000×3)', star: 3, exam: true },
+  { q: 'ได้คอมมิชชั่นระหว่างปีหลายครั้ง หักภาษีเดือนที่มีคอมมิชชั่นอย่างไร?', a: 'ภาษีเงินเดือนปกติ + (ภาษีปีรวมคอมฯ สะสม − ภาษีปีก่อนรวมคอมฯ ก้อนนี้)', d: 'ตัวอย่าง 4: มี.ค. คอมฯ 100,000: 31,925−20,450 = 11,475 → หัก 13,179.16 · เม.ย. คอมฯ 30,000: 36,425−31,925 = 4,500 → หัก 6,204.16 — เทียบกับยอดสะสมก่อนหน้าเสมอ ไม่ใช่เทียบกับฐานเงินเดือนเปล่า', star: 3, exam: true },
+  { q: 'จ่ายค่านายหน้า 40(2) ให้ผู้ที่ไม่ใช่พนักงานประจำ ครั้งแรกของปี คำนวณอย่างไร?', a: 'ถือจำนวนที่จ่ายจริงเป็นเงินได้เสมือนทั้งปี (ไม่คูณ 12) หัก คชจ. 50% ไม่เกิน 100,000 หักลดหย่อน แล้วคำนวณขั้นบันได', d: 'ตัวอย่างนางรินรภัทร: ม.ค. 400,000 → สุทธิ 240,000 → ภาษีหัก 4,500 · จ่ายครั้งถัดไปรวมยอดสะสมแล้วเครดิตภาษีที่หักไว้แล้ว (ก.ย.: ภาษีปี 73,000−4,500 = 68,500) · ไม่มีลดหย่อนประกันสังคมเพราะไม่ใช่พนักงานประจำ', star: 3, exam: true },
+  { q: 'เงินได้จ่ายครั้งเดียวเพราะออกจากงาน มี 4 ประเภทอะไรบ้าง?', a: '1) คำนวณแบบบำเหน็จบำนาญข้าราชการ 2) เงินจากกองทุน (PVD/กบข.) 3) เงินชดเชยตามกฎหมายแรงงาน 4) เงินได้ครั้งเดียวที่คำนวณต่างจาก (1)', d: 'ประเภท (4) รวมถึงเงินก้อนแม้ลาออกสมัครใจ เงินบำเหน็จ Early Retire และค่าจ้างวันหยุดพักผ่อนที่ไม่ได้ใช้', star: 3, exam: false },
+  { q: 'ทำงานครบ 5 ปี กับไม่ครบ 5 ปี ต่างกันอย่างไรในการคำนวณเงินก้อนออกจากงาน?', a: 'ครบ 5 ปี: เลือกแยกคำนวณด้วยใบแนบ ภงด.90/91 ได้ / ไม่ครบ: ต้องรวมเป็น 40(1) แยกไม่ได้', d: 'สิทธิแยกคำนวณ (เสียภาษีน้อยกว่ามาก เพราะหัก 7,000×ปี + 50%) ให้เฉพาะผู้ทำงานครบ 5 ปี · การนับปี: เศษเกิน 183 วันปัดขึ้นเป็น 1 ปี', star: 3, exam: false },
+  { q: 'สูตรบำเหน็จ และบำนาญข้าราชการ คืออะไร?', a: 'บำเหน็จ = เงินเดือนสุดท้าย × ปีที่ทำงาน · บำนาญ = (เงินเดือนสุดท้าย × ปีที่ทำงาน) ÷ 50', d: 'เศษของปีเกิน 6 เดือนปัดเป็น 1 ปี — สูตรนี้เป็นเกณฑ์ของเงินก้อนประเภท (1)', star: 2, exam: false },
+  { q: 'เงิน 4 ส่วนของกองทุนสำรองเลี้ยงชีพ (PVD) ยกเว้นภาษีทั้งหมดเมื่อใด?', a: 'เมื่อเป็นสมาชิกกองทุนครบ 5 ปี และผู้มีเงินได้อายุครบ 55 ปี', d: '4 ส่วน = เงินสะสม + ผลประโยชน์เงินสะสม + เงินสมทบ + ผลประโยชน์เงินสมทบ · ไม่ครบ 5 ปี: ส่วน (2)(3)(4) รวมเป็น 40(1) แยกไม่ได้ · ครบ 5 ปีแต่อายุไม่ถึง 55: เลือกรวมหรือแยกคำนวณก็ได้', star: 3, exam: false },
+  { q: 'อายุงาน 10 ปี ได้ค่าชดเชยเลิกจ้างกี่วัน? และยกเว้นภาษีเท่าไร?', a: '300 วัน (10 ปีแต่ไม่ถึง 20 ปี) · ยกเว้นค่าจ้าง 400 วันสุดท้ายแต่ไม่เกิน 600,000 บาท', d: 'ตารางชดเชย: <120วัน=0, 120วัน-1ปี=30, 1-3ปี=90, 3-6ปี=180, 6-10ปี=240, 10-20ปี=300, 20ปี+=400 วัน · ส่วนยกเว้นภาษีใช้เพดาน 600,000 เสมอ', star: 3, exam: false },
+  { q: 'เงินก้อนประเภท (4) ถ้าเงินเดือน 12 เดือนสุดท้ายไม่เท่ากัน ใช้เพดานอะไรเทียบ?', a: 'เงินเดือนเฉลี่ย 12 เดือนสุดท้าย × 1.1 × จำนวนปีที่ทำงาน (เลือกค่าที่น้อยกว่าไปคำนวณ)', d: 'ถ้าเงินเดือน 12 เดือนสุดท้ายเท่ากัน ใช้ เงินเดือนสุดท้าย × ปีทำงาน · เทียบกับเงินที่ได้จริงแล้วเลือกจำนวนน้อยกว่า เช่น นายนักคิดได้พิเศษ 500,000 เทียบเพดาน 600,000 → ใช้ 500,000', star: 2, exam: true },
+  { q: 'สูตรหักค่าใช้จ่ายของเงินก้อนออกจากงาน (คำนวณแยก) คืออะไร?', a: 'ส่วนแรก 7,000 × ปีที่ทำงาน + ส่วนที่สอง (เงินก้อน − ส่วนแรก) × 50%', d: 'จากนั้นคำนวณภาษีขั้นบันได โดยจุดต่างสำคัญคือ เสีย 5% ตั้งแต่บาทแรก — 150,000 แรกไม่ได้รับยกเว้น', star: 3, exam: true },
+  { q: '[ตัวอย่างนายนักคิด] ฐานเงินได้ 1,600,000 ทำงาน 10 ปี — ภาษีที่ต้องหักเท่าไร?', a: '75,500 บาท', d: 'คชจ. = (7,000×10) + (1,600,000−70,000)×50% = 835,000 → เหลือ 765,000 → ภาษี: 300,000×5% + 200,000×10% + 250,000×15% + 15,000×20% = 15,000+20,000+37,500+3,000 = 75,500 (5% ตั้งแต่บาทแรก)', star: 3, exam: true },
+  { q: 'ดอกเบี้ยเงินฝากออมทรัพย์ธนาคารพาณิชย์ ยกเว้นภาษีเมื่อไม่เกินเท่าไร?', a: '20,000 บาท', d: 'ถ้าเกินถูกหัก 15% · ยกเว้นเพิ่มเติม: ออมทรัพย์ออมสิน/ธกส./สหกรณ์, ฝากประจำปลอดภาษี (24 เดือน ≤25,000/เดือน รวม ≤600,000), ฝากประจำ 1 ปีขึ้นไปดอกเบี้ยไม่เกิน 30,000 สำหรับผู้อายุ 55 ปีขึ้นไป', star: 2, exam: false },
+  { q: 'เงินปันผลหุ้นถูกหักกี่ %? กรณีใดยกเว้น? Capital gain ในตลาดหลักทรัพย์เสียภาษีไหม?', a: 'หัก 10% · ยกเว้นถ้ารับจากบริษัท BOI · Capital gain ในตลาดฯ ยกเว้นภาษี', d: 'เงินปันผล 40(4)(ข) หัก 10% เลือก Final Tax ได้ · ปันผลจากบริษัทที่ได้รับส่งเสริมการลงทุน (BOI) ยกเว้น · กำไรขายหลักทรัพย์ในตลาดหลักทรัพย์และกำไรขายคืนหน่วยลงทุนยกเว้น', star: 3, exam: false },
+  { q: 'ตั้งแต่ 20 ส.ค. 2562 เงินปันผลกองทุนรวมมีกติกาอย่างไร?', a: 'เป็นเงินได้ 40(4) — เลือก Final Tax หรือรวมยื่น ต้องเลือกทางเดียวกันทั้งปันผลหุ้นและปันผลกองทุน', d: 'แยกยื่นไม่ได้เพราะเป็นเงินได้ประเภทเดียวกัน ถ้ารวมยื่นต้องรวมทั้งหมด และปันผลกองทุนไม่มีเครดิตภาษี (ต่างจากปันผลหุ้น)', star: 2, exam: false },
+  { q: 'ค่าใช้จ่ายเหมาสำหรับเงินได้ 40(1)(2) หักได้เท่าไร?', a: '50% ของเงินได้ แต่ไม่เกิน 100,000 บาท', d: 'ใช้ในทุกตัวอย่างการคำนวณ ภงด.1 — เงินได้ 200,000 ขึ้นไปจะชนเพดาน 100,000 เสมอ', star: 3, exam: false },
+  { q: '[ปูพื้น] เงินได้พึงประเมิน 8 ประเภทตาม ม.40 มีอะไรบ้าง (เรียงลำดับ)?', a: 'จ้าง – ทำ – สิทธิ – ทุน – เช่า – วิชาชีพ – เหมา – อื่น', d: '40(1) จ้างแรงงาน · 40(2) รับทำงานให้ · 40(3) ค่าสิทธิ · 40(4) ดอกเบี้ย/ปันผล · 40(5) ค่าเช่า · 40(6) วิชาชีพอิสระ · 40(7) รับเหมา · 40(8) อื่น ๆ — เรียงจากความสัมพันธ์แน่นแฟ้นสุด (ลูกจ้าง) ไปถังรวม', star: 3, exam: false },
+  { q: '[ปูพื้น] เงินได้ 40(1) ต่างจาก 40(2) ตรงไหน? พนักงานขายประจำได้คอมมิชชั่นเป็นประเภทใด?', a: 'ดูความสัมพันธ์นายจ้าง-ลูกจ้าง: มี = 40(1), ไม่มี = 40(2) · พนักงานประจำได้คอมฯ = 40(1)', d: 'อย่าตัดสินจากชื่อเรียกเงิน — คอมมิชชั่นของลูกจ้างประจำคือ 40(1) แต่คอมมิชชั่นของนายหน้าอิสระ (เช่น นางรินรภัทร) คือ 40(2) และไม่มีลดหย่อนประกันสังคม', star: 3, exam: false },
+  { q: '[ปูพื้น] วิชาชีพอิสระตาม 40(6) มีกี่อาชีพ อะไรบ้าง?', a: '6 อาชีพ: โรคศิลปะ (หมอ) กฎหมาย วิศวกรรม สถาปัตยกรรม บัญชี ประณีตศิลปกรรม', d: 'ปิดรายการแค่ 6 อาชีพนี้เท่านั้น — ฟรีแลนซ์อื่น ๆ ที่ไม่เข้าข่ายมักเป็น 40(2) หรือ 40(8) · จำ: "หมอ-ความ-วิศวะ-สถาปนิก-บัญชี-ศิลป์" หัก 3%', star: 2, exam: false },
+  { q: '[ปูพื้น] บันไดอัตราภาษีบุคคลธรรมดา 4 ขั้นแรก คืออะไร?', a: '0-150,000 ยกเว้น · ถึง 300,000 = 5% · ถึง 500,000 = 10% · ถึง 750,000 = 15% (ต่อไป 20/25/30/35%)', d: 'ภาษีสะสมเต็มขั้นที่ควรจำ: ถึง 300k = 7,500 · ถึง 500k = 27,500 · ถึง 750k = 65,000 · ถึง 1M = 115,000 — ใช้คิดเร็วในห้องสอบ', star: 3, exam: false },
+  { q: '[ปูพื้น] เงินได้สุทธิ 360,500 บาท เสียภาษี 10% ทั้งก้อน = 36,050 ถูกหรือไม่?', a: 'ผิด — คิดแบบขั้นบันได (marginal) ได้ 13,550', d: '150,000 แรกยกเว้น + 150,000×5% (7,500) + 60,500×10% (6,050) = 13,550 — อัตราแต่ละขั้นใช้เฉพาะส่วนที่ล้นเข้าขั้นนั้น ไม่ใช่คูณทั้งก้อน', star: 3, exam: true },
+  { q: '[ปูพื้น] ทำไมกฎหมายให้ "ผู้จ่าย" ร่วมรับผิดเมื่อหักภาษีขาด ทั้งที่ภาษีเป็นของผู้รับ?', a: 'เพราะผู้จ่ายคือ "ตัวแทนเก็บภาษีของรัฐ" (deputized collector)', d: 'รัฐมอบอำนาจการจัดเก็บให้ผู้จ่าย หน้าที่ 4 ข้อ (ขอ-หัก-ออก-ยื่น) และบทลงโทษทั้งหมดจึง derive จากหลักตัวแทนนี้ — ตอบข้อสอบวิเคราะห์ได้โดยไม่ต้องท่องรายข้อ', star: 2, exam: false },
+];
+
+/* ============================================================
+   3. QUICK REFERENCE CARDS
+   ============================================================ */
+const quickSections = [
+  { divider: '🎯 สูตรตอบข้อสอบ 30 วินาที' },
+  { s: 'FLOW', t: 'กรอบคิดก่อนหักทุกครั้ง', b: 'ใครจ่าย? → จ่ายค่าอะไร (40(1)-(8))? → จ่ายให้ใคร (บุคคล/นิติ)? → อัตราเท่าไร → ยื่นแบบอะไร', type: 'flow' },
+  { s: 'แบบยื่น', t: 'จำชุด ภ.ง.ด.', b: '1-2-3 คือจ่ายให้บุคคลธรรมดา: 40(1)(2)→ภงด.1 · 40(3)(4)→ภงด.2 · 40(5)-(8)→ภงด.3 · จ่ายให้นิติบุคคล 40(2)-(8)→ภงด.53 อย่างเดียว', type: 'formula' },
+  { s: 'WHT เงินเดือน', t: 'สูตรหลัก ภงด.1', b: '(เสมือนทั้งปี − คชจ.50%≤100,000 − ลดหย่อน) → ภาษีขั้นบันได → ÷ คราวที่จ่าย · มีเงินได้เพิ่ม = คำนวณใหม่ แล้วหักส่วนต่างในเดือนนั้น · เดือน ธ.ค. เก็บเศษ', type: 'formula' },
+  { s: 'เงินก้อน', t: 'สูตรออกจากงาน (แยกคำนวณ)', b: 'คชจ. = 7,000×ปี + (ก้อน−ส่วนแรก)×50% → ขั้นบันไดแบบ 5% ตั้งแต่บาทแรก (ไม่มียกเว้น 150,000)', type: 'formula' },
+  { divider: '📊 อัตราหัก — ท่องเป็นกลุ่ม' },
+  { s: '5%', t: 'กลุ่มหัก 5%', b: 'ค่าเช่าทรัพย์สิน · เงินรางวัลประกวด/แข่งขัน/ชิงโชค · นักแสดงสาธารณะ', type: 'chunk' },
+  { s: '3%', t: 'กลุ่มหัก 3% (เยอะสุด)', b: 'วิชาชีพอิสระ · รับเหมา/จ้างทำของ · บริการอื่น ๆ · รางวัลส่วนลดส่งเสริมการขาย · นายหน้า+ลิขสิทธิ์ (นิติบุคคล)', type: 'chunk' },
+  { s: '1-2%', t: 'กลุ่มหัก 1% และ 2%', b: '1%: ขนส่งเอกชน · เช่าเรือเดินทะเล · ดอกเบี้ยจ่ายนิติบุคคล · เบี้ยประกันวินาศภัย · ราชการจ่าย — 2%: ค่าโฆษณาเท่านั้น', type: 'chunk' },
+  { s: '10-15%', t: 'กลุ่มอัตราสูง', b: 'เงินปันผล 10% (ทุกกรณี) · มูลนิธิ/สมาคมรับเงิน 10% · ดอกเบี้ยจ่ายบุคคลธรรมดา 15% · ผู้รับไม่อยู่ในไทย 40(2)-(6) 15%', type: 'chunk' },
+  { s: '<1%', t: 'สินค้าเกษตร (นิติบุคคล)', b: 'ยางแผ่น มันสำปะหลัง ปอ ข้าวโพด อ้อย เมล็ดกาแฟ ผลปาล์มน้ำมัน = 0.75% · ข้าว = 0.50% · ขายอสังหาฯ นิติบุคคล (ม.69 ตรี) = 1%', type: 'chunk' },
+  { s: 'จำสลับ!', t: 'ดอกเบี้ย: บุคคล vs นิติ', b: 'จ่ายดอกเบี้ยให้บุคคลธรรมดา 15% แต่จ่ายให้นิติบุคคลแค่ 1% — ข้อสอบชอบหลอกจุดนี้ · ปันผล 10% เท่ากันทั้งคู่', type: 'contrast' },
+  { s: 'ราชการจ่าย', t: 'เกณฑ์ขั้นต่ำต่างกัน', b: 'ราชการจ่ายให้บุคคลธรรมดา (40(5)-(8)): หัก 1% เมื่อจ่าย ≥10,000 บาท · จ่ายให้นิติบุคคล (ม.69 ทวิ): หัก 1% เมื่อจ่าย ≥500 บาท', type: 'contrast' },
+  { divider: '⏰ ตัวเลขหน้าที่และบทลงโทษ' },
+  { s: '7+8', t: 'กำหนดยื่นแบบ', b: 'นำส่งใน 7 วันนับแต่วันสิ้นเดือนที่จ่าย · ยื่นออนไลน์ต่อเวลาอีก 8 วัน', type: 'chunk' },
+  { s: '4 ฉบับ', t: 'หนังสือรับรองหัก ณ ที่จ่าย', b: 'ต้นฉบับ+สำเนาแรก → ผู้ถูกหัก (ขอคืน 1 เก็บ 1) · สำเนา 2-3 → ผู้หัก (แนบยื่น 1 เก็บ 1) · ออกทุกครั้งที่หัก', type: 'chunk' },
+  { s: 'โทษ', t: 'บันไดบทลงโทษ', b: 'ส่งช้า: เงินเพิ่ม 1.5%/เดือน (เศษเดือน = 1 เดือน) → ไม่ยื่น: ปรับ ≤2,000 → เจตนาเลี่ยง: คุก ≤1 ปี / ปรับ ≤200,000 · หักขาด: ร่วมรับผิดกับผู้มีเงินได้', type: 'contrast' },
+  { s: 'หน้าที่ 4', t: 'ผู้หักต้องทำ', b: 'ขอข้อมูล → หักทุกครั้ง → ออกหนังสือรับรอง → ยื่นแบบนำส่งใน 7 วัน (จำ: ขอ-หัก-ออก-ยื่น)', type: 'mnem' },
+  { divider: '🧮 เทคนิคคำนวณ ภงด.1' },
+  { s: 'เดือนจริง', t: 'เริ่มงานกลางปี', b: 'เสมือนทั้งปี = เงินเดือน × จำนวนเดือนที่ได้รับจริง (ไม่ใช่ 12) และหารด้วยจำนวนเดือนเดียวกัน เช่น เริ่ม เม.ย. → ×9 ÷9', type: 'flow' },
+  { s: 'ก้อนพิเศษ', t: 'OT/คอมมิชชั่น', b: 'ภาษีของเงินก้อนพิเศษ = ภาษีปี(รวมก้อนสะสม) − ภาษีปี(ก่อนก้อนนี้) แล้วหักทั้งจำนวนในเดือนที่จ่าย + ภาษีเงินเดือนปกติ', type: 'flow' },
+  { s: 'ปรับฐาน', t: 'ขึ้นเงินเดือนระหว่างปี', b: 'ฐานปีใหม่ตามจริงแต่ละช่วง → ภาษีปีใหม่ − หักสะสมแล้ว → ÷ เดือนที่เหลือ · เดือนสุดท้ายเก็บเศษเสมอ', type: 'flow' },
+  { s: '40(2)', t: 'นายหน้าไม่ประจำ', b: 'จ่ายครั้งแรก = ถือเป็นเงินได้ทั้งปี (ไม่คูณ 12) · ครั้งถัดไป = รวมสะสม คิดภาษีปีใหม่ หักเครดิตที่หักแล้ว · ไม่มีลดหย่อนประกันสังคม', type: 'flow' },
+  { divider: '💼 เงินก้อนออกจากงาน' },
+  { s: '5 ปี', t: 'เกณฑ์ทอง 5 ปี / 55 ปี', b: 'ทำงานครบ 5 ปี → แยกคำนวณได้ (ใบแนบ ภงด.90/91) · PVD ยกเว้นทั้ง 4 ส่วน เมื่อสมาชิกครบ 5 ปี + อายุครบ 55 · นับปี: เกิน 183 วันปัดขึ้น', type: 'mnem' },
+  { s: '4 ประเภท', t: 'เงินได้จ่ายครั้งเดียว', b: '(1) แบบบำเหน็จบำนาญข้าราชการ (2) เงินกองทุน PVD/กบข. (3) ชดเชยตามกฎหมายแรงงาน (4) วิธีคำนวณอื่น เช่น Early Retire, วันหยุดที่ไม่ได้ใช้', type: 'chunk' },
+  { s: 'ชดเชย', t: 'ตารางค่าชดเชย (จำเป็นคู่)', b: '120วัน-1ปี→30 · 1-3ปี→90 · 3-6ปี→180 · 6-10ปี→240 · 10-20ปี→300 · 20ปี+→400 วัน (คูณ 3 สลับ ×2: 30-90, 90-180... จำ 30/90/180/240/300/400)', type: 'mnem' },
+  { s: '600K', t: 'ยกเว้นค่าชดเชย', b: 'ค่าชดเชยเลิกจ้างยกเว้นภาษี = ค่าจ้าง 400 วันสุดท้าย แต่ไม่เกิน 600,000 บาท (เกินจากนั้นเข้าฐานภาษี)', type: 'formula' },
+  { s: '×1.1', t: 'เพดานเงินก้อนประเภท (4)', b: '12 เดือนสุดท้ายเงินเดือนเท่ากัน: สุดท้าย×ปี · ไม่เท่ากัน: เฉลี่ย 12 เดือน×1.1×ปี · เทียบของจริง เลือกน้อยกว่า', type: 'formula' },
+  { s: 'บำเหน็จ', t: 'สูตรข้าราชการ', b: 'บำเหน็จ = เดือนสุดท้าย×ปี · บำนาญ = (เดือนสุดท้าย×ปี)÷50 · เศษเกิน 6 เดือนปัด 1 ปี', type: 'formula' },
+  { divider: '💰 ดอกเบี้ย & เงินปันผล (ภงด.2)' },
+  { s: 'ยกเว้นดอกเบี้ย', t: 'ดอกเบี้ยที่ไม่ถูกหัก 15%', b: 'ออมสิน/ธกส./สหกรณ์ (ออมทรัพย์) · เผื่อเรียก ≤20,000 · ฝากประจำปลอดภาษี (24 ด. ≤25,000/ด. รวม ≤600,000) · ฝากประจำ ≥1 ปี ≤30,000 + อายุ ≥55', type: 'chunk' },
+  { s: 'ปันผล', t: 'หุ้น vs กองทุน', b: 'ทั้งคู่หัก 10% เลือก Final Tax ได้ · หุ้น BOI ยกเว้น · Capital gain ตลาดฯ + ขายคืนหน่วยลงทุน ยกเว้น · ตั้งแต่ 20 ส.ค. 62 ต้องเลือกทางเดียวกันทั้งสอง และปันผลกองทุนไม่มีเครดิตภาษี', type: 'contrast' },
+  { s: 'Final Tax', t: '4 กลุ่มเลือกจบได้', b: 'ปันผล · ดอกเบี้ย · ขายอสังหาฯ · เงินก้อนออกจากงาน (จำ: "ปัน-ดอก-ขาย-ออก")', type: 'mnem' },
+  { divider: '🧱 ปูพื้นต้องจำ' },
+  { s: 'ม.40', t: '8 ประเภทเงินได้', b: 'จ้าง – ทำ – สิทธิ – ทุน – เช่า – วิชาชีพ – เหมา – อื่น (40(1)→40(8) เรียงจากสัมพันธ์แน่นแฟ้น → ถังรวม)', type: 'mnem' },
+  { s: 'บันได', t: 'อัตราก้าวหน้า + ภาษีสะสมเต็มขั้น', b: '150k ยกเว้น → 5% → 10% → 15% → 20% → 25% → 30% → 35% · สะสม: ถึง 300k=7,500 · 500k=27,500 · 750k=65,000 · 1M=115,000', type: 'chunk' },
+  { s: '6 อาชีพ', t: 'วิชาชีพอิสระ 40(6) หัก 3%', b: 'หมอ (โรคศิลปะ) - ความ (กฎหมาย) - วิศวะ - สถาปนิก - บัญชี - ประณีตศิลป์ — ปิดรายการแค่ 6 อาชีพนี้', type: 'mnem' },
+  { s: '1↔2', t: '40(1) vs 40(2) ดูที่ความสัมพันธ์', b: 'มีนายจ้าง-ลูกจ้าง = 40(1) · อิสระ/นายหน้า/เบี้ยประชุม = 40(2) · คอมมิชชั่นของพนักงานประจำ = 40(1) เสมอ · คชจ. 50% ≤100,000 รวมกันทั้งคู่', type: 'contrast' },
+  { s: 'Marginal', t: 'ขั้นบันได ไม่ใช่คูณทั้งก้อน', b: 'อัตราแต่ละขั้นใช้เฉพาะส่วนที่ล้นเข้าขั้นนั้น เช่น สุทธิ 360,500 → 13,550 (ไม่ใช่ 36,050)', type: 'contrast' },
+];
+
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+const Stars = ({ n }) => <span>{'⭐'.repeat(n)}</span>;
+
+const SectionCards = ({ data }) => (
+  <div>
+    {data.map(sec => (
+      <Card key={sec.key} style={{ marginBottom: 20, borderColor: C.border, background: C.white }}
+        title={<Space wrap><Text strong style={{ fontSize: 17, color: C.text }}>{sec.title}</Text>
+          {sec.tags.map(([label, color], i) => <Tag key={i} color={color}>{label}</Tag>)}</Space>}>
+        {sec.content()}
+      </Card>
+    ))}
+  </div>
+);
+
+const FoundationTab = () => <SectionCards data={foundationData} />;
+const SummaryTab = () => <SectionCards data={summaryData} />;
+
+const FlashcardTab = () => {
+  const [mode, setMode] = useState('all');
+  const [order, setOrder] = useState(flashcards.map((_, i) => i));
+  const [pos, setPos] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [score, setScore] = useState({ ok: 0, no: 0 });
+
+  const filteredIdx = order.filter(i => {
+    if (mode === 'exam') return flashcards[i].exam;
+    if (mode === 'star3') return flashcards[i].star === 3;
+    return true;
+  });
+  const total = filteredIdx.length;
+  const safePos = total === 0 ? 0 : Math.min(pos, total - 1);
+  const card = total > 0 ? flashcards[filteredIdx[safePos]] : null;
+
+  const shuffle = () => {
+    const arr = [...flashcards.keys()];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    setOrder(arr); setPos(0); setFlipped(false); setScore({ ok: 0, no: 0 });
+  };
+  const go = (d) => { setFlipped(false); setPos(p => (p + d + total) % total); };
+  const mark = (ok) => {
+    setScore(s => ok ? { ...s, ok: s.ok + 1 } : { ...s, no: s.no + 1 });
+    go(1);
+  };
+  const switchMode = (m) => { setMode(m); setPos(0); setFlipped(false); setScore({ ok: 0, no: 0 }); };
+
+  return (
+    <div>
+      <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ marginBottom: 16 }}>
+        <Space wrap>
+          <Button type={mode === 'all' ? 'primary' : 'default'} onClick={() => switchMode('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={mode === 'exam' ? 'primary' : 'default'} onClick={() => switchMode('exam')}>🧮 โจทย์คำนวณ ({flashcards.filter(f => f.exam).length})</Button>
+          <Button type={mode === 'star3' ? 'primary' : 'default'} onClick={() => switchMode('star3')}>⭐⭐⭐ สำคัญสุด ({flashcards.filter(f => f.star === 3).length})</Button>
+        </Space>
+        <Button onClick={shuffle}>🔀 สับไพ่</Button>
+      </Flex>
+      <Row gutter={12} style={{ marginBottom: 16 }}>
+        <Col span={8}><Card size="small" style={{ background: C.surface3, borderColor: C.border, textAlign: 'center' }}><Statistic title="การ์ดที่" value={total === 0 ? 0 : safePos + 1} suffix={`/ ${total}`} valueStyle={{ color: C.text, fontSize: 20 }} /></Card></Col>
+        <Col span={8}><Card size="small" style={{ background: C.greenBg, borderColor: C.green, textAlign: 'center' }}><Statistic title="ตอบถูก" value={score.ok} valueStyle={{ color: C.green, fontSize: 20 }} /></Card></Col>
+        <Col span={8}><Card size="small" style={{ background: C.redBg, borderColor: C.red, textAlign: 'center' }}><Statistic title="ยังไม่ได้" value={score.no} valueStyle={{ color: C.red, fontSize: 20 }} /></Card></Col>
+      </Row>
+      {card ? (
+        <div>
+          <div className="fc-perspective" onClick={() => setFlipped(f => !f)}>
+            <div className={'fc-card' + (flipped ? ' flipped' : '')}>
+              <div className="fc-face" style={{ background: C.white, border: `2px solid ${C.borderDark}`, boxShadow: '0 4px 14px rgba(122,101,72,0.12)' }}>
+                <Space direction="vertical" align="center" style={{ width: '100%' }}>
+                  <Space>
+                    <Stars n={card.star} />
+                    {card.exam && <Tag color="volcano">🧮 โจทย์คำนวณ</Tag>}
+                  </Space>
+                  <Text strong style={{ fontSize: 19, textAlign: 'center', color: C.text }}>{card.q}</Text>
+                  <Text type="secondary" style={{ marginTop: 12 }}>👆 แตะการ์ดเพื่อดูเฉลย</Text>
+                </Space>
+              </div>
+              <div className="fc-face fc-back" style={{ background: C.surface3, border: `2px solid ${C.gold}`, boxShadow: '0 4px 14px rgba(122,101,72,0.12)' }}>
+                <Space direction="vertical" align="center" style={{ width: '100%' }}>
+                  <Tag color="gold" style={{ fontSize: 13 }}>คำตอบ</Tag>
+                  <Text strong style={{ fontSize: 18, textAlign: 'center', color: C.amberDark }}>{card.a}</Text>
+                  <Divider style={{ margin: '10px 0', borderColor: C.borderDark }} />
+                  <Text style={{ fontSize: 14, textAlign: 'center', color: C.text2 }}>{card.d}</Text>
+                </Space>
+              </div>
+            </div>
+          </div>
+          <Flex justify="center" gap={12} style={{ marginTop: 20 }} wrap="wrap">
+            <Button onClick={() => go(-1)}>← ก่อนหน้า</Button>
+            <Button danger onClick={() => mark(false)}>✗ ยังไม่ได้</Button>
+            <Button type="primary" style={{ background: C.green }} onClick={() => mark(true)}>✓ ตอบได้</Button>
+            <Button onClick={() => go(1)}>ถัดไป →</Button>
+          </Flex>
+        </div>
+      ) : <Alert type="warning" message="ไม่มีการ์ดในโหมดนี้" />}
+    </div>
+  );
+};
+
+const typeStyle = {
+  mnem: { color: C.purple, bg: C.purpleBg, label: '🧠 ช่วยจำ' },
+  flow: { color: C.cyan, bg: C.cyanBg, label: '🔄 ขั้นตอน' },
+  contrast: { color: C.red, bg: C.redBg, label: '⚖️ เทียบ/ระวัง' },
+  chunk: { color: C.blue, bg: C.blueBg, label: '📦 จำเป็นกลุ่ม' },
+  formula: { color: C.amberDark, bg: '#F3EBDCFF', label: '🧮 สูตร' },
+};
+
+const QuickTab = () => (
+  <div>
+    {quickSections.map((item, idx) => {
+      if (item.divider) {
+        return <Divider key={idx} orientation="left" style={{ borderColor: C.borderDark }}>
+          <Text strong style={{ fontSize: 16, color: C.amberDark }}>{item.divider}</Text>
+        </Divider>;
+      }
+      const st = typeStyle[item.type];
+      return (
+        <Card key={idx} size="small" className="qc"
+          style={{ marginBottom: 10, background: st.bg, borderColor: st.color, borderLeftWidth: 5, borderLeftColor: st.color }}>
+          <Flex align="flex-start" gap={12} wrap="wrap">
+            <Tag color="default" style={{ background: C.white, borderColor: st.color, color: st.color, fontWeight: 700, minWidth: 64, textAlign: 'center' }}>{item.s}</Tag>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <Space size={6} wrap>
+                <Text strong style={{ color: C.text }}>{item.t}</Text>
+                <Text style={{ fontSize: 12, color: st.color }}>{st.label}</Text>
+              </Space>
+              <div><Text style={{ color: C.text2 }}>{item.b}</Text></div>
+            </div>
+          </Flex>
+        </Card>
+      );
+    })}
+  </div>
+);
+
+/* Print-friendly view: all three tabs flattened into one document.
+   Hidden on screen (.print-only), shown only when printing / saving as PDF. */
+const PrintView = () => (
+  <div className="print-only" style={{ maxWidth: 900, margin: '0 auto', padding: 16, background: '#fff' }}>
+    <div style={{ textAlign: 'center', marginBottom: 20 }}>
+      <Title level={2} style={{ color: C.amberDark, marginBottom: 4 }}>GA513 การภาษีอากร — ภาษีเงินได้หัก ณ ที่จ่าย (Withholding Tax)</Title>
+      <Text type="secondary">ชีทติวสอบฉบับพิมพ์ · สรุปจากเอกสารประกอบการสอน ดร.จิรารัช พิพัฒน์นราพงศ์ · UTCC บัญชีมหาบัณฑิต</Text>
+    </div>
+    <Title level={3} className="pv-section-title" style={{ color: C.amberDark, borderBottom: `3px solid ${C.gold}`, paddingBottom: 6 }}>ส่วนที่ 1 — ปูพื้น</Title>
+    {foundationData.map(sec => (
+      <div key={sec.key} style={{ marginBottom: 20 }}>
+        <Title level={4} className="pv-section-title" style={{ color: C.text, borderBottom: `1px solid ${C.borderDark}`, paddingBottom: 4 }}>{sec.title}</Title>
+        {sec.content()}
+      </div>
+    ))}
+    <Title level={3} className="pv-section-title pv-page-start" style={{ color: C.amberDark, borderBottom: `3px solid ${C.gold}`, paddingBottom: 6 }}>ส่วนที่ 2 — สรุปเนื้อหา</Title>
+    {summaryData.map(sec => (
+      <div key={sec.key} style={{ marginBottom: 20 }}>
+        <Title level={4} className="pv-section-title" style={{ color: C.text, borderBottom: `1px solid ${C.borderDark}`, paddingBottom: 4 }}>{sec.title}</Title>
+        {sec.content()}
+      </div>
+    ))}
+    <Title level={3} className="pv-section-title pv-page-start" style={{ color: C.amberDark, borderBottom: `3px solid ${C.gold}`, paddingBottom: 6 }}>ส่วนที่ 3 — Flashcard {flashcards.length} ข้อ (ถาม–ตอบ)</Title>
+    {flashcards.map((f, i) => (
+      <div key={i} className="no-break" style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 12px', marginBottom: 8 }}>
+        <div>
+          <Text strong>{i + 1}. {f.q}</Text>
+          <Text> {'⭐'.repeat(f.star)}</Text>
+          {f.exam && <Tag color="volcano" style={{ marginLeft: 6 }}>🧮 โจทย์คำนวณ</Tag>}
+        </div>
+        <div><Text strong style={{ color: C.amberDark }}>ตอบ: {f.a}</Text></div>
+        <div><Text style={{ fontSize: 13, color: C.text2 }}>{f.d}</Text></div>
+      </div>
+    ))}
+    <Title level={3} className="pv-section-title pv-page-start" style={{ color: C.amberDark, borderBottom: `3px solid ${C.gold}`, paddingBottom: 6 }}>ส่วนที่ 4 — การ์ดจำด่วน</Title>
+    {quickSections.map((item, idx) => {
+      if (item.divider) {
+        return <Title key={idx} level={4} className="pv-divider" style={{ color: C.amberDark, marginTop: 16 }}>{item.divider}</Title>;
+      }
+      const st = typeStyle[item.type];
+      return (
+        <div key={idx} className="no-break" style={{ border: `1px solid ${C.border}`, borderLeft: `4px solid ${st.color}`, borderRadius: 8, padding: '6px 12px', marginBottom: 6 }}>
+          <Text strong>[{item.s}] {item.t}</Text>
+          <Text style={{ fontSize: 12, color: st.color }}> {st.label}</Text>
+          <div><Text style={{ fontSize: 13, color: C.text2 }}>{item.b}</Text></div>
+        </div>
+      );
+    })}
+    <div style={{ textAlign: 'center', marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 8 }}>
+      <Text type="secondary" style={{ fontSize: 12 }}>GA513 ติวสอบ ภาษีเงินได้หัก ณ ที่จ่าย · โชคดีในการสอบ! 🍀</Text>
+    </div>
+  </div>
+);
+
+const App = () => (
+  <ConfigProvider theme={{
+    algorithm: theme.defaultAlgorithm,
+    token: {
+      colorPrimary: C.gold, colorBgBase: C.bg, colorTextBase: C.text,
+      colorBgContainer: C.white, colorBorder: C.border, colorBorderSecondary: C.border,
+      borderRadius: 10, fontFamily: "'Noto Sans Thai', sans-serif", fontSize: 15,
+    },
+  }}>
+    <Layout className="screen-only" style={{ minHeight: '100vh', background: C.bg }}>
+      <Layout.Content style={{ maxWidth: 900, width: '100%', margin: '0 auto', padding: '28px 16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <Title level={2} style={{ color: C.amberDark, marginBottom: 4 }}>📚 GA513 การภาษีอากร</Title>
+          <Title level={4} style={{ color: C.text2, marginTop: 0, fontWeight: 500 }}>ภาษีเงินได้หัก ณ ที่จ่าย (Withholding Tax)</Title>
+          <Text type="secondary">สรุปจากเอกสารประกอบการสอน ดร.จิรารัช พิพัฒน์นราพงศ์ · UTCC บัญชีมหาบัณฑิต · มิ.ย.–ก.ค. 2569</Text>
+          <div style={{ marginTop: 12 }}>
+            <Button onClick={() => window.print()}>🖨️ พิมพ์ / บันทึกเป็น PDF</Button>
+            <div><Text type="secondary" style={{ fontSize: 12 }}>ฉบับพิมพ์รวมเนื้อหาทั้ง 4 แท็บ (ปูพื้น + สรุป + ถาม-ตอบ + การ์ดจำด่วน) พอดีกระดาษ A4</Text></div>
+          </div>
+        </div>
+        <Tabs centered type="card" size="large" style={{ marginTop: 16 }}
+          items={[
+            { key: 'foundation', label: '🧱 ปูพื้น', children: <FoundationTab /> },
+            { key: 'summary', label: '📖 สรุปเนื้อหา', children: <SummaryTab /> },
+            { key: 'flash', label: '🃏 Flashcard', children: <FlashcardTab /> },
+            { key: 'quick', label: '⚡ การ์ดจำด่วน', children: <QuickTab /> },
+          ]} />
+        <div style={{ textAlign: 'center', marginTop: 32, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+          <Text type="secondary" style={{ fontSize: 13 }}>สร้างจากเอกสารประกอบการสอน GA513 (24 หน้า) · ใช้คู่กับรูป JPEG ทั้ง 24 หน้าในโฟลเดอร์ GA513-jpeg · โชคดีในการสอบ! 🍀</Text>
+        </div>
+      </Layout.Content>
+    </Layout>
+    <PrintView />
+  </ConfigProvider>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
