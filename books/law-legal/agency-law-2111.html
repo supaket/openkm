@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตัวแทน–นายหน้า LAW2011/2111 · ห้องเรียนแบบ Harvard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#F5F0E8;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#3D3229;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#DDD3C1; color:#3D3229; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#EDE8DF; }
+  ::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#A8906C; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  /* Flip card */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  /* Quick card hover */
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(120,100,70,.18); }
+
+  /* Reveal animation */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  /* Diagram animations */
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .flow-dot { animation:moveDot 2.4s linear infinite; }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+
+  /* Token travelling along a path handled in JS via offset */
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#7A5C36; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(120,100,70,.16); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(168,144,108,.35);} 50%{ box-shadow:0 0 0 8px rgba(168,144,108,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress, Steps,
+        Collapse, Switch, Select, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE ============ */
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  amber:'#B5986A', amberDark:'#7A6548',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62',
+  white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.amber, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+const Sec = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.goldDark, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap'}}>ม.{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='gold', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    purple:[C.purple,C.purpleBg], cyan:[C.cyan,C.cyanBg], gold:[C.goldDark,C.surface3]
+  };
+  const [cc,bb] = map[tone]||map.gold;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+// A node = rounded rect with a title + subtitle
+function DiaNode({x, y, w=150, h=62, title, sub, color, active, onClick}) {
+  return (
+    <g style={{cursor:onClick?'pointer':'default'}} onClick={onClick} className={active?'node-pulse':''}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="16"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11.5"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+// An edge with optional animated travelling token
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.18 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+// The core Principal–Agent–ThirdParty triangle, with 3 comparison modes
+function AgencyTriangle() {
+  const modes = {
+    agent: {
+      label:'ตัวแทนธรรมดา', color:C.blue,
+      desc:'ตัวแทนทำนิติกรรม "ในนามของตัวการ" → ผลของสัญญาตกที่ตัวการกับบุคคลภายนอก "โดยตรง" ตัวแทนไม่ผูกพันเป็นการส่วนตัว',
+      bindPT:true, bindAT:false, actLabel:'ทำการในนามตัวการ (ม.820)'
+    },
+    komma: {
+      label:'ตัวแทนค้าต่าง', color:C.purple,
+      desc:'ตัวแทนค้าต่างทำการ "ในนามของตนเอง" แต่เพื่อประโยชน์ตัวการ → ตัวแทนค้าต่างผูกพันกับบุคคลภายนอกเอง (ม.837) บุคคลภายนอกไม่รู้จักตัวการ',
+      bindPT:false, bindAT:true, actLabel:'ทำการในนามตนเอง (ม.833)'
+    },
+    broker: {
+      label:'นายหน้า', color:C.green,
+      desc:'นายหน้าเป็นเพียง "คนชี้ช่อง/จัดการให้ได้ทำสัญญา" ไม่ได้เป็นคู่สัญญาเลย เมื่อคู่สัญญาตกลงกันสำเร็จเพราะผลงานนายหน้า → นายหน้าได้บำเหน็จ (ม.845)',
+      bindPT:true, bindAT:false, broker:true, actLabel:'ชี้ช่องให้ 2 ฝ่ายมาเจอกัน (ม.845)'
+    }
+  };
+  const [m, setM] = useState('agent');
+  const M = modes[m];
+  // node coords
+  const P = {x:130, y:90}, A = {x:530, y:90}, T = {x:330, y:290};
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="large"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 660 350" style={{width:'100%', height:'auto', maxHeight:400}}>
+          {/* internal relationship P<->A */}
+          <DiaEdge id="pa" d={`M ${P.x+50} ${P.y+18} Q 330 30 ${A.x-60} ${A.y+18}`} color={C.gold}
+            label={M.broker?'จ้างชี้ช่อง':'สัญญาตัวแทน / มอบอำนาจ'} labelX={330} labelY={38} dashed animate dur={3}
+            dim={false} />
+          {/* Agent -> Third party (the act) */}
+          <DiaEdge id="at" d={`M ${A.x-30} ${A.y+40} L ${T.x+70} ${T.y-40}`} color={M.color}
+            label={M.actLabel} labelX={480} labelY={215} animate dur={2.4} width={3}
+            dim={M.broker} />
+          {/* Binding line: who is bound to third party */}
+          {M.bindPT &&
+            <DiaEdge id="pt" d={`M ${P.x+8} ${P.y+42} L ${T.x-70} ${T.y-38}`} color={C.red}
+              label="ผูกพันโดยตรง" labelX={175} labelY={215} animate dur={2.2} width={4} />}
+          {M.bindAT &&
+            <DiaEdge id="atb" d={`M ${A.x-8} ${A.y+42} L ${T.x+82} ${T.y-30}`} color={C.red}
+              label="ผูกพันกันเอง" labelX={505} labelY={235} animate dur={2.2} width={4} />}
+          {M.broker &&
+            <DiaEdge id="brk" d={`M ${P.x+8} ${P.y+44} L ${A.x-8} ${A.y+44}`} color={C.red}
+              label="ทำสัญญากันเอง 2 ฝ่าย" labelX={330} labelY={92} animate dur={2.6} width={4} />}
+
+          <DiaNode {...P} title="ตัวการ" sub={M.broker?'ผู้ว่าจ้าง':'Principal'} color={C.blue} active />
+          <DiaNode {...A} title={M.broker?'นายหน้า':(m==='komma'?'ตัวแทนค้าต่าง':'ตัวแทน')} sub={M.broker?'Broker':'Agent'} color={M.color} active />
+          <DiaNode {...T} title="บุคคลภายนอก" sub="Third Party" color={C.cyan} active />
+        </svg>
+      </div>
+      <Box tone={m==='broker'?'green':(m==='komma'?'purple':'blue')} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        {M.desc}
+      </Box>
+    </div>
+  );
+}
+
+// Money / liability flow strip — a horizontal animated pipeline of steps
+function FlowStrip({steps, color=C.gold}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['ตัวการ', 'Principal', 'คนที่ "มอบหมาย" ให้คนอื่นไปทำแทน — เจ้าของงานตัวจริง', C.blue],
+    ['ตัวแทน', 'Agent', 'คนที่ "รับไปทำแทน" ตัวการ ในนามของตัวการ', C.gold],
+    ['บุคคลภายนอก', 'Third Party', 'คนที่มาทำสัญญาด้วย เช่น คนขาย/คนซื้อ', C.cyan],
+    ['ตัวแทนค้าต่าง', 'Commission Agent', 'ตัวแทนที่ทำการซื้อขาย "ในนามตนเอง" แต่เพื่อตัวการ', C.purple],
+    ['นายหน้า', 'Broker', 'คนกลางที่ "ชี้ช่อง" ให้ 2 ฝ่ายมาทำสัญญากัน แล้วรับบำเหน็จ', C.green],
+    ['บำเหน็จ', 'Remuneration', 'ค่าตอบแทนของตัวแทน/นายหน้า', C.amberDark],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>วิชานี้ว่าด้วยเรื่องเดียว: <strong>"เมื่อเราให้คนอื่นไปทำธุระแทนเรา ผลทางกฎหมายจะตกที่ใคร?"</strong> ทุกมาตราในเล่มนี้ตอบคำถามนี้จากมุมต่าง ๆ ค่อย ๆ อ่านตามลำดับด้านล่างนะ</span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>🍜 นึกภาพง่าย ๆ ด้วยชีวิตจริง</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          สมมติคุณอยากได้ก๋วยเตี๋ยว แต่ไม่อยากไปเอง เลยฝากเงินให้ <strong>เพื่อน</strong> ไปซื้อให้
+          — คุณคือ <Pill color={C.blue} bg={C.blueBg}>ตัวการ</Pill>
+          เพื่อนคือ <Pill color={C.gold} bg={C.surface3}>ตัวแทน</Pill>
+          ร้านก๋วยเตี๋ยวคือ <Pill color={C.cyan} bg={C.cyanBg}>บุคคลภายนอก</Pill>.
+          เพื่อนบอกร้านว่า "ซื้อให้เพื่อนนะ" (ในนามคุณ) → ของและภาระตกที่คุณ ไม่ใช่เพื่อน. นี่คือหัวใจของ "ตัวแทน" ทั้งเล่ม
+        </Paragraph>
+        <FlowStrip color={C.gold} steps={[
+          {icon:'🙋', t:'ตัวการมอบหมาย', bg:C.blueBg},
+          {icon:'🏃', t:'ตัวแทนไปทำแทน', bg:C.surface3},
+          {icon:'🤝', t:'ทำสัญญากับร้าน', bg:C.cyanBg},
+          {icon:'📦', t:'ผลตกที่ตัวการ', bg:C.redBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: ผลของสัญญาตกที่ใคร?</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับโหมดเพื่อดูว่า "เส้นสีแดง" (ใครผูกพันกับบุคคลภายนอก) ย้ายไปที่ใคร — นี่คือจุดตายของข้อสอบ</Paragraph>
+      <AgencyTriangle/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 6 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                <span style={{fontWeight:700, fontSize:16.5, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚖️ 3 ตัวละครที่คนสับสนที่สุด (ต้องแยกให้ออก!)</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'', dataIndex:'k', width:130, render:t=><strong style={{color:C.goldDark}}>{t}</strong>},
+          {title:<span style={{color:C.blue}}>ตัวแทน</span>, dataIndex:'agent'},
+          {title:<span style={{color:C.purple}}>ตัวแทนค้าต่าง</span>, dataIndex:'komma'},
+          {title:<span style={{color:C.green}}>นายหน้า</span>, dataIndex:'broker'},
+        ]}
+        dataSource={[
+          {key:1, k:'ทำในนามใคร', agent:'นามตัวการ', komma:'นามตนเอง', broker:'ไม่ทำสัญญาเอง'},
+          {key:2, k:'เป็นคู่สัญญาไหม', agent:'ไม่เป็น (ตัวการเป็น)', komma:'เป็นเอง', broker:'ไม่เป็น'},
+          {key:3, k:'ใครผูกพันบุคคลภายนอก', agent:'ตัวการ', komma:'ตัวแทนค้าต่าง', broker:'คู่สัญญา 2 ฝ่าย'},
+          {key:4, k:'มาตราหลัก', agent:'820, 797', komma:'833, 837', broker:'845'},
+          {key:5, k:'ได้บำเหน็จเมื่อ', agent:'ตามสัญญา/ปริยาย', komma:'ทำสำเร็จ (834)', broker:'สัญญาสำเร็จเพราะผลงานตน'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        ถ้าโจทย์บอกว่าคนกลาง "ทำในนามตนเอง" → คือ <strong>ตัวแทนค้าต่าง</strong> (ม.837/838) ไม่ใช่ตัวแทนธรรมดา.
+        ถ้าคนกลางแค่ "แนะนำ/พามาเจอกัน" โดยไม่มีสัญญาจ้างเป็นนายหน้ามาก่อน → <strong>ไม่มีสิทธิได้บำเหน็จ</strong> (ม.845)
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+// reusable "section rule" row
+const SRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Sec>{n}</Sec>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+const lessonModules = [
+  {
+    key:'l1', star:2, icon:'📜', title:'สัญญาตัวแทนคืออะไร & "แบบ" ของการตั้งตัวแทน',
+    chips:['797','798','799'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="797">สัญญาตัวแทน = สัญญาที่ให้ "ตัวแทน" มีอำนาจทำการแทน "ตัวการ" — ความเป็นตัวแทนตั้งได้ทั้ง <strong>โดยชัดแจ้ง</strong> หรือ <strong>โดยปริยาย</strong></SRule>
+          <SRule n="799">ตัวการใช้ <strong>ผู้ไร้ความสามารถ</strong> เป็นตัวแทน ตัวการก็ยังต้อง <strong>ผูกพัน</strong> ในกิจการที่ตัวแทนทำ</SRule>
+        </Box>
+        <Box tone="red" title="จุดออกสอบ — แบบของการตั้งตัวแทน (ม.798)" icon="🎯">
+          กิจการใดที่กฎหมายบังคับให้ <strong>ทำเป็นหนังสือ</strong> การตั้งตัวแทนก็ต้องทำเป็นหนังสือด้วย และถ้ากิจการนั้นต้อง <strong>มีหลักฐานเป็นหนังสือ</strong> การตั้งตัวแทนก็ต้องมีหลักฐานเป็นหนังสือเช่นกัน<br/>
+          <span style={{color:C.red}}>เชื่อมกับ ม.456:</span> ซื้อขาย/จะซื้อจะขาย "อสังหาริมทรัพย์" ต้องมีหลักฐานเป็นหนังสือ ฯลฯ → ดังนั้นการตั้งตัวแทนไปทำสัญญาซื้อขายที่ดินก็ต้องทำเป็นหนังสือ มิฉะนั้นสัญญาตัวแทนไม่สมบูรณ์
+        </Box>
+        <Alert type="warning" showIcon style={{background:C.surface3, border:`1px solid ${C.amber}55`}}
+          message={<span>ตัวอย่างข้อสอบ 2/67 ข้อ 2: มอบให้ขายที่ดินโดย "เขียนชื่อ+พิมพ์ลายมือแทน" — สัญญาตัวแทนตามแบบไม่เกิด แต่ต้องพิจารณาต่อว่าเข้า <strong>ตัวแทนเชิด ม.821</strong> หรือไม่</span>} />
+      </div>
+    )
+  },
+  {
+    key:'l2', star:2, icon:'🧭', title:'ขอบอำนาจตัวแทน — เฉพาะการ / ทั่วไป / ฉุกเฉิน',
+    chips:['800','801','802','806'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="อำนาจแคบ vs กว้าง" icon="🧭">
+          <SRule n="800">มอบอำนาจ <strong>เฉพาะการ</strong> → ทำได้เท่าที่ "จำเป็น" เพื่อให้กิจที่มอบหมายสำเร็จ</SRule>
+          <SRule n="801">มอบอำนาจ <strong>ทั่วไป</strong> → ทำกิจการจัดการแทนได้ทุกอย่าง <strong>เว้น 6 เรื่อง</strong>ที่ทำไม่ได้</SRule>
+        </Box>
+        <Box tone="purple" title="ท่องจำ 6 ข้อที่ตัวแทนทั่วไปทำไม่ได้ (ม.801 ว.2)" icon="🔒">
+          <b>"ขาย–เช่า–ให้–ประนีฯ–ฟ้อง–อนุญาโต"</b><br/>
+          (1) ขาย/จำนองอสังหาฯ (2) ให้เช่าอสังหาฯ เกิน 3 ปี (3) ให้ (4) ประนีประนอมยอมความ (5) ยื่นฟ้องต่อศาล (6) มอบข้อพิพาทให้อนุญาโตตุลาการ
+        </Box>
+        <Box tone="green" title="เหตุฉุกเฉิน & ตัวการไม่เปิดเผยชื่อ" icon="⚡">
+          <SRule n="802">เหตุ <strong>ฉุกเฉิน</strong> เพื่อป้องกันตัวการเสียหาย → สันนิษฐานว่าตัวแทนมีอำนาจทำอย่าง "วิญญูชน" พึงทำได้ทั้งสิ้น</SRule>
+          <SRule n="806">ตัวการ <strong>ไม่เปิดเผยชื่อ</strong> จะกลับแสดงตนเข้ารับเอาสัญญาก็ได้ แต่ต้องไม่เสื่อมสิทธิบุคคลภายนอก</SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'🧑‍💼', title:'หน้าที่ของ "ตัวแทน" (โซนคะแนนข้อ 1)',
+    chips:['807','808','809','810','811','812'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หน้าที่หลัก" icon="✅">
+          <SRule n="807">ทำการตาม <strong>คำสั่ง</strong>ของตัวการ ไม่มีคำสั่งก็ทำตามทางที่เคยทำ — <strong>ว.2 นำ ม.659 มาใช้</strong> (มาตรฐานความระมัดระวัง)</SRule>
+          <SRule n="808">ต้องทำการ <strong>ด้วยตนเอง</strong> เว้นแต่มีอำนาจใช้ตัวแทนช่วง</SRule>
+          <SRule n="809">ต้อง <strong>แจ้งความเป็นไป</strong> และเมื่อสิ้นสุดต้อง <strong>แถลงบัญชี</strong></SRule>
+          <SRule n="810">เงิน/ทรัพย์ที่รับไว้ ต้อง <strong>ส่งมอบ/โอน</strong>ให้ตัวการจนสิ้น</SRule>
+          <SRule n="811">เอาเงินตัวการ <strong>ไปใช้ส่วนตัว</strong> → ต้องเสีย <strong>ดอกเบี้ย</strong>นับแต่วันเอาไปใช้</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.812 — ความรับผิดของตัวแทน (ออกเกือบทุกครั้ง)" icon="🎯">
+          ถ้าเกิดความเสียหายเพราะ (ก) <strong>ประมาทเลินเล่อ</strong> (ข) <strong>ไม่ทำการเป็นตัวแทน</strong> หรือ (ค) <strong>ทำนอก/ปราศจากอำนาจ</strong> → ตัวแทน <strong>ต้องรับผิด</strong>
+        </Box>
+        <Box tone="cyan" title="สูตรวินิจฉัยข้อ 1 (มาตรฐานความระมัดระวัง)" icon="🧪">
+          ตัวแทนเป็น "ผู้มีอาชีพเฉพาะ" (เช่น ช่างเครื่องยนต์) ไหม? → <strong>ม.807 ว.2 + ม.659 ว.3</strong> ต้องใช้ความระมัดระวัง+ฝีมือ "เท่าที่ผู้มีอาชีพนั้นพึงใช้" ถ้าใช้แค่ระดับวิญญูชนธรรมดา = <strong>ประมาทเลินเล่อ</strong> → รับผิดตาม <strong>ม.812</strong><br/>
+          <span style={{color:C.cyan}}>(อ้างอิงแนวคำตอบ 1/66 ข้อ 1: นายวายุ ช่างเครื่องยนต์ ต้องชดใช้ 100,000)</span>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:2, icon:'🏦', title:'หน้าที่ของ "ตัวการ" & สิทธิยึดหน่วง',
+    chips:['815','816','817','819'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="ตัวการต้องดูแลตัวแทน" icon="✅">
+          <SRule n="815">ตัวแทนขอ <strong>เงินทดรอง</strong>ล่วงหน้าได้ตามจำเป็น</SRule>
+          <SRule n="816">ตัวแทนออกเงินทดรอง/มีหนี้/เสียหาย (ไม่ใช่ความผิดตน) → เรียก <strong>ชดใช้ + ดอกเบี้ย / ให้ตัวการรับผิดหนี้แทน / ค่าสินไหม</strong>ได้</SRule>
+          <SRule n="817">ถ้าไม่ตกลงเป็นอื่น <strong>บำเหน็จ</strong>จ่ายเมื่อการเป็นตัวแทน <strong>สิ้นสุด</strong>แล้ว</SRule>
+        </Box>
+        <Box tone="purple" title="อาวุธของตัวแทน" icon="🛡️">
+          <SRule n="819">ตัวแทน <strong>ยึดหน่วง</strong>ทรัพย์สินของตัวการที่อยู่ในครอบครองไว้ได้ จนกว่าจะได้รับเงินค้างชำระเพราะการเป็นตัวแทน</SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l5', star:2, icon:'🔗', title:'ตัวแทนช่วง (มอบอำนาจช่วง)',
+    chips:['808','813','814'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.purple} steps={[
+          {icon:'👤', t:'ตัวการ', bg:C.blueBg},
+          {icon:'🧑‍💼', t:'ตัวแทน', bg:C.surface3},
+          {icon:'🧑‍🔧', t:'ตัวแทนช่วง', bg:C.purpleBg},
+          {icon:'🤝', t:'บุคคลภายนอก', bg:C.cyanBg},
+        ]}/>
+        <Box tone="blue" title="ความรับผิดของตัวแทนที่ตั้งตัวแทนช่วง" icon="🔗" style={{marginTop:12}}>
+          <SRule n="813">ตัวแทนช่วงที่ตั้ง <strong>ตามที่ตัวการระบุ</strong> → ตัวแทน (คนแรก) รับผิด <strong>เฉพาะ</strong>กรณีรู้ว่าตัวแทนช่วงไม่เหมาะสม/ไม่น่าไว้ใจ แล้วไม่แจ้งหรือไม่ถอน</SRule>
+          <SRule n="814">ตัวแทนช่วง <strong>รับผิดตรงต่อตัวการ</strong> และตัวการก็รับผิดตรงต่อตัวแทนช่วงเช่นกัน (relation ตรงถึงกัน)</SRule>
+        </Box>
+        <Alert type="info" showIcon style={{background:C.blueBg, border:`1px solid ${C.blue}44`}}
+          message={<span>ข้อสอบ S/67 & 2/67 ข้อ 1 ชอบผูกเรื่อง "มอบอำนาจช่วงในการฟ้องคดี" + เหตุฉุกเฉิน ม.802 มาปน — ระวังแยกให้ออกว่าใช้ตัวแทนช่วงโดยชอบไหม</span>} />
+      </div>
+    )
+  },
+  {
+    key:'l6', star:3, icon:'🎭', title:'ผลต่อบุคคลภายนอก — ตัวแทนเชิด & ทำเกินอำนาจ',
+    chips:['820','821','822','823'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลักผูกพันตัวการ" icon="✅">
+          <SRule n="820">ตัวการ <strong>ผูกพัน</strong>ต่อบุคคลภายนอกในกิจการที่ตัวแทน/ตัวแทนช่วงทำไป <strong>ภายในขอบอำนาจ</strong></SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐ ม.821 ตัวแทนเชิด (Agency by estoppel)" icon="🎭">
+          ผู้ใด <strong>เชิด</strong>บุคคลอื่นออกแสดงเป็นตัวแทนของตน <strong>หรือ</strong> รู้แล้วยอมให้เขาเชิดตัวเองเป็นตัวแทน → ต้องรับผิดต่อบุคคลภายนอก <strong>ผู้สุจริต</strong> เสมือนเป็นตัวแทนของตนจริง
+        </Box>
+        <Box tone="purple" title="ทำเกิน / ปราศจากอำนาจ" icon="⚖️">
+          <SRule n="822">ทำ <strong>เกินอำนาจ</strong> แต่ทางปฏิบัติของตัวการทำให้บุคคลภายนอกมีมูลเชื่อว่าอยู่ในอำนาจ → ใช้ ม.820/821 บังคับ</SRule>
+          <SRule n="823">ทำ <strong>ปราศจากอำนาจ/นอกเหนืออำนาจ</strong> → <strong>ไม่ผูกพันตัวการ</strong> เว้นตัวการ <strong>ให้สัตยาบัน</strong>; ถ้าไม่ให้สัตยาบัน ตัวแทนรับผิดต่อบุคคลภายนอกเอง</SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:1, icon:'🛑', title:'ความระงับสิ้นไปของสัญญาตัวแทน',
+    chips:['826','827','828'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="เหตุสิ้นสุด" icon="🛑">
+          <SRule n="826">ระงับด้วย <strong>ถอนตัวแทน / บอกเลิก</strong>; หรือคู่สัญญาฝ่ายใด <strong>ตาย / ไร้ความสามารถ / ล้มละลาย</strong> (เว้นขัดกับสัญญาหรือสภาพกิจการ)</SRule>
+          <SRule n="827">ถอน/บอกเลิกเวลาใดก็ได้ — แต่ถ้าทำในเวลา <strong>ไม่สะดวก</strong>แก่อีกฝ่าย ต้องรับผิดค่าเสียหาย เว้น <strong>จำเป็น</strong></SRule>
+          <SRule n="828">ตัวการ <strong>ตาย</strong> → ตัวแทนต้องจัดการรักษาประโยชน์ต่อไปจนกว่าทายาท/ผู้แทนตัวการเข้าปกปักรักษาได้</SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:3, icon:'🏷️', title:'ตัวแทนค้าต่าง (Commission Agent) — ข้อ 2 ตัวจริง',
+    chips:['833','834','837','838','839','843','844'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="นิยาม & ลักษณะเด่น" icon="🏷️">
+          <SRule n="833">ตัวแทนค้าต่าง = ผู้ที่ในทางค้าขายทำการ <strong>ซื้อหรือขายทรัพย์สิน</strong> หรือจัดทำกิจการค้าขาย <strong>"ในนามของตนเอง"</strong> ต่างตัวการ</SRule>
+          <SRule n="834">มีสิทธิได้ <strong>บำเหน็จตามธรรมเนียมทุกราย</strong> (ต่างจากตัวแทนธรรมดา ที่ ม.803 ตั้งต้นว่าไม่มีบำเหน็จ)</SRule>
+        </Box>
+        <Box tone="red" title="⭐ ม.837 ใครผูกพันบุคคลภายนอก" icon="🎯">
+          ตัวแทนค้าต่างทำการในนามตนเอง → <strong>ได้สิทธิ</strong>อันมีต่อคู่สัญญาอีกฝ่าย <strong>และผูกพัน</strong>ต่อคู่สัญญานั้น <strong>ด้วยตนเอง</strong> (ตัวการไม่โผล่หน้า)
+        </Box>
+        <Box tone="purple" title="⭐⭐⭐ ม.838 คู่สัญญาไม่ชำระ ใครรับผิด (del credere)" icon="🔥">
+          โดยหลัก คู่สัญญาอีกฝ่ายไม่ชำระหนี้ → ตัวแทนค้าต่าง <strong>ไม่ต้องรับผิด</strong>ต่อตัวการ<br/>
+          <b>ยกเว้น</b> (1) มีข้อกำหนดในสัญญา (2) มีปริยาย/ธรรมเนียมท้องถิ่น หรือ (3) เข้ารับประกันการชำระหนี้ = <strong>"ตัวแทนฐานประกัน"</strong> → รับผิด + ได้บำเหน็จพิเศษ
+        </Box>
+        <Box tone="cyan" title="ราคาผิดจากที่กำหนด & entering self" icon="💱">
+          <SRule n="839">ขาย <strong>ต่ำ</strong>กว่า / ซื้อ <strong>สูง</strong>กว่าที่กำหนด — ถ้าตัวแทนรับส่วนต่างที่ขาดเอง ตัวการก็ต้องรับซื้อรับขาย</SRule>
+          <SRule n="840">ขาย <strong>สูง</strong>กว่า / ซื้อ <strong>ต่ำ</strong>กว่าที่กำหนด → ส่วนดี <strong>ต้องคืนตัวการ</strong> เอาเป็นประโยชน์ตนไม่ได้</SRule>
+          <SRule n="844">ระหว่างตัวการกับตัวแทนค้าต่าง ถือเสมือนกิจการทำในนามตัวการ <strong>โดยตรง</strong></SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l9', star:3, icon:'🤝', title:'นายหน้า (Broker) — ข้อ 3 ตัวจริง',
+    chips:['845','846','847','848','849'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.green} steps={[
+          {icon:'🧑', t:'ผู้จะขาย', bg:C.blueBg},
+          {icon:'🕴️', t:'นายหน้าชี้ช่อง', bg:C.greenBg},
+          {icon:'🧑‍💼', t:'ผู้จะซื้อ', bg:C.cyanBg},
+          {icon:'💰', t:'สัญญาสำเร็จ→บำเหน็จ', bg:C.surface3},
+        ]}/>
+        <Box tone="green" title="⭐⭐⭐ ม.845 เมื่อไหร่นายหน้าได้บำเหน็จ" icon="🎯" style={{marginTop:12}}>
+          ต้องครบ 2 เงื่อนไข: (1) มี <strong>ข้อตกลง/สัญญานายหน้า</strong> ให้ชี้ช่อง–จัดการ และ (2) สัญญาที่มุ่งหมาย <strong>"ได้ทำสำเร็จเนื่องแต่ผลแห่งการที่นายหน้าชี้ช่อง"</strong><br/>
+          ถ้ามี <strong>เงื่อนไขบังคับก่อน</strong> → เรียกบำเหน็จไม่ได้จนกว่าเงื่อนไขสำเร็จ · ค่าใช้จ่ายเรียกได้ <strong>เฉพาะเมื่อตกลงไว้</strong>
+        </Box>
+        <Box tone="red" title="กับดัก: ไม่มีสัญญานายหน้ามาก่อน = ไม่ได้บำเหน็จ" icon="⚠️">
+          ข้อสอบ 1/66 ข้อ 3 (นายขนมต้ม): แม้ช่วยชี้ช่องจนซื้อขายสำเร็จ แต่ <strong>ไม่เคยมีสัญญานายหน้าต่อกัน</strong> → <strong>ไม่มีสิทธิได้ 3%</strong> ตาม ม.845
+        </Box>
+        <Box tone="purple" title="บำเหน็จปริยาย & ข้อห้าม" icon="⚖️">
+          <SRule n="846">กิจการที่มอบหมายโดยพฤติการณ์คาดหมายได้ว่าทำเพื่อเอาบำเหน็จ → ถือว่ามีบำเหน็จ <strong>โดยปริยาย</strong> จำนวนตามธรรมเนียม</SRule>
+          <SRule n="847">นายหน้าทำการให้บุคคลภายนอกด้วย หรือรับคำมั่นบำเหน็จจากอีกฝ่ายโดยฝ่าฝืนหน้าที่ → <strong>ไม่มีสิทธิได้บำเหน็จ/ค่าใช้จ่าย</strong></SRule>
+          <SRule n="848">นายหน้า <strong>ไม่ต้องรับผิด</strong>ตามสัญญาที่เป็นสื่อให้ทำ เว้นได้บอกชื่อฝ่ายหนึ่งปิดไว้ไม่ให้อีกฝ่ายรู้</SRule>
+          <SRule n="849">การรับชำระหนี้ตามสัญญานั้น สันนิษฐานว่านายหน้า <strong>ไม่มีอำนาจรับแทน</strong>คู่สัญญา</SRule>
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l3']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Sec key={c}>{c}</Sec>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>9 โมดูล เรียงจากพื้นฐาน → ตัวแทนค้าต่าง → นายหน้า</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกครั้ง) · คลิกที่หัวข้อเพื่อกางเนื้อหา</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: CASE LAB (ห้องทดลองเคส) ============ */
+const YN = ({value, onChange}) => (
+  <Radio.Group value={value} onChange={e=>onChange(e.target.value)} optionType="button" buttonStyle="solid"
+    options={[{label:'ใช่',value:true},{label:'ไม่',value:false}]} />
+);
+
+function verdictEngine(s) {
+  // returns {secs:[], title, tone, ruling, who}
+  if (s.type==='agent') {
+    if (s.excess) {
+      if (s.ratify) return {secs:['823','820'], tone:'green', title:'ตัวการให้สัตยาบัน → ผูกพัน',
+        ruling:'แม้ตัวแทนทำนอก/ปราศจากอำนาจ แต่ตัวการ "ให้สัตยาบัน" การนั้นย่อมผูกพันตัวการเสมือนทำในขอบอำนาจ (ม.823 ประกอบ ม.820)', who:'ตัวการผูกพันบุคคลภายนอก'};
+      return {secs:['823'], tone:'red', title:'ทำปราศจากอำนาจ + ไม่สัตยาบัน',
+        ruling:'ตัวแทนทำการปราศจากอำนาจ/นอกเหนืออำนาจ และตัวการไม่ให้สัตยาบัน → ไม่ผูกพันตัวการ ตัวแทนต้องรับผิดต่อบุคคลภายนอกโดยลำพังตนเอง (ม.823 ว.2)', who:'ตัวแทนรับผิดเอง'};
+    }
+    if (s.proNeg) return {secs:['807','659','812'], tone:'red', title:'ตัวแทนอาชีพเฉพาะ ประมาทเลินเล่อ',
+      ruling:'ตัวแทนเป็นผู้มีอาชีพเฉพาะ ต้องใช้ความระมัดระวัง+ฝีมือตามมาตรฐานอาชีพนั้น (ม.807 ว.2 + ม.659 ว.3) เมื่อทำโดยประมาท เกิดความเสียหาย → รับผิดชดใช้แก่ตัวการ (ม.812)', who:'ตัวแทนรับผิดต่อตัวการ'};
+    if (s.thirdDefault) return {secs:['820'], tone:'blue', title:'บุคคลภายนอกผิดนัด',
+      ruling:'ตัวแทนทำในนามตัวการ → ตัวการเป็นคู่สัญญา/เจ้าหนี้เอง ต้องไปว่ากล่าวเรียกร้องเอาจากบุคคลภายนอกโดยตรง ตัวแทนไม่ต้องรับผิดแทน (ม.820)', who:'ตัวการ ↔ บุคคลภายนอก โดยตรง'};
+    return {secs:['820'], tone:'green', title:'ตัวแทนทำในขอบอำนาจโดยชอบ',
+      ruling:'ตัวแทนทำนิติกรรมในนามตัวการภายในขอบอำนาจ → ผลตกที่ตัวการกับบุคคลภายนอกโดยตรง ตัวแทนไม่ผูกพันเป็นส่วนตัว (ม.820)', who:'ตัวการผูกพันบุคคลภายนอก'};
+  }
+  if (s.type==='komma') {
+    if (s.thirdDefault) {
+      if (s.delc) return {secs:['838','837'], tone:'purple', title:'ตัวแทนฐานประกัน (del credere)',
+        ruling:'คู่สัญญาไม่ชำระ โดยหลักตัวแทนค้าต่างไม่ต้องรับผิด แต่เมื่อเข้ารับประกันการชำระหนี้ = ตัวแทนฐานประกัน → ต้องรับผิดต่อตัวการ และมีสิทธิได้บำเหน็จพิเศษ (ม.838 ว.ท้าย)', who:'ตัวแทนค้าต่างรับผิดต่อตัวการ'};
+      return {secs:['838','837'], tone:'blue', title:'คู่สัญญาไม่ชำระ — หลักทั่วไป',
+        ruling:'ตัวแทนค้าต่างทำในนามตนเอง ผูกพันคู่สัญญาเอง (ม.837) แต่เมื่อคู่สัญญาไม่ชำระ ตัวแทนค้าต่าง "ไม่ต้องรับผิด" ต่อตัวการเพื่อชำระหนี้นั้นเอง (ม.838) เว้นเข้าข้อยกเว้น', who:'ตัวการรับความเสี่ยงเอง'};
+    }
+    return {secs:['837','833','844'], tone:'green', title:'ตัวแทนค้าต่างทำการปกติ',
+      ruling:'ตัวแทนค้าต่างทำการซื้อขายในนามตนเองต่างตัวการ (ม.833) ย่อมได้สิทธิและผูกพันต่อคู่สัญญาอีกฝ่ายด้วยตนเอง (ม.837) ระหว่างตัวการกับตัวแทนถือเสมือนทำในนามตัวการโดยตรง (ม.844)', who:'ตัวแทนค้าต่าง ↔ บุคคลภายนอก'};
+  }
+  // broker
+  if (!s.hasContract) return {secs:['845'], tone:'red', title:'ไม่มีสัญญานายหน้า',
+    ruling:'แม้ช่วยชี้ช่อง/พามาเจอกันจนซื้อขายสำเร็จ แต่เมื่อ "ไม่เคยมีสัญญาหรือข้อตกลงเป็นนายหน้าต่อกันมาก่อน" นายหน้าย่อม "ไม่มีสิทธิได้บำเหน็จ" (ม.845)', who:'นายหน้าไม่ได้บำเหน็จ'};
+  if (!s.success) return {secs:['845'], tone:'blue', title:'สัญญายังไม่สำเร็จ / มีเงื่อนไข',
+    ruling:'บำเหน็จนายหน้าจะเรียกได้ต่อเมื่อสัญญาที่มุ่งหมายได้ทำสำเร็จ "เนื่องแต่ผลแห่งการที่นายหน้าชี้ช่อง" ถ้ายังไม่สำเร็จ/มีเงื่อนไขบังคับก่อนที่ยังไม่สำเร็จ → ยังเรียกบำเหน็จไม่ได้ (ม.845)', who:'ยังไม่ได้บำเหน็จ'};
+  if (s.dualDisloyal) return {secs:['847'], tone:'red', title:'นายหน้าสองฝ่ายโดยฝ่าฝืนหน้าที่',
+    ruling:'นายหน้าไปทำการให้บุคคลภายนอกด้วย หรือรับคำมั่นบำเหน็จจากอีกฝ่ายโดยฝ่าฝืนหน้าที่ที่ตนรับทำ → หมดสิทธิได้รับบำเหน็จและค่าใช้จ่าย (ม.847)', who:'นายหน้าเสียสิทธิบำเหน็จ'};
+  return {secs:['845','846'], tone:'green', title:'นายหน้าได้บำเหน็จ',
+    ruling:'มีสัญญานายหน้า + สัญญาที่มุ่งหมายทำสำเร็จเพราะผลชี้ช่องของนายหน้า → นายหน้ามีสิทธิได้บำเหน็จ จำนวนตามที่ตกลง หรือตามธรรมเนียมโดยปริยาย (ม.845, 846)', who:'นายหน้าได้บำเหน็จ'};
+}
+
+function CaseLab() {
+  const [type, setType] = useState('agent');
+  const [f, setF] = useState({});
+  const set = (k,v)=>setF(p=>({...p,[k]:v}));
+  const s = {type, ...f};
+  const v = verdictEngine(s);
+  const toneColor = {green:C.green, red:C.red, blue:C.blue, purple:C.purple}[v.tone];
+
+  const Q = ({label, k}) => (
+    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, padding:'11px 14px', background:C.white, border:`1px solid ${C.border}`, borderRadius:10, marginBottom:9}}>
+      <span style={{color:C.text2, fontSize:14.5, flex:1}}>{label}</span>
+      <YN value={f[k]===undefined?false:f[k]} onChange={val=>set(k,val)} />
+    </div>
+  );
+
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:C.surface3, border:`1px solid ${C.amber}66`}}
+        message={<span style={{fontWeight:700, color:C.amberDark}}>🧪 ห้องทดลองเคส — ปรับข้อเท็จจริงแล้วดูคำวินิจฉัยเปลี่ยนทันที</span>}
+        description={<span style={{color:C.text2}}>เลือกว่า "คนกลาง" เป็นแบบไหน แล้วตอบคำถามข้อเท็จจริง ระบบจะบอก <strong>มาตราที่ใช้</strong> และ <strong>ผลทางกฎหมาย</strong> เหมือนอาจารย์ค่อย ๆ ซักในห้องเรียน</span>} />
+      <Row gutter={[16,16]}>
+        <Col xs={24} md={11}>
+          <Card title={<span style={{color:C.text}}>1️⃣ เลือกประเภทคนกลาง</span>} style={{borderColor:C.border}} bodyStyle={{padding:16}}>
+            <Segmented block value={type} onChange={(val)=>{setType(val); setF({});}} size="large"
+              options={[{label:'ตัวแทน',value:'agent'},{label:'ตัวแทนค้าต่าง',value:'komma'},{label:'นายหน้า',value:'broker'}]} />
+            <Divider style={{margin:'16px 0 12px'}}/>
+            <div style={{color:C.text3, fontSize:13, marginBottom:10}}>2️⃣ ตอบข้อเท็จจริง</div>
+            {type==='agent' && <>
+              <Q label="บุคคลภายนอกผิดนัดไม่ชำระหนี้?" k="thirdDefault"/>
+              <Q label="ตัวแทนเป็นผู้มีอาชีพเฉพาะ และทำโดยประมาทเลินเล่อ?" k="proNeg"/>
+              <Q label="ตัวแทนทำการเกิน/ปราศจากอำนาจ?" k="excess"/>
+              {f.excess && <Q label="…ตัวการให้สัตยาบันการนั้น?" k="ratify"/>}
+            </>}
+            {type==='komma' && <>
+              <Q label="คู่สัญญา (บุคคลภายนอก) ผิดนัดไม่ชำระ?" k="thirdDefault"/>
+              {f.thirdDefault && <Q label="…ตัวแทนค้าต่างเข้ารับประกันการชำระหนี้ (ตัวแทนฐานประกัน)?" k="delc"/>}
+            </>}
+            {type==='broker' && <>
+              <Q label="มีสัญญา/ข้อตกลงเป็นนายหน้ากันมาก่อน?" k="hasContract"/>
+              <Q label="สัญญาที่มุ่งหมายทำสำเร็จเพราะผลการชี้ช่องของนายหน้า?" k="success"/>
+              <Q label="นายหน้าไปรับใช้/รับคำมั่นจากอีกฝ่ายโดยฝ่าฝืนหน้าที่ด้วย?" k="dualDisloyal"/>
+            </>}
+          </Card>
+        </Col>
+        <Col xs={24} md={13}>
+          <Card className="glow" style={{borderColor:toneColor, borderWidth:2, background:C.white, height:'100%'}}
+            bodyStyle={{padding:20}}>
+            <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:6}}>
+              <span style={{fontSize:26}}>⚖️</span>
+              <span style={{fontWeight:800, fontSize:19, color:toneColor}}>{v.title}</span>
+            </div>
+            <div style={{marginBottom:14}}>
+              {v.secs.map(sec=><span key={sec} style={{display:'inline-block', margin:'3px 6px 3px 0', background:toneColor, color:C.white, padding:'3px 12px', borderRadius:8, fontWeight:700, fontFamily:"'Noto Serif Thai'"}}>มาตรา {sec}</span>)}
+            </div>
+            <div style={{background:C.surface3, borderRadius:12, padding:'14px 16px', border:`1px solid ${C.border}`}}>
+              <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:4}}>คำวินิจฉัย</div>
+              <div style={{color:C.text2, fontSize:14.8, lineHeight:1.85}}>{v.ruling}</div>
+            </div>
+            <div style={{marginTop:14, textAlign:'center'}}>
+              <span style={{display:'inline-block', background:toneColor+'1a', color:toneColor, border:`1.5px dashed ${toneColor}`, borderRadius:30, padding:'8px 20px', fontWeight:700, fontSize:15}}>
+                🎯 ผล: {v.who}</span>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+      <Box tone="cyan" title="ลองเล่นแบบนี้สิ" icon="💡" style={{marginTop:16}}>
+        เลือก <strong>นายหน้า</strong> → ตอบ "ไม่มีสัญญานายหน้า" ดู แล้วสลับเป็น "มี" + "สำเร็จเพราะชี้ช่อง" — สังเกตว่าผลพลิกจาก <i>ไม่ได้บำเหน็จ</i> เป็น <i>ได้บำเหน็จ</i> ทันที นี่คือแกนของข้อ 3 ทุกปี
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'1/66 ข้อ 1', star:3, topic:'ตัวแทน + มาตรฐานความระมัดระวัง',
+    facts:'นายแสงเหนือมอบให้นายวายุ (ช่างเครื่องยนต์) ไปซื้อรถมือสองไม่เกิน 500,000 บ. ตกลงบำเหน็จ 10,000 บ. นายวายุซื้อรถจากร้านนายศิลาราคา 480,000 บ. โดย "ทดลองขับเหมือนวิญญูชนทั่วไป" แต่ไม่ได้เช็คสภาพเครื่องยนต์ (ทั้งที่ป้ายเขียน "ไม่พอใจยินดีคืนเงิน") ต่อมาพบเครื่องชำรุด เสียค่าซ่อม 100,000 บ. — นายวายุต้องรับผิดชดใช้ 100,000 หรือไม่?',
+    issue:'ตัวแทนซึ่งเป็นผู้มีอาชีพเฉพาะ (ช่างเครื่องยนต์) ต้องใช้ความระมัดระวังระดับใด และเมื่อไม่ได้ตรวจสภาพเครื่องจนเกิดความเสียหาย ต้องรับผิดต่อตัวการหรือไม่',
+    rule:['807','659','812'],
+    ruleText:'ม.807 ว.2 ให้นำ ม.659 มาใช้ — ผู้มีวิชาชีพเฉพาะต้องใช้ความระมัดระวังและฝีมือ "เท่าที่เป็นธรรมดาต้องใช้และสมควรต้องใช้ในกิจการนั้น" (ม.659 ว.3) และ ม.812 ถ้าเกิดความเสียหายเพราะความประมาทเลินเล่อของตัวแทน ตัวแทนต้องรับผิด',
+    application:'นายวายุเป็นช่างเครื่องยนต์ = ผู้มีอาชีพเฉพาะ จึงต้องใช้ความระมัดระวัง+ฝีมือตรวจสภาพเครื่องยนต์เท่าที่ช่างพึงใช้ แต่กลับเลือกซื้อโดยใช้เพียงความระมัดระวังอย่างวิญญูชนธรรมดา (แค่ทดลองขับ) ไม่ตรวจเครื่อง ทั้งที่ร้านมีเงื่อนไขคืนเงินได้ → เป็นการประมาทเลินเล่อจากการไม่ใช้ความระมัดระวังตามสมควรแก่ผู้มีอาชีพ เมื่อเกิดความเสียหาย 100,000 บ.',
+    conclusion:'นายวายุต้องรับผิดชดใช้ค่าซ่อม 100,000 บ. ให้แก่นายแสงเหนือ ตาม ม.807 ว.2 ประกอบ ม.659 และ ม.812'
+  },
+  {
+    id:'c2', tag:'1/66 ข้อ 2', star:3, topic:'ตัวแทนค้าต่าง — ใครฟ้อง/ใครรับผิด',
+    facts:'นายประสาน ฝากรถจักรยานยนต์ให้นายประสงค์ (เปิดร้านขายรถมือสอง) ขายในราคา 20,000 บ. บำเหน็จ 2,000 บ. นายประสงค์ขายเชื่อให้นายประเสริฐ เมื่อถึงกำหนด นายประเสริฐไม่ชำระ — (1) ใครมีสิทธิฟ้องเรียกรถคืนจากนายประเสริฐ และถ้าฟ้องแล้วไม่ได้เงิน นายประสงค์ต้องรับผิดต่อนายประสานหรือไม่',
+    issue:'ตัวแทนค้าต่างที่ขายทรัพย์ในนามตนเอง ใครมีสิทธิเรียกร้องต่อคู่สัญญา และเมื่อคู่สัญญาไม่ชำระ ตัวแทนค้าต่างต้องรับผิดต่อตัวการหรือไม่',
+    rule:['837','838'],
+    ruleText:'ม.837 ตัวแทนค้าต่างทำการในนามตนเอง ย่อมได้สิทธิและผูกพันต่อคู่สัญญาอีกฝ่ายด้วยตนเอง · ม.838 เมื่อคู่สัญญาไม่ชำระ ตัวแทนค้าต่างไม่ต้องรับผิดต่อตัวการเพื่อชำระหนี้นั้นเอง (เว้นเข้าข้อยกเว้น)',
+    application:'นายประสงค์เป็นตัวแทนค้าต่างที่ทำสัญญาขายเชื่อในนามของตนเองต่างนายประสาน จึงเป็นผู้ได้สิทธิและมีสิทธิฟ้องเรียกรถ/ราคาคืนจากนายประเสริฐเอง (ม.837) และเมื่อฟ้องแล้วนายประเสริฐไม่มีเงินชำระ นายประสงค์ซึ่งทำในนามตนเองไม่ต้องรับผิดชำระหนี้นั้นแทนต่อนายประสาน (ม.838)',
+    conclusion:'นายประสงค์เป็นผู้มีสิทธิฟ้องเรียกรถคืนจากนายประเสริฐ และแม้ฟ้องแล้วไม่ได้เงิน นายประสงค์ก็ไม่ต้องรับผิดต่อนายประสาน'
+  },
+  {
+    id:'c3', tag:'1/66 ข้อ 3', star:3, topic:'นายหน้า — ไม่มีสัญญา = ไม่ได้บำเหน็จ',
+    facts:'นายขนมต้ม (รับเหมาก่อสร้าง 30 ปี) รู้ว่านายลอดช่องอยากขายที่ดิน 30 ไร่ ราคา 350 ล้าน จึงพานายรวย (เศรษฐีอันดับ 1) ไปดูและช่วยประสานจนนายรวยตกลงทำสัญญาจะซื้อจะขายกับนายลอดช่อง วางมัดจำ 20 ล้าน ต่อมานายขนมต้มเรียกค่านายหน้า 3% จากนายลอดช่อง — มีสิทธิได้หรือไม่',
+    issue:'ผู้ที่ช่วยชี้ช่อง/พาคู่สัญญามาเจอกันจนทำสัญญาสำเร็จ แต่ไม่เคยมีสัญญานายหน้าต่อกัน มีสิทธิได้บำเหน็จนายหน้าหรือไม่',
+    rule:['845'],
+    ruleText:'ม.845 บุคคลจะได้ค่าบำเหน็จนายหน้าต่อเมื่อ (1) มีข้อตกลง/สัญญาให้เป็นนายหน้าชี้ช่อง และ (2) สัญญาที่มุ่งหมายได้ทำสำเร็จเนื่องแต่ผลแห่งการที่นายหน้าชี้ช่องนั้น',
+    application:'แม้นายขนมต้มจะได้ชี้ช่องและช่วยจัดการจนนายลอดช่องกับนายรวยเข้าทำสัญญาจะซื้อจะขายสำเร็จ แต่ข้อเท็จจริงปรากฏว่าทั้งสองไม่เคยมีสัญญาหรือข้อตกลงเป็นนายหน้าให้กันมาก่อน เมื่อขาดองค์ประกอบข้อสัญญานายหน้า จึงไม่ครบเงื่อนไข ม.845',
+    conclusion:'นายขนมต้มไม่มีสิทธิได้รับค่านายหน้า 3% จากนายลอดช่อง เพราะไม่ได้มีสัญญานายหน้าต่อกัน (ม.845)'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0); // 0=facts only, 1..4 reveal I R A C
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.purple, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Sec>{x}</Sec></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'ปรับข้อเท็จจริง (A)', color:C.amberDark, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="volcano" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.goldDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสจริงจากข้อสอบ ทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น เพื่อฝึกโครงการเขียนตอบแบบได้คะแนนเต็ม</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="gold" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>หลักกฎหมาย</b> (ยกมาตราที่เกี่ยว) → <b>วินิจฉัย</b> (เอาข้อเท็จจริงจับกับหลัก) → <b>สรุป</b> (ตอบคำถามให้ตรง). ทุกข้อ 25 คะแนน เขียนให้ครบ 3 ท่อนนี้เสมอ
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: FLASHCARDS (แฟลชการ์ด) ============ */
+const flashcards = [
+  {q:'"ตัวแทน" ต่างจาก "ตัวแทนค้าต่าง" ตรงไหนสำคัญที่สุด?', a:'ทำในนามใคร', d:'ตัวแทนทำในนามตัวการ (ม.820) ผลตกที่ตัวการ; ตัวแทนค้าต่างทำในนามตนเอง (ม.833,837) ผูกพันคู่สัญญาเอง', star:3, exam:true},
+  {q:'ตัวแทนเป็นผู้มีอาชีพเฉพาะ ต้องใช้ความระมัดระวังระดับใด?', a:'ม.807 ว.2 + ม.659 ว.3', d:'มาตรฐาน "เท่าที่ผู้มีอาชีพนั้นพึงใช้" ถ้าใช้แค่ระดับวิญญูชน = ประมาท → รับผิด ม.812', star:3, exam:true},
+  {q:'ตัวแทนค้าต่างขายเชื่อแล้วลูกค้าไม่จ่าย ตัวแทนต้องรับผิดต่อตัวการไหม?', a:'ไม่ (ม.838)', d:'หลัก: ไม่ต้องรับผิด เว้นตกลง/ธรรมเนียม/เป็นตัวแทนฐานประกัน (del credere)', star:3, exam:true},
+  {q:'ช่วยพาคนมาซื้อขายจนสำเร็จ แต่ไม่มีสัญญานายหน้า จะได้บำเหน็จไหม?', a:'ไม่ได้ (ม.845)', d:'ต้องมีสัญญานายหน้า + สัญญาสำเร็จเพราะผลชี้ช่อง จึงจะได้บำเหน็จ', star:3, exam:true},
+  {q:'มอบอำนาจให้ไปทำสัญญาซื้อขายที่ดิน ต้องทำเป็นหนังสือไหม?', a:'ต้อง (ม.798 + ม.456)', d:'กิจการที่ต้องมีหลักฐานเป็นหนังสือ การตั้งตัวแทนก็ต้องมีหลักฐานเป็นหนังสือด้วย', star:3, exam:true},
+  {q:'ตัวแทนทำ "ปราศจากอำนาจ" ผลเป็นอย่างไร?', a:'ไม่ผูกพันตัวการ เว้นสัตยาบัน (ม.823)', d:'ถ้าไม่สัตยาบัน ตัวแทนรับผิดต่อบุคคลภายนอกเอง', star:3, exam:true},
+  {q:'"เชิดตัวแทน" คือมาตราใด และผลเป็นอย่างไร?', a:'ม.821', d:'ผู้เชิด (หรือรู้แล้วยอมให้เชิด) ต้องรับผิดต่อบุคคลภายนอกผู้สุจริต เสมือนเป็นตัวแทนจริง', star:2, exam:true},
+  {q:'ตัวแทนทั่วไป (มอบอำนาจทั่วไป) ทำอะไรไม่ได้บ้าง?', a:'6 ข้อ ม.801 ว.2', d:'ขาย/จำนองอสังหาฯ, เช่าเกิน 3 ปี, ให้, ประนีประนอม, ฟ้อง, อนุญาโตตุลาการ', star:2, exam:false},
+  {q:'ตัวแทนเอาเงินตัวการไปใช้ส่วนตัว ผลเป็นอย่างไร?', a:'เสียดอกเบี้ย (ม.811)', d:'นับแต่วันที่เอาไปใช้', star:1, exam:false},
+  {q:'บำเหน็จตัวแทน (ทั่วไป) จ่ายเมื่อใด ถ้าไม่ตกลงเป็นอื่น?', a:'เมื่อการเป็นตัวแทนสิ้นสุด (ม.817)', d:'ต่างจากตัวแทนค้าต่างที่ได้บำเหน็จตามธรรมเนียมทุกราย (ม.834)', star:1, exam:false},
+  {q:'เหตุฉุกเฉินเพื่อป้องกันตัวการเสียหาย ตัวแทนมีอำนาจแค่ไหน?', a:'ม.802', d:'สันนิษฐานว่ามีอำนาจทำอย่างวิญญูชนพึงกระทำได้ทั้งสิ้น', star:2, exam:true},
+  {q:'ตัวแทนช่วงที่ตั้งตามที่ตัวการระบุ ตัวแทนคนแรกรับผิดเมื่อใด?', a:'ม.813', d:'เฉพาะกรณีรู้ว่าตัวแทนช่วงไม่เหมาะสม/ไม่น่าไว้ใจ แล้วไม่แจ้ง/ไม่ถอน', star:2, exam:false},
+  {q:'ตัวแทนช่วงมีความสัมพันธ์ทางกฎหมายกับตัวการอย่างไร?', a:'รับผิดตรงต่อกัน (ม.814)', d:'ตัวแทนช่วงรับผิดตรงต่อตัวการ และตัวการรับผิดตรงต่อตัวแทนช่วง', star:1, exam:false},
+  {q:'ตัวแทนค้าต่างขายได้ราคาสูงกว่าที่ตัวการกำหนด ส่วนเกินเป็นของใคร?', a:'ตัวการ (ม.840)', d:'ขายสูง/ซื้อต่ำ ส่วนดีต้องคืนตัวการ; ขายต่ำ/ซื้อสูงตัวแทนรับส่วนต่างเอง (ม.839)', star:2, exam:false},
+  {q:'สิทธิยึดหน่วงของตัวแทนอยู่มาตราใด?', a:'ม.819', d:'ยึดหน่วงทรัพย์ตัวการที่อยู่ในครอบครองไว้จนกว่าได้รับเงินค้างเพราะการเป็นตัวแทน', star:1, exam:false},
+  {q:'ตัวการใช้ผู้ไร้ความสามารถเป็นตัวแทน ตัวการผูกพันไหม?', a:'ผูกพัน (ม.799)', d:'ตัวการต้องผูกพันในกิจการที่ตัวแทน(ผู้ไร้ความสามารถ)กระทำ', star:1, exam:false},
+  {q:'นายหน้าไปรับบำเหน็จจากอีกฝ่ายโดยฝ่าฝืนหน้าที่ ผลเป็นอย่างไร?', a:'เสียสิทธิบำเหน็จ (ม.847)', d:'หมดสิทธิได้ทั้งบำเหน็จและค่าใช้จ่าย', star:2, exam:false},
+  {q:'สัญญาตัวแทนระงับด้วยเหตุใดบ้าง?', a:'ม.826', d:'ถอน/บอกเลิก; หรือคู่สัญญาตาย/ไร้ความสามารถ/ล้มละลาย (เว้นขัดสัญญาหรือสภาพกิจการ)', star:1, exam:false},
+  {q:'ตัวการตาย ตัวแทนต้องทำอย่างไร?', a:'ม.828', d:'จัดการรักษาประโยชน์ต่อไปจนกว่าทายาท/ผู้แทนตัวการเข้าปกปักรักษาได้', star:1, exam:false},
+  {q:'ตัวแทนค้าต่างที่เข้ารับประกันการชำระหนี้ เรียกว่าอะไร?', a:'ตัวแทนฐานประกัน (del credere) ม.838', d:'ต้องรับผิดต่อตัวการหากคู่สัญญาไม่ชำระ แต่ได้บำเหน็จพิเศษ', star:3, exam:true},
+  {q:'นายหน้าต้องรับผิดตามสัญญาที่เป็นสื่อให้ทำไหม?', a:'ไม่ (ม.848)', d:'เว้นได้บอกชื่อฝ่ายหนึ่งปิดไว้ไม่ให้อีกฝ่ายรู้', star:1, exam:false},
+  {q:'ตัวแทนต้องทำการด้วยตนเองไหม?', a:'ต้อง เว้นมีอำนาจใช้ตัวแทนช่วง (ม.808)', d:'', star:1, exam:false},
+  {q:'ตัวการไม่เปิดเผยชื่อ จะเข้ารับเอาสัญญาเองได้ไหม?', a:'ได้ (ม.806)', d:'แต่ต้องไม่ทำให้เสื่อมสิทธิบุคคลภายนอกที่มีต่อตัวแทน', star:1, exam:false},
+  {q:'ระหว่างตัวการกับตัวแทนค้าต่าง กิจการที่ทำถือว่าอย่างไร?', a:'เสมือนทำในนามตัวการโดยตรง (ม.844)', d:'', star:1, exam:false},
+  {q:'[ข้อสอบ 2/67 ข้อ 2] มอบให้ขายที่ดินโดยเขียน+พิมพ์ลายมือแทน สัญญาตัวแทนเกิดไหม?', a:'ไม่เกิดตามแบบ → ดู ม.821 เชิด', d:'สัญญาตั้งตัวแทนขายที่ดินต้องเป็นหนังสือ (798+456) แต่พิจารณาตัวแทนเชิด ม.821 ต่อ', star:2, exam:true},
+  {q:'บำเหน็จนายหน้าถ้าไม่ได้กำหนดจำนวนไว้ คิดอย่างไร?', a:'ตามธรรมเนียม (ม.846)', d:'ถือว่าตกลงกันโดยปริยายว่ามีบำเหน็จ จำนวนตามธรรมเนียม', star:1, exam:false},
+  {q:'การรับชำระหนี้ตามสัญญา นายหน้ามีอำนาจรับแทนไหม?', a:'สันนิษฐานว่าไม่มี (ม.849)', d:'', star:1, exam:false},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(((i*7+3)%(i+1)));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length}</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.gold} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:280}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:280}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.gold}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="volcano" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ คำถาม (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:19, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:21, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.gold, borderColor:C.gold}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ TAB 6: QUICK REF + QUIZ ============ */
+const quickSections = [
+  {divider:'🔮 ทำนายข้อสอบ 3 ข้อ (สูตรตอบเร็ว)'},
+  {s:'ข้อ 1', t:'ตัวแทน + มาตรฐานความระมัดระวัง', b:'คนกลางมีอาชีพเฉพาะไหม? → 807 ว.2 + 659 → ประมาท → รับผิด 812', type:'formula'},
+  {s:'ข้อ 2', t:'ตัวแทนค้าต่าง', b:'ทำในนามตนเอง → ผูกพันเอง 837 → ลูกค้าไม่จ่าย ตัวแทนไม่รับผิด 838 (เว้น del credere)', type:'formula'},
+  {s:'ข้อ 3', t:'นายหน้า', b:'มีสัญญานายหน้าไหม? + สำเร็จเพราะชี้ช่องไหม? → 845 ได้/ไม่ได้บำเหน็จ', type:'formula'},
+
+  {divider:'🧠 เทคนิคช่วยจำ (Mnemonic)'},
+  {s:'6 ข้อห้าม', t:'ตัวแทนทั่วไปทำไม่ได้ (801)', b:'"ขาย–เช่า–ให้–ประนีฯ–ฟ้อง–อนุญาโต" (ขาย/จำนองอสังหาฯ · เช่าเกิน3ปี · ให้ · ประนีประนอม · ฟ้อง · อนุญาโตตุลาการ)', type:'mnem'},
+  {s:'ในนามใคร', t:'แยก 3 ตัวละคร', b:'ตัวแทน=นามตัวการ · ค้าต่าง=นามตนเอง · นายหน้า=ไม่ทำสัญญาเอง แค่ชี้ช่อง', type:'mnem'},
+  {s:'812', t:'ตัวแทนรับผิด 3 เหตุ', b:'ประมาท · ไม่ทำการ · ทำนอกอำนาจ', type:'mnem'},
+
+  {divider:'🔀 เทียบให้ชัด (Contrast)'},
+  {s:'838 vs ค้ำ', t:'ตัวแทนค้าต่างไม่ใช่ผู้ค้ำ', b:'หลัก 838 ตัวแทนค้าต่างไม่รับผิดแทนลูกหนี้ เว้น "ตัวแทนฐานประกัน" จึงรับผิด', type:'contrast'},
+  {s:'820 vs 837', t:'ใครผูกพันบุคคลภายนอก', b:'ตัวแทนธรรมดา → ตัวการผูกพัน (820); ตัวแทนค้าต่าง → ตัวแทนผูกพันเอง (837)', type:'contrast'},
+  {s:'823 vs 821', t:'ปราศจากอำนาจ vs เชิด', b:'823 ไม่ผูกพันตัวการ(เว้นสัตยาบัน); 821 ผู้เชิดต้องรับผิดต่อบุคคลภายนอกสุจริต', type:'contrast'},
+
+  {divider:'📝 โครงคำตอบ (Answer Template)'},
+  {s:'โครง', t:'เขียน 3 ท่อนเสมอ', b:'หลักกฎหมาย (ยกมาตรา) → วินิจฉัย (จับข้อเท็จจริงกับหลัก) → สรุป (ตอบให้ตรงคำถาม)', type:'formula'},
+  {s:'ยกมาตรา', t:'ต้องยกเลขมาตรา', b:'ตอบโดยไม่ยกมาตรา = เสียคะแนน แม้วินิจฉัยถูก', type:'chunk'},
+];
+
+const quizData = [
+  {q:'นายวายุเป็นช่างเครื่องยนต์ รับไปซื้อรถแทน แต่ไม่ตรวจเครื่องจนเสียหาย ต้องรับผิดตามมาตราใดเป็นหลัก?',
+    opts:['ม.812 (ประกอบ 807 ว.2, 659)','ม.845','ม.838','ม.821'], correct:0,
+    exp:'ตัวแทนอาชีพเฉพาะประมาท → รับผิดตาม ม.812 ประกอบ ม.807 ว.2 และ ม.659'},
+  {q:'ตัวแทนค้าต่างขายเชื่อ ลูกค้าไม่จ่าย โดยไม่ได้เป็นตัวแทนฐานประกัน ผลเป็นอย่างไร?',
+    opts:['ตัวแทนต้องจ่ายแทนตัวการ','ตัวแทนไม่ต้องรับผิดต่อตัวการ (ม.838)','ตัวการต้องจ่ายให้ตัวแทน','สัญญาเป็นโมฆะ'], correct:1,
+    exp:'ม.838 หลัก: ตัวแทนค้าต่างไม่ต้องรับผิดต่อตัวการ เว้นเข้าข้อยกเว้น'},
+  {q:'ช่วยชี้ช่องขายที่ดินจนสำเร็จ แต่ไม่มีสัญญานายหน้า จะได้บำเหน็จ 3% ไหม?',
+    opts:['ได้ เพราะสำเร็จแล้ว','ได้ครึ่งหนึ่ง','ไม่ได้ เพราะไม่มีสัญญานายหน้า (ม.845)','ได้ตามธรรมเนียม'], correct:2,
+    exp:'ม.845 ต้องมีสัญญานายหน้า + สำเร็จเพราะชี้ช่อง จึงจะได้บำเหน็จ'},
+  {q:'มอบอำนาจให้ไปทำสัญญาซื้อขายที่ดิน การตั้งตัวแทนต้องมีแบบอย่างไร?',
+    opts:['ด้วยวาจาก็ได้','ต้องมีหลักฐานเป็นหนังสือ (ม.798+456)','ต้องจดทะเบียน','ไม่ต้องมีแบบ'], correct:1,
+    exp:'ม.798: กิจการที่ต้องมีหลักฐานเป็นหนังสือ การตั้งตัวแทนก็ต้องมีหลักฐานเป็นหนังสือ'},
+  {q:'ตัวแทนทำการ "ปราศจากอำนาจ" และตัวการไม่ให้สัตยาบัน ผลคือ?',
+    opts:['ผูกพันตัวการเต็มที่','ไม่ผูกพันตัวการ ตัวแทนรับผิดเอง (ม.823)','โมฆียะ','ผูกพันบุคคลภายนอกเท่านั้น'], correct:1,
+    exp:'ม.823: ไม่ผูกพันตัวการ เว้นสัตยาบัน; ไม่สัตยาบัน ตัวแทนรับผิดต่อบุคคลภายนอกเอง'},
+  {q:'ข้อใดคือ 1 ใน 6 เรื่องที่ตัวแทนรับมอบอำนาจ "ทั่วไป" ทำไม่ได้ (ม.801)?',
+    opts:['ซื้อสังหาริมทรัพย์','ให้เช่าอสังหาฯ เกิน 3 ปี','รับชำระหนี้','จ้างลูกจ้าง'], correct:1,
+    exp:'ม.801 ว.2: ให้เช่าอสังหาฯ เกิน 3 ปี เป็น 1 ใน 6 ข้อที่ทำไม่ได้'},
+  {q:'ตัวแทนค้าต่างขายทรัพย์ได้ราคาสูงกว่าที่ตัวการกำหนด ส่วนเกินเป็นของใคร?',
+    opts:['ตัวแทน','ตัวการ (ม.840)','แบ่งครึ่ง','บุคคลภายนอก'], correct:1,
+    exp:'ม.840: ขายสูง/ซื้อต่ำกว่ากำหนด ส่วนดีต้องคืนตัวการ'},
+  {q:'"เชิดตัวแทน" (ม.821) คุ้มครองใคร?',
+    opts:['ตัวการ','ตัวแทน','บุคคลภายนอกผู้สุจริต','เจ้าพนักงาน'], correct:2,
+    exp:'ม.821: ผู้เชิดต้องรับผิดต่อบุคคลภายนอกผู้สุจริต เสมือนเป็นตัวแทนจริง'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=6?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=6?'เก่งมาก! พร้อมสอบระดับหนึ่งแล้ว 🎉':'ทบทวนแท็บบทเรียน & เดินเคสอีกรอบแล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.gold, borderColor:C.gold}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="gold">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuickQuizTab() {
+  const [view, setView] = useState('quick');
+  const typeColor = {mnem:C.purple, flow:C.cyan, contrast:C.red, chunk:C.blue, formula:C.amberDark};
+  const typeBg = {mnem:C.purpleBg, flow:C.cyanBg, contrast:C.redBg, chunk:C.blueBg, formula:'#F7F0E0'};
+  return (
+    <div className="fade-up">
+      <div style={{textAlign:'center', marginBottom:18}}>
+        <Segmented size="large" value={view} onChange={setView}
+          options={[{label:'⚡ การ์ดจำด่วน',value:'quick'},{label:'🎮 ทำควิซ',value:'quiz'}]}/>
+      </div>
+      {view==='quick' ? (
+        <div>
+          {quickSections.map((q,i)=> q.divider ? (
+            <Divider key={i} orientation="left" style={{borderColor:C.border, color:C.goldDark, fontWeight:700, fontSize:16}}>{q.divider}</Divider>
+          ) : (
+            <div key={i} className="qc" style={{background:typeBg[q.type], borderLeft:`4px solid ${typeColor[q.type]}`, borderRadius:'0 12px 12px 0', padding:'12px 16px', marginBottom:10, border:`1px solid ${typeColor[q.type]}22`, borderLeftWidth:4}}>
+              <div style={{display:'flex', gap:10, alignItems:'baseline', flexWrap:'wrap'}}>
+                <span style={{fontWeight:800, color:typeColor[q.type], fontSize:15, minWidth:56, fontFamily:"'Noto Serif Thai'"}}>{q.s}</span>
+                <span style={{fontWeight:700, color:C.text}}>{q.t}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:4}}>{q.b}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+          <Quiz/>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'lab', label:'🧪 ห้องทดลอง', children:<CaseLab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+    {key:'quick', label:'⚡ จำด่วน + ควิซ', children:<QuickQuizTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.gold, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.gold, itemActiveColor:C.goldDark, itemSelectedColor:C.goldDark, itemHoverColor:C.amber, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.gold, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.goldDark}, ${C.amber})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(120,100,70,.25)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 2011 / 2111 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:30, fontWeight:800}}>กฎหมายตัวแทน–นายหน้า</h1>
+          <div style={{color:'#FFF4E4', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Harvard</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 797–849 (และ ม.456, 659) · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>
