@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หลักกฎหมายมหาชน LAW1101 · ห้องเรียนอินเทอร์แอกทีฟ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#EEF2F7;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#26303F;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#C9D4E3; color:#26303F; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#E3E9F2; }
+  ::-webkit-scrollbar-thumb { background:#A9BAD1; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#7E97C0; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  /* Flip card */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  /* Quick card hover */
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(63,91,140,.18); }
+
+  /* Reveal animation */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  /* Diagram animations */
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#2E4468; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(63,91,140,.16); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(63,91,140,.35);} 50%{ box-shadow:0 0 0 8px rgba(63,91,140,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress, Steps,
+        Collapse, Switch, Select, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE (โทนคราม–ศิลาราชการ เฉพาะวิชามหาชน) ============ */
+const C = {
+  navy:'#3F5B8C', navyDark:'#2E4468', navyLight:'#7E97C0',
+  amber:'#A9823F', amberDark:'#7E6231',
+  bg:'#EEF2F7', surface:'#E3E9F2', surface2:'#D8E0EC', surface3:'#F3F6FA',
+  border:'#C9D4E3', borderDark:'#A9BAD1',
+  text:'#26303F', text2:'#46536A', text3:'#6B7A92',
+  white:'#FBFCFE',
+  green:'#4E8A6A', greenBg:'#EAF4EE',
+  red:'#B65454', redBg:'#F6ECEA',
+  purple:'#7A6699', purpleBg:'#F0EDF6',
+  blue:'#4E7AA8', blueBg:'#EAF1F7',
+  cyan:'#4E8A8A', cyanBg:'#EAF3F3',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.amber, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+// ป้ายหลักกฎหมาย (วิชานี้อ้าง "หลัก/พ.ร.บ." มากกว่าเลขมาตรา)
+const Pr = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.navyDark, padding:'1px 9px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap', fontSize:12.5}}>{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='navy', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    purple:[C.purple,C.purpleBg], cyan:[C.cyan,C.cyanBg], navy:[C.navyDark,C.surface3],
+    amber:[C.amberDark,'#F7F2E6']
+  };
+  const [cc,bb] = map[tone]||map.navy;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+// แถวหลักย่อยในบทเรียน
+const HRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Pr>{n}</Pr>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+function DiaNode({x, y, w=150, h=62, title, sub, color, active, onClick}) {
+  return (
+    <g style={{cursor:onClick?'pointer':'default'}} onClick={onClick} className={active?'node-pulse':''}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="16"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11.5"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.15 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+/* แผนภาพแกนของวิชา: กฎหมาย–รัฐ–เอกชน–ศาล (สลับได้ 3 โหมด) */
+function PublicLawDiagram() {
+  const modes = {
+    relation: {
+      label:'นิติสัมพันธ์มหาชน', color:C.blue,
+      desc:'ในกฎหมายมหาชน คู่กรณีฝ่ายหนึ่งคือ "รัฐ/หน่วยงานของรัฐ/เจ้าหน้าที่ของรัฐ" ซึ่งมีอำนาจเหนือเอกชน — รัฐออก "คำสั่งฝ่ายเดียว" บังคับเอาได้โดยไม่ต้องได้รับความยินยอม (หลักความไม่เท่าเทียม) ต่างจากกฎหมายเอกชนที่คู่สัญญาเสมอภาค ต้องมีเจตนาเสนอ–สนองตรงกัน',
+    },
+    nitirat: {
+      label:'หลักนิติรัฐ', color:C.red,
+      desc:'"ไม่มีกฎหมาย ไม่มีอำนาจ" — รัฐเองก็ต้องอยู่ "ใต้" กฎหมาย จะใช้อำนาจใดได้ต่อเมื่อมีกฎหมายให้อำนาจไว้ และกฎหมายนั้นต้องเป็นกฎหมายที่ดี ถูกต้องเป็นธรรม นี่คือหัวใจของทั้งวิชา ออกสอบเกือบทุกเทอม',
+    },
+    control: {
+      label:'การควบคุมอำนาจรัฐ', color:C.green,
+      desc:'เมื่อรัฐมีอำนาจเหนือ ย่อมต้องมี "ระบบตรวจสอบ" — เอกชนที่ถูกกระทบสิทธิฟ้องศาลปกครองได้ (ไทยใช้ระบบศาลคู่) ศาลตรวจสอบความชอบด้วยกฎหมายและเพิกถอนคำสั่งที่มิชอบ นอกจากนั้นยังควบคุมโดยรัฐสภาและองค์กรอิสระได้อีกชั้นหนึ่ง',
+    }
+  };
+  const [m, setM] = useState('relation');
+  const M = modes[m];
+  const L = {x:330, y:60}, S = {x:130, y:190}, P = {x:530, y:190}, J = {x:330, y:320};
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="large"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 660 390" style={{width:'100%', height:'auto', maxHeight:430}}>
+          {/* กฎหมาย → รัฐ : ให้อำนาจ/จำกัดอำนาจ */}
+          <DiaEdge id="ls" d={`M ${L.x-60} ${L.y+22} Q 190 100 ${S.x+18} ${S.y-34}`} color={m==='nitirat'?C.red:C.navy}
+            label={m==='nitirat'?'ให้อำนาจ + จำกัดอำนาจ':'ให้อำนาจเท่าที่กำหนด'} labelX={190} labelY={92}
+            dashed={m!=='nitirat'} animate dur={2.6} width={m==='nitirat'?4:3} dim={m==='control'} />
+          {/* รัฐ → เอกชน : คำสั่งฝ่ายเดียว */}
+          <DiaEdge id="sp" d={`M ${S.x+72} ${S.y} L ${P.x-72} ${P.y}`} color={m==='relation'?C.red:C.blue}
+            label={m==='relation'?'คำสั่งฝ่ายเดียว (อำนาจเหนือ)':'ใช้อำนาจปกครอง'} labelX={330} labelY={168}
+            animate dur={2.2} width={m==='relation'?4:3} dim={m==='nitirat'} />
+          {/* เอกชน → ศาล : ฟ้องตรวจสอบ */}
+          <DiaEdge id="pj" d={`M ${P.x-30} ${P.y+34} Q 470 300 ${J.x+70} ${J.y-14}`} color={m==='control'?C.green:C.cyan}
+            label={m==='control'?'ฟ้องศาลปกครอง':'สิทธิฟ้องคดี'} labelX={480} labelY={286}
+            animate dur={2.4} width={m==='control'?4:2.5} dim={m==='relation'} />
+          {/* ศาล → รัฐ : เพิกถอนคำสั่งมิชอบ */}
+          {m==='control' &&
+            <DiaEdge id="js" d={`M ${J.x-70} ${J.y-14} Q 190 300 ${S.x+26} ${S.y+34}`} color={C.red}
+              label="เพิกถอนคำสั่งที่มิชอบ" labelX={185} labelY={286} animate dur={2.2} width={4} />}
+          {/* นิติรัฐ: เอกชนได้รับความคุ้มครองจากกฎหมาย */}
+          {m==='nitirat' &&
+            <DiaEdge id="lp" d={`M ${L.x+60} ${L.y+22} Q 470 100 ${P.x-18} ${P.y-34}`} color={C.green}
+              label="คุ้มครองสิทธิเสรีภาพ" labelX={475} labelY={92} animate dur={2.8} width={3.5} />}
+
+          <DiaNode {...L} title="กฎหมาย" sub="รัฐธรรมนูญ · พ.ร.บ." color={C.purple} active />
+          <DiaNode {...S} title="รัฐ / ฝ่ายปกครอง" sub="เจ้าหน้าที่ของรัฐ" color={C.navy} active />
+          <DiaNode {...P} title="เอกชน" sub="ประชาชน" color={C.cyan} active />
+          <DiaNode {...J} title={m==='control'?'ศาลปกครอง':'ศาล'} sub={m==='control'?'ระบบศาลคู่':'องค์กรตุลาการ'} color={M.color==='#B65454'?C.blue:M.color} active />
+        </svg>
+      </div>
+      <Box tone={m==='relation'?'blue':(m==='nitirat'?'red':'green')} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        {M.desc}
+      </Box>
+    </div>
+  );
+}
+
+// แถบขั้นตอน (pipeline) เคลื่อนไหว
+function FlowStrip({steps, color=C.navy}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs${color.replace('#','')}${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['กฎหมายมหาชน', 'Public Law', 'กฎหมายที่ให้ "อำนาจและหน้าที่" แก่รัฐ/หน่วยงาน/เจ้าหน้าที่ของรัฐ เพื่อประโยชน์ของประชาชนส่วนใหญ่ โดยรัฐมีอำนาจเหนือผู้ใต้ปกครอง', C.navy],
+    ['หลักนิติรัฐ', 'Legal State / Rechtsstaat', 'รัฐต้องปกครอง "โดยกฎหมาย" ไม่ใช่ตามอำเภอใจ — ไม่มีกฎหมายให้อำนาจ ฝ่ายปกครองทำมิได้', C.red],
+    ['หลักนิติธรรม', 'The Rule of Law', 'หลักของอังกฤษ (Dicey): กฎหมายเป็นใหญ่ · เสมอภาคต่อหน้ากฎหมาย · สิทธิปัจเจกชนคุ้มครองโดยศาล', C.purple],
+    ['ประโยชน์สาธารณะ', 'Public Interest', 'ความต้องการของคนส่วนใหญ่ในสังคม ซึ่งรัฐมีหน้าที่จัดหาในรูป "บริการสาธารณะ" — เป้าหมายสูงสุดของกฎหมายมหาชน', C.green],
+    ['อำนาจดุลพินิจ', 'Discretionary Power', 'อำนาจที่กฎหมายเปิดช่องให้ฝ่ายปกครอง "เลือก" ตัดสินใจได้ — จึงต้องมีระบบควบคุมการใช้', C.blue],
+    ['ระบบศาลคู่', 'Dual Court System', 'แยกศาลปกครอง (คดีมหาชน) ออกจากศาลยุติธรรม (คดีเอกชน) — ไทย ฝรั่งเศส เยอรมนี ใช้ระบบนี้', C.cyan],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>วิชานี้ตอบคำถามเดียว: <strong>"รัฐมีอำนาจเหนือเรา แล้วอะไรจะกันไม่ให้รัฐใช้อำนาจตามอำเภอใจ?"</strong> คำตอบคือ "กฎหมายมหาชน" — กฎหมายที่ทั้ง <strong>ให้อำนาจ</strong> รัฐ และ <strong>ควบคุม</strong> รัฐไปพร้อมกัน ทุกบทในวิชานี้วนอยู่รอบแกนนี้</span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>🏗️ นึกภาพง่าย ๆ ด้วยชีวิตจริง</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          สมมติเทศบาลจะ <strong>สั่งรื้อ</strong> แผงลอยหน้าบ้านคุณ — เทศบาลไม่ต้องมาขอความยินยอม สั่งได้ฝ่ายเดียว
+          เพราะเป็น <Pill color={C.navy} bg={C.blueBg}>ฝ่ายปกครอง</Pill> ที่มี <Pill color={C.red} bg={C.redBg}>อำนาจเหนือ</Pill> เอกชน
+          แต่! เทศบาลจะสั่งได้ก็ต่อเมื่อ <strong>มีกฎหมายให้อำนาจ</strong> เท่านั้น (หลักนิติรัฐ)
+          และถ้าสั่งเกินกว่าที่กฎหมายให้ คุณ <Pill color={C.green} bg={C.greenBg}>ฟ้องศาลปกครอง</Pill> ให้เพิกถอนได้ — ครบวงจรกฎหมายมหาชนในหนึ่งย่อหน้า
+        </Paragraph>
+        <FlowStrip color={C.navy} steps={[
+          {icon:'📜', t:'กฎหมายให้อำนาจ', bg:C.purpleBg},
+          {icon:'🏛️', t:'รัฐใช้อำนาจฝ่ายเดียว', bg:C.blueBg},
+          {icon:'🙎', t:'เอกชนถูกกระทบสิทธิ', bg:C.cyanBg},
+          {icon:'⚖️', t:'ศาลปกครองตรวจสอบ', bg:C.greenBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: กฎหมาย–รัฐ–เอกชน–ศาล</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับโหมดเพื่อดูว่า "เส้นเน้น" ย้ายไปที่ความสัมพันธ์ใด — สามโหมดนี้คือโครงข้อสอบ 3 ข้อของวิชานี้เลย</Paragraph>
+      <PublicLawDiagram/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 6 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', flexWrap:'wrap'}}>
+                <span style={{fontWeight:700, fontSize:16.5, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚖️ มหาชน vs เอกชน — ตาราง 6 ทฤษฎีที่ออกสอบแน่นอน</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'ประเด็น/ทฤษฎี', dataIndex:'k', width:170, render:t=><strong style={{color:C.navyDark}}>{t}</strong>},
+          {title:<span style={{color:C.navy}}>กฎหมายมหาชน</span>, dataIndex:'pub'},
+          {title:<span style={{color:C.cyan}}>กฎหมายเอกชน</span>, dataIndex:'pri'},
+        ]}
+        dataSource={[
+          {key:1, k:'1. ทฤษฎีตัวการ', pub:'รัฐ/หน่วยงานรัฐ/จนท.รัฐ ↔ เอกชน', pri:'เอกชน ↔ เอกชน'},
+          {key:2, k:'2. ทฤษฎีผลประโยชน์', pub:'มุ่งประโยชน์สาธารณะ ไม่มุ่งกำไร', pri:'มุ่งประโยชน์ส่วนตัว/กำไร'},
+          {key:3, k:'3. ทฤษฎีความไม่เท่าเทียม', pub:'ไม่เสมอภาค รัฐสั่งฝ่ายเดียว บังคับเอาได้', pri:'เสมอภาค สมัครใจ เจตนาเสนอ–สนองตรงกัน'},
+          {key:4, k:'4. นิติวิธี', pub:'สร้างหลักกฎหมายมหาชนเอง ปฏิเสธการนำกฎหมายเอกชนมาใช้โดยตรง', pri:'ใช้หลักกฎหมายเอกชน เช่น ป.พ.พ.'},
+          {key:5, k:'5. นิติปรัชญา', pub:'ประสาน/สร้างสมดุลระหว่างประโยชน์สาธารณะกับสิทธิเอกชน', pri:'ความยุติธรรมเท่าเทียม หลักศักดิ์สิทธิ์แห่งการแสดงเจตนา'},
+          {key:6, k:'6. เขตอำนาจศาล', pub:'ศาลพิเศษ (ศาลปกครอง ศาลรัฐธรรมนูญ) ระบบไต่สวน', pri:'ศาลยุติธรรม (แพ่ง อาญา) ระบบกล่าวหา'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        ท่องปรัชญาคู่นี้ให้ขึ้นใจ: กฎหมายมหาชน <strong>"ไม่มีกฎหมายให้อำนาจ → ทำมิได้"</strong> แต่กฎหมายเอกชน <strong>"ไม่มีกฎหมายห้าม → ย่อมทำได้"</strong> — โจทย์ชอบถามกลับด้าน เช่น "รัฐจะแทรกแซงนิติสัมพันธ์ระหว่างเอกชนกับเอกชนได้หรือไม่" คำตอบต้องเริ่มจากคู่ปรัชญานี้เสมอ
+      </Box>
+      <Box tone="cyan" title="ตัวช่วยจำ 6 ทฤษฎี" icon="🧠">
+        <strong>"ตัว–ผล–ไม่เท่า–นิติ–ปรัชญา–ศาล"</strong> (ตัวการ, ผลประโยชน์, ความไม่เท่าเทียม, นิติวิธี, นิติปรัชญา, เขตอำนาจศาล)
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+const lessonModules = [
+  {
+    key:'l1', star:1, icon:'📜', title:'กฎหมายคืออะไร — นิยามจากนักกฎหมายคนสำคัญ',
+    chips:['บทนำ'],
+    body:()=>(
+      <div>
+        <Box tone="navy" title="สุภาษิตเปิดวิชา" icon="🏺">
+          <strong>"Ubi societas ibi jus"</strong> = "ที่ไหนมีสังคม ที่นั่นมีกฎหมาย" — กฎหมายเป็นศาสตร์แห่งบรรทัดฐาน (Normative Science) เกิดคู่กับสังคมมนุษย์เสมอ
+        </Box>
+        <Box tone="blue" title="นิยามที่ต้องยกอ้างได้" icon="👨‍⚖️">
+          <HRule n="กรมหลวงราชบุรีฯ">กฎหมาย คือ คำสั่งของผู้ปกครองว่าการแผ่นดินต่อราษฎรทั้งหลาย เมื่อไม่ทำตามแล้วธรรมดาต้องมีโทษ</HRule>
+          <HRule n="John Austin">คำสั่งของรัฏฐาธิปัตย์ที่กำหนดหน้าที่ให้บุคคลปฏิบัติตาม มิฉะนั้นจะได้รับผลร้าย</HRule>
+          <HRule n="หยุด แสงอุทัย">กฎหมายแบ่งเป็น (1) กฎหมายตามเนื้อความ และ (2) กฎหมายตามแบบพิธี</HRule>
+          <HRule n="ปรีดี เกษมทรัพย์">กฎเกณฑ์ที่เป็นแบบแผนความประพฤติของมนุษย์ในสังคม มีกระบวนการที่เป็นกิจจะลักษณะ</HRule>
+          <HRule n="โภคิน พลกุล">กฎเกณฑ์ที่วางระเบียบแห่งการอยู่ร่วมกันของมนุษย์ในสังคม โดยมีสภาพบังคับของสังคมนั้น ๆ</HRule>
+        </Box>
+        <Box tone="green" title="องค์ประกอบ 'กฎหมายตามเนื้อความ' 5 ข้อ (ศ.ดร.หยุด แสงอุทัย)" icon="✅">
+          (1) เป็นข้อบังคับ (2) เป็นข้อบังคับ<strong>ของรัฐ</strong> (รัฐ = ราษฎร + อาณาเขต + อำนาจอธิปไตย) (3) กำหนด<strong>ความประพฤติ</strong> (การเคลื่อนไหว/งดเว้นเคลื่อนไหวร่างกาย — ลำพังความคิดในใจกฎหมายไม่เกี่ยว) (4) กำหนดความประพฤติ<strong>ของมนุษย์</strong> (5) ฝ่าฝืนต้องได้รับ<strong>ผลร้าย/ถูกลงโทษ</strong>
+        </Box>
+        <Box tone="amber" title="จุดสอบ" icon="🎯">
+          โจทย์ประเภท "จงอธิบายความหมายของกฎหมายมหาชน" อาจารย์ให้คะแนนเพิ่มถ้าเปิดคำตอบด้วยนิยามกฎหมายทั่วไปสัก 1 นิยาม (ยกชื่อผู้ให้นิยาม) แล้วค่อยลงนิยามกฎหมายมหาชน — ดูเป็น "นักกฎหมาย" กว่าเขียนลอย ๆ
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l2', star:2, icon:'🏛️', title:'ความหมายและขอบเขตของกฎหมายมหาชน',
+    chips:['บทนำ','บทที่ 1'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="นิยามที่ต้องท่องได้เป๊ะ" icon="✅">
+          <strong>กฎหมายมหาชน</strong> คือ กฎหมายที่บัญญัติให้ <strong>อำนาจและหน้าที่</strong> แก่รัฐ หน่วยงานทางปกครอง หน่วยงานของรัฐ และเจ้าหน้าที่ของรัฐ ในทางปกครองและ<strong>การบริการสาธารณะ</strong> เพื่อประโยชน์ของประชาชนส่วนใหญ่ ในฐานะที่ฝ่ายปกครองมี<strong>อำนาจเหนือ</strong>ผู้ใต้ปกครอง
+        </Box>
+        <Box tone="blue" title="ขอบเขต 4 สาขา" icon="🗂️">
+          <HRule n="รัฐธรรมนูญ">วางระเบียบการปกครองของรัฐในทางการเมือง: โครงสร้างของรัฐ ระบอบการปกครอง การใช้อำนาจอธิปไตย</HRule>
+          <HRule n="ปกครอง">วางหลักการจัดระเบียบราชการบริหาร + การจัดทำบริการสาธารณะ</HRule>
+          <HRule n="การคลัง">งบประมาณและการเงินของรัฐ</HRule>
+          <HRule n="อาญา">กำหนดความผิดและโทษ (มีลักษณะเป็นกฎหมายมหาชน)</HRule>
+        </Box>
+        <Box tone="red" title="คู่ปรัชญาที่พลิกคำตอบทั้งข้อ" icon="🎯">
+          มหาชน: <strong>"เมื่อไม่มีกฎหมายให้อำนาจ → จะทำมิได้"</strong> · เอกชน: <strong>"เมื่อไม่มีกฎหมายห้าม → ย่อมทำได้"</strong><br/>
+          ตัวอย่าง: เจ้าหน้าที่อยากเก็บ "ค่าธรรมเนียมพิเศษ" ที่ไม่มีกฎหมายรองรับ = ทำไม่ได้เด็ดขาด แม้เจตนาดีแค่ไหนก็ตาม
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'⚔️', title:'ความแตกต่างมหาชน/เอกชน 6 ประการ (ออกสอบแน่นอน)',
+    chips:['บทที่ 1'],
+    body:()=>(
+      <div>
+        <Box tone="red" title="⭐⭐⭐ หัวข้อออกสอบถี่สุดของวิชา" icon="🔥">
+          ต้องเขียนได้ครบทั้ง 6 ทฤษฎีแบบความเรียง ไม่ใช่แค่ลิสต์: <strong>(1) ตัวการ</strong> — มหาชนมีรัฐเป็นคู่กรณีฝ่ายหนึ่ง เอกชนคือเอกชนกับเอกชน · <strong>(2) ผลประโยชน์</strong> — มหาชนมุ่งประโยชน์สาธารณะ เอกชนมุ่งกำไรส่วนตัว · <strong>(3) ความไม่เท่าเทียม</strong> — มหาชนรัฐสั่งฝ่ายเดียวได้ เอกชนต้องสมัครใจเสมอภาค · <strong>(4) นิติวิธี</strong> — มหาชนสร้างหลักของตนเอง ปฏิเสธการนำกฎหมายเอกชนมาใช้โดยตรง · <strong>(5) นิติปรัชญา</strong> — มหาชนประสานประโยชน์สาธารณะกับสิทธิเอกชน เอกชนยึดหลักศักดิ์สิทธิ์แห่งการแสดงเจตนา · <strong>(6) เขตอำนาจศาล</strong> — มหาชนขึ้นศาลพิเศษ (ปกครอง/รัฐธรรมนูญ, ระบบไต่สวน) เอกชนขึ้นศาลยุติธรรม (ระบบกล่าวหา)
+        </Box>
+        <Box tone="cyan" title="เทคนิคเขียนตอบให้ได้คะแนนเต็ม" icon="✍️">
+          เปิดแต่ละข้อด้วยประโยค "เมื่อพิจารณาในแง่<strong>...</strong>แล้ว เห็นว่า..." แล้วปิดท้ายทั้งหมดว่า "กล่าวโดยสรุป กฎหมายมหาชนแตกต่างจากกฎหมายเอกชนครบทั้ง 6 ประการดังวินิจฉัยข้างต้น"
+        </Box>
+        <Box tone="amber" title="กับดัก" icon="⚠️">
+          โจทย์ 1/67 และ 2/66 ถามพ่วงว่า "รัฐแทรกแซงนิติสัมพันธ์ระหว่างเอกชนกับเอกชนได้หรือไม่" — ตอบว่า <strong>โดยหลักไม่ได้</strong> เพราะเป็นแดนของกฎหมายเอกชน (หลักเสรีภาพในการทำสัญญา) เว้นแต่มี<strong>กฎหมายมหาชนให้อำนาจ</strong>ไว้เพื่อคุ้มครองประโยชน์สาธารณะ เช่น กฎหมายคุ้มครองผู้บริโภค การควบคุมราคาสินค้า — ถ้ามีกฎหมายให้อำนาจ รัฐจึงแทรกแซงได้เท่าที่กฎหมายกำหนด
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:2, icon:'🧬', title:'ลักษณะเฉพาะของกฎหมายมหาชน 6 ประการ',
+    chips:['บทที่ 2'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="6 ลักษณะ" icon="🧬">
+          <HRule n="1 ปฏิรูป">เป็นกฎหมายที่ใช้ในการปฏิรูป — ร.5 ยกเลิกจตุสดมภ์ ตั้งเทศาภิบาล เลิกทาส · พ.ศ. 2475 เปลี่ยนเป็นประชาธิปไตย · รธน. ม.258 กำหนดการปฏิรูป 7 ด้าน</HRule>
+          <HRule n="2 นิติบุคคลมหาชน">กระทรวง ทบวง กรม · จังหวัด · อปท. (อบจ. เทศบาล อบต. กทม. พัทยา) · รัฐวิสาหกิจ · วัด (พุทธ) · องค์การมหาชน — จัดตั้งโดยกฎหมาย เพื่อบริการสาธารณะ (ต่างจากบริษัท/สมาคม/มูลนิธิที่จดทะเบียนตาม ป.พ.พ. เพื่อประโยชน์ส่วนตัว)</HRule>
+          <HRule n="3 ประโยชน์สาธารณะ">มุ่งประโยชน์ส่วนรวม ไม่ใช่ส่วนตัว</HRule>
+          <HRule n="4 ควบคุมอำนาจรัฐ">มีวัตถุประสงค์ควบคุมการใช้อำนาจรัฐ (ทฤษฎีนิติรัฐ + ทฤษฎีจำกัดอำนาจด้วยความสมัครใจแบบเยอรมนี)</HRule>
+          <HRule n="5 ไม่เสมอภาค">รัฐบังคับเอาได้ — เอกสิทธิ์ฝ่ายปกครอง: กระทำไปได้ก่อน ยกเลิก/แก้ไขสัญญาฝ่ายเดียวได้ (โดยคำนึงสาธารณประโยชน์)</HRule>
+          <HRule n="6 มีพัฒนาการ">ปรับเปลี่ยนตามยุคสมัย — ต่างประเทศเริ่มยุคโรมัน ไทยเริ่มจริงจังสมัย ร.5</HRule>
+        </Box>
+        <Box tone="amber" title="จุดจำสำหรับสอบ" icon="🎯">
+          <strong>กรมหลวงราชบุรีดิเรกฤทธิ์</strong> = บิดาแห่งกฎหมายไทย · <strong>รัชกาลที่ 5</strong> = พระบิดาแห่งกฎหมายมหาชนของไทย — สลับกันเมื่อไหร่เสียคะแนนทันที
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l5', star:3, icon:'🏰', title:'หลักนิติรัฐ (Legal State / Rechtsstaat) — หัวใจของวิชา',
+    chips:['บทที่ 3','บทที่ 9 เดิม'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="ความเป็นมา + นิยาม" icon="📖">
+          กำเนิดจาก<strong>เยอรมนี</strong> (Rechtsstaat, ระบบ Civil Law) — ศตวรรษที่ 17-18 ประชาชนยุโรปต่อต้านสมบูรณาญาสิทธิราชย์ → รธน.สหรัฐฯ (1788), ปฏิวัติฝรั่งเศส (1789) · <strong>Robert von Mohl</strong>: "การดำรงอยู่ของรัฐไม่ควรขึ้นอยู่กับกำลังอำนาจ แต่ควรขึ้นอยู่กับเหตุผล" · หลักนิติรัฐ = ระบบที่สร้างขึ้นเพื่อ<strong>ป้องกันและแก้ไขเยียวยาการใช้อำนาจรัฐตามอำเภอใจ</strong> เพื่อคุ้มครองสิทธิเสรีภาพของประชาชน · <strong>รัชกาลที่ 4</strong> ทรงเรียกว่า <strong>"ระบบนับถือกฎหมาย"</strong>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ สาระสำคัญ 3 ประการ (ท่องให้ได้)" icon="🎯">
+          (1) <strong>จำกัดการใช้อำนาจรัฐ/ผู้ปกครอง</strong> ให้อยู่ในกรอบของกฎหมาย และกฎหมายนั้นต้องเป็นกฎหมายที่ดี<br/>
+          (2) <strong>คุ้มครองสิทธิเสรีภาพของประชาชน</strong> จากการใช้อำนาจโดยมิชอบของผู้ปกครอง<br/>
+          (3) <strong>เนื้อหาของกฎหมายต้องถูกต้องเป็นธรรม</strong> ยุติธรรม สมเหตุสมผล ไม่ขัดหลักกฎหมายที่ดี
+        </Box>
+        <Box tone="purple" title="องค์ประกอบทางรูปแบบ" icon="🧱">
+          <HRule n="แบ่งแยกอำนาจ">ไม่ให้อำนาจรวมศูนย์ที่องค์กรเดียว — นิติบัญญัติ · บริหาร · ตุลาการ ดุลและคานกัน</HRule>
+          <HRule n="ชอบด้วยกฎหมาย">นิติบัญญัติผูกพันต่อรัฐธรรมนูญ · บริหาร/ตุลาการผูกพันต่อกฎหมาย · ไม่มีกฎหมายให้อำนาจ ฝ่ายปกครองบังคับประชาชนไม่ได้</HRule>
+          <HRule n="ประกันสิทธิกระบวนพิจารณา">รับฟังคู่กรณี นำพยานหลักฐานเข้าหักล้างได้ กระบวนการต้องเป็นธรรม (fair)</HRule>
+          <HRule n="เข้าถึงกระบวนการยุติธรรม">เอกชนต้องมีหนทางนำข้อพิพาทไปสู่ศาลได้</HRule>
+        </Box>
+        <Box tone="cyan" title="องค์ประกอบทางเนื้อหา" icon="📦">
+          (1) <strong>ประกันสิทธิเสรีภาพขั้นพื้นฐาน</strong> — ศักดิ์ศรีความเป็นมนุษย์ เสรีภาพ ความเสมอภาค (2) <strong>ความชัดเจนแน่นอนของกฎหมาย</strong> — กฎหมายที่ไม่ชัดเจนถือว่าขัดรัฐธรรมนูญ (3) <strong>ห้ามมีผลย้อนหลัง</strong> — โดยเฉพาะกฎหมายอาญาที่เป็นโทษ (4) <strong>ความได้สัดส่วน/พอสมควรแก่เหตุ</strong></Box>
+        <Box tone="amber" title="จุดสอบ: 'ไม่มีกฎหมาย ไม่มีอำนาจ'" icon="🔥">
+          ประโยคนี้ถูกยกเป็นโจทย์ตรง ๆ ทั้ง 2/67 และ 2/66 — โครงตอบ: (ก) วางหลักนิติรัฐ + หลักความชอบด้วยกฎหมาย (ข) อธิบายว่าฝ่ายปกครองจะกระทำการอันบังคับประชาชนได้ต่อเมื่อมีกฎหมายให้อำนาจ (ค) ยกตัวอย่าง เช่น จะเวนคืนที่ดินต้องมี พ.ร.บ.เวนคืนฯ ให้อำนาจ จะเก็บภาษีต้องมีกฎหมายภาษีรองรับ (ง) สรุป
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l6', star:2, icon:'👑', title:'หลักนิติธรรม (Rule of Law) และข้อต่างจากหลักนิติรัฐ',
+    chips:['บทที่ 3'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลักนิติธรรมของ A.V. Dicey (อังกฤษ) — 3 ประการ" icon="✅">
+          (1) <strong>Supremacy of Law</strong> กฎหมายเป็นใหญ่ — ไม่มีใครถูกลงโทษเว้นแต่ทำผิดกฎหมาย และพิจารณาโดยศาลยุติธรรม (2) <strong>Equality before the Law</strong> ทุกคนเสมอภาคต่อหน้ากฎหมาย ไม่มีใครอยู่เหนือกฎหมาย (3) <strong>Constitution based on Individual Rights</strong> สิทธิเสรีภาพมิใช่เพราะรัฐธรรมนูญประทาน หากแต่เพราะ<strong>ศาล</strong>ยอมรับบังคับให้
+        </Box>
+        <Box tone="red" title="⭐⭐ ตารางต่างนิติรัฐ vs นิติธรรม (ออกสอบบ่อย)" icon="🎯">
+          <HRule n="บ่อเกิด">นิติรัฐ = Civil Law (ประมวลกฎหมาย) · นิติธรรม = Common Law (คำพิพากษา/จารีต)</HRule>
+          <HRule n="คุ้มครองสิทธิ">นิติรัฐ = บัญญัติไว้ในรัฐธรรมนูญ · นิติธรรม = คุ้มครองโดยศาล</HRule>
+          <HRule n="ควบคุมการตรากฎหมาย">นิติรัฐ = ศาลรัฐธรรมนูญตรวจสอบ · นิติธรรม = รัฐสภาเป็นรัฐาธิปัตย์</HRule>
+          <HRule n="ศาลปกครอง">นิติรัฐ = มี (ระบบศาลคู่) · นิติธรรม = ไม่มี (ศาลยุติธรรมเดียว)</HRule>
+          <HRule n="ประเทศ">นิติรัฐ = ฝรั่งเศส เยอรมนี <strong>ไทย</strong> · นิติธรรม = อังกฤษ สหรัฐอเมริกา</HRule>
+        </Box>
+        <Box tone="cyan" title="ตัวช่วยจำ" icon="🧠">
+          นิติรัฐ = ภาคพื้นยุโรป = Civil Law = <strong>มี</strong>ศาลปกครอง · นิติธรรม = อังกฤษ = Common Law = ศาลเดียว
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:3, icon:'⚖️', title:'หลักความได้สัดส่วน (Principle of Proportionality)',
+    chips:['บทที่ 3','ข้อสอบ 2/67'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.purple} steps={[
+          {icon:'🎯', t:'เหมาะสม: บรรลุวัตถุประสงค์ได้', bg:C.purpleBg},
+          {icon:'🪶', t:'จำเป็น: กระทบสิทธิน้อยสุด', bg:C.blueBg},
+          {icon:'⚖️', t:'แคบ: ได้คุ้มเสีย', bg:C.greenBg},
+        ]}/>
+        <Box tone="red" title="⭐⭐⭐ 3 หลักย่อยที่ต้องเขียนครบ (ข้อสอบ 2/67 ถามตรง)" icon="🎯" style={{marginTop:12}}>
+          (1) <strong>หลักแห่งความเหมาะสม (Suitability)</strong> — มาตรการที่รัฐใช้ต้องสามารถบรรลุวัตถุประสงค์ที่กฎหมายกำหนดได้จริง<br/>
+          (2) <strong>หลักแห่งความจำเป็น (Necessity)</strong> — ในบรรดามาตรการที่บรรลุวัตถุประสงค์ได้ ต้องเลือกอันที่<strong>กระทบสิทธิประชาชนน้อยที่สุด</strong><br/>
+          (3) <strong>หลักความได้สัดส่วนในความหมายอย่างแคบ</strong> — ชั่งน้ำหนักประโยชน์สาธารณะที่ได้ กับประโยชน์เอกชนที่เสียไป ต้องได้สัดส่วนกัน
+        </Box>
+        <Box tone="blue" title="สถานะทางกฎหมาย" icon="🏛️">
+          คำวินิจฉัยศาลรัฐธรรมนูญและคำพิพากษาศาลปกครองสูงสุดยอมรับหลักนี้เป็น<strong>หลักกฎหมายทั่วไป</strong> ที่ผูกพันองค์กรผู้ใช้อำนาจรัฐทุกฝ่าย (นิติบัญญัติ บริหาร ตุลาการ) — ใช้อำนาจละเมิดหลักนี้ = ไม่ชอบด้วยรัฐธรรมนูญและกฎหมาย
+        </Box>
+        <Box tone="amber" title="ตัวอย่างสอนสด" icon="💡">
+          เป้าหมาย: แก้ปัญหาหาบเร่กีดขวางทางเท้า 1 ซอย — ถ้าสั่ง "ห้ามค้าขายทั้งจังหวัด": ผ่านหลักเหมาะสม (แก้ได้จริง) แต่<strong>ตกหลักจำเป็น</strong> (มีวิธีเบากว่า เช่น จัดระเบียบเฉพาะจุด) และตกหลักอย่างแคบ (เสียหายเกินกว่าประโยชน์ที่ได้) → มาตรการไม่ชอบ
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:3, icon:'🤝', title:'ประโยชน์สาธารณะ & หลักบริการสาธารณะ 4 หลัก',
+    chips:['บทที่ 6','ข้อสอบ 1/68'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="นิยาม" icon="✅">
+          <strong>ประโยชน์สาธารณะ</strong> = ความต้องการของประชาชน<strong>ส่วนใหญ่</strong>ในสังคม ซึ่งรัฐมีหน้าที่จัดหาให้ในรูป<strong>บริการสาธารณะ</strong> — เป็นเป้าหมายสูงสุดของกฎหมายมหาชน ไม่ใช่ประโยชน์ของคนบางกลุ่มหรือคนใดคนหนึ่ง · 3 ประเด็นสำคัญ: การดำเนินงานต้องเป็นของรัฐ · องค์กรพิจารณา = รัฐสภา · องค์กรทำหน้าที่ = ฝ่ายปกครอง/บริหาร/นิติบัญญัติ/ตุลาการ
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ หลักบริการสาธารณะ 4 หลัก (1/68 ข้อ 2 ถามตรง)" icon="🎯">
+          (1) <strong>หลักความต่อเนื่อง</strong> — บริการต้องไม่หยุดชะงัก (ไฟฟ้า ประปา ต้องมีตลอด)<br/>
+          (2) <strong>หลักความเสมอภาค</strong> — ทุกคนได้รับบริการเท่าเทียม ไม่เลือกปฏิบัติ<br/>
+          (3) <strong>หลักการปรับปรุงเปลี่ยนแปลง</strong> — ต้องพัฒนาให้ทันความต้องการของยุคสมัย<br/>
+          (4) <strong>หลักการกำกับดูแลโดยรัฐ</strong> — แม้ให้เอกชนดำเนินการแทน รัฐก็ต้องควบคุมคุณภาพ
+        </Box>
+        <Box tone="cyan" title="นิติวิธีของกฎหมายมหาชน" icon="🧪">
+          <strong>เชิงปฏิเสธ</strong>: ไม่นำหลักกฎหมายเอกชนมาใช้โดยตรง (เพราะจุดมุ่งหมาย คู่กรณี อำนาจพิเศษ และผลทางกฎหมายต่างกัน) · <strong>เชิงสร้างสรรค์</strong>: สร้างหลักกฎหมายมหาชนขึ้นเองจากการประสานประโยชน์สาธารณะกับสิทธิเสรีภาพประชาชน — นี่คือ "ปรัชญากฎหมายมหาชน: สร้างดุลยภาพระหว่างประโยชน์สาธารณะกับสิทธิเสรีภาพของเอกชน"
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l9', star:3, icon:'🗺️', title:'การจัดระเบียบบริหารราชการแผ่นดิน (ออก 1 ข้อแน่)',
+    chips:['บทที่ 9','พ.ร.บ. 2534'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.blue} steps={[
+          {icon:'🏢', t:'ส่วนกลาง · รวมอำนาจ', bg:C.blueBg},
+          {icon:'🏞️', t:'ส่วนภูมิภาค · แบ่งอำนาจ', bg:C.cyanBg},
+          {icon:'🏘️', t:'ส่วนท้องถิ่น · กระจายอำนาจ', bg:C.greenBg},
+        ]}/>
+        <Box tone="red" title="⭐⭐⭐ ตาราง 3 ส่วน 3 หลัก (ตาม พ.ร.บ.ระเบียบบริหารราชการแผ่นดิน 2534)" icon="🎯" style={{marginTop:12}}>
+          <HRule n="ส่วนกลาง">กระทรวง ทบวง กรม — <strong>หลักการรวมอำนาจ</strong> (Centralization) อำนาจตัดสินใจอยู่ส่วนกลาง มีลำดับชั้นบังคับบัญชาชัดเจน</HRule>
+          <HRule n="ส่วนภูมิภาค">จังหวัด (ผวจ.) → อำเภอ (นอภ.) → ตำบล (กำนัน) → หมู่บ้าน (ผญบ.) — <strong>หลักการแบ่งอำนาจ</strong> (Deconcentration) มอบอำนาจบางส่วน แต่ยังอยู่ใต้บังคับบัญชาส่วนกลาง</HRule>
+          <HRule n="ส่วนท้องถิ่น">ทั่วไป: อบจ. เทศบาล อบต. · พิเศษ: กทม. พัทยา — <strong>หลักการกระจายอำนาจ</strong> (Decentralization) มีอิสระ ผู้บริหารมาจากการเลือกตั้ง อยู่ใน "การกำกับดูแล" เท่านั้น</HRule>
+        </Box>
+        <Box tone="purple" title="บังคับบัญชา vs กำกับดูแล (จุดตายของข้อนี้)" icon="🔒">
+          <strong>ควบคุมบังคับบัญชา</strong> (ส่วนกลาง ↔ ภูมิภาค): ผู้บังคับบัญชา <strong>กลับ แก้ ยกเลิก เพิกถอน</strong> คำสั่งได้ ตรวจได้ทั้งความชอบด้วยกฎหมายและความเหมาะสม<br/>
+          <strong>ควบคุมกำกับดูแล</strong> (ส่วนกลาง/ภูมิภาค ↔ ท้องถิ่น): ดูได้เฉพาะ<strong>ความชอบด้วยกฎหมาย</strong>เท่านั้น แทรกแซงดุลพินิจ/ความเหมาะสมไม่ได้ — ท่อง: <strong>"กลาง→บังคับบัญชา→ภูมิภาค→กำกับดูแล→ท้องถิ่น"</strong>
+        </Box>
+        <Box tone="blue" title="เกร็ดที่ชอบถามแทรก" icon="💡">
+          ประเภทเทศบาล: <strong>นคร</strong> ≥ 50,000 คน · <strong>เมือง</strong> ≥ 10,000 คน หรือที่ตั้งศาลากลางจังหวัด · <strong>ตำบล</strong> ≥ 5,000 คน (ทุกประเภทต้อง + รายได้พอสมควร) · กฎหมายท้องถิ่น: ข้อบัญญัติ อบจ. / เทศบัญญัติ / ข้อบังคับตำบล / ข้อบัญญัติ กทม. / ข้อบัญญัติเมืองพัทยา · แนวโน้มอนาคต = <strong>กระจายอำนาจสู่ท้องถิ่นมากขึ้น</strong> (1/68 ข้อ 1 ถามตรง)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l10', star:3, icon:'🛡️', title:'การควบคุมการใช้อำนาจรัฐ (ออก 1 ข้อแน่)',
+    chips:['บทที่ 7','บทที่ 10'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="อำนาจ 2 รูปแบบ" icon="✅">
+          <strong>อำนาจผูกพัน</strong> — เมื่อข้อเท็จจริงครบตามกฎหมาย ฝ่ายปกครอง <strong>ต้อง</strong> ออกคำสั่งตามที่กฎหมายกำหนด (เช่น จดทะเบียนสมรสเมื่อครบเงื่อนไข ต้องรับจด) · <strong>อำนาจดุลพินิจ</strong> — กฎหมายเปิดช่องให้ <strong>เลือก</strong> ตัดสินใจได้ (เช่น พิจารณาอนุญาตตั้งโรงงาน/ก่อสร้างตามความเหมาะสม)
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ดุลพินิจมิชอบด้วยกฎหมาย 6 ประการ" icon="🎯">
+          (1) <strong>กระทำข้ามขั้นตอน</strong> — กฎหมายให้ฟังความเห็นประชาชนก่อน แต่ไม่ฟัง (2) <strong>กระทำโดยปราศจากอำนาจ</strong> — ธุรการอนุมัติแทนปลัดโดยไม่มีอำนาจ (3) <strong>กระทำผิดแบบ</strong> — กฎหมายให้ออกเป็นหนังสือ แต่สั่งด้วยวาจา (4) <strong>นอกวัตถุประสงค์ของกฎหมาย</strong> — ใช้การย้ายเป็นการลงโทษ (5) <strong>สร้างภาระให้ประชาชนเกินจำเป็น</strong> (6) <strong>อคติ/ไม่สุจริต</strong> — สั่งปิดโรงงาน 2 เดือนเพราะขัดแย้งส่วนตัว ทั้งที่กฎหมายให้ปิดได้ 1 เดือน
+        </Box>
+        <Box tone="purple" title="รูปแบบการควบคุม 2 แบบ" icon="🛡️">
+          <strong>แบบป้องกัน (ก่อนออกคำสั่ง)</strong> — ตาม พ.ร.บ.วิธีปฏิบัติราชการทางปกครอง 2539: ให้คู่กรณีโต้แย้ง · ปรึกษาหารือ · ผู้พิจารณาต้องไม่มีส่วนได้เสีย · ไต่สวน · แจ้งสิทธิหน้าที่ · ระบุการอุทธรณ์<br/>
+          <strong>แบบแก้ไข (หลังออกคำสั่ง)</strong> — ภายในฝ่ายบริหาร: บังคับบัญชา ร้องทุกข์ อุทธรณ์ · ภายนอก: รัฐสภา (กระทู้ อภิปรายไม่ไว้วางใจ) องค์กรอิสระ (กกต. ผู้ตรวจการแผ่นดิน ป.ป.ช. ผู้ตรวจเงินแผ่นดิน กสม.) · ศาล: ศาลปกครอง ศาลรัฐธรรมนูญ ศาลยุติธรรม
+        </Box>
+        <Box tone="cyan" title="พ.ร.บ. 4 ฉบับที่ต้องอ้างเป็น" icon="📚">
+          (1) <strong>พ.ร.บ.วิธีปฏิบัติราชการทางปกครอง 2539</strong> — ขั้นตอนก่อนออกคำสั่ง (ควบคุมป้องกัน) (2) <strong>พ.ร.บ.ความรับผิดทางละเมิดของเจ้าหน้าที่ 2539</strong> — ความรับผิดเมื่อ จนท. ทำละเมิด (จงใจ/ประมาทเลินเล่ออย่างร้ายแรง จึงไล่เบี้ยได้) (3) <strong>พ.ร.บ.จัดตั้งศาลปกครองฯ 2542</strong> — ช่องทางฟ้องตรวจสอบดุลพินิจ (4) <strong>พ.ร.บ.ระเบียบบริหารราชการแผ่นดิน 2534</strong> — วางความสัมพันธ์ 3 ส่วน · ความเชื่อมโยง: ทำผิดตามฉบับ 1 หรือ 2 → ฟ้องศาลปกครองโดยอาศัยฉบับ 3 (แนวข้อสอบ 1/68 ข้อ 1.2)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l11', star:1, icon:'🌐', title:'รัฐ อำนาจอธิปไตย และระบบศาล',
+    chips:['บทที่ 4','บทที่ 7'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="องค์ประกอบของรัฐ 4 + ลักษณะอำนาจอธิปไตย 4" icon="🌐">
+          รัฐ = <strong>ประชากร + ดินแดน + รัฐบาล + อำนาจอธิปไตย</strong> · อำนาจอธิปไตยมี 4 ลักษณะ: <strong>เด็ดขาด – ครอบคลุมทั่วไป – ถาวร – แบ่งแยกมิได้</strong> (ท่อง "เด็ด-ครอบ-ถาวร-ไม่แยก") แบ่งการใช้เป็น 3 อำนาจ: นิติบัญญัติ (รัฐสภา) บริหาร (ครม.) ตุลาการ (ศาล)
+        </Box>
+        <Box tone="green" title="รูปแบบของรัฐ" icon="🗺️">
+          <strong>รัฐเดี่ยว</strong> — รัฐบาลกลางองค์กรเดียวมีอำนาจสูงสุด (ไทย ญี่ปุ่น ฝรั่งเศส) · <strong>รัฐรวม</strong> — รัฐบาล 2 ระดับ: สมาพันธรัฐ (ร่วมมือตามสนธิสัญญา เช่น EU) vs สหพันธรัฐ (รวมโดยรัฐธรรมนูญ เช่น สหรัฐฯ เยอรมนี ออสเตรเลีย) · หน้าที่รัฐสมัยใหม่ 3: ปกครอง (ความสงบ/มั่นคง) บริหารจัดการ (บริการสาธารณะ) ดูแลคุณภาพชีวิต (สวัสดิการ สาธารณสุข การศึกษา)
+        </Box>
+        <Box tone="red" title="ระบบศาล — จุดที่ออกข้อ 3 บ่อย" icon="🎯">
+          <strong>ศาลเดี่ยว</strong>: ศาลยุติธรรมพิจารณาได้ทุกประเภทคดี (Common Law: อังกฤษ สหรัฐฯ) · <strong>ศาลคู่</strong>: แยกศาลปกครองจากศาลยุติธรรม (Civil Law: ฝรั่งเศส เยอรมนี <strong>ไทย</strong>) · ไทยมี 4 ศาล: <strong>ศาลรัฐธรรมนูญ</strong> (ความชอบด้วยรัฐธรรมนูญ) <strong>ศาลยุติธรรม</strong> (แพ่ง อาญา) <strong>ศาลปกครอง</strong> (คดีปกครอง ระบบไต่สวน) <strong>ศาลทหาร</strong> (คดีอาญาทหาร)
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l5']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Pr key={c}>{c}</Pr>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>11 โมดูล เรียงจากพื้นฐาน → นิติรัฐ → การควบคุมอำนาจรัฐ</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกเทอม) · คลิกที่หัวข้อเพื่อกางเนื้อหา · โครงข้อสอบ: ข้อ 1 มักออกโครงสร้าง/การควบคุม · ข้อ 2 หลักกฎหมาย (นิติรัฐ ได้สัดส่วน ประโยชน์สาธารณะ) · ข้อ 3 ความหมาย/ความแตกต่าง/ระบบศาล</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'แนว 2/67 ข้อ 3', star:3, topic:'"ไม่มีกฎหมาย ไม่มีอำนาจ" — หลักนิติรัฐ',
+    facts:'ผู้อำนวยการเขตแห่งหนึ่งเห็นว่างบทำความสะอาดไม่พอ จึงออกประกาศเรียกเก็บ "ค่าบำรุงความสะอาดพิเศษ" จากร้านค้าทุกร้านในเขต เดือนละ 500 บาท โดยไม่มีกฎหมายหรือข้อบัญญัติใดให้อำนาจเรียกเก็บเงินดังกล่าว ร้านค้าที่ไม่จ่ายจะถูกขู่ว่าไม่ต่อใบอนุญาต — ประกาศนี้ชอบด้วยกฎหมายหรือไม่?',
+    issue:'ฝ่ายปกครองจะออกคำสั่ง/ประกาศสร้างภาระแก่ประชาชน โดยไม่มีกฎหมายให้อำนาจ ได้หรือไม่',
+    rule:['หลักนิติรัฐ','หลักความชอบด้วยกฎหมาย'],
+    ruleText:'ตามหลักนิติรัฐ รัฐต้องปกครองโดยกฎหมาย ฝ่ายปกครองจะกระทำการใดอันเป็นการบังคับหรือสร้างภาระแก่ประชาชนได้ต่อเมื่อมีกฎหมายให้อำนาจไว้ ("ไม่มีกฎหมาย ไม่มีอำนาจ") — ปรัชญากฎหมายมหาชนคือ "เมื่อไม่มีกฎหมายให้อำนาจ จะทำมิได้" ต่างจากเอกชนที่ "ไม่มีกฎหมายห้าม ย่อมทำได้"',
+    application:'การเรียกเก็บเงินจากประชาชนเป็นการสร้างภาระและกระทบสิทธิในทรัพย์สินโดยตรง จึงต้องมีกฎหมายระดับพระราชบัญญัติหรือข้อบัญญัติท้องถิ่นให้อำนาจไว้ชัดเจน เมื่อข้อเท็จจริงปรากฏว่าไม่มีกฎหมายใดให้อำนาจ ผอ.เขตจึงกระทำโดยปราศจากอำนาจ แม้จะอ้างเจตนาดีเพื่อความสะอาดของเขต (ประโยชน์สาธารณะ) ก็ไม่อาจทดแทนการไม่มีกฎหมายให้อำนาจได้ ทั้งการขู่ไม่ต่อใบอนุญาตยังเป็นการใช้อำนาจนอกวัตถุประสงค์ของกฎหมายอีกด้วย',
+    conclusion:'ประกาศเรียกเก็บค่าบำรุงพิเศษไม่ชอบด้วยกฎหมาย เพราะขัดหลักนิติรัฐและหลักความชอบด้วยกฎหมาย ร้านค้าฟ้องศาลปกครองขอให้เพิกถอนได้'
+  },
+  {
+    id:'c2', tag:'แนว 2/67 ข้อ 2', star:3, topic:'หลักความได้สัดส่วน 3 ขั้น',
+    facts:'จังหวัดหนึ่งมีปัญหาวัยรุ่นแข่งรถบนถนนสายเดียวช่วงเที่ยงคืน ผู้ว่าราชการจังหวัดจึงออกประกาศ "ห้ามประชาชนทุกคนใช้ถนนทุกสายทั่วทั้งจังหวัด ตั้งแต่ 4 ทุ่มถึงตี 5 เป็นเวลา 1 ปี" — มาตรการนี้ชอบด้วยหลักความได้สัดส่วนหรือไม่?',
+    issue:'มาตรการจำกัดสิทธิเสรีภาพของประชาชนทั้งจังหวัดเพื่อแก้ปัญหาเฉพาะจุด ต้องตรวจสอบด้วยหลักความได้สัดส่วนอย่างไร',
+    rule:['หลักความได้สัดส่วน','หลักนิติรัฐ (เนื้อหา)'],
+    ruleText:'หลักความได้สัดส่วนประกอบด้วย 3 หลักย่อย: (1) ความเหมาะสม — มาตรการต้องบรรลุวัตถุประสงค์ได้ (2) ความจำเป็น — ต้องเลือกมาตรการที่กระทบสิทธิน้อยที่สุด (3) ความได้สัดส่วนอย่างแคบ — ประโยชน์สาธารณะที่ได้ต้องคุ้มกับสิทธิเอกชนที่เสียไป หลักนี้เป็นหลักกฎหมายทั่วไปที่ศาลรัฐธรรมนูญและศาลปกครองสูงสุดใช้ตรวจสอบการใช้อำนาจรัฐทุกองค์กร',
+    application:'ขั้นเหมาะสม: การห้ามใช้ถนนตอนกลางคืนย่อมหยุดการแข่งรถได้ จึงผ่าน · ขั้นจำเป็น: ปัญหาเกิดบนถนนสายเดียว การห้ามทั้งจังหวัดจึงไม่ใช่วิธีที่กระทบสิทธิน้อยที่สุด — ยังมีวิธีเบากว่า เช่น ตั้งด่านเฉพาะถนนสายนั้น จำกัดเวลาเฉพาะจุด จึงตกขั้นนี้ · ขั้นอย่างแคบ: ประชาชนทั้งจังหวัดเสียเสรีภาพในการเดินทาง คนทำงานกลางคืน ผู้ป่วยฉุกเฉิน เดือดร้อนทั่วหน้า เกินกว่าประโยชน์ที่ได้จากการปราบแข่งรถจุดเดียวมาก จึงตกขั้นนี้เช่นกัน',
+    conclusion:'ประกาศไม่ชอบด้วยหลักความได้สัดส่วน (ตกทั้งหลักความจำเป็นและหลักอย่างแคบ) จึงเป็นการใช้อำนาจที่ไม่ชอบด้วยรัฐธรรมนูญและกฎหมาย'
+  },
+  {
+    id:'c3', tag:'แนวบทที่ 10', star:3, topic:'อำนาจผูกพัน — ปฏิเสธไม่ได้',
+    facts:'นายเมฆกับนางสาวฝนไปขอจดทะเบียนสมรส ณ ที่ว่าการอำเภอ คุณสมบัติครบถ้วนทุกประการตามกฎหมาย แต่นายทะเบียนไม่รับจดทะเบียน อ้างว่า "ขอใช้ดุลพินิจ เพราะเห็นว่าทั้งสองยังไม่พร้อม อยากให้ไปศึกษากันดูอีกสักปี" — การปฏิเสธนี้ชอบด้วยกฎหมายหรือไม่?',
+    issue:'เมื่อข้อเท็จจริงครบองค์ประกอบตามที่กฎหมายกำหนด เจ้าหน้าที่จะอ้างดุลพินิจปฏิเสธไม่ออกคำสั่งได้หรือไม่',
+    rule:['อำนาจผูกพัน','หลักความชอบด้วยกฎหมาย'],
+    ruleText:'อำนาจของรัฐมี 2 รูปแบบ: อำนาจผูกพัน — เมื่อมีข้อเท็จจริงครบตามที่กฎหมายกำหนด ฝ่ายปกครอง "ต้อง" ออกคำสั่งตามที่กฎหมายกำหนดไว้ · อำนาจดุลพินิจ — กฎหมายเปิดช่องให้เลือกตัดสินใจได้ การรับจดทะเบียนสมรสเป็นตัวอย่างตำราของอำนาจผูกพัน',
+    application:'การจดทะเบียนสมรสเป็นอำนาจผูกพัน มิใช่อำนาจดุลพินิจ เมื่อผู้ร้องมีคุณสมบัติครบถ้วนตามเงื่อนไขที่กฎหมายกำหนดแล้ว นายทะเบียนไม่มีช่องให้ใช้ดุลพินิจส่วนตัวเรื่อง "ความพร้อม" ซึ่งไม่ใช่เงื่อนไขตามกฎหมาย การปฏิเสธจึงเป็นการไม่ปฏิบัติหน้าที่ตามที่กฎหมายกำหนด และเป็นการเอาความเห็นส่วนตัวมาเพิ่มเงื่อนไขนอกกฎหมาย',
+    conclusion:'การปฏิเสธไม่ชอบด้วยกฎหมาย นายทะเบียนต้องรับจดทะเบียนสมรส ผู้เสียหายอาจอุทธรณ์/ฟ้องศาลปกครองให้สั่งให้ปฏิบัติหน้าที่ได้'
+  },
+  {
+    id:'c4', tag:'แนวบทที่ 10', star:3, topic:'ดุลพินิจมิชอบ — อคติ + เกินอำนาจ',
+    facts:'กฎหมายให้อำนาจนายกเทศมนตรีสั่งปิดโรงงานที่ปล่อยน้ำเสียได้ "ไม่เกิน 1 เดือน" นายกเทศมนตรีมีเรื่องขัดแย้งส่วนตัวกับเจ้าของโรงงานแดง จึงสั่งปิดโรงงานแดง 2 เดือน ทั้งที่โรงงานอื่นที่ปล่อยน้ำเสียเหมือนกันสั่งปิดเพียง 15 วัน — คำสั่งนี้ชอบด้วยกฎหมายหรือไม่?',
+    issue:'การใช้ดุลพินิจสั่งลงโทษเกินกรอบที่กฎหมายให้ และโดยมีอคติส่วนตัว เป็นการใช้ดุลพินิจโดยมิชอบหรือไม่',
+    rule:['ดุลพินิจมิชอบ 6 ประการ','หลักความชอบด้วยกฎหมาย','หลักความเสมอภาค'],
+    ruleText:'การใช้ดุลพินิจที่ไม่ชอบด้วยกฎหมายมี 6 ประการ ที่เกี่ยวข้องคือ (2) กระทำโดยปราศจากอำนาจ/เกินอำนาจ และ (6) กระทำโดยอคติหรือไม่สุจริต — ตัวอย่างตำราคือสั่งปิดโรงงาน 2 เดือนเพราะปัญหาส่วนตัว ทั้งที่กฎหมายให้ปิดได้ 1 เดือน นอกจากนี้การเลือกปฏิบัติยังขัดหลักความยุติธรรม/เสมอภาค',
+    application:'คำสั่งปิด 2 เดือนเกินกรอบ 1 เดือนที่กฎหมายให้อำนาจ = กระทำเกินอำนาจ · มูลเหตุจูงใจคือความขัดแย้งส่วนตัว = ใช้ดุลพินิจโดยอคติ ไม่สุจริต · การลงโทษหนักกว่าโรงงานอื่นที่ทำผิดอย่างเดียวกัน = เลือกปฏิบัติ ขัดหลักการใช้อำนาจกับทุกคนอย่างเสมอกัน — เข้าลักษณะดุลพินิจมิชอบหลายประการซ้อนกัน',
+    conclusion:'คำสั่งไม่ชอบด้วยกฎหมายทั้งเหตุเกินอำนาจและอคติ เจ้าของโรงงานฟ้องศาลปกครองขอเพิกถอนคำสั่งได้ (อาศัยสิทธิตาม พ.ร.บ.จัดตั้งศาลปกครองฯ 2542)'
+  },
+  {
+    id:'c5', tag:'แนวบทที่ 9', star:3, topic:'กำกับดูแล ≠ บังคับบัญชา',
+    facts:'อบต.ท่าทราย ออกข้อบังคับตำบลจัดเก็บค่าธรรมเนียมจัดการขยะโดยชอบด้วยกฎหมายทุกประการ นายอำเภอเห็นว่าอัตราที่เก็บ "แพงไป ไม่เหมาะสม" จึงมีหนังสือสั่งการให้ อบต. แก้อัตราให้ถูกลงภายใน 15 วัน มิฉะนั้นจะเพิกถอนข้อบังคับ — นายอำเภอทำได้หรือไม่?',
+    issue:'ราชการส่วนภูมิภาคจะสั่งแก้ไขการกระทำของ อปท. ที่ชอบด้วยกฎหมายแต่ตนเห็นว่าไม่เหมาะสม ได้หรือไม่',
+    rule:['หลักการกระจายอำนาจ','การกำกับดูแล vs บังคับบัญชา'],
+    ruleText:'ส่วนท้องถิ่นจัดระเบียบตามหลักการกระจายอำนาจ มีอิสระ ไม่อยู่ในบังคับบัญชาของส่วนกลาง/ภูมิภาค แต่อยู่ใน "การกำกับดูแล" ซึ่งตรวจสอบได้เฉพาะความชอบด้วยกฎหมายเท่านั้น จะก้าวล่วงเข้าไปแทรกแซงดุลพินิจหรือความเหมาะสมมิได้ (ต่างจากการควบคุมบังคับบัญชาระหว่างส่วนกลางกับภูมิภาค ที่กลับ แก้ ยกเลิก เพิกถอนคำสั่งได้)',
+    application:'อบต. เป็นราชการส่วนท้องถิ่น ความสัมพันธ์กับนายอำเภอเป็นการกำกับดูแล เมื่อข้อบังคับตำบลออกโดยชอบด้วยกฎหมายแล้ว การที่นายอำเภอไม่พอใจเพียง "ความเหมาะสมของอัตรา" ซึ่งเป็นดุลพินิจของสภาท้องถิ่นที่มาจากการเลือกตั้งของประชาชน นายอำเภอจึงไม่มีอำนาจสั่งแก้หรือขู่เพิกถอน เพราะเท่ากับใช้อำนาจบังคับบัญชากับหน่วยที่ตนมีเพียงอำนาจกำกับดูแล',
+    conclusion:'นายอำเภอทำไม่ได้ การสั่งการดังกล่าวขัดหลักการกระจายอำนาจและเกินขอบเขตการกำกับดูแล ข้อบังคับตำบลยังมีผลใช้บังคับต่อไป'
+  },
+  {
+    id:'c6', tag:'แนว 1/68 ข้อ 2', star:3, topic:'หลักบริการสาธารณะ — ต่อเนื่อง + เสมอภาค',
+    facts:'การประปาส่วนภูมิภาคสาขาหนึ่งประกาศ "งดจ่ายน้ำทุกวันเสาร์–อาทิตย์ตลอดปี เพื่อประหยัดงบประมาณ" และจ่ายน้ำให้เฉพาะหมู่บ้านจัดสรรที่ยอมจ่ายค่าบำรุงพิเศษก่อน — การกระทำทั้งสองชอบด้วยหลักบริการสาธารณะหรือไม่?',
+    issue:'การหยุดให้บริการสาธารณะเป็นช่วง ๆ และการเลือกให้บริการเฉพาะผู้จ่ายเงินเพิ่ม ขัดหลักบริการสาธารณะข้อใด',
+    rule:['หลักบริการสาธารณะ 4 หลัก','หลักประโยชน์สาธารณะ'],
+    ruleText:'บริการสาธารณะต้องเป็นไปตาม 4 หลัก: (1) ความต่อเนื่อง — ไม่หยุดชะงัก (2) ความเสมอภาค — ทุกคนได้รับบริการเท่าเทียม (3) การปรับปรุงเปลี่ยนแปลง (4) การกำกับดูแลโดยรัฐ — เพราะบริการสาธารณะคือเครื่องมือตอบสนองประโยชน์สาธารณะของคนส่วนใหญ่',
+    application:'น้ำประปาเป็นบริการสาธารณะจำเป็นต่อชีวิตประจำวัน การงดจ่ายทุกสุดสัปดาห์ตลอดปีทำให้บริการหยุดชะงักเป็นประจำ ขัดหลักความต่อเนื่องโดยตรง ข้ออ้างประหยัดงบไม่อาจลบล้างหน้าที่นี้ · ส่วนการจ่ายน้ำเฉพาะหมู่บ้านที่จ่ายเงินพิเศษเป็นการเลือกปฏิบัติตามฐานะทางเศรษฐกิจ ขัดหลักความเสมอภาคในการรับบริการ',
+    conclusion:'ทั้งสองการกระทำไม่ชอบ — ขัดหลักความต่อเนื่องและหลักความเสมอภาคของบริการสาธารณะ ผู้เดือดร้อนร้องเรียน/ฟ้องต่อศาลปกครองได้'
+  },
+  {
+    id:'c7', tag:'แนวบทที่ 1 + 7', star:2, topic:'คดีนี้ขึ้นศาลไหน — ระบบศาลคู่',
+    facts:'(ก) นายโชคทำสัญญาซื้อรถมือสองจากนายชัยแล้วผิดนัดไม่จ่ายเงิน (ข) กรมทางหลวงออกคำสั่งเวนคืนที่ดินของนางสมศรีเพื่อตัดถนน โดยนางสมศรีเห็นว่าคำสั่งไม่ชอบด้วยกฎหมาย — สองคดีนี้ต้องฟ้องที่ศาลใด?',
+    issue:'ข้อพิพาทระหว่างเอกชนกับเอกชน และข้อพิพาทจากการใช้อำนาจปกครองของรัฐ อยู่ในเขตอำนาจศาลใดตามระบบศาลคู่ของไทย',
+    rule:['ทฤษฎีตัวการ','ระบบศาลคู่ 4 ศาล'],
+    ruleText:'ไทยใช้ระบบศาลคู่ มี 4 ศาล: ศาลรัฐธรรมนูญ ศาลยุติธรรม ศาลปกครอง ศาลทหาร — เกณฑ์แบ่งเบื้องต้นใช้ทฤษฎีตัวการ: คู่กรณีเอกชนกับเอกชนตามกฎหมายเอกชน → ศาลยุติธรรม (ระบบกล่าวหา) · คู่กรณีฝ่ายหนึ่งเป็นรัฐ/หน่วยงานรัฐใช้อำนาจปกครอง → ศาลปกครอง (ระบบไต่สวน)',
+    application:'คดี (ก) เป็นสัญญาซื้อขายระหว่างเอกชนกับเอกชน มุ่งประโยชน์ส่วนตัว ตั้งอยู่บนความเสมอภาคและเจตนาเสนอ–สนอง จึงเป็นคดีแพ่งตามกฎหมายเอกชน · คดี (ข) กรมทางหลวงเป็นหน่วยงานของรัฐ ใช้อำนาจฝ่ายเดียวออกคำสั่งเวนคืนกระทบสิทธิเอกชนเพื่อประโยชน์สาธารณะ จึงเป็นคดีปกครองตามกฎหมายมหาชน',
+    conclusion:'คดี (ก) ฟ้องศาลยุติธรรม (ศาลแพ่ง) · คดี (ข) ฟ้องศาลปกครอง — แยกตามทฤษฎีตัวการและระบบศาลคู่'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0); // 0=facts only, 1..4 reveal I R A C
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.purple, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Pr>{x}</Pr></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'ปรับข้อเท็จจริง (A)', color:C.amberDark, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="geekblue" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.navyDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น — วิชานี้เป็นอัตนัย 3 ข้อ ข้อละ 25 คะแนน โครงเขียนตอบ "วางหลัก → วินิจฉัย → สรุป" คือกุญแจได้คะแนน</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="navy" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>วางหลักกฎหมาย</b> (ยกหลัก/ทฤษฎี/พ.ร.บ. ที่เกี่ยว พร้อมชื่อภาษาอังกฤษถ้ามี) → <b>วินิจฉัย</b> (จับข้อเท็จจริงเข้ากับหลักทีละประเด็น + ยกตัวอย่างประกอบ) → <b>สรุป</b> (ตอบคำถามให้ตรง). เขียนครบ 3 ท่อนนี้ทุกข้อเสมอ — ตอบถูกแต่ไม่ยกหลัก = เสียคะแนนฟรี
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: CASE LAB (ทำนายก่อนเฉลย) ============ */
+const labCases = [
+  {
+    id:'p1', icon:'🧾', topic:'เก็บเงินโดยไม่มีกฎหมายรองรับ',
+    facts:'ปลัดอำเภอออกหนังสือเวียนเรียกเก็บ "ค่าธรรมเนียมความมั่นคง" ครัวเรือนละ 100 บาท เพื่อจ้างยามหมู่บ้าน โดยไม่มีกฎหมายฉบับใดให้อำนาจเรียกเก็บ',
+    q:'การเรียกเก็บนี้ชอบด้วยกฎหมายหรือไม่?', yesLabel:'ชอบ', noLabel:'ไม่ชอบ', answer:false,
+    secs:['หลักนิติรัฐ','หลักความชอบด้วยกฎหมาย'], tone:'red',
+    ruling:'ไม่ชอบด้วยกฎหมาย — กฎหมายมหาชนถือปรัชญา "ไม่มีกฎหมายให้อำนาจ → ทำมิได้" การเก็บเงินจากประชาชนเป็นการสร้างภาระ ต้องมีกฎหมายให้อำนาจชัดเจน เจตนาดี (ความปลอดภัยหมู่บ้าน) ไม่อาจทดแทนการไม่มีฐานอำนาจทางกฎหมายได้'
+  },
+  {
+    id:'p2', icon:'💍', topic:'อำนาจผูกพัน — ขอจดทะเบียนสมรส',
+    facts:'คู่รักคุณสมบัติครบถ้วนตามกฎหมายทุกประการ มาขอจดทะเบียนสมรส นายทะเบียนอยากใช้ดุลพินิจไม่รับจด เพราะเห็นว่า "อายุยังน้อย ควรรอก่อน"',
+    q:'นายทะเบียนปฏิเสธได้หรือไม่?', yesLabel:'ได้', noLabel:'ไม่ได้', answer:false,
+    secs:['อำนาจผูกพัน'], tone:'red',
+    ruling:'ไม่ได้ — การจดทะเบียนสมรสเป็น "อำนาจผูกพัน": เมื่อข้อเท็จจริงครบตามที่กฎหมายกำหนด เจ้าหน้าที่ต้องออกคำสั่งรับจดทะเบียน ไม่มีช่องให้ใช้ดุลพินิจเพิ่มเงื่อนไขนอกกฎหมาย (ต่างจากการอนุญาตตั้งโรงงานซึ่งเป็นอำนาจดุลพินิจ)'
+  },
+  {
+    id:'p3', icon:'🏭', topic:'สั่งปิดโรงงานเกินกรอบเพราะโกรธส่วนตัว',
+    facts:'กฎหมายให้สั่งปิดโรงงานที่ทำผิดได้ไม่เกิน 1 เดือน นายกเทศมนตรีสั่งปิดโรงงานของคู่อริ 2 เดือน อ้างว่า "จะได้เข็ด"',
+    q:'คำสั่งนี้ชอบด้วยกฎหมายหรือไม่?', yesLabel:'ชอบ', noLabel:'ไม่ชอบ', answer:false,
+    secs:['ดุลพินิจมิชอบ (อคติ/เกินอำนาจ)'], tone:'red',
+    ruling:'ไม่ชอบ — เป็นตัวอย่างตำราของการใช้ดุลพินิจโดยมิชอบ 2 ประการซ้อน: สั่งเกินกรอบอำนาจ 1 เดือนที่กฎหมายให้ (ปราศจาก/เกินอำนาจ) และมีมูลเหตุจากความขัดแย้งส่วนตัว (อคติ ไม่สุจริต) — ฟ้องศาลปกครองเพิกถอนได้'
+  },
+  {
+    id:'p4', icon:'🏘️', topic:'ผู้ว่าฯ สั่งแก้ข้อบัญญัติท้องถิ่นที่ชอบด้วยกฎหมาย',
+    facts:'เทศบาลออกเทศบัญญัติโดยชอบด้วยกฎหมายทุกขั้นตอน ผู้ว่าราชการจังหวัดเห็นว่าเนื้อหา "ไม่ถูกใจ ไม่เหมาะสม" จึงสั่งให้แก้ไขทันที',
+    q:'ผู้ว่าฯ สั่งแก้ได้หรือไม่?', yesLabel:'ได้', noLabel:'ไม่ได้', answer:false,
+    secs:['กำกับดูแล','หลักกระจายอำนาจ'], tone:'red',
+    ruling:'ไม่ได้ — เทศบาลเป็นราชการส่วนท้องถิ่น อยู่ภายใต้ "การกำกับดูแล" ซึ่งตรวจสอบได้เฉพาะความชอบด้วยกฎหมายเท่านั้น เมื่อเทศบัญญัติชอบด้วยกฎหมายแล้ว ผู้ว่าฯ จะแทรกแซงดุลพินิจ/ความเหมาะสมไม่ได้ (นั่นคืออำนาจบังคับบัญชา ซึ่งใช้ได้กับส่วนภูมิภาคเท่านั้น)'
+  },
+  {
+    id:'p5', icon:'🍺', topic:'ห้ามขายแอลกอฮอล์ทั่วประเทศถาวร',
+    facts:'เพื่อแก้ปัญหาเมาแล้วขับช่วงสงกรานต์ หน่วยงานรัฐเสนอมาตรการ "ห้ามผลิต ห้ามขาย เครื่องดื่มแอลกอฮอล์ทั่วประเทศตลอดไป"',
+    q:'มาตรการนี้ผ่านหลักความได้สัดส่วนหรือไม่?', yesLabel:'ผ่าน', noLabel:'ไม่ผ่าน', answer:false,
+    secs:['หลักความได้สัดส่วน (จำเป็น + อย่างแคบ)'], tone:'red',
+    ruling:'ไม่ผ่าน — แม้จะบรรลุเป้าหมายได้ (ผ่านหลักความเหมาะสม) แต่มีมาตรการที่เบากว่าและได้ผล เช่น ห้ามขายเฉพาะช่วงเทศกาล ตั้งด่านตรวจ จึงตกหลักความจำเป็น และความเสียหายทางเศรษฐกิจ/เสรีภาพที่เกิดทั่วประเทศถาวรเกินกว่าประโยชน์ที่ได้ จึงตกหลักความได้สัดส่วนอย่างแคบด้วย'
+  },
+  {
+    id:'p6', icon:'💧', topic:'งดจ่ายน้ำประปาทุกสุดสัปดาห์',
+    facts:'การประปาสาขาหนึ่งประกาศงดจ่ายน้ำทุกวันเสาร์–อาทิตย์ตลอดปี อ้างเหตุประหยัดงบประมาณ',
+    q:'ทำได้ตามหลักบริการสาธารณะหรือไม่?', yesLabel:'ได้', noLabel:'ไม่ได้', answer:false,
+    secs:['หลักความต่อเนื่องของบริการสาธารณะ'], tone:'red',
+    ruling:'ไม่ได้ — น้ำประปาเป็นบริการสาธารณะที่จำเป็นต่อชีวิตประจำวัน หลักข้อแรกของบริการสาธารณะคือ "ความต่อเนื่อง" บริการต้องไม่หยุดชะงัก การงดจ่ายเป็นประจำทุกสัปดาห์ขัดหลักนี้โดยตรง เหตุผลด้านงบประมาณไม่อาจลบล้างหน้าที่จัดทำบริการสาธารณะของรัฐ'
+  },
+  {
+    id:'p7', icon:'🚗', topic:'ผิดสัญญาซื้อขายรถ ฟ้องศาลปกครอง?',
+    facts:'นายเอกซื้อรถจากนายโท (เอกชนทั้งคู่) แล้วนายโทส่งมอบรถไม่ตรงสเปก นายเอกไปยื่นฟ้องต่อศาลปกครอง เพราะได้ยินว่า "ศาลนี้ตัดสินเร็ว"',
+    q:'ศาลปกครองรับคดีนี้ไว้พิจารณาได้หรือไม่?', yesLabel:'ได้', noLabel:'ไม่ได้', answer:false,
+    secs:['ทฤษฎีตัวการ','ระบบศาลคู่'], tone:'red',
+    ruling:'ไม่ได้ — ข้อพิพาทนี้เป็นเอกชนกับเอกชน ตามสัญญาซื้อขายที่ตั้งอยู่บนความเสมอภาคและเจตนาเสนอ–สนอง เป็นคดีแพ่งตามกฎหมายเอกชน ต้องฟ้องศาลยุติธรรม ศาลปกครองรับเฉพาะคดีที่คู่กรณีฝ่ายหนึ่งเป็นรัฐ/หน่วยงานรัฐที่ใช้อำนาจทางปกครอง (ระบบศาลคู่)'
+  },
+  {
+    id:'p8', icon:'⏪', topic:'ออกกฎหมายอาญาย้อนหลังลงโทษ',
+    facts:'สภาผ่านกฎหมายกำหนดโทษอาญาใหม่ และให้มีผล "ย้อนหลัง" ไปลงโทษการกระทำที่เกิดก่อนกฎหมายประกาศใช้ 5 ปี',
+    q:'กฎหมายนี้สอดคล้องกับหลักนิติรัฐหรือไม่?', yesLabel:'สอดคล้อง', noLabel:'ขัดหลัก', answer:false,
+    secs:['หลักห้ามมีผลย้อนหลัง (นิติรัฐทางเนื้อหา)'], tone:'red',
+    ruling:'ขัดหลักนิติรัฐ — องค์ประกอบทางเนื้อหาของหลักนิติรัฐห้ามมิให้กฎหมายที่เป็นโทษมีผลย้อนหลัง (Ex Post Facto) โดยเฉพาะกฎหมายอาญา เพราะประชาชนต้องสามารถรู้ล่วงหน้าได้ว่าการกระทำใดผิดกฎหมาย (โยงหลักความชัดเจนแน่นอนของกฎหมายด้วย)'
+  },
+  {
+    id:'p9', icon:'🛒', topic:'รัฐแทรกแซงสัญญาระหว่างเอกชน — มีกฎหมายให้อำนาจ',
+    facts:'ช่วงภัยพิบัติ พ่อค้าโก่งราคาสินค้าจำเป็น รัฐอาศัยอำนาจตามกฎหมายว่าด้วยราคาสินค้าและบริการ เข้ากำหนดเพดานราคาขายสูงสุด ทั้งที่สัญญาซื้อขายเป็นเรื่องระหว่างเอกชนกับเอกชน',
+    q:'รัฐแทรกแซงเช่นนี้ได้หรือไม่?', yesLabel:'ได้', noLabel:'ไม่ได้', answer:true,
+    secs:['กฎหมายมหาชนให้อำนาจ','ประโยชน์สาธารณะ'], tone:'green',
+    ruling:'ได้ — โดยหลัก นิติสัมพันธ์เอกชน-เอกชนเป็นแดนของกฎหมายเอกชน รัฐไม่แทรกแซง แต่เมื่อมี "กฎหมายมหาชนให้อำนาจ" ไว้เพื่อคุ้มครองประโยชน์สาธารณะ (ป้องกันการค้ากำไรเกินควรในภาวะวิกฤต) รัฐย่อมแทรกแซงได้เท่าที่กฎหมายกำหนดและพอสมควรแก่เหตุ — นี่คือคำตอบของโจทย์ 1/67 ข้อ 2 และ 2/66 ข้อ 2'
+  },
+];
+
+function PredictCard({c, onAnswered}) {
+  const [pick, setPick] = useState(null); // true/false = คำตอบที่ผู้เรียนทาย
+  const revealed = pick!==null;
+  const correct = revealed && pick===c.answer;
+  const toneColor = c.answer ? C.green : C.red;
+  return (
+    <Card className={revealed?'':'hoverlift'} style={{marginBottom:16, borderColor:revealed?toneColor:C.border, borderWidth:revealed?2:1}} bodyStyle={{padding:'16px 18px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:8}}>
+        <span style={{fontSize:22}}>{c.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{c.topic}</span>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'11px 14px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3, marginBottom:12}}>
+        {c.facts}
+      </div>
+      <Flex align="center" justify="space-between" gap={12} wrap="wrap">
+        <span style={{fontWeight:700, color:C.navyDark, fontSize:14.8}}>🔮 ทำนายก่อนเฉลย: {c.q}</span>
+        {!revealed &&
+          <Space>
+            <Button size="large" style={{borderColor:C.green, color:C.green, fontWeight:700}}
+              onClick={()=>{setPick(true); onAnswered(true===c.answer);}}>{c.yesLabel}</Button>
+            <Button size="large" style={{borderColor:C.red, color:C.red, fontWeight:700}}
+              onClick={()=>{setPick(false); onAnswered(false===c.answer);}}>{c.noLabel}</Button>
+          </Space>}
+      </Flex>
+      {revealed && (
+        <div className="fade-up" style={{marginTop:12}}>
+          <Flex align="center" gap={10} wrap="wrap" style={{marginBottom:8}}>
+            <Tag color={correct?'green':'red'} style={{padding:'4px 12px', fontSize:14, fontWeight:700}}>
+              {correct?'🎯 ทายถูก!':'📖 ยังไม่ใช่ — ดูเหตุผลด้านล่าง'}</Tag>
+            <span style={{fontWeight:800, color:toneColor}}>เฉลย: {c.answer?c.yesLabel:c.noLabel}</span>
+          </Flex>
+          <div style={{marginBottom:10}}>
+            {c.secs.map(sec=><span key={sec} style={{display:'inline-block', margin:'3px 6px 3px 0', background:toneColor, color:C.white, padding:'3px 12px', borderRadius:8, fontWeight:700, fontFamily:"'Noto Serif Thai'", fontSize:13}}>{sec}</span>)}
+          </div>
+          <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`}}>
+            <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:4}}>คำวินิจฉัย</div>
+            <div style={{color:C.text2, fontSize:14.6, lineHeight:1.85}}>{c.ruling}</div>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CaseLabTab() {
+  const [score, setScore] = useState({c:0, t:0});
+  const onAnswered = (ok)=> setScore(s=>({c:s.c+(ok?1:0), t:s.t+1}));
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:'#F7F2E6', border:`1px solid ${C.amber}66`}}
+        message={<span style={{fontWeight:700, color:C.amberDark}}>🧪 Case Lab — อ่านข้อเท็จจริง "ทายผลก่อน" แล้วค่อยดูเฉลย</span>}
+        description={<span style={{color:C.text2}}>เหมือนอาจารย์ซักในห้องแบบ Socratic: ตัดสินเองก่อนว่า <strong>ชอบ/ไม่ชอบด้วยกฎหมาย</strong> จากนั้นระบบจะเฉลยพร้อม <strong>หลักกฎหมายที่ใช้</strong> และคำวินิจฉัยเต็ม — ระวัง มีข้อหลอกที่คำตอบสวนสัญชาตญาณ</span>} />
+      <Flex justify="flex-end" style={{marginBottom:10}}>
+        <Tag color="geekblue" style={{padding:'5px 14px', fontSize:14}}>ทายถูก {score.c} / {score.t} จากทั้งหมด {labCases.length} เคส</Tag>
+      </Flex>
+      {labCases.map(c=><PredictCard key={c.id} c={c} onAnswered={onAnswered}/>)}
+      <Box tone="cyan" title="สังเกตแพตเทิร์น" icon="💡">
+        เคสส่วนใหญ่เฉลยว่า "ไม่ชอบ/ไม่ได้" เพราะโจทย์วิชานี้มักสร้างสถานการณ์ให้รัฐใช้อำนาจ <strong>เกิน–ข้าม–นอก–อคติ</strong> แล้วถามให้เราตรวจสอบ — แต่เคสสุดท้าย (กำหนดเพดานราคา) เฉลยว่า "ได้" เพราะ<strong>มีกฎหมายให้อำนาจ</strong> นี่แหละเส้นแบ่งที่ข้อสอบต้องการวัด
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: QUIZ (ควิซ) ============ */
+const quizData = [
+  {q:'ปรัชญาของกฎหมายมหาชนคือข้อใด?',
+    opts:['ไม่มีกฎหมายห้าม ย่อมทำได้','ไม่มีกฎหมายให้อำนาจ จะทำมิได้','ทำได้ทุกอย่างเพื่อประโยชน์สาธารณะ','สัญญาต้องเป็นสัญญา'], correct:1,
+    exp:'มหาชน: "ไม่มีกฎหมายให้อำนาจ → ทำมิได้" ส่วน "ไม่มีกฎหมายห้าม → ย่อมทำได้" คือปรัชญากฎหมายเอกชน'},
+  {q:'ข้อใด "ไม่ใช่" หนึ่งใน 6 ทฤษฎีความแตกต่างระหว่างกฎหมายมหาชนกับเอกชน?',
+    opts:['ทฤษฎีตัวการ','ทฤษฎีผลประโยชน์','ทฤษฎีสัญญาประชาคม','นิติวิธี'], correct:2,
+    exp:'6 ทฤษฎีคือ ตัวการ ผลประโยชน์ ความไม่เท่าเทียม นิติวิธี นิติปรัชญา เขตอำนาจศาล — สัญญาประชาคมไม่อยู่ในชุดนี้'},
+  {q:'หลักนิติรัฐ (Rechtsstaat) มีต้นกำเนิดจากประเทศใด?',
+    opts:['อังกฤษ','ฝรั่งเศส','เยอรมนี','สหรัฐอเมริกา'], correct:2,
+    exp:'หลักนิติรัฐมาจากเยอรมนี (Rechtsstaat, ระบบ Civil Law) ส่วนหลักนิติธรรม (Rule of Law) มาจากอังกฤษ'},
+  {q:'รัชกาลที่ 4 ทรงเรียกการปกครองโดยกฎหมายว่าอย่างไร?',
+    opts:['ระบบธรรมราชา','ระบบนับถือกฎหมาย','ระบบทศพิธราชธรรม','ระบบนิติธรรมสยาม'], correct:1,
+    exp:'ทรงเรียกว่า "ระบบนับถือกฎหมาย" — จุดจำเล็กที่ชอบออกเป็นตัวเลือกหลอก'},
+  {q:'หลักความได้สัดส่วนประกอบด้วยหลักย่อยตามข้อใด?',
+    opts:['เหมาะสม – จำเป็น – ได้สัดส่วนอย่างแคบ','ชอบด้วยกฎหมาย – สุจริต – เสมอภาค','ต่อเนื่อง – เสมอภาค – ปรับเปลี่ยนได้','แบ่งแยกอำนาจ – ตรวจสอบ – ถ่วงดุล'], correct:0,
+    exp:'3 หลักย่อย: Suitability (เหมาะสม) Necessity (จำเป็น — กระทบสิทธิน้อยสุด) และ Proportionality in narrow sense (ชั่งได้–เสีย) ออกตรง ๆ ใน 2/67 ข้อ 2'},
+  {q:'ข้อใดคือหลักบริการสาธารณะครบทั้ง 4 หลัก?',
+    opts:['ต่อเนื่อง เสมอภาค ปรับปรุงเปลี่ยนแปลง กำกับดูแลโดยรัฐ','ต่อเนื่อง ประหยัด โปร่งใส ตรวจสอบได้','เสมอภาค เป็นธรรม รวดเร็ว ทั่วถึง','ถูกกฎหมาย สุจริต จำเป็น ได้สัดส่วน'], correct:0,
+    exp:'4 หลัก: ความต่อเนื่อง ความเสมอภาค การปรับปรุงเปลี่ยนแปลง และการกำกับดูแลโดยรัฐ (1/68 ข้อ 2 ถามตรง)'},
+  {q:'ราชการส่วนภูมิภาคจัดระเบียบตามหลักการใด?',
+    opts:['หลักการรวมอำนาจ','หลักการแบ่งอำนาจ','หลักการกระจายอำนาจ','หลักการมอบอำนาจเด็ดขาด'], correct:1,
+    exp:'ส่วนกลาง = รวมอำนาจ · ส่วนภูมิภาค = แบ่งอำนาจ (Deconcentration ยังอยู่ใต้บังคับบัญชา) · ส่วนท้องถิ่น = กระจายอำนาจ'},
+  {q:'ความสัมพันธ์ระหว่างส่วนกลาง/ภูมิภาค กับองค์กรปกครองส่วนท้องถิ่น เป็นแบบใด?',
+    opts:['บังคับบัญชา — สั่งแก้คำสั่งได้ทุกกรณี','กำกับดูแล — ตรวจได้เฉพาะความชอบด้วยกฎหมาย','อิสระสมบูรณ์ — ไม่มีใครตรวจสอบได้','มอบหมายงาน — ท้องถิ่นเป็นลูกจ้างส่วนกลาง'], correct:1,
+    exp:'ท้องถิ่นอยู่ใน "การกำกับดูแล" เท่านั้น ดูได้เฉพาะความชอบด้วยกฎหมาย แทรกแซงดุลพินิจ/ความเหมาะสมไม่ได้ — ท่อง "กลาง→บังคับบัญชา→ภูมิภาค→กำกับดูแล→ท้องถิ่น"'},
+  {q:'เมื่อประชาชนยื่นขอจดทะเบียนสมรสโดยคุณสมบัติครบถ้วน อำนาจของนายทะเบียนเป็นอำนาจแบบใด?',
+    opts:['อำนาจดุลพินิจ','อำนาจผูกพัน','อำนาจอธิปไตย','อำนาจกำกับดูแล'], correct:1,
+    exp:'เป็นอำนาจผูกพัน: ข้อเท็จจริงครบตามกฎหมาย → ต้องรับจด จะอ้างดุลพินิจปฏิเสธไม่ได้'},
+  {q:'พ.ร.บ.ฉบับใดกำหนด "ขั้นตอนก่อนออกคำสั่งทางปกครอง" (การควบคุมแบบป้องกัน)?',
+    opts:['พ.ร.บ.ระเบียบบริหารราชการแผ่นดิน 2534','พ.ร.บ.วิธีปฏิบัติราชการทางปกครอง 2539','พ.ร.บ.ความรับผิดทางละเมิดของเจ้าหน้าที่ 2539','พ.ร.บ.จัดตั้งศาลปกครองฯ 2542'], correct:1,
+    exp:'พ.ร.บ.วิธีปฏิบัติราชการทางปกครอง 2539 = ควบคุมป้องกันก่อนออกคำสั่ง · พ.ร.บ.ความรับผิดทางละเมิดฯ = เยียวยาหลังเกิดเสียหาย · พ.ร.บ.ศาลปกครอง 2542 = ช่องทางฟ้อง'},
+  {q:'ประเทศไทยใช้ระบบศาลแบบใด และมีกี่ศาล?',
+    opts:['ศาลเดี่ยว — 1 ศาล','ศาลคู่ — 2 ศาล','ศาลคู่ — 4 ศาล (รัฐธรรมนูญ ยุติธรรม ปกครอง ทหาร)','ศาลเดี่ยว — 3 ศาล'], correct:2,
+    exp:'ไทยใช้ระบบศาลคู่ตามสาย Civil Law มี 4 ศาล: ศาลรัฐธรรมนูญ ศาลยุติธรรม ศาลปกครอง ศาลทหาร'},
+  {q:'ตามหลักนิติธรรมของ Dicey ข้อใดถูกต้อง?',
+    opts:['สิทธิเสรีภาพคุ้มครองโดยรัฐธรรมนูญลายลักษณ์อักษร','มีศาลปกครองแยกต่างหาก','กฎหมายเป็นใหญ่ ทุกคนเสมอภาคต่อหน้ากฎหมาย สิทธิคุ้มครองโดยศาล','ศาลรัฐธรรมนูญตรวจสอบการตรากฎหมาย'], correct:2,
+    exp:'Dicey: Supremacy of Law + Equality before the Law + สิทธิปัจเจกชนคุ้มครองโดยศาล — ส่วนรัฐธรรมนูญลายลักษณ์อักษร/ศาลปกครอง/ศาลรัฐธรรมนูญ เป็นฝั่ง "นิติรัฐ"'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=9?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=9?'เก่งมาก! พร้อมลงสนามสอบแล้ว 🎉':'กลับไปทวนแท็บบทเรียน (โดยเฉพาะโมดูล ★★★) แล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.navy, borderColor:C.navy}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="geekblue">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuizTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>ควิซ 12 ข้อ — ตอบแล้วเฉลยพร้อมเหตุผลทันที</span>}
+        description={<span style={{color:C.text2}}>ข้อสอบจริงเป็นอัตนัย แต่ควิซนี้ใช้เช็กว่า "หลัก" ในหัวแม่นพอจะเอาไปเขียนความเรียงหรือยัง — ทำได้ 9+ ค่อยไปฝึกเขียน IRAC</span>} />
+      <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+        <Quiz/>
+      </Card>
+      <Box tone="navy" title="สูตรทำนายข้อสอบ 3 ข้อของวิชานี้" icon="🔮" style={{maxWidth:680, margin:'16px auto 0'}}>
+        <b>ข้อ 1</b>: โครงสร้างบริหารราชการแผ่นดิน / การควบคุมอำนาจรัฐ / พ.ร.บ. 4 ฉบับ ·
+        <b> ข้อ 2</b>: หลักกฎหมาย — นิติรัฐ, ความได้สัดส่วน, ประโยชน์สาธารณะ+บริการสาธารณะ ·
+        <b> ข้อ 3</b>: ความหมาย/ความแตกต่างมหาชน-เอกชน / "ไม่มีกฎหมาย ไม่มีอำนาจ" / ระบบศาล-อปท.
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 6: FLASHCARDS (แฟลชการ์ด) ============ */
+const flashcards = [
+  {q:'นิยาม "กฎหมายมหาชน" ที่ต้องท่องได้?', a:'กฎหมายที่ให้อำนาจ+หน้าที่แก่รัฐ', d:'บัญญัติให้อำนาจและหน้าที่แก่รัฐ หน่วยงานทางปกครอง หน่วยงานของรัฐ เจ้าหน้าที่ของรัฐ ในทางปกครองและบริการสาธารณะ เพื่อประโยชน์ของประชาชนส่วนใหญ่ โดยฝ่ายปกครองมีอำนาจเหนือผู้ใต้ปกครอง', star:3, exam:true},
+  {q:'ปรัชญามหาชน vs เอกชน ต่างกันอย่างไร?', a:'ให้อำนาจ vs ห้าม', d:'มหาชน: ไม่มีกฎหมายให้อำนาจ → ทำมิได้ · เอกชน: ไม่มีกฎหมายห้าม → ย่อมทำได้', star:3, exam:true},
+  {q:'6 ทฤษฎีความแตกต่างมหาชน/เอกชน มีอะไรบ้าง?', a:'"ตัว-ผล-ไม่เท่า-นิติ-ปรัชญา-ศาล"', d:'ตัวการ · ผลประโยชน์ · ความไม่เท่าเทียม · นิติวิธี · นิติปรัชญา · เขตอำนาจศาล', star:3, exam:true},
+  {q:'สาระสำคัญของหลักนิติรัฐ 3 ประการ?', a:'จำกัดอำนาจ · คุ้มครองสิทธิ · กฎหมายเป็นธรรม', d:'(1) จำกัดการใช้อำนาจรัฐให้อยู่ในกรอบกฎหมายที่ดี (2) คุ้มครองสิทธิเสรีภาพประชาชน (3) เนื้อหากฎหมายต้องถูกต้องเป็นธรรม สมเหตุสมผล', star:3, exam:true},
+  {q:'"ไม่มีกฎหมาย ไม่มีอำนาจ" หมายความว่า?', a:'ฝ่ายปกครองทำได้เท่าที่กฎหมายให้', d:'ถ้าไม่มีกฎหมายกำหนดให้อำนาจไว้ ฝ่ายปกครองจะกระทำการอันบังคับประชาชนมิได้ — โจทย์ตรงของ 2/67 และ 2/66', star:3, exam:true},
+  {q:'หลักนิติรัฐกำเนิดจากประเทศใด และใครให้นิยามเชิงเหตุผล?', a:'เยอรมนี · Robert von Mohl', d:'Rechtsstaat จากเยอรมนี (Civil Law) — von Mohl: การดำรงอยู่ของรัฐควรขึ้นอยู่กับเหตุผล ไม่ใช่กำลังอำนาจ', star:2, exam:true},
+  {q:'หลักนิติธรรมของ Dicey มี 3 ข้อคือ?', a:'Supremacy · Equality · Individual Rights', d:'กฎหมายเป็นใหญ่ · เสมอภาคต่อหน้ากฎหมาย · สิทธิปัจเจกชนได้รับการคุ้มครองเพราะศาลยอมรับบังคับให้', star:2, exam:true},
+  {q:'นิติรัฐ vs นิติธรรม — จุดต่างเร็ว ๆ?', a:'Civil Law + ศาลปกครอง vs Common Law + ศาลเดียว', d:'นิติรัฐ: ภาคพื้นยุโรป/ไทย รธน.คุ้มครองสิทธิ ศาลรัฐธรรมนูญตรวจสอบ มีศาลปกครอง · นิติธรรม: อังกฤษ/สหรัฐฯ ศาลคุ้มครองสิทธิ รัฐสภาเป็นรัฐาธิปัตย์', star:3, exam:true},
+  {q:'หลักความได้สัดส่วน 3 หลักย่อย?', a:'เหมาะสม → จำเป็น → อย่างแคบ', d:'บรรลุวัตถุประสงค์ได้ → เลือกวิธีกระทบสิทธิน้อยสุด → ประโยชน์ที่ได้คุ้มกับสิทธิที่เสีย (2/67 ข้อ 2 ถามตรง)', star:3, exam:true},
+  {q:'หลักบริการสาธารณะ 4 หลัก?', a:'ต่อเนื่อง · เสมอภาค · ปรับเปลี่ยน · รัฐกำกับ', d:'บริการไม่หยุดชะงัก · ทุกคนได้เท่าเทียม · พัฒนาให้ทันสมัย · รัฐควบคุมคุณภาพ (1/68 ข้อ 2)', star:3, exam:true},
+  {q:'ราชการแผ่นดิน 3 ส่วน ใช้หลักอะไรบ้าง?', a:'กลาง-รวม / ภูมิภาค-แบ่ง / ท้องถิ่น-กระจาย', d:'ส่วนกลาง (กระทรวง ทบวง กรม) = รวมอำนาจ · ส่วนภูมิภาค (จังหวัด อำเภอ) = แบ่งอำนาจ · ส่วนท้องถิ่น (อบจ. เทศบาล อบต. กทม. พัทยา) = กระจายอำนาจ', star:3, exam:true},
+  {q:'บังคับบัญชา vs กำกับดูแล ต่างกันตรงไหน?', a:'แก้ได้ทุกอย่าง vs ดูแค่ชอบด้วยกฎหมาย', d:'บังคับบัญชา (กลาง↔ภูมิภาค): กลับ แก้ ยกเลิก เพิกถอนได้ · กำกับดูแล (↔ท้องถิ่น): ตรวจเฉพาะความชอบด้วยกฎหมาย แทรกแซงดุลพินิจไม่ได้', star:3, exam:true},
+  {q:'อำนาจผูกพัน vs อำนาจดุลพินิจ?', a:'"ต้องทำ" vs "เลือกได้"', d:'ผูกพัน: ข้อเท็จจริงครบ → ต้องออกคำสั่งตามกฎหมาย (จดทะเบียนสมรส) · ดุลพินิจ: กฎหมายเปิดช่องให้เลือก (อนุญาตตั้งโรงงาน)', star:3, exam:true},
+  {q:'การใช้ดุลพินิจมิชอบมี 6 ประการ อะไรบ้าง?', a:'ข้ามขั้น-ไร้อำนาจ-ผิดแบบ-นอกวัตถุประสงค์-สร้างภาระ-อคติ', d:'(1) ข้ามขั้นตอน (2) ปราศจากอำนาจ (3) ผิดแบบ (4) นอกวัตถุประสงค์กฎหมาย (5) สร้างภาระเกินจำเป็น (6) อคติ/ไม่สุจริต', star:3, exam:true},
+  {q:'การควบคุมแบบป้องกัน vs แก้ไข ต่างกันอย่างไร?', a:'ก่อนออกคำสั่ง vs หลังออกคำสั่ง', d:'ป้องกัน: ตาม พ.ร.บ.วิธีปฏิบัติราชการทางปกครอง 2539 (โต้แย้ง ไต่สวน ไม่มีส่วนได้เสีย) · แก้ไข: ร้องทุกข์/อุทธรณ์ รัฐสภา องค์กรอิสระ และศาล', star:2, exam:true},
+  {q:'พ.ร.บ. 4 ฉบับควบคุมอำนาจรัฐ มีอะไรบ้าง?', a:'วิ.ปฏิบัติฯ 39 · ละเมิดฯ 39 · ศาลปกครอง 42 · ระเบียบบริหารฯ 34', d:'ทำผิดตามฉบับ 1-2 → ฟ้องศาลปกครองโดยอาศัยสิทธิตามฉบับ 3 · ฉบับ 4 วางโครงสร้าง 3 ส่วน (แนว 1/68 ข้อ 1.2)', star:3, exam:true},
+  {q:'องค์ประกอบของรัฐ 4 ประการ?', a:'ประชากร ดินแดน รัฐบาล อำนาจอธิปไตย', d:'ลักษณะอำนาจอธิปไตย 4: เด็ดขาด ครอบคลุมทั่วไป ถาวร แบ่งแยกมิได้ ("เด็ด-ครอบ-ถาวร-ไม่แยก")', star:1, exam:false},
+  {q:'ไทยเป็นรัฐเดี่ยวหรือรัฐรวม?', a:'รัฐเดี่ยว', d:'รัฐบาลกลางองค์กรเดียวมีอำนาจสูงสุด (เช่นเดียวกับญี่ปุ่น ฝรั่งเศส) ต่างจากสหรัฐฯ/เยอรมนีที่เป็นสหพันธรัฐ', star:1, exam:false},
+  {q:'ระบบศาลของไทยเป็นแบบใด?', a:'ศาลคู่ — 4 ศาล', d:'ศาลรัฐธรรมนูญ · ศาลยุติธรรม · ศาลปกครอง (ระบบไต่สวน) · ศาลทหาร — สาย Civil Law เช่นฝรั่งเศส เยอรมนี', star:2, exam:true},
+  {q:'ใครคือ "พระบิดาแห่งกฎหมายมหาชนของไทย"?', a:'รัชกาลที่ 5', d:'ส่วนกรมหลวงราชบุรีดิเรกฤทธิ์ = บิดาแห่งกฎหมายไทย — อย่าสลับกัน!', star:2, exam:true},
+  {q:'เทศบาล 3 ประเภทแบ่งตามอะไร?', a:'นคร 5 หมื่น · เมือง 1 หมื่น · ตำบล 5 พัน', d:'เทศบาลนคร ≥50,000 คน · เทศบาลเมือง ≥10,000 หรือที่ตั้งศาลากลาง · เทศบาลตำบล ≥5,000 (ทุกประเภท + รายได้พอสมควร)', star:1, exam:false},
+  {q:'องค์กรอิสระตามรัฐธรรมนูญมีอะไรบ้าง?', a:'กกต. ผู้ตรวจการแผ่นดิน ป.ป.ช. ผู้ตรวจเงินแผ่นดิน กสม.', d:'ผู้ตรวจการแผ่นดิน (Ombudsman) ทำได้แค่รายงานและเผยแพร่ ไม่มีอำนาจสั่ง — จุดหลอกที่ชอบออก', star:1, exam:false},
+  {q:'องค์ประกอบ "กฎหมายตามเนื้อความ" 5 ข้อของหยุด แสงอุทัย?', a:'ข้อบังคับ-ของรัฐ-ความประพฤติ-ของมนุษย์-มีผลร้าย', d:'เป็นข้อบังคับ · ของรัฐ · กำหนดความประพฤติ (เคลื่อนไหว/งดเว้น — ลำพังใจไม่นับ) · ของมนุษย์ · ฝ่าฝืนได้รับผลร้าย', star:1, exam:false},
+  {q:'"Ubi societas ibi jus" แปลว่า?', a:'ที่ไหนมีสังคม ที่นั่นมีกฎหมาย', d:'สุภาษิตลาตินเปิดวิชา — กฎหมายเป็นศาสตร์แห่งบรรทัดฐาน (Normative Science)', star:1, exam:false},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(((i*7+3)%(i+1)));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length}</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.navy} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:280}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:280}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.navy}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="geekblue" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ คำถาม (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:19, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:20, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.navy, borderColor:C.navy}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'lab', label:'🧪 Case Lab', children:<CaseLabTab/>},
+    {key:'quiz', label:'🎮 ควิซ', children:<QuizTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.navy, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.navy, itemActiveColor:C.navyDark, itemSelectedColor:C.navyDark, itemHoverColor:C.navyLight, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.navy, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.navyDark}, ${C.navy})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(46,68,104,.3)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 1101 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:30, fontWeight:800}}>หลักกฎหมายมหาชน</h1>
+          <div style={{color:'#DCE6F5', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Case Method + Socratic</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงเอกสารสรุป LAW1101 (หลักนิติรัฐ · การควบคุมอำนาจรัฐ · การจัดระเบียบบริหารราชการแผ่นดิน · พ.ร.บ.วิธีปฏิบัติราชการทางปกครอง 2539 · พ.ร.บ.ความรับผิดทางละเมิดฯ 2539 · พ.ร.บ.จัดตั้งศาลปกครองฯ 2542 · พ.ร.บ.ระเบียบบริหารราชการแผ่นดิน 2534) · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง 2563–2568
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>
