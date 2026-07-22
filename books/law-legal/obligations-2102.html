@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>กฎหมายแพ่งและพาณิชย์ว่าด้วยหนี้ LAW2102 · ห้องเรียนอินเทอร์แอกทีฟ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#EEEFF7;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#2A2E44;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#D2D7EF; color:#2A2E44; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#E3E5F1; }
+  ::-webkit-scrollbar-thumb { background:#A6ADD0; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#4B5CA6; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(75,92,166,.16); }
+
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#333E7C; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(75,92,166,.15); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(75,92,166,.35);} 50%{ box-shadow:0 0 0 8px rgba(75,92,166,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress,
+        Collapse, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE — โทน "อินดิโก้" ประจำวิชาว่าด้วยหนี้ ============ */
+const C = {
+  primary:'#4B5CA6', primaryDark:'#333E7C', primaryLight:'#8C97CC',
+  amber:'#B0894F', amberDark:'#8A6836',
+  bg:'#EEEFF7', surface:'#E3E5F1', surface2:'#D9DCEC', surface3:'#EAECF6',
+  border:'#CCD0E4', borderDark:'#A6ADD0',
+  text:'#2A2E44', text2:'#4A4F6B', text3:'#6E7391',
+  white:'#FAFBFE',
+  green:'#4F8A61', greenBg:'#EBF4EE',
+  red:'#B25757', redBg:'#F6ECEA',
+  purple:'#75689B', purpleBg:'#EFEDF6',
+  blue:'#4E77A8', blueBg:'#EAF0F7',
+  cyan:'#4E8A8A', cyanBg:'#EAF3F3',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.amber, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+const Sec = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.primaryDark, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap'}}>ม.{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='primary', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    purple:[C.purple,C.purpleBg], cyan:[C.cyan,C.cyanBg], primary:[C.primaryDark,C.surface3],
+    amber:[C.amberDark,'#F5EFE3']
+  };
+  const [cc,bb] = map[tone]||map.primary;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+function DiaNode({x, y, w=158, h=62, title, sub, color, active, onClick}) {
+  return (
+    <g style={{cursor:onClick?'pointer':'default'}} onClick={onClick} className={active?'node-pulse':''}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="15.5"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11.5"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.18 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+/* ความสัมพันธ์แห่งหนี้ — 3 โหมด: ผิดนัด / รับช่วงสิทธิ / ลูกหนี้ร่วม */
+function DebtScene() {
+  const modes = {
+    delay: {
+      label:'การผิดนัด', color:C.red,
+      desc:'หนี้ถึงกำหนดชำระ — ถ้าหนี้ไม่มีกำหนดเวลาแน่นอน เจ้าหนี้ต้อง "เตือน" ก่อน ลูกหนี้ไม่ชำระจึงผิดนัด (ม.203, 204 ว.1) แต่ถ้ากำหนดเวลาไว้แน่นอนตามปฏิทิน ลูกหนี้ไม่ชำระตามกำหนด ผิดนัดทันทีโดยมิพักต้องเตือน (ม.204 ว.2) — ผลของลูกหนี้ผิดนัด: ต้องรับผิดในความเสียหายระหว่างผิดนัด แม้เกิดจากเหตุสุดวิสัย (ม.217) กลับกัน ถ้าลูกหนี้ขอชำระโดยชอบแล้วเจ้าหนี้ไม่ยอมรับ เจ้าหนี้ตกเป็นผู้ผิดนัด (ม.207)'
+    },
+    subro: {
+      label:'รับช่วงสิทธิ', color:C.cyan,
+      desc:'บุคคลที่สาม (เช่น ผู้ค้ำประกัน หรือผู้มีส่วนได้เสีย) ชำระหนี้แทนลูกหนี้ให้แก่เจ้าหนี้ → ย่อม "เข้ารับช่วงสิทธิ" ของเจ้าหนี้เดิมโดยผลของกฎหมาย (ม.229) แล้วสวมสิทธิทั้งหลายบรรดาที่เจ้าหนี้เคยมี (รวมประกัน/จำนอง/ค้ำประกัน) ไปไล่เบี้ยเอาจากลูกหนี้ได้ (ม.226)'
+    },
+    joint: {
+      label:'ลูกหนี้ร่วม', color:C.purple,
+      desc:'ลูกหนี้หลายคนผูกพันชำระหนี้ร่วมกัน → เจ้าหนี้เรียกให้ลูกหนี้ร่วมคนใดคนหนึ่งชำระหนี้ "สิ้นเชิง" หรือแต่บางส่วนก็ได้ตามแต่จะเลือก จนกว่าจะได้รับชำระเต็ม (ม.291) เมื่อลูกหนี้ร่วมคนหนึ่งชำระครบแล้ว หนี้ระงับสำหรับทุกคน (ม.292) และผู้ที่ชำระย่อมไล่เบี้ยเอาจากลูกหนี้ร่วมคนอื่นได้ตามส่วนเท่า ๆ กัน (ม.296)'
+    }
+  };
+  const [m, setM] = useState('delay');
+  const M = modes[m];
+  const CR = {x:130, y:90}, DB = {x:530, y:90}, TP = {x:330, y:290};
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="large"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 660 350" style={{width:'100%', height:'auto', maxHeight:400}}>
+          <DiaEdge id="mainhead" d={`M ${CR.x+60} ${CR.y+16} Q 330 26 ${DB.x-62} ${DB.y+16}`} color={C.amber}
+            label="มูลหนี้ (นิติกรรม/ละเมิด)" labelX={330} labelY={34} dashed animate dur={3.2} />
+          {m==='delay' && <g>
+            <DiaEdge id="d-remind" d={`M ${CR.x+70} ${CR.y+6} L ${DB.x-72} ${DB.y+6}`} color={C.blue}
+              label="เตือนให้ชำระ (ม.203/204)" labelX={330} labelY={104} animate dur={2.2} width={3.2} />
+            <DiaEdge id="d-nopay" d={`M ${DB.x-72} ${DB.y+30} L ${CR.x+70} ${CR.y+30}`} color={C.red}
+              label="ไม่ชำระ → ผิดนัด (ม.204)" labelX={330} labelY={140} animate dur={2.4} width={3.5} reverse />
+            <DiaEdge id="d-risk" d={`M ${DB.x} ${DB.y+40} L ${TP.x+70} ${TP.y-34}`} color={C.red}
+              label="รับผิดแม้พ้นวิสัย (ม.217)" labelX={500} labelY={226} animate dur={2.6} width={3.5} />
+            <DiaNode {...TP} title="ผลของการผิดนัด" sub="ค่าเสียหาย + ดอกเบี้ย" color={C.red} active />
+          </g>}
+          {m==='subro' && <g>
+            <DiaEdge id="s-pay" d={`M ${TP.x-70} ${TP.y-34} L ${DB.x-8} ${DB.y+42}`} color={C.green}
+              label="ชำระหนี้แทน" labelX={492} labelY={228} animate dur={2.2} width={3.5} />
+            <DiaEdge id="s-sub" d={`M ${DB.x-72} ${DB.y+8} L ${CR.x+72} ${CR.y+8}`} color={C.cyan}
+              label="รับช่วงสิทธิ (ม.226,229)" labelX={330} labelY={110} animate dur={2.5} width={3.5} />
+            <DiaEdge id="s-recur" d={`M ${TP.x-72} ${TP.y-34} L ${CR.x+8} ${CR.y+44}`} color={C.purple}
+              label="ไล่เบี้ยลูกหนี้เดิม" labelX={170} labelY={226} animate dur={2.6} width={3} dashed />
+            <DiaNode {...TP} title="ผู้ชำระแทน" sub="ผู้ค้ำ/ผู้มีส่วนได้เสีย" color={C.cyan} active />
+          </g>}
+          {m==='joint' && <g>
+            <DiaEdge id="j-claim" d={`M ${DB.x-72} ${DB.y+8} L ${CR.x+72} ${CR.y+8}`} color={C.purple}
+              label="เรียกคนเดียวเต็มจำนวน (ม.291)" labelX={330} labelY={110} animate dur={2.4} width={4} reverse />
+            <DiaEdge id="j-recur1" d={`M ${CR.x} ${CR.y+40} L ${TP.x-72} ${TP.y-34}`} color={C.cyan}
+              label="ไล่เบี้ยตามส่วน (ม.296)" labelX={172} labelY={226} animate dur={2.6} width={3} dashed />
+            <DiaEdge id="j-recur2" d={`M ${CR.x+40} ${CR.y+44} L ${TP.x+20} ${TP.y-34}`} color={C.cyan} width={2.5} dashed />
+            <DiaNode {...TP} title="ลูกหนี้ร่วมคนอื่น" sub="รับผิดส่วนเท่า ๆ กัน" color={C.purple} active />
+          </g>}
+          <DiaNode {...CR} title={m==='joint'?'ลูกหนี้ร่วมคนหนึ่ง':(m==='subro'?'ลูกหนี้':'ลูกหนี้')} sub="Debtor" color={C.primary} active />
+          <DiaNode {...DB} title="เจ้าหนี้" sub="Creditor" color={M.color} active />
+        </svg>
+      </div>
+      <Box tone={m==='joint'?'purple':(m==='subro'?'cyan':'red')} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        {M.desc}
+      </Box>
+    </div>
+  );
+}
+
+/* แถบ Flow แนวนอน */
+function FlowStrip({steps, color=C.primary}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs-${color.slice(1)}-${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['เจ้าหนี้ / ลูกหนี้', 'Creditor / Debtor', 'เจ้าหนี้ = ผู้มีสิทธิเรียกให้ชำระหนี้ · ลูกหนี้ = ผู้มีหน้าที่ชำระหนี้', C.primary],
+    ['วัตถุแห่งหนี้', 'Object of Obligation', 'สิ่งที่ลูกหนี้ต้องกระทำ: ส่งมอบทรัพย์ · กระทำการ · งดเว้นกระทำการ', C.blue],
+    ['การผิดนัด', 'Default (Delay)', 'ลูกหนี้ผิดนัด = ไม่ชำระเมื่อถึงกำหนด (203-206) · เจ้าหนี้ผิดนัด = ไม่ยอมรับชำระโดยชอบ (207)', C.red],
+    ['พ้นวิสัย', 'Impossibility', 'ชำระหนี้ไม่ได้ — โทษลูกหนี้ (218 ต้องใช้ค่าสินไหม) / ไม่โทษลูกหนี้ (219 หลุดพ้น)', C.amberDark],
+    ['รับช่วงสิทธิ', 'Subrogation', 'ผู้ชำระหนี้แทนเข้าสวมสิทธิของเจ้าหนี้เดิมไปไล่เบี้ยลูกหนี้ (226-229)', C.cyan],
+    ['หักกลบลบหนี้', 'Set-off', 'สองฝ่ายต่างเป็นเจ้าหนี้ลูกหนี้กัน หนี้ถึงกำหนด → หักกลบกันได้ (341)', C.purple],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>วิชานี้ตอบว่า <strong>"เมื่อลูกหนี้ไม่ยอมชำระหนี้ หรือชำระไม่ได้ กฎหมายให้เครื่องมืออะไรแก่เจ้าหนี้บ้าง?"</strong> — 4 หัวข้อออกสอบ: (1) การผิดนัด (2) พ้นวิสัย + รับช่วงสิทธิ (3) ควบคุมกองทรัพย์สินลูกหนี้ (ใช้สิทธิเรียกร้อง + เพิกถอนฉ้อฉล) (4) ลูกหนี้ร่วม + หักกลบลบหนี้</span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>💵 นึกภาพง่าย ๆ ด้วยชีวิตจริง</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          คุณให้เพื่อนยืมเงิน — คุณคือ <Pill color={C.blue} bg={C.blueBg}>เจ้าหนี้</Pill>
+          เพื่อนคือ <Pill color={C.primary} bg={C.surface3}>ลูกหนี้</Pill> มีกำหนดคืนวันที่ 1 มกราคม.
+          ถึงวันแล้วเพื่อนไม่คืน → เพื่อน <Pill color={C.red} bg={C.redBg}>ผิดนัด</Pill> (ม.204) ต้องเสียดอกเบี้ยและรับผิดหนักขึ้น (ม.217).
+          ถ้าเพื่อนไม่มีจ่ายแต่มีคนอื่นจ่ายแทน คนนั้นก็ <Pill color={C.cyan} bg={C.cyanBg}>รับช่วงสิทธิ</Pill> มาทวงเพื่อนต่อ (ม.229).
+          นี่คือโครงเรื่องหลักที่ข้อสอบเอามาแต่งเป็นโจทย์ทุกเทอม
+        </Paragraph>
+        <FlowStrip color={C.primary} steps={[
+          {icon:'📜', t:'เกิดมูลหนี้', bg:C.surface3},
+          {icon:'📅', t:'หนี้ถึงกำหนด', bg:C.blueBg},
+          {icon:'🔔', t:'เตือน (203-204)', bg:C.blueBg},
+          {icon:'⏰', t:'ผิดนัด (204)', bg:C.redBg},
+          {icon:'⚖️', t:'ผล: รับผิดหนัก (217)', bg:C.redBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: เจ้าหนี้–ลูกหนี้–บุคคลที่สาม</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับ 3 โหมด แล้วสังเกตทิศของลูกศร "เรียกชำระ" กับ "ไล่เบี้ย" — จุดตายของข้อสอบคือแยก 3 ฉากนี้ให้ออก</Paragraph>
+      <DebtScene/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 6 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                <span style={{fontWeight:700, fontSize:16.5, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚖️ ลูกหนี้ผิดนัด vs เจ้าหนี้ผิดนัด (ต้องแยกให้ออก!)</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'', dataIndex:'k', width:140, render:t=><strong style={{color:C.primaryDark}}>{t}</strong>},
+          {title:<span style={{color:C.red}}>ลูกหนี้ผิดนัด</span>, dataIndex:'a'},
+          {title:<span style={{color:C.blue}}>เจ้าหนี้ผิดนัด</span>, dataIndex:'b'},
+        ]}
+        dataSource={[
+          {key:1, k:'เกิดเมื่อ', a:'หนี้ถึงกำหนด + (เตือน) แล้วลูกหนี้ไม่ชำระ (204)', b:'ลูกหนี้ขอชำระโดยชอบ แต่เจ้าหนี้ไม่ยอมรับ (207)'},
+          {key:2, k:'ความรับผิดในเหตุสุดวิสัย', a:'ต้องรับผิดแม้เกิดจากเหตุสุดวิสัยระหว่างผิดนัด (217)', b:'ลูกหนี้รับผิดเฉพาะจงใจ/ประมาทเลินเล่ออย่างร้ายแรง (217 วรรคท้าย)'},
+          {key:3, k:'ดอกเบี้ย', a:'ต้องเสียดอกเบี้ยผิดนัด (224)', b:'หนี้เงินไม่ต้องเสียดอกเบี้ยระหว่างเจ้าหนี้ผิดนัด (221)'},
+          {key:4, k:'ทางแก้ของอีกฝ่าย', a:'เจ้าหนี้เรียกค่าสินไหมทดแทน/บังคับชำระหนี้ (213,215)', b:'ลูกหนี้วางทรัพย์เพื่อหลุดพ้น (331)'},
+          {key:5, k:'มาตราหลัก', a:'203, 204, 217, 224', b:'207, 208, 221'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        (1) หนี้ <strong>ไม่มีกำหนดเวลาแน่นอน</strong> ลูกหนี้ยัง<strong>ไม่ผิดนัด</strong>จนกว่าเจ้าหนี้จะ "เตือน" ตาม ม.203 อย่ารีบตอบว่าผิดนัดทันที ·
+        (2) หนี้ละเมิด ลูกหนี้ผิดนัด <strong>ตั้งแต่เวลาทำละเมิด</strong> โดยไม่ต้องเตือน (ม.206) ·
+        (3) <strong>เจ้าหนี้ผิดนัด</strong>ก็มี! ลูกหนี้ขอชำระโดยชอบแล้วเจ้าหนี้ไม่รับ ภาระความรับผิดพลิกกลับทันที (ม.207)
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+const SRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Sec>{n}</Sec>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+const lessonModules = [
+  {
+    key:'l1', star:3, icon:'⏰', title:'ลูกหนี้ผิดนัด — เมื่อไรถึงเรียกว่า "ผิดนัด"',
+    chips:['203','204','205','206'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="203">หนี้ที่ <strong>ไม่ได้กำหนดเวลาชำระ</strong> เจ้าหนี้เรียกให้ชำระได้โดยพลัน และลูกหนี้ก็ชำระได้โดยพลัน</SRule>
+          <SRule n="204">ว.1 หนี้ถึงกำหนดแล้ว เจ้าหนี้ <strong>เตือน</strong>ให้ชำระ ลูกหนี้ไม่ชำระ → <strong>ผิดนัด</strong> · ว.2 ถ้ากำหนดเวลาชำระไว้ <strong>แน่นอนตามวันแห่งปฏิทิน</strong> ลูกหนี้ไม่ชำระตามกำหนด → ผิดนัด <strong>โดยมิพักต้องเตือน</strong></SRule>
+          <SRule n="205">ลูกหนี้ <strong>ยังไม่ผิดนัด</strong> ตราบเท่าที่ยังไม่ชำระหนี้เพราะพฤติการณ์อันจะโทษลูกหนี้ไม่ได้</SRule>
+          <SRule n="206">หนี้อันเกิดแต่ <strong>มูลละเมิด</strong> ลูกหนี้ได้ชื่อว่าผิดนัด <strong>มาแต่เวลาที่ทำละเมิด</strong> (ไม่ต้องเตือน)</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ เส้นแบ่งที่ออกสอบทุกเทอม" icon="🎯">
+          <strong>มีกำหนดเวลาแน่นอน (ปฏิทิน)</strong> → ไม่ชำระตามกำหนด = ผิดนัดทันที (204 ว.2) · <strong>ไม่มีกำหนด / ไม่แน่นอน</strong> → ต้องเตือนก่อน จึงจะผิดนัด (203, 204 ว.1) · <strong>ละเมิด</strong> → ผิดนัดแต่วันทำละเมิด (206) — ดูให้ออกว่าโจทย์เป็นหนี้แบบไหน
+        </Box>
+        <Box tone="cyan" title="สอนสด" icon="🎓">
+          "เตือน" (ม.204) ไม่มีแบบพิธี จะเตือนด้วยวาจา หนังสือ หรือฟ้องคดีก็ได้ — สิ่งสำคัญคือต้องเป็นการเรียกให้ชำระ <strong>หลังหนี้ถึงกำหนดแล้ว</strong> เตือนก่อนหนี้ถึงกำหนดไม่ทำให้ผิดนัด
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l2', star:3, icon:'🔥', title:'ผลของลูกหนี้ผิดนัด — รับผิดแม้เหตุสุดวิสัย (ม.217)',
+    chips:['215','217','224'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="215">ลูกหนี้ไม่ชำระหนี้ให้ต้องตามความประสงค์อันแท้จริงแห่งมูลหนี้ → เจ้าหนี้เรียก <strong>ค่าสินไหมทดแทน</strong>เพื่อความเสียหายได้</SRule>
+          <SRule n="217">ลูกหนี้ผิดนัดต้องรับผิดในความเสียหายที่เกิดระหว่างผิดนัด <strong>แม้เกิดแต่เหตุสุดวิสัย</strong> — <strong>เว้นแต่</strong>พิสูจน์ได้ว่า ถึงแม้ตนไม่ผิดนัด ความเสียหายนั้นก็คงจะเกิดอยู่ดี</SRule>
+          <SRule n="224">หนี้เงินระหว่างผิดนัด คิด <strong>ดอกเบี้ยผิดนัด</strong> ร้อยละ 5 ต่อปี (หรือสูงกว่าตามที่กำหนด) โดยเจ้าหนี้ไม่ต้องพิสูจน์ความเสียหาย</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.217 คือดาวเด่นของหัวข้อ" icon="🎯">
+          ปกติถ้าทรัพย์เสียหายเพราะ <strong>เหตุสุดวิสัย</strong> ลูกหนี้หลุดพ้น (219) — <strong>แต่</strong>ถ้าลูกหนี้ <strong>ผิดนัดแล้ว</strong> ทรัพย์มาสูญเสียเพราะเหตุสุดวิสัยในระหว่างผิดนัด ลูกหนี้ <strong>ยังต้องรับผิด</strong> (217) นี่คือ "โทษของการผิดนัด" ที่โจทย์ชอบเอามาหลอก
+        </Box>
+        <Box tone="amber" title="ข้อยกเว้นที่ต้องเขียนให้ครบ" icon="📌">
+          ม.217 ตอนท้าย: ถ้าลูกหนี้ <strong>พิสูจน์ได้</strong>ว่าแม้ตนไม่ผิดนัด ความเสียหายก็จะเกิดอยู่ดี (เช่น ไฟไหม้ทั้งย่านไม่ว่าจะส่งมอบทันหรือไม่) → ลูกหนี้ <strong>หลุดพ้น</strong> — เขียนตอบต้องกล่าวถึงข้อยกเว้นนี้ด้วยจึงได้คะแนนเต็ม
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'🙅', title:'เจ้าหนี้ผิดนัด — ภาระพลิกกลับ (ม.207)',
+    chips:['207','208','221'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="207">เจ้าหนี้ตกเป็นผู้ผิดนัด เมื่อลูกหนี้ <strong>ขอปฏิบัติการชำระหนี้โดยชอบแล้ว</strong> แต่เจ้าหนี้ไม่รับชำระโดยปราศจากมูลเหตุอันจะอ้างกฎหมายได้</SRule>
+          <SRule n="208">การขอปฏิบัติการชำระหนี้ต้องทำ <strong>โดยชอบ</strong> — เสนอชำระตามความเป็นจริง ตรงตามกำหนดเวลาและสถานที่</SRule>
+          <SRule n="221">หนี้เงินอันต้องเสียดอกเบี้ย ระหว่าง <strong>เจ้าหนี้ผิดนัด</strong> ลูกหนี้ <strong>ไม่ต้องเสียดอกเบี้ย</strong></SRule>
+        </Box>
+        <Box tone="blue" title="ผลเมื่อเจ้าหนี้ผิดนัด" icon="🔄">
+          (1) ลูกหนี้ยังคงเป็นลูกหนี้ แต่ <strong>ความรับผิดผ่อนคลาย</strong> — รับผิดเฉพาะความเสียหายที่เกิดจากจงใจหรือประมาทเลินเล่ออย่างร้ายแรงของตน (ม.217 วรรคท้าย ประกอบหลักเจ้าหนี้ผิดนัด) · (2) หนี้เงินหยุดคิดดอกเบี้ย (221) · (3) ลูกหนี้ <strong>วางทรัพย์</strong>เพื่อให้หลุดพ้นจากหนี้ได้ (ม.331)
+        </Box>
+        <Box tone="red" title="กับดัก (ข้อสอบชอบสลับตัวผิดนัด)" icon="⚠️">
+          โจทย์: "จันทร์ตกลงส่งมอบรถให้อังคารวันที่ 1 ม.ค. ถึงกำหนดจันทร์นำรถไปส่ง แต่อังคารไม่ยอมมารับ" — คนที่ผิดนัดคือ <strong>อังคาร (เจ้าหนี้)</strong> ไม่ใช่จันทร์! เพราะจันทร์ขอชำระโดยชอบแล้ว (207) อย่าเผลอตอบว่าจันทร์ผิดนัด
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:3, icon:'💥', title:'การชำระหนี้กลายเป็นพ้นวิสัย — โทษใคร?',
+    chips:['218','219'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="218">การชำระหนี้กลายเป็นพ้นวิสัยเพราะพฤติการณ์อันลูกหนี้ <strong>ต้องรับผิดชอบ</strong> → ลูกหนี้ต้องใช้ <strong>ค่าสินไหมทดแทน</strong>เพื่อการไม่ชำระหนี้นั้น</SRule>
+          <SRule n="219">การชำระหนี้กลายเป็นพ้นวิสัยเพราะพฤติการณ์อันลูกหนี้ <strong>ไม่ต้องรับผิดชอบ</strong> (เช่น เหตุสุดวิสัย) → ลูกหนี้ <strong>หลุดพ้น</strong>จากการชำระหนี้</SRule>
+        </Box>
+        <Box tone="purple" title="ตารางตัดสินใจ 2 ทาง" icon="🧭">
+          พ้นวิสัยเพราะ <strong>ความผิดของลูกหนี้</strong> (เช่น ประมาททำทรัพย์เสียหาย) → ม.218 ชดใช้ค่าสินไหม · พ้นวิสัยเพราะ <strong>เหตุที่โทษลูกหนี้ไม่ได้</strong> (ไฟไหม้จากฟ้าผ่า) → ม.219 หลุดพ้น — <strong>แต่</strong>ถ้าลูกหนี้ผิดนัดอยู่ก่อนแล้ว ให้ย้อนไปดู ม.217 (รับผิดแม้สุดวิสัย)
+        </Box>
+        <Box tone="cyan" title="สอนสด — ลำดับการวิเคราะห์" icon="🎓">
+          เจอโจทย์ทรัพย์สูญหาย/เสียหาย ให้ถาม 3 ชั้น: (1) ลูกหนี้ <strong>ผิดนัด</strong>อยู่ก่อนหรือยัง? ถ้าใช่ → 217 รับผิด · (2) ถ้ายังไม่ผิดนัด เหตุนั้น <strong>โทษลูกหนี้ได้ไหม</strong>? โทษได้ → 218 ชดใช้ · โทษไม่ได้ → 219 หลุดพ้น
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l5', star:3, icon:'🔁', title:'รับช่วงสิทธิ & รับช่วงทรัพย์ — อาวุธของผู้ชำระแทน',
+    chips:['226','227','228','229'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.cyan} steps={[
+          {icon:'💰', t:'ผู้ค้ำ/ผู้มีส่วนได้เสียชำระแทน', bg:C.greenBg},
+          {icon:'🔁', t:'เข้ารับช่วงสิทธิ (229)', bg:C.cyanBg},
+          {icon:'🛡️', t:'ได้สิทธิประกันทั้งหมด (226)', bg:C.blueBg},
+          {icon:'⚖️', t:'ไล่เบี้ยลูกหนี้เดิม', bg:C.purpleBg},
+        ]}/>
+        <Box tone="green" title="หลัก" icon="✅" style={{marginTop:12}}>
+          <SRule n="226">ผู้รับช่วงสิทธิของเจ้าหนี้ ชอบที่จะ <strong>ใช้สิทธิทั้งหลายบรรดาที่เจ้าหนี้มีอยู่</strong>ในมูลหนี้ รวมทั้งประกันแห่งหนี้ (จำนอง จำนำ ค้ำประกัน)</SRule>
+          <SRule n="227">เจ้าหนี้ได้รับ <strong>ค่าสินไหมทดแทนเต็มจำนวน</strong>แล้ว → ผู้ใช้ค่าสินไหมนั้นเข้ารับช่วงสิทธิของเจ้าหนี้ (รับช่วงทรัพย์)</SRule>
+          <SRule n="229">การรับช่วงสิทธิ <strong>ย่อมมีขึ้นโดยอำนาจกฎหมาย</strong> เพื่อประโยชน์ของ: (3) บุคคลผู้มีความผูกพันร่วมกับผู้อื่น หรือเพื่อผู้อื่นในอันจะต้องใช้หนี้ ซึ่ง <strong>มีส่วนได้เสีย</strong>ที่จะใช้หนี้นั้น — เช่น <strong>ผู้ค้ำประกัน</strong>ที่ชำระหนี้แทน</SRule>
+        </Box>
+        <Box tone="red" title="จุดสอบ" icon="🎯">
+          ผู้ค้ำประกันชำระหนี้แทนลูกหนี้ → เข้ารับช่วงสิทธิของเจ้าหนี้ <strong>โดยผลของกฎหมาย</strong>ตาม ม.229(3) (ประกอบ ม.693) ไม่ต้องมีข้อตกลง — แล้วสวมสิทธิเจ้าหนี้ทั้งหมด (ม.226) ไปไล่เบี้ยลูกหนี้ รวมทั้งสิทธิในหลักประกันต่าง ๆ ด้วย
+        </Box>
+        <Box tone="amber" title="แยกให้ออก: รับช่วงสิทธิ ≠ ช่วงสิทธิเรียกร้อง" icon="📌">
+          "รับช่วงสิทธิ" (subrogation, ม.226-232) = ผู้ชำระแทน <strong>สวมเป็นเจ้าหนี้</strong> · ต่างจาก "โอนสิทธิเรียกร้อง" (assignment, ม.303) ที่เป็นการ <strong>โอนตามสัญญา</strong> และต้องบอกกล่าวลูกหนี้เป็นหนังสือ (ม.306)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l6', star:2, icon:'🎣', title:'ใช้สิทธิเรียกร้องของลูกหนี้ (Creditor\'s Action) — ม.233',
+    chips:['233','234','235','236'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="233">ถ้าลูกหนี้ <strong>ขัดขืน / เพิกเฉย</strong>ไม่ยอมใช้สิทธิเรียกร้องของตนต่อบุคคลภายนอก เป็นเหตุให้เจ้าหนี้เสียประโยชน์ → เจ้าหนี้จะ <strong>ใช้สิทธิเรียกร้องนั้นในนามของตนเอง</strong>แทนลูกหนี้เพื่อป้องกันสิทธิของตนก็ได้ (เว้นแต่เป็นการของลูกหนี้โดยเฉพาะตัว)</SRule>
+          <SRule n="234">เจ้าหนี้ใช้สิทธิเรียกร้องแทนลูกหนี้ ต้อง <strong>ขอหมายเรียกลูกหนี้เข้ามาในคดี</strong>ด้วย</SRule>
+        </Box>
+        <Box tone="blue" title="เงื่อนไข 3 ข้อ" icon="🧭">
+          (1) ลูกหนี้มีสิทธิเรียกร้องต่อบุคคลภายนอก · (2) ลูกหนี้ <strong>เฉื่อยชา/ขัดขืน</strong>ไม่ใช้สิทธิ · (3) เป็นเหตุให้เจ้าหนี้ <strong>เสียประโยชน์</strong> (ลูกหนี้ไม่มีทรัพย์อื่นพอชำระหนี้) — ครบ 3 ข้อ เจ้าหนี้ทำแทนได้
+        </Box>
+        <Box tone="red" title="กับดัก" icon="⚠️">
+          เจ้าหนี้ใช้สิทธิแทนได้ <strong>เฉพาะเพื่อรักษาเงินเข้ากองทรัพย์สินของลูกหนี้</strong> ไม่ใช่เอาเข้ากระเป๋าตนเองโดยตรง และทำไม่ได้ถ้าเป็นสิทธิ <strong>เฉพาะตัวลูกหนี้</strong> (เช่น สิทธิฟ้องหย่า สิทธิเรียกค่าทดแทนทางจิตใจ)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:3, icon:'🗑️', title:'เพิกถอนการฉ้อฉล (Fraudulent Transfer) — ม.237',
+    chips:['237','238','240'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="237">เจ้าหนี้ชอบที่จะ <strong>ร้องขอให้ศาลเพิกถอน</strong>นิติกรรมใด ๆ ที่ลูกหนี้ได้ทำลง <strong>ทั้งรู้อยู่ว่าเป็นทางให้เจ้าหนี้เสียเปรียบ</strong> — เว้นแต่ผู้ได้ลาภงอก (ผู้รับโอน) <strong>ไม่รู้</strong>ข้อความจริงในขณะทำนิติกรรม · แต่ถ้าเป็นการทำให้โดย <strong>เสน่หา</strong> เพียงลูกหนี้รู้ฝ่ายเดียวก็เพิกถอนได้</SRule>
+          <SRule n="240">การเพิกถอนต้องฟ้องภายใน <strong>1 ปี</strong>นับแต่เจ้าหนี้รู้เหตุเพิกถอน หรือ <strong>10 ปี</strong>นับแต่ทำนิติกรรม</SRule>
+        </Box>
+        <Box tone="purple" title="แยก 2 กรณี — ตัวชี้ขาดคือ 'ได้ค่าตอบแทนหรือให้เปล่า'" icon="🧭">
+          <strong>นิติกรรมมีค่าตอบแทน</strong> (ขาย) → เพิกถอนได้ต่อเมื่อ <strong>ทั้งลูกหนี้และผู้รับโอนรู้</strong>ว่าทำให้เจ้าหนี้เสียเปรียบ · <strong>นิติกรรมให้เปล่า</strong> (ยกให้โดยเสน่หา) → เพิกถอนได้แม้ <strong>ลูกหนี้รู้ฝ่ายเดียว</strong> (ผู้รับไม่ต้องรู้)
+        </Box>
+        <Box tone="red" title="จุดสอบตัวแม่" icon="🎯">
+          ลูกหนี้จวนถูกยึดทรัพย์ รีบ <strong>โอน/ยกที่ดินให้ญาติ</strong>เพื่อหนีเจ้าหนี้ — เจ้าหนี้ฟ้องขอเพิกถอนได้ตาม ม.237 ถ้าเป็นการให้โดยเสน่หา ผู้รับจะรู้หรือไม่ก็เพิกถอนได้ (ลูกหนี้รู้ฝ่ายเดียวพอ) อย่าลืมตรวจอายุความ 1 ปี/10 ปี (240)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:3, icon:'👥', title:'ลูกหนี้ร่วม — เจ้าหนี้เลือกเรียกใครก็ได้ (ม.291)',
+    chips:['291','292','293','295','296','297'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="291">ลูกหนี้ร่วมกัน → เจ้าหนี้เรียกให้ลูกหนี้ <strong>คนใดคนหนึ่งชำระหนี้สิ้นเชิง</strong>หรือแต่โดยส่วนก็ได้ ตามแต่จะเลือก จนกว่าจะได้รับชำระเต็มจำนวน</SRule>
+          <SRule n="292">การชำระหนี้ (รวมวางทรัพย์ หักกลบ) โดยลูกหนี้ร่วมคนหนึ่ง <strong>ย่อมได้เป็นประโยชน์แก่ลูกหนี้คนอื่น</strong>ด้วย → หนี้ระงับสำหรับทุกคน</SRule>
+          <SRule n="293">การ <strong>ปลดหนี้</strong>ให้ลูกหนี้ร่วมคนหนึ่ง ย่อมเป็นประโยชน์แก่คนอื่น <strong>เพียงส่วน</strong>ของลูกหนี้ที่ได้ปลดไปเท่านั้น</SRule>
+          <SRule n="295">ข้อความอื่น ๆ (เช่น การผิดนัด การบอกกล่าว) เป็นเรื่อง <strong>เฉพาะตัวลูกหนี้ร่วมแต่ละคน</strong> (นอกจากที่ ม.292-294 บัญญัติไว้)</SRule>
+          <SRule n="296">ระหว่างลูกหนี้ร่วมกันเอง ต่างต้องรับผิด <strong>เป็นส่วนเท่า ๆ กัน</strong> เว้นแต่จะกำหนดไว้เป็นอย่างอื่น → ผู้ที่ชำระเกินส่วนของตน <strong>ไล่เบี้ย</strong>เอาจากคนอื่นได้</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ สูตรข้อสอบลูกหนี้ร่วม 3 คน" icon="🎯">
+          รัก/รุ่ง/เรือง กู้ร่วม 300,000 → เจ้าหนี้เรียกเรืองคนเดียว <strong>เต็ม 300,000</strong> ได้ (291) เมื่อเรืองจ่ายครบ หนี้ระงับหมด (292) แล้วเรือง <strong>ไล่เบี้ย</strong>รักและรุ่งได้คนละ 100,000 (296) — ระวัง "ปลดหนี้" (293): ปลดให้รุ่งคนเดียว หนี้ลดเฉพาะส่วนของรุ่ง (100,000) เหลือ 200,000
+        </Box>
+        <Box tone="amber" title="จุดจำ — อะไร 'ลามถึงทุกคน' อะไร 'เฉพาะตัว'" icon="📌">
+          <strong>ลามถึงทุกคน:</strong> การชำระหนี้ · วางทรัพย์ · หักกลบลบหนี้ · หนี้เกลื่อนกลืนกัน (292-294) · <strong>เฉพาะตัว:</strong> การผิดนัด · การบอกกล่าว · การสละสิทธิ (295)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l9', star:3, icon:'⚖️', title:'หักกลบลบหนี้ & ปลดหนี้ — ความระงับแห่งหนี้',
+    chips:['340','341','344'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="340">การ <strong>ปลดหนี้</strong> — เจ้าหนี้แสดงเจตนาปลดหนี้ให้ลูกหนี้ หนี้ระงับ (ถ้าหนี้มีหลักฐานเป็นหนังสือ การปลดหนี้ก็ต้องทำเป็นหนังสือ หรือเวนคืนเอกสาร)</SRule>
+          <SRule n="341">บุคคล 2 คน <strong>ต่างมีความผูกพันซึ่งกันและกัน</strong> โดยมูลหนี้มีวัตถุเป็นอย่างเดียวกัน และหนี้ทั้งสอง <strong>ถึงกำหนด</strong>แล้ว → ต่างฝ่ายต่าง <strong>หักกลบลบหนี้</strong>กันได้ตามจำนวนที่ตรงกัน (โดยแสดงเจตนาต่ออีกฝ่าย)</SRule>
+          <SRule n="344">สิทธิเรียกร้องที่ <strong>ยังมีข้อต่อสู้</strong> จะเอามาหักกลบลบหนี้ <strong>ไม่ได้</strong></SRule>
+        </Box>
+        <Box tone="purple" title="เงื่อนไขหักกลบลบหนี้ (ม.341) — ต้องครบ" icon="🧭">
+          (1) ต่างเป็นเจ้าหนี้และลูกหนี้ซึ่งกันและกัน · (2) วัตถุแห่งหนี้เป็น <strong>ประเภทเดียวกัน</strong> (เช่นเงินกับเงิน) · (3) หนี้ทั้งสอง <strong>ถึงกำหนดชำระ</strong>แล้ว · (4) ไม่ใช่หนี้ที่กฎหมายห้ามหักกลบ / ไม่มีข้อต่อสู้ (344)
+        </Box>
+        <Box tone="red" title="จุดโยงกับลูกหนี้ร่วม" icon="🎯">
+          ลูกหนี้ร่วมคนหนึ่งมีสิทธิเรียกร้องต่อเจ้าหนี้ (เจ้าหนี้ติดหนี้เขาอยู่) → เขาเอามา <strong>หักกลบ</strong>ได้ และการหักกลบนั้น <strong>เป็นประโยชน์แก่ลูกหนี้ร่วมคนอื่นด้วย</strong> (ม.292 ประกอบ 341) — นี่คือจุดที่หัวข้อ 4 ผูกลูกหนี้ร่วมเข้ากับหักกลบลบหนี้
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l2']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Sec key={c}>{c}</Sec>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>9 โมดูล เรียงตาม 4 หัวข้อออกสอบ: ผิดนัด → พ้นวิสัย+รับช่วงสิทธิ → ควบคุมกองทรัพย์สิน → ลูกหนี้ร่วม+หักกลบ</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกครั้ง) · คลิกที่หัวข้อเพื่อกางเนื้อหา</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'หัวข้อ 1', star:3, topic:'หนี้ไม่มีกำหนดเวลา — ต้องเตือนก่อนผิดนัด',
+    facts:'นายเอกกู้เงินนายโทไป 200,000 บาท โดยไม่ได้กำหนดวันคืนเงินไว้ ต่อมานายโทต้องการเงินคืนจึงส่งหนังสือทวงถามให้นายเอกชำระภายใน 7 วัน นายเอกเพิกเฉย นายโทจะถือว่านายเอกผิดนัดตั้งแต่เมื่อใด และเรียกดอกเบี้ยผิดนัดได้หรือไม่',
+    issue:'หนี้ที่ไม่ได้กำหนดเวลาชำระ ลูกหนี้ตกเป็นผู้ผิดนัดเมื่อใด และเจ้าหนี้เรียกดอกเบี้ยผิดนัดได้เพียงใด',
+    rule:['203','204','224'],
+    ruleText:'ม.203 หนี้ที่ไม่ได้กำหนดเวลาชำระ เจ้าหนี้เรียกให้ชำระได้โดยพลัน · ม.204 ว.1 เมื่อหนี้ถึงกำหนดแล้ว เจ้าหนี้เตือนให้ชำระ ลูกหนี้ไม่ชำระ จึงตกเป็นผู้ผิดนัด · ม.224 หนี้เงินระหว่างผิดนัดคิดดอกเบี้ยผิดนัดได้โดยไม่ต้องพิสูจน์ความเสียหาย',
+    application:'หนี้กู้ยืมรายนี้ไม่ได้กำหนดเวลาชำระไว้ นายเอกจึงยังไม่ผิดนัดจนกว่านายโทจะเตือน เมื่อนายโทมีหนังสือทวงถามซึ่งถือเป็นการเตือนตาม ม.204 ว.1 และครบกำหนด 7 วันแล้วนายเอกเพิกเฉยไม่ชำระ นายเอกจึงตกเป็นผู้ผิดนัดนับแต่วันพ้นกำหนดตามคำเตือน และต้องเสียดอกเบี้ยผิดนัดตาม ม.224 นับแต่วันผิดนัดนั้น',
+    conclusion:'นายเอกผิดนัดนับแต่วันพ้นกำหนดตามหนังสือเตือน (มิใช่นับแต่วันกู้) นายโทเรียกดอกเบี้ยผิดนัดได้ตั้งแต่วันผิดนัดเป็นต้นไป (ม.203, 204 ว.1, 224)'
+  },
+  {
+    id:'c2', tag:'หัวข้อ 1', star:3, topic:'ขอชำระโดยชอบแล้วอีกฝ่ายไม่รับ — ใครผิดนัด',
+    facts:'นายจันทร์ตกลงขายและส่งมอบรถยนต์ให้นายอังคาร กำหนดส่งมอบวันที่ 1 มกราคม ครั้นถึงกำหนดนายจันทร์นำรถไปส่งมอบ ณ สถานที่ที่ตกลงกัน แต่นายอังคารไม่ยอมมารับโดยไม่มีเหตุอันจะอ้างได้ ต่อมารถถูกไฟไหม้เสียหายทั้งคันโดยไม่ใช่ความผิดของนายจันทร์ — ใครเป็นผู้ผิดนัด และใครต้องรับความเสียหาย',
+    issue:'เจ้าหนี้ที่ไม่ยอมรับชำระหนี้ซึ่งลูกหนี้ขอปฏิบัติโดยชอบ ตกเป็นผู้ผิดนัดหรือไม่ และภาระความเสี่ยงในทรัพย์ที่สูญเสียตกแก่ใคร',
+    rule:['207','217','219'],
+    ruleText:'ม.207 เจ้าหนี้ตกเป็นผู้ผิดนัดเมื่อลูกหนี้ขอปฏิบัติการชำระหนี้โดยชอบแล้ว แต่เจ้าหนี้ไม่รับชำระโดยปราศจากมูลเหตุอันจะอ้างกฎหมายได้ · ม.217 ลูกหนี้ (ที่มิได้ผิดนัด) ในระหว่างเจ้าหนี้ผิดนัด คงรับผิดเฉพาะความเสียหายที่เกิดจากความจงใจหรือประมาทเลินเล่ออย่างร้ายแรงของตน · ม.219 การชำระหนี้กลายเป็นพ้นวิสัยเพราะเหตุอันลูกหนี้ไม่ต้องรับผิด ลูกหนี้หลุดพ้น',
+    application:'นายจันทร์นำรถไปส่งมอบตามกำหนด ณ สถานที่ที่ตกลง เป็นการขอปฏิบัติการชำระหนี้โดยชอบตาม ม.207 เมื่อนายอังคารไม่ยอมรับโดยไม่มีเหตุ นายอังคาร (เจ้าหนี้) จึงตกเป็นผู้ผิดนัด มิใช่นายจันทร์ ครั้นรถถูกไฟไหม้โดยไม่ใช่ความผิดหรือความประมาทร้ายแรงของนายจันทร์ นายจันทร์จึงหลุดพ้นจากการส่งมอบตาม ม.219 และไม่ต้องรับผิดในความเสียหายตาม ม.217',
+    conclusion:'นายอังคาร (เจ้าหนี้) เป็นผู้ผิดนัดตาม ม.207 นายจันทร์หลุดพ้นความรับผิด ความเสี่ยงในการที่รถสูญเสียตกแก่นายอังคาร (ม.207, 217, 219)'
+  },
+  {
+    id:'c3', tag:'หัวข้อ 1-2', star:3, topic:'ลูกหนี้ผิดนัดแล้วทรัพย์สูญหายเพราะเหตุสุดวิสัย',
+    facts:'นายหนึ่งต้องส่งมอบม้าแข่งให้นายสองในวันที่ 1 มีนาคมตามสัญญาซึ่งกำหนดวันไว้แน่นอน แต่นายหนึ่งไม่ส่งมอบตามกำหนดโดยไม่มีเหตุ ต่อมาวันที่ 10 มีนาคม เกิดฟ้าผ่าลงคอกทำให้ม้าตาย นายหนึ่งอ้างว่าม้าตายเพราะเหตุสุดวิสัย จึงไม่ต้องรับผิด — ข้ออ้างฟังขึ้นหรือไม่',
+    issue:'ลูกหนี้ที่ผิดนัดแล้ว ยังต้องรับผิดในความเสียหายที่เกิดจากเหตุสุดวิสัยในระหว่างผิดนัดหรือไม่',
+    rule:['204','217'],
+    ruleText:'ม.204 ว.2 กำหนดเวลาชำระไว้แน่นอนตามวันแห่งปฏิทิน ลูกหนี้ไม่ชำระตามกำหนด ผิดนัดโดยมิพักต้องเตือน · ม.217 ลูกหนี้ผิดนัดต้องรับผิดในความเสียหายที่เกิดขึ้นในระหว่างผิดนัด แม้เกิดแต่เหตุสุดวิสัย เว้นแต่พิสูจน์ได้ว่าถึงแม้ไม่ผิดนัดความเสียหายก็คงจะเกิด',
+    application:'สัญญากำหนดวันส่งมอบไว้แน่นอนวันที่ 1 มีนาคม เมื่อนายหนึ่งไม่ส่งมอบตามกำหนด จึงผิดนัดโดยมิพักต้องเตือนตาม ม.204 ว.2 ตั้งแต่วันที่ 1 มีนาคม ครั้นม้าตายเพราะฟ้าผ่าในวันที่ 10 มีนาคม ซึ่งเป็นเหตุสุดวิสัยในระหว่างที่นายหนึ่งผิดนัดอยู่ นายหนึ่งจึงยังต้องรับผิดตาม ม.217 เว้นแต่จะพิสูจน์ได้ว่าแม้ส่งมอบทันกำหนด ม้าก็จะถูกฟ้าผ่าตายอยู่ดี (เช่น ฟ้าผ่าที่คอกของนายสองเช่นกัน) ซึ่งตามข้อเท็จจริงพิสูจน์ไม่ได้',
+    conclusion:'ข้ออ้างของนายหนึ่งฟังไม่ขึ้น — แม้ม้าตายเพราะเหตุสุดวิสัย แต่เกิดในระหว่างนายหนึ่งผิดนัด นายหนึ่งจึงต้องรับผิดใช้ค่าสินไหมทดแทนตาม ม.217'
+  },
+  {
+    id:'c4', tag:'หัวข้อ 4', star:3, topic:'ลูกหนี้ร่วม — เรียกคนเดียวเต็ม & ไล่เบี้ย',
+    facts:'นายรัก นายรุ่ง และนายเรือง ร่วมกันกู้เงินนายทองไป 300,000 บาท ตกลงเป็นลูกหนี้ร่วม เมื่อหนี้ถึงกำหนด นายทองเรียกให้นายเรืองชำระทั้ง 300,000 บาทแต่เพียงผู้เดียว นายเรืองต่อสู้ว่าตนควรรับผิดเพียง 1 ใน 3 — ข้อต่อสู้ฟังขึ้นหรือไม่ และหากนายเรืองชำระครบ จะไล่เบี้ยได้เพียงใด',
+    issue:'เจ้าหนี้เรียกให้ลูกหนี้ร่วมคนเดียวชำระหนี้เต็มจำนวนได้หรือไม่ และลูกหนี้ร่วมที่ชำระแล้วไล่เบี้ยจากคนอื่นได้เพียงใด',
+    rule:['291','292','296'],
+    ruleText:'ม.291 ลูกหนี้ร่วมกัน เจ้าหนี้จะเรียกให้ลูกหนี้แต่คนใดคนหนึ่งชำระหนี้สิ้นเชิงหรือแต่โดยส่วนก็ได้ตามแต่จะเลือก จนกว่าจะได้รับชำระเต็มจำนวน · ม.292 การชำระหนี้โดยลูกหนี้ร่วมคนหนึ่งย่อมได้เป็นประโยชน์แก่ลูกหนี้คนอื่นด้วย · ม.296 ระหว่างลูกหนี้ร่วมกันเอง ต่างต้องรับผิดเป็นส่วนเท่า ๆ กัน เว้นแต่จะกำหนดไว้เป็นอย่างอื่น',
+    application:'ทั้งสามเป็นลูกหนี้ร่วม นายทองเจ้าหนี้จึงมีสิทธิเลือกเรียกให้นายเรืองชำระหนี้ทั้ง 300,000 บาทแต่ผู้เดียวได้ตาม ม.291 ข้อต่อสู้ว่ารับผิดเพียง 1 ใน 3 ต่อเจ้าหนี้จึงฟังไม่ขึ้น เมื่อนายเรืองชำระครบ 300,000 บาท หนี้ย่อมระงับสำหรับนายรักและนายรุ่งด้วยตาม ม.292 และในระหว่างลูกหนี้ร่วมกันเอง ต่างรับผิดส่วนเท่า ๆ กันตาม ม.296 คือคนละ 100,000 บาท นายเรืองจึงไล่เบี้ยเอาจากนายรักและนายรุ่งได้คนละ 100,000 บาท',
+    conclusion:'ข้อต่อสู้ฟังไม่ขึ้น — นายเรืองต้องชำระเต็ม 300,000 บาทต่อเจ้าหนี้ (ม.291) แต่ไล่เบี้ยเอาจากนายรักและนายรุ่งได้คนละ 100,000 บาท (ม.296)'
+  },
+  {
+    id:'c5', tag:'หัวข้อ 2', star:3, topic:'ผู้ค้ำประกันชำระแทน → รับช่วงสิทธิ',
+    facts:'นายกู้กู้เงินธนาคาร 1,000,000 บาท โดยมีนายค้ำเป็นผู้ค้ำประกัน และมีที่ดินของนายกู้จำนองเป็นประกันหนี้ไว้ด้วย ต่อมานายกู้ผิดนัด นายค้ำในฐานะผู้ค้ำประกันจึงชำระหนี้ 1,000,000 บาทแก่ธนาคารแทน แล้วนายค้ำจะบังคับเอาจากนายกู้และที่ดินจำนองได้หรือไม่',
+    issue:'ผู้ค้ำประกันที่ชำระหนี้แทนลูกหนี้ เข้ารับช่วงสิทธิของเจ้าหนี้เดิมและใช้สิทธิในหลักประกัน (จำนอง) ได้หรือไม่',
+    rule:['226','229'],
+    ruleText:'ม.229 การรับช่วงสิทธิย่อมมีขึ้นโดยอำนาจกฎหมายเพื่อประโยชน์ของบุคคลผู้มีความผูกพันร่วมกับหรือเพื่อผู้อื่นในอันจะต้องใช้หนี้ ซึ่งมีส่วนได้เสียที่จะใช้หนี้นั้น (เช่น ผู้ค้ำประกัน) · ม.226 ผู้รับช่วงสิทธิของเจ้าหนี้ชอบที่จะใช้สิทธิทั้งหลายบรรดาที่เจ้าหนี้มีอยู่ รวมทั้งประกันแห่งหนี้',
+    application:'นายค้ำเป็นผู้ค้ำประกันซึ่งมีความผูกพันเพื่อผู้อื่นในอันจะต้องใช้หนี้และมีส่วนได้เสีย เมื่อชำระหนี้ 1,000,000 บาทแก่ธนาคารแทนนายกู้ จึงเข้ารับช่วงสิทธิของธนาคารเจ้าหนี้โดยผลของกฎหมายตาม ม.229(3) และย่อมใช้สิทธิทั้งหลายที่ธนาคารเคยมี รวมทั้งสิทธิบังคับจำนองที่ดิน ตาม ม.226 ได้',
+    conclusion:'นายค้ำเข้ารับช่วงสิทธิของธนาคารตาม ม.229 แล้วบังคับเอาจากนายกู้ได้เต็มจำนวน และบังคับจำนองที่ดินซึ่งเป็นประกันหนี้ได้ด้วยตาม ม.226'
+  },
+  {
+    id:'c6', tag:'หัวข้อ 3', star:3, topic:'ลูกหนี้ยกทรัพย์ให้ญาติหนีเจ้าหนี้ — เพิกถอนฉ้อฉล',
+    facts:'นายลูกหนี้เป็นหนี้นายเจ้าหนี้ 2,000,000 บาท และมีทรัพย์สินเพียงที่ดินแปลงเดียวมูลค่า 2,000,000 บาท เมื่อใกล้ถูกฟ้องบังคับคดี นายลูกหนี้รีบทำนิติกรรม "ยกที่ดินให้บุตรโดยเสน่หา" ทำให้ตนไม่มีทรัพย์อื่นชำระหนี้ — นายเจ้าหนี้จะขอเพิกถอนนิติกรรมยกให้นี้ได้หรือไม่',
+    issue:'เจ้าหนี้ขอให้ศาลเพิกถอนนิติกรรมให้โดยเสน่หาที่ลูกหนี้ทำลงทั้งรู้ว่าเป็นทางให้เจ้าหนี้เสียเปรียบได้หรือไม่ และต้องพิสูจน์ว่าผู้รับรู้ด้วยหรือไม่',
+    rule:['237','240'],
+    ruleText:'ม.237 เจ้าหนี้ชอบที่จะร้องขอให้ศาลเพิกถอนนิติกรรมที่ลูกหนี้ทำลงทั้งรู้อยู่ว่าเป็นทางให้เจ้าหนี้เสียเปรียบ เว้นแต่ผู้ได้ลาภงอกไม่รู้ข้อความจริง แต่ถ้าเป็นการทำให้โดยเสน่หา เพียงลูกหนี้รู้ฝ่ายเดียวก็เพิกถอนได้ · ม.240 ต้องฟ้องภายใน 1 ปีนับแต่รู้เหตุ หรือ 10 ปีนับแต่ทำนิติกรรม',
+    application:'การที่นายลูกหนี้ยกที่ดินอันเป็นทรัพย์เพียงชิ้นเดียวให้บุตรโดยเสน่หา ทำให้ตนไม่มีทรัพย์ชำระหนี้ ย่อมเป็นทางให้นายเจ้าหนี้เสียเปรียบ และนายลูกหนี้ย่อมรู้ถึงผลนั้น กรณีเป็นนิติกรรมให้โดยเสน่หา จึงเพิกถอนได้แม้บุตรผู้รับให้จะไม่รู้ข้อความจริง เพียงลูกหนี้รู้ฝ่ายเดียวก็พอตาม ม.237 ทั้งนี้นายเจ้าหนี้ต้องฟ้องภายในกำหนดอายุความตาม ม.240',
+    conclusion:'นายเจ้าหนี้ขอให้ศาลเพิกถอนนิติกรรมยกที่ดินให้บุตรได้ตาม ม.237 (เป็นการให้โดยเสน่หา ลูกหนี้รู้ฝ่ายเดียวพอ) โดยต้องฟ้องภายในอายุความ ม.240'
+  },
+  {
+    id:'c7', tag:'หัวข้อ 4', star:2, topic:'หักกลบลบหนี้ระหว่างกัน',
+    facts:'นายเอเป็นหนี้ค่าซื้อสินค้านายบี 50,000 บาท ครบกำหนดชำระแล้ว ขณะเดียวกันนายบีก็เป็นหนี้เงินกู้นายเอ 30,000 บาท ซึ่งครบกำหนดเช่นกัน นายบีทวงให้นายเอชำระ 50,000 บาท นายเอจะขอหักกลบลบหนี้กันได้หรือไม่ และเหลือหนี้เท่าใด',
+    issue:'บุคคลสองฝ่ายต่างเป็นเจ้าหนี้ลูกหนี้กันในหนี้เงินที่ถึงกำหนดทั้งคู่ จะหักกลบลบหนี้กันได้หรือไม่',
+    rule:['341'],
+    ruleText:'ม.341 บุคคลสองคนต่างมีความผูกพันซึ่งกันและกันโดยมูลหนี้อันมีวัตถุเป็นอย่างเดียวกัน และหนี้ทั้งสองรายถึงกำหนดจะชำระ ต่างฝ่ายต่างหักกลบลบหนี้กันได้ตามจำนวนที่ตรงกัน โดยแสดงเจตนาแก่อีกฝ่ายหนึ่ง',
+    application:'นายเอเป็นลูกหนี้ค่าสินค้า 50,000 บาท และเป็นเจ้าหนี้เงินกู้นายบี 30,000 บาท ต่างเป็นเจ้าหนี้ลูกหนี้ซึ่งกันและกัน วัตถุแห่งหนี้เป็นเงินเหมือนกัน และหนี้ทั้งสองถึงกำหนดชำระแล้ว เข้าเงื่อนไข ม.341 นายเอจึงแสดงเจตนาขอหักกลบลบหนี้ 30,000 บาทได้ คงเหลือหนี้ที่นายเอต้องชำระนายบี 20,000 บาท',
+    conclusion:'นายเอขอหักกลบลบหนี้ได้ตาม ม.341 เมื่อหักกลบ 30,000 บาทแล้ว คงเหลือหนี้ที่นายเอต้องชำระนายบีอีก 20,000 บาท'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0);
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.purple, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Sec>{x}</Sec></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'ปรับข้อเท็จจริง (A)', color:C.amberDark, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="geekblue" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.primaryDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสจริงจากข้อสอบ ทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น เพื่อฝึกโครงการเขียนตอบแบบได้คะแนนเต็ม</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="primary" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>หลักกฎหมาย</b> (ยกมาตราที่เกี่ยว) → <b>วินิจฉัย</b> ("กรณีตามปัญหา… เห็นว่า…" เอาข้อเท็จจริงจับกับหลัก) → <b>สรุป</b> ("กล่าวโดยสรุป…" ตอบคำถามให้ตรง) — ห้ามสลับลำดับ และตอบโดยไม่ยกมาตรา = เสียคะแนนแม้วินิจฉัยถูก
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: CASE LAB (ทำนายก่อนเฉลย) ============ */
+const labCases = [
+  {
+    id:'lab1', icon:'🔔', title:'หนี้ไม่มีกำหนดเวลา ยังไม่เตือน',
+    scenario:'นายเอกกู้เงินนายโทโดยไม่ได้กำหนดวันคืน วันหนึ่งนายโทโกรธนายเอกเรื่องอื่น จึงจะคิดดอกเบี้ยผิดนัดจากนายเอกทันทีทั้งที่ยังไม่เคยทวงถามให้ชำระหนี้เลย',
+    question:'นายเอกผิดนัดแล้วหรือยัง?',
+    answer:false, yesLabel:'ผิดนัดแล้ว', noLabel:'ยังไม่ผิดนัด',
+    secs:['203','204'],
+    verdict:'ยังไม่ผิดนัด — หนี้ที่ไม่ได้กำหนดเวลาชำระ ลูกหนี้ยังไม่ผิดนัดจนกว่าเจ้าหนี้จะ "เตือน" ให้ชำระตาม ม.203 และ ม.204 ว.1 เมื่อนายโทยังไม่เคยทวงถาม นายเอกจึงยังไม่ผิดนัดและยังไม่ต้องเสียดอกเบี้ยผิดนัด',
+    trap:'ไม่มีกำหนดเวลา = ต้องเตือนก่อน · กำหนดวันแน่นอนตามปฏิทิน = ผิดนัดทันทีโดยไม่ต้องเตือน (204 ว.2)'
+  },
+  {
+    id:'lab2', icon:'🚗', title:'ลูกหนี้นำของไปส่ง แต่เจ้าหนี้ไม่รับ',
+    scenario:'นายจันทร์นำรถไปส่งมอบให้นายอังคาร ณ ที่นัดหมายตรงตามกำหนด แต่นายอังคารไม่ยอมมารับโดยไม่มีเหตุผล ต่อมารถถูกไฟไหม้โดยไม่ใช่ความผิดของนายจันทร์',
+    question:'นายจันทร์เป็นผู้ผิดนัด และต้องรับผิดในรถที่ไหม้หรือไม่?',
+    answer:false, yesLabel:'จันทร์ผิดนัด/ต้องรับผิด', noLabel:'จันทร์ไม่ผิดนัด/ไม่ต้องรับผิด',
+    secs:['207','219'],
+    verdict:'จันทร์ไม่ผิดนัด/ไม่ต้องรับผิด — จันทร์ขอปฏิบัติการชำระหนี้โดยชอบแล้ว เมื่ออังคารไม่รับ อังคาร (เจ้าหนี้) ต่างหากที่ผิดนัดตาม ม.207 เมื่อรถไหม้โดยไม่ใช่ความผิดของจันทร์ จันทร์หลุดพ้นตาม ม.219 ความเสี่ยงตกแก่อังคาร',
+    trap:'เจ้าหนี้ผิดนัดพลิกภาระทันที — ลูกหนี้ที่ขอชำระโดยชอบไม่ใช่ผู้ผิดนัด'
+  },
+  {
+    id:'lab3', icon:'🐴', title:'ผิดนัดแล้วทรัพย์ตายเพราะฟ้าผ่า',
+    scenario:'นายหนึ่งต้องส่งมอบม้าในวันที่กำหนดแน่นอนตามปฏิทิน แต่ไม่ส่งตามกำหนด ต่อมาม้าถูกฟ้าผ่าตายในระหว่างที่ยังไม่ได้ส่งมอบ นายหนึ่งอ้างเหตุสุดวิสัย',
+    question:'นายหนึ่งหลุดพ้นความรับผิดเพราะเหตุสุดวิสัยหรือไม่?',
+    answer:false, yesLabel:'หลุดพ้น', noLabel:'ไม่หลุดพ้น',
+    secs:['204','217'],
+    verdict:'ไม่หลุดพ้น — สัญญากำหนดวันแน่นอน นายหนึ่งไม่ส่งตามกำหนดจึงผิดนัดโดยไม่ต้องเตือน (204 ว.2) เมื่อม้าตายในระหว่างผิดนัด แม้เป็นเหตุสุดวิสัย นายหนึ่งยังต้องรับผิดตาม ม.217 เว้นแต่พิสูจน์ได้ว่าแม้ส่งทันม้าก็จะตายอยู่ดี',
+    trap:'ม.217 คือ "โทษของการผิดนัด" — เหตุสุดวิสัยไม่ช่วยลูกหนี้ที่ผิดนัดไปแล้ว'
+  },
+  {
+    id:'lab4', icon:'👥', title:'เจ้าหนี้เรียกลูกหนี้ร่วมคนเดียวเต็ม',
+    scenario:'รัก รุ่ง เรือง กู้ร่วมกัน 300,000 บาทเป็นลูกหนี้ร่วม เจ้าหนี้เรียกให้เรืองคนเดียวชำระทั้ง 300,000 บาท เรืองต่อสู้ว่าตนควรจ่ายแค่ 1 ใน 3',
+    question:'เจ้าหนี้เรียกให้เรืองคนเดียวจ่ายเต็มได้หรือไม่?',
+    answer:true, yesLabel:'ได้', noLabel:'ไม่ได้',
+    secs:['291','296'],
+    verdict:'ได้ — ม.291 เจ้าหนี้เรียกลูกหนี้ร่วมคนใดคนหนึ่งชำระสิ้นเชิงได้ตามแต่จะเลือก ข้อต่อสู้ของเรืองต่อเจ้าหนี้ฟังไม่ขึ้น เมื่อเรืองจ่ายครบแล้วจึงไปไล่เบี้ยรักและรุ่งได้คนละ 100,000 บาทตาม ม.296',
+    trap:'"ส่วนเท่า ๆ กัน" (296) ใช้เฉพาะ "ระหว่างลูกหนี้ร่วมกันเอง" ไม่ใช่ยกต่อสู้เจ้าหนี้'
+  },
+  {
+    id:'lab5', icon:'🛡️', title:'ผู้ค้ำประกันจ่ายแทน',
+    scenario:'นายค้ำเป็นผู้ค้ำประกันหนี้เงินกู้ของนายกู้ต่อธนาคาร เมื่อนายกู้ผิดนัด นายค้ำชำระหนี้แทนเต็มจำนวน แล้วต้องการไปทวงเอาจากนายกู้ พร้อมบังคับที่ดินที่นายกู้จำนองประกันหนี้ไว้',
+    question:'นายค้ำเข้ารับช่วงสิทธิของธนาคารและบังคับจำนองได้หรือไม่?',
+    answer:true, yesLabel:'ได้', noLabel:'ไม่ได้',
+    secs:['226','229'],
+    verdict:'ได้ — ผู้ค้ำประกันมีส่วนได้เสียในการใช้หนี้ เมื่อชำระแทนย่อมเข้ารับช่วงสิทธิของเจ้าหนี้โดยผลกฎหมายตาม ม.229(3) และใช้สิทธิทั้งหลายที่เจ้าหนี้เคยมี รวมทั้งบังคับจำนอง ตาม ม.226',
+    trap:'รับช่วงสิทธิเกิด "โดยผลของกฎหมาย" ไม่ต้องมีข้อตกลง และได้หลักประกันเดิมติดมาด้วย'
+  },
+  {
+    id:'lab6', icon:'🎁', title:'ลูกหนี้ยกทรัพย์ให้ลูกหนีหนี้',
+    scenario:'นายลูกหนี้เป็นหนี้ 2 ล้าน มีทรัพย์เพียงที่ดินแปลงเดียว เมื่อใกล้ถูกบังคับคดี รีบยกที่ดินให้บุตรโดยเสน่หา ทำให้ไม่มีทรัพย์ชำระหนี้ บุตรอ้างว่าตนไม่รู้เรื่องหนี้ของพ่อเลย',
+    question:'เจ้าหนี้ขอเพิกถอนนิติกรรมยกให้ได้หรือไม่?',
+    answer:true, yesLabel:'เพิกถอนได้', noLabel:'เพิกถอนไม่ได้',
+    secs:['237'],
+    verdict:'เพิกถอนได้ — ม.237 การยกให้โดยเสน่หาที่ทำให้เจ้าหนี้เสียเปรียบ เพียง "ลูกหนี้รู้ฝ่ายเดียว" ก็เพิกถอนได้ ผู้รับ (บุตร) จะรู้หรือไม่ไม่สำคัญ ต่างจากนิติกรรมมีค่าตอบแทนที่ต้องพิสูจน์ว่าผู้รับรู้ด้วย',
+    trap:'ให้เปล่า → ลูกหนี้รู้ฝ่ายเดียวพอ · ขาย (มีค่าตอบแทน) → ต้องพิสูจน์ว่าผู้รับโอนรู้ด้วย'
+  },
+  {
+    id:'lab7', icon:'⚖️', title:'ต่างเป็นหนี้กัน ขอหักกลบ',
+    scenario:'นายเอเป็นหนี้ค่าสินค้านายบี 50,000 บาท (ถึงกำหนดแล้ว) ขณะที่นายบีก็เป็นหนี้เงินกู้นายเอ 30,000 บาท (ถึงกำหนดแล้วเช่นกัน) นายบีมาทวง 50,000 บาทเต็ม',
+    question:'นายเอขอหักกลบลบหนี้ แล้วจ่ายเพียง 20,000 บาทได้หรือไม่?',
+    answer:true, yesLabel:'ได้', noLabel:'ไม่ได้',
+    secs:['341'],
+    verdict:'ได้ — ม.341 ต่างเป็นเจ้าหนี้ลูกหนี้กันในหนี้เงิน (วัตถุอย่างเดียวกัน) และถึงกำหนดทั้งคู่ นายเอแสดงเจตนาหักกลบ 30,000 บาทได้ คงเหลือหนี้ที่ต้องชำระ 20,000 บาท',
+    trap:'หักกลบต้อง: ต่างเป็นเจ้าหนี้ลูกหนี้กัน + วัตถุประเภทเดียวกัน + ถึงกำหนดทั้งคู่ + ไม่มีข้อต่อสู้ (344)'
+  },
+  {
+    id:'lab8', icon:'💥', title:'ทรัพย์เสียหายก่อนผิดนัด เพราะเหตุสุดวิสัย',
+    scenario:'นายดำต้องส่งมอบข้าวเปลือกให้นายขาว ก่อนถึงกำหนดส่งมอบและก่อนที่นายดำจะผิดนัด เกิดน้ำท่วมใหญ่จากพายุพัดข้าวเปลือกเสียหายทั้งหมด โดยไม่ใช่ความผิดของนายดำ',
+    question:'นายดำต้องรับผิดชดใช้ค่าข้าวเปลือกให้นายขาวหรือไม่?',
+    answer:false, yesLabel:'ต้องรับผิด', noLabel:'ไม่ต้องรับผิด (หลุดพ้น)',
+    secs:['219'],
+    verdict:'ไม่ต้องรับผิด — การชำระหนี้กลายเป็นพ้นวิสัยเพราะพฤติการณ์อันลูกหนี้ไม่ต้องรับผิดชอบ (พายุน้ำท่วม) และเกิด "ก่อน" นายดำผิดนัด นายดำจึงหลุดพ้นจากการชำระหนี้ตาม ม.219 (ต่างจาก ม.217 ที่ใช้เมื่อผิดนัดไปแล้ว)',
+    trap:'เช็กเสมอว่าเหตุเกิด "ก่อน" หรือ "หลัง" ผิดนัด — ก่อน+ไม่โทษลูกหนี้ = 219 หลุดพ้น / หลังผิดนัด = 217 รับผิด'
+  },
+];
+
+function LabCard({c}) {
+  const [pick, setPick] = useState(null);
+  const revealed = pick!==null;
+  const correct = revealed && pick===c.answer;
+  return (
+    <Card className={revealed?'':'hoverlift'} style={{marginBottom:16, borderColor: revealed?(correct?C.green:C.red):C.border, borderWidth:revealed?2:1}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:8}}>
+        <span style={{fontSize:24}}>{c.icon}</span>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.title}</span>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>{c.secs.map(s=><Sec key={s}>{s}</Sec>)}</span>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3, marginBottom:12}}>
+        {c.scenario}
+      </div>
+      <div style={{display:'flex', alignItems:'center', gap:12, flexWrap:'wrap'}}>
+        <span style={{fontWeight:700, color:C.primaryDark, fontSize:15}}>🔮 ทำนาย: {c.question}</span>
+        {!revealed &&
+          <Space>
+            <Button size="large" style={{borderColor:C.green, color:C.green, fontWeight:700}} onClick={()=>setPick(true)}>{c.yesLabel}</Button>
+            <Button size="large" style={{borderColor:C.red, color:C.red, fontWeight:700}} onClick={()=>setPick(false)}>{c.noLabel}</Button>
+          </Space>}
+        {revealed &&
+          <Tag color={correct?'green':'red'} style={{fontSize:14, padding:'4px 14px', fontWeight:700}}>
+            {correct?'🎯 ทำนายถูก!':'❌ ทำนายพลาด'} — คำตอบ: {c.answer?c.yesLabel:c.noLabel}
+          </Tag>}
+      </div>
+      {revealed && (
+        <div className="fade-up">
+          <div style={{marginTop:12, background:(correct?C.greenBg:C.redBg), borderRadius:12, padding:'13px 16px', border:`1px solid ${(correct?C.green:C.red)}33`}}>
+            <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:4}}>คำวินิจฉัย</div>
+            <div style={{color:C.text2, fontSize:14.6, lineHeight:1.85}}>{c.verdict}</div>
+          </div>
+          <div style={{marginTop:10, display:'flex', gap:8, alignItems:'flex-start', background:'#F5EFE3', border:`1px dashed ${C.amberDark}66`, borderRadius:10, padding:'9px 13px'}}>
+            <span>⚠️</span>
+            <span style={{color:C.amberDark, fontSize:13.5, fontWeight:600}}>กับดัก: {c.trap}</span>
+          </div>
+          <div style={{textAlign:'right', marginTop:8}}>
+            <Button size="small" onClick={()=>setPick(null)}>ลองใหม่</Button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CaseLabTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:'#F5EFE3', border:`1px solid ${C.amber}66`}}
+        message={<span style={{fontWeight:700, color:C.amberDark}}>🧪 ห้องทดลองเคส — ทำนายก่อน แล้วค่อยดูเฉลย</span>}
+        description={<span style={{color:C.text2}}>อ่านสถานการณ์ แล้ว <strong>เลือกคำตอบที่คิดว่าใช่</strong> ระบบจะเฉลยคำวินิจฉัยพร้อม <strong>มาตราที่ใช้</strong> และกับดักที่ซ่อนอยู่ — ฝึกซักถามแบบ Socratic</span>} />
+      {labCases.map(c=><LabCard key={c.id} c={c}/>)}
+      <Box tone="cyan" title="เทคนิคจากห้องนี้" icon="💡">
+        คำถามหนี้เกือบทุกข้อชี้ขาดด้วยคำถามชุดเดียว: <strong>(1) หนี้ถึงกำหนดหรือยัง / ต้องเตือนไหม (2) ใครผิดนัด — ลูกหนี้หรือเจ้าหนี้ (3) เหตุเกิดก่อนหรือหลังผิดนัด (4) ต่อสู้เจ้าหนี้ หรือไล่เบี้ยกันเอง</strong> — ตอบตามองค์ประกอบมาตรา ไม่ใช่ตามความรู้สึก
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: QUIZ ============ */
+const quizData = [
+  {q:'หนี้ที่ "ไม่ได้กำหนดเวลาชำระ" ลูกหนี้ตกเป็นผู้ผิดนัดเมื่อใด?',
+    opts:['ทันทีที่เกิดหนี้','เมื่อเจ้าหนี้เตือนแล้วลูกหนี้ไม่ชำระ (ม.203/204 ว.1)','เมื่อพ้น 1 ปี','ไม่มีวันผิดนัด'], correct:1,
+    exp:'ม.203/204 ว.1: หนี้ไม่มีกำหนดเวลา ต้องเตือนก่อน ลูกหนี้จึงจะผิดนัด'},
+  {q:'หนี้ที่กำหนดเวลาชำระไว้แน่นอนตามวันแห่งปฏิทิน ลูกหนี้ไม่ชำระตามกำหนด ผลคือ?',
+    opts:['ต้องเตือนก่อนจึงผิดนัด','ผิดนัดทันทีโดยมิพักต้องเตือน (ม.204 ว.2)','ผิดนัดเมื่อฟ้องคดี','ไม่ผิดนัด'], correct:1,
+    exp:'ม.204 ว.2: กำหนดวันแน่นอนตามปฏิทิน ไม่ชำระตามกำหนด = ผิดนัดทันที'},
+  {q:'หนี้อันเกิดแต่มูลละเมิด ลูกหนี้ผิดนัดตั้งแต่เมื่อใด?',
+    opts:['เมื่อเจ้าหนี้ทวง','แต่เวลาที่ทำละเมิด (ม.206)','เมื่อศาลพิพากษา','เมื่อครบ 1 ปี'], correct:1,
+    exp:'ม.206: หนี้ละเมิด ลูกหนี้ผิดนัดมาแต่เวลาที่ทำละเมิด โดยไม่ต้องเตือน'},
+  {q:'ลูกหนี้ผิดนัดแล้ว ทรัพย์เสียหายเพราะเหตุสุดวิสัยระหว่างผิดนัด ผลเป็นอย่างไร?',
+    opts:['หลุดพ้นเพราะสุดวิสัย','ยังต้องรับผิด (ม.217) เว้นแต่พิสูจน์ได้ว่าจะเสียหายอยู่ดี','รับผิดครึ่งเดียว','เจ้าหนี้รับความเสี่ยงเอง'], correct:1,
+    exp:'ม.217: ผิดนัดแล้วต้องรับผิดแม้เหตุสุดวิสัย เว้นแต่พิสูจน์ได้ว่าถึงไม่ผิดนัดก็จะเสียหายอยู่ดี'},
+  {q:'ลูกหนี้ขอปฏิบัติการชำระหนี้โดยชอบแล้ว เจ้าหนี้ไม่ยอมรับโดยไม่มีเหตุ ผลคือ?',
+    opts:['ลูกหนี้ผิดนัด','เจ้าหนี้ตกเป็นผู้ผิดนัด (ม.207)','หนี้ระงับ','สัญญาเลิกกัน'], correct:1,
+    exp:'ม.207: เจ้าหนี้ไม่รับชำระที่ลูกหนี้ขอโดยชอบ → เจ้าหนี้ผิดนัด'},
+  {q:'การชำระหนี้กลายเป็นพ้นวิสัยเพราะเหตุ "อันลูกหนี้ไม่ต้องรับผิดชอบ" (ก่อนผิดนัด) ผลคือ?',
+    opts:['ลูกหนี้ต้องใช้ค่าสินไหม (218)','ลูกหนี้หลุดพ้น (ม.219)','เจ้าหนี้ต้องชดใช้','หนี้ยังอยู่'], correct:1,
+    exp:'ม.219: พ้นวิสัยเพราะเหตุที่โทษลูกหนี้ไม่ได้ → ลูกหนี้หลุดพ้น (ต่างจาก 218 ที่โทษลูกหนี้ได้)'},
+  {q:'ผู้ค้ำประกันชำระหนี้แทนลูกหนี้ให้เจ้าหนี้แล้ว ได้สิทธิอะไร?',
+    opts:['ไม่ได้อะไร','เข้ารับช่วงสิทธิของเจ้าหนี้ไล่เบี้ยลูกหนี้ (ม.229)','ได้แค่ครึ่ง','ต้องรอลูกหนี้สมัครใจคืน'], correct:1,
+    exp:'ม.229(3): ผู้ค้ำประกันมีส่วนได้เสีย ชำระแทนแล้วรับช่วงสิทธิเจ้าหนี้โดยผลของกฎหมาย (ใช้สิทธิเดิม+ประกันตาม ม.226)'},
+  {q:'ลูกหนี้เพิกเฉยไม่ใช้สิทธิเรียกร้องของตนต่อบุคคลภายนอก จนเจ้าหนี้เสียประโยชน์ เจ้าหนี้ทำอะไรได้?',
+    opts:['ยึดทรัพย์บุคคลภายนอกทันที','ใช้สิทธิเรียกร้องแทนลูกหนี้ในนามตนเอง (ม.233)','ฟ้องล้มละลาย','ทำอะไรไม่ได้'], correct:1,
+    exp:'ม.233: ลูกหนี้เฉื่อยชาไม่ใช้สิทธิ เจ้าหนี้ใช้สิทธิเรียกร้องนั้นแทนในนามตนเองเพื่อรักษากองทรัพย์สินลูกหนี้ได้'},
+  {q:'ลูกหนี้ "ยกทรัพย์ให้ผู้อื่นโดยเสน่หา" เพื่อหนีเจ้าหนี้ เจ้าหนี้เพิกถอนได้เมื่อใด?',
+    opts:['ต้องพิสูจน์ว่าผู้รับรู้ด้วยเสมอ','เพียงลูกหนี้รู้ฝ่ายเดียวก็เพิกถอนได้ (ม.237)','เพิกถอนไม่ได้','ต้องได้ความยินยอมผู้รับ'], correct:1,
+    exp:'ม.237: ให้โดยเสน่หา → ลูกหนี้รู้ฝ่ายเดียวพอ (ถ้ามีค่าตอบแทนต้องพิสูจน์ว่าผู้รับโอนรู้ด้วย)'},
+  {q:'ลูกหนี้ร่วม 3 คนกู้ 300,000 เจ้าหนี้เรียกคนเดียวให้ชำระเท่าใดได้?',
+    opts:['เฉพาะ 1 ใน 3','ทั้ง 300,000 สิ้นเชิง (ม.291)','ครึ่งหนึ่ง','เรียกไม่ได้'], correct:1,
+    exp:'ม.291: เจ้าหนี้เรียกลูกหนี้ร่วมคนใดคนหนึ่งชำระสิ้นเชิงได้ตามแต่จะเลือก'},
+  {q:'ลูกหนี้ร่วมคนหนึ่งชำระหนี้ครบแล้ว จะไล่เบี้ยลูกหนี้ร่วมคนอื่นได้เพียงใด?',
+    opts:['ไล่เบี้ยไม่ได้','ตามส่วนเท่า ๆ กัน เว้นแต่ตกลงเป็นอย่างอื่น (ม.296)','ได้เต็มจำนวน','ได้เฉพาะดอกเบี้ย'], correct:1,
+    exp:'ม.296: ระหว่างลูกหนี้ร่วมกันเอง รับผิดส่วนเท่า ๆ กัน ผู้ชำระเกินส่วนไล่เบี้ยได้'},
+  {q:'บุคคลสองคนต่างเป็นเจ้าหนี้ลูกหนี้กันในหนี้เงินที่ถึงกำหนดทั้งคู่ จะทำอย่างไรให้หนี้ลดลง?',
+    opts:['แปลงหนี้ใหม่','หักกลบลบหนี้ได้ตามจำนวนที่ตรงกัน (ม.341)','ปลดหนี้','โอนสิทธิเรียกร้อง'], correct:1,
+    exp:'ม.341: ต่างมีหนี้ต่อกัน วัตถุอย่างเดียวกัน ถึงกำหนดทั้งคู่ → หักกลบลบหนี้กันได้'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=9?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=9?'เยี่ยมมาก! มาตราแม่นระดับพร้อมสอบแล้ว 🎉':'ทบทวนแท็บบทเรียน & เดินเคส IRAC อีกรอบแล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.primary, borderColor:C.primary}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="blue">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuizTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>ควิซ 12 ข้อ — ตอบแล้วเฉลยพร้อมเหตุผลทันที</span>}
+        description={<span style={{color:C.text2}}>ครอบคลุมทั้ง 4 หัวข้อ: ผิดนัด · พ้นวิสัย+รับช่วงสิทธิ · ควบคุมกองทรัพย์สิน · ลูกหนี้ร่วม+หักกลบ</span>} />
+      <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+        <Quiz/>
+      </Card>
+    </div>
+  );
+}
+
+/* ============ TAB 6: FLASHCARDS ============ */
+const flashcards = [
+  {q:'หนี้ไม่มีกำหนดเวลาชำระ เจ้าหนี้เรียกได้เมื่อใด ลูกหนี้ผิดนัดเมื่อใด?', a:'ม.203 + 204 ว.1', d:'เรียกได้โดยพลัน (203) · ลูกหนี้ผิดนัดเมื่อเตือนแล้วไม่ชำระ (204 ว.1)', star:3, exam:true},
+  {q:'หนี้กำหนดเวลาแน่นอนตามปฏิทิน ไม่ชำระตามกำหนด → ผิดนัดเมื่อใด?', a:'ม.204 ว.2 — ทันที', d:'ผิดนัดโดยมิพักต้องเตือน', star:3, exam:true},
+  {q:'หนี้ละเมิด ลูกหนี้ผิดนัดเมื่อใด?', a:'ม.206 — แต่เวลาทำละเมิด', d:'ผิดนัดมาแต่เวลาที่ทำละเมิด โดยไม่ต้องเตือน', star:2, exam:true},
+  {q:'ลูกหนี้ผิดนัดแล้ว ทรัพย์เสียหายเพราะเหตุสุดวิสัยระหว่างผิดนัด?', a:'ม.217 — ยังต้องรับผิด', d:'รับผิดแม้เหตุสุดวิสัย เว้นแต่พิสูจน์ได้ว่าแม้ไม่ผิดนัดก็จะเสียหายอยู่ดี', star:3, exam:true},
+  {q:'หนี้เงินระหว่างผิดนัด คิดอะไรได้?', a:'ม.224 — ดอกเบี้ยผิดนัด', d:'คิดดอกเบี้ยผิดนัดได้โดยเจ้าหนี้ไม่ต้องพิสูจน์ความเสียหาย', star:2, exam:false},
+  {q:'เจ้าหนี้ตกเป็นผู้ผิดนัดเมื่อใด?', a:'ม.207', d:'เมื่อลูกหนี้ขอปฏิบัติการชำระหนี้โดยชอบแล้ว แต่เจ้าหนี้ไม่รับโดยไม่มีเหตุ', star:3, exam:true},
+  {q:'ระหว่างเจ้าหนี้ผิดนัด หนี้เงินคิดดอกเบี้ยไหม?', a:'ม.221 — ไม่คิด', d:'ระหว่างเจ้าหนี้ผิดนัด ลูกหนี้ไม่ต้องเสียดอกเบี้ย', star:2, exam:false},
+  {q:'พ้นวิสัยเพราะเหตุที่ "โทษลูกหนี้ได้" ผลเป็นอย่างไร?', a:'ม.218 — ใช้ค่าสินไหม', d:'ลูกหนี้ต้องใช้ค่าสินไหมทดแทนเพื่อการไม่ชำระหนี้', star:2, exam:true},
+  {q:'พ้นวิสัยเพราะเหตุที่ "โทษลูกหนี้ไม่ได้" (ก่อนผิดนัด) ผลเป็นอย่างไร?', a:'ม.219 — หลุดพ้น', d:'ลูกหนี้หลุดพ้นจากการชำระหนี้ (ระวังต่างจาก 217 เมื่อผิดนัดแล้ว)', star:3, exam:true},
+  {q:'ผู้รับช่วงสิทธิของเจ้าหนี้ ใช้สิทธิอะไรได้บ้าง?', a:'ม.226', d:'ใช้สิทธิทั้งหลายบรรดาที่เจ้าหนี้มีอยู่ รวมประกันแห่งหนี้ (จำนอง จำนำ ค้ำประกัน)', star:3, exam:true},
+  {q:'ผู้ค้ำประกันชำระหนี้แทน → เข้ารับช่วงสิทธิด้วยมาตราใด?', a:'ม.229(3)', d:'รับช่วงสิทธิเกิดโดยผลของกฎหมาย เพราะผู้ค้ำมีส่วนได้เสียในการใช้หนี้', star:3, exam:true},
+  {q:'ลูกหนี้เฉื่อยชาไม่ใช้สิทธิเรียกร้องของตน เจ้าหนี้ทำอะไรได้?', a:'ม.233 — ใช้สิทธิแทน', d:'ใช้สิทธิเรียกร้องของลูกหนี้ในนามตนเองเพื่อรักษากองทรัพย์สินลูกหนี้ (ต้องเรียกลูกหนี้เข้าคดี ม.234)', star:2, exam:true},
+  {q:'ลูกหนี้โอนทรัพย์ทำให้เจ้าหนี้เสียเปรียบ เจ้าหนี้ทำอะไรได้?', a:'ม.237 — เพิกถอนฉ้อฉล', d:'ขอศาลเพิกถอน · ให้เปล่า→ลูกหนี้รู้ฝ่ายเดียวพอ · มีค่าตอบแทน→ต้องพิสูจน์ผู้รับรู้ด้วย', star:3, exam:true},
+  {q:'อายุความฟ้องเพิกถอนการฉ้อฉล?', a:'ม.240 — 1 ปี / 10 ปี', d:'1 ปีนับแต่รู้เหตุเพิกถอน หรือ 10 ปีนับแต่ทำนิติกรรม', star:2, exam:false},
+  {q:'ลูกหนี้ร่วม — เจ้าหนี้เรียกใครชำระได้เท่าใด?', a:'ม.291 — คนเดียวเต็มได้', d:'เรียกลูกหนี้ร่วมคนใดคนหนึ่งชำระสิ้นเชิงหรือแต่บางส่วนก็ได้ ตามแต่จะเลือก', star:3, exam:true},
+  {q:'ลูกหนี้ร่วมคนหนึ่งชำระหนี้ → กระทบคนอื่นอย่างไร?', a:'ม.292 — เป็นประโยชน์แก่ทุกคน', d:'การชำระหนี้/วางทรัพย์/หักกลบ โดยคนหนึ่ง หนี้ระงับสำหรับทุกคน', star:2, exam:true},
+  {q:'ปลดหนี้ให้ลูกหนี้ร่วมคนหนึ่ง → ผลต่อคนอื่น?', a:'ม.293 — เฉพาะส่วนที่ปลด', d:'เป็นประโยชน์แก่คนอื่นเพียงส่วนของลูกหนี้ที่ได้ปลดไปเท่านั้น', star:3, exam:true},
+  {q:'ระหว่างลูกหนี้ร่วมกันเอง รับผิดกันอย่างไร?', a:'ม.296 — ส่วนเท่า ๆ กัน', d:'เว้นแต่กำหนดเป็นอย่างอื่น — ผู้ชำระเกินส่วนไล่เบี้ยได้', star:3, exam:true},
+  {q:'การปลดหนี้ทำอย่างไรให้หนี้ระงับ?', a:'ม.340', d:'เจ้าหนี้แสดงเจตนาปลดหนี้ (ถ้าหนี้มีหลักฐานเป็นหนังสือ ต้องทำเป็นหนังสือหรือเวนคืนเอกสาร)', star:2, exam:false},
+  {q:'หักกลบลบหนี้ต้องมีเงื่อนไขอะไรบ้าง?', a:'ม.341', d:'ต่างเป็นเจ้าหนี้ลูกหนี้กัน + วัตถุประเภทเดียวกัน + หนี้ทั้งสองถึงกำหนด → หักกลบได้', star:3, exam:true},
+  {q:'สิทธิเรียกร้องที่ยังมีข้อต่อสู้ เอามาหักกลบได้ไหม?', a:'ม.344 — ไม่ได้', d:'หนี้ที่ยังมีข้อต่อสู้ห้ามนำมาหักกลบลบหนี้', star:1, exam:false},
+  {q:'[แยกให้ออก] รับช่วงสิทธิ (226) ต่างจากโอนสิทธิเรียกร้อง (303) อย่างไร?', a:'เกิดโดยกฎหมาย vs โดยสัญญา', d:'รับช่วงสิทธิ = ผู้ชำระแทนสวมเป็นเจ้าหนี้โดยผลกฎหมาย · โอนสิทธิเรียกร้อง = โอนตามสัญญา ต้องบอกกล่าวลูกหนี้เป็นหนังสือ (306)', star:2, exam:false},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length}</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.primary} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:290}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:290}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.primary}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:290}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="geekblue" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ คำถาม (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:18, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:290}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:21, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.primary, borderColor:C.primary}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ TAB 7: QUICK REF (จำด่วน) ============ */
+const quickSections = [
+  {divider:'🔮 4 หัวข้อออกสอบ (สูตรตอบเร็ว)'},
+  {s:'หัวข้อ 1', t:'การผิดนัด', b:'203/204 (ลูกหนี้ผิดนัด — ไม่มีกำหนด=เตือน / กำหนดปฏิทิน=ทันที / ละเมิด=206) → 207 (เจ้าหนี้ผิดนัด) → 217 (ผิดนัดแล้วรับผิดแม้สุดวิสัย) → 224 (ดอกเบี้ย)', type:'formula'},
+  {s:'หัวข้อ 2', t:'พ้นวิสัย + รับช่วงสิทธิ', b:'218 (โทษลูกหนี้=ใช้ค่าสินไหม) / 219 (ไม่โทษ=หลุดพ้น) → 226,229 (ผู้ชำระแทน/ผู้ค้ำ รับช่วงสิทธิ+หลักประกัน)', type:'formula'},
+  {s:'หัวข้อ 3', t:'ควบคุมกองทรัพย์สินลูกหนี้', b:'233 (ลูกหนี้เฉื่อยชา → เจ้าหนี้ใช้สิทธิแทน) · 237 (ลูกหนี้ยักย้ายทรัพย์ → เพิกถอนฉ้อฉล — เสน่หา:ลูกหนี้รู้ฝ่ายเดียวพอ) · 240 (1ปี/10ปี)', type:'formula'},
+  {s:'หัวข้อ 4', t:'ลูกหนี้ร่วม + หักกลบ', b:'291 (เรียกคนเดียวเต็ม) → 292 (ชำระ=ระงับทุกคน) → 293 (ปลดหนี้=เฉพาะส่วน) → 296 (ไล่เบี้ยส่วนเท่ากัน) → 341 (หักกลบ)', type:'formula'},
+
+  {divider:'🧠 เทคนิคช่วยจำ (Mnemonic)'},
+  {s:'ตต้ล', t:'ลูกหนี้ผิดนัด (204)', b:'ตกลง"ต"ามปฏิทิน = ผิดนัด"ต"ันที · ไม่มีกำหนด = ต้อง"ต"ือนก่อน · "ล"ะเมิด = ผิดนัดแต่วันทำ (206)', type:'mnem'},
+  {s:'217 vs 219', t:'ทรัพย์เสียหาย', b:'"หลัง"ผิดนัด → 217 รับผิดแม้สุดวิสัย · "ก่อน"ผิดนัด + โทษไม่ได้ → 219 หลุดพ้น', type:'mnem'},
+  {s:'คช.สวม', t:'ผู้ค้ำชำระแทน (229)', b:'ผู้"ค"้ำ"ช"ำระแทน → "สวม"สิทธิเจ้าหนี้ (226) ได้ประกันเดิมติดมาด้วย', type:'mnem'},
+  {s:'ฉ้อ-เสน่หา', t:'เพิกถอน (237)', b:'"ให้เปล่า" → ลูกหนี้รู้ฝ่ายเดียวพอ · "มีค่าตอบแทน" → ต้องพิสูจน์ผู้รับรู้ด้วย', type:'mnem'},
+  {s:'ร่วม291', t:'ลูกหนี้ร่วม', b:'ต่อ"เจ้าหนี้" = เรียกคนเดียวเต็ม (291) · "ระหว่างกันเอง" = ส่วนเท่ากัน (296)', type:'mnem'},
+
+  {divider:'🔀 เทียบให้ชัด (Contrast)'},
+  {s:'217 vs 219', t:'สุดวิสัย', b:'ผิดนัดแล้ว → 217 รับผิด / ยังไม่ผิดนัด+โทษไม่ได้ → 219 หลุดพ้น', type:'contrast'},
+  {s:'218 vs 219', t:'พ้นวิสัย', b:'โทษลูกหนี้ได้ → 218 ใช้ค่าสินไหม / โทษไม่ได้ → 219 หลุดพ้น', type:'contrast'},
+  {s:'ลูกหนี้ vs เจ้าหนี้ผิดนัด', t:'ใครผิดนัด', b:'ลูกหนี้ไม่ชำระ (204) / เจ้าหนี้ไม่รับชำระที่ขอโดยชอบ (207) — ภาระพลิกกลับ', type:'contrast'},
+  {s:'291 vs 296', t:'ลูกหนี้ร่วม', b:'ต่อเจ้าหนี้: เต็มจำนวน (291) / ระหว่างกันเอง: ส่วนเท่ากัน (296)', type:'contrast'},
+  {s:'292 vs 293', t:'ชำระ vs ปลดหนี้', b:'ชำระ → ระงับทุกคน (292) / ปลดหนี้ → เฉพาะส่วนที่ปลด (293)', type:'contrast'},
+  {s:'226 vs 303', t:'สวมสิทธิเจ้าหนี้', b:'รับช่วงสิทธิ (226) = โดยกฎหมาย / โอนสิทธิเรียกร้อง (303) = โดยสัญญา ต้องบอกกล่าวเป็นหนังสือ (306)', type:'contrast'},
+
+  {divider:'⏱️ ตัวเลข/มาตราที่ห้ามสลับ'},
+  {s:'203/204', t:'ผิดนัด', b:'ไม่มีกำหนด=ต้องเตือน · กำหนดปฏิทิน=ทันที', type:'chunk'},
+  {s:'206', t:'ละเมิด', b:'ผิดนัดแต่วันทำละเมิด', type:'chunk'},
+  {s:'217', t:'ผิดนัด+สุดวิสัย', b:'ยังต้องรับผิด เว้นแต่พิสูจน์ว่าเสียหายอยู่ดี', type:'chunk'},
+  {s:'229(3)', t:'ผู้ค้ำรับช่วงสิทธิ', b:'ชำระแทนแล้วสวมสิทธิเจ้าหนี้โดยกฎหมาย', type:'chunk'},
+  {s:'237 / 240', t:'ฉ้อฉล', b:'เพิกถอนได้ · ฟ้องภายใน 1 ปี/10 ปี', type:'chunk'},
+  {s:'291 / 296', t:'ลูกหนี้ร่วม', b:'เรียกเต็มได้ / ไล่เบี้ยส่วนเท่ากัน', type:'chunk'},
+  {s:'341', t:'หักกลบลบหนี้', b:'ต่างเป็นเจ้าหนี้ลูกหนี้กัน + วัตถุเดียวกัน + ถึงกำหนดทั้งคู่', type:'chunk'},
+
+  {divider:'📝 โครงคำตอบ (Answer Template)'},
+  {s:'โครง', t:'เขียน 3 ท่อนเสมอ', b:'หลักกฎหมาย (ยกมาตรา) → วินิจฉัย ("กรณีตามปัญหา… เห็นว่า…") → สรุป ("กล่าวโดยสรุป…" ตอบให้ตรงคำถาม)', type:'formula'},
+  {s:'ยกมาตรา', t:'ต้องยกเลขมาตรา', b:'ตอบโดยไม่ยกมาตรา = เสียคะแนน แม้วินิจฉัยถูก', type:'chunk'},
+];
+
+function QuickTab() {
+  const typeColor = {mnem:C.purple, flow:C.cyan, contrast:C.red, chunk:C.blue, formula:C.amberDark};
+  const typeBg = {mnem:C.purpleBg, flow:C.cyanBg, contrast:C.redBg, chunk:C.blueBg, formula:'#F5EFE3'};
+  return (
+    <div className="fade-up">
+      {quickSections.map((q,i)=> q.divider ? (
+        <Divider key={i} orientation="left" style={{borderColor:C.border, color:C.primaryDark, fontWeight:700, fontSize:16}}>{q.divider}</Divider>
+      ) : (
+        <div key={i} className="qc" style={{background:typeBg[q.type]||C.surface3, borderLeft:`4px solid ${typeColor[q.type]||C.primary}`, borderRadius:'0 12px 12px 0', padding:'12px 16px', marginBottom:10, border:`1px solid ${(typeColor[q.type]||C.primary)}22`, borderLeftWidth:4}}>
+          <div style={{display:'flex', gap:10, alignItems:'baseline', flexWrap:'wrap'}}>
+            <span style={{fontWeight:800, color:typeColor[q.type]||C.primary, fontSize:15, minWidth:76, fontFamily:"'Noto Serif Thai'"}}>{q.s}</span>
+            <span style={{fontWeight:700, color:C.text}}>{q.t}</span>
+          </div>
+          <div style={{color:C.text2, fontSize:14, marginTop:4}}>{q.b}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'lab', label:'🧪 ห้องทดลองเคส', children:<CaseLabTab/>},
+    {key:'quiz', label:'🎮 ควิซ', children:<QuizTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+    {key:'quick', label:'⚡ จำด่วน', children:<QuickTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.primary, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.primary, itemActiveColor:C.primaryDark, itemSelectedColor:C.primaryDark, itemHoverColor:C.primaryLight, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.primary, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.primaryDark}, ${C.primary})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(51,62,124,.25)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 2102 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:29, fontWeight:800}}>กฎหมายแพ่งและพาณิชย์ว่าด้วยหนี้</h1>
+          <div style={{color:'#E6E9F7', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Case Method</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงประมวลกฎหมายแพ่งและพาณิชย์ บรรพ 2 ลักษณะหนี้ (มาตรา 203–353) · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>
