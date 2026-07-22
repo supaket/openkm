@@ -1,0 +1,23 @@
+# openkm — self-hosted deployment
+#
+# Runner pipeline: build → push to GHCR → `docker compose pull && up -d` on the host.
+# Local dev:       `docker compose up -d --build`  (builds from ./Dockerfile)
+#
+# Override with a .env file next to this compose file, e.g.:
+#   OPENKM_PORT=8080
+#   OPENKM_IMAGE=ghcr.io/supaket/openkm:latest
+
+services:
+  web:
+    image: ${OPENKM_IMAGE:-ghcr.io/supaket/openkm:latest}
+    build: .
+    container_name: openkm-web
+    restart: unless-stopped
+    ports:
+      - "${OPENKM_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

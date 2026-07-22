@@ -1,0 +1,62 @@
+name: Build & Deploy (self-hosted)
+
+# Build a Docker image of the static site, push it to GHCR, then
+# (re)deploy it on the self-hosted runner host via docker compose.
+
+on:
+  push:
+    branches: [main]
+    # Skip runs that only touch docs/CI — the served site doesn't change.
+    paths-ignore:
+      - '**/*.md'
+      - '.gitignore'
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-deploy:
+    runs-on: [self-hosted]
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/openkm
+      OPENKM_PORT: ${{ vars.OPENKM_PORT || '8080' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build image
+        run: |
+          docker build \
+            -t "$IMAGE:latest" \
+            -t "$IMAGE:${GITHUB_SHA}" \
+            .
+
+      - name: Push image
+        run: |
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:${GITHUB_SHA}"
+
+      - name: Deploy (compose up)
+        env:
+          OPENKM_IMAGE: ${{ env.IMAGE }}:latest
+        run: |
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+      - name: Prune dangling images
+        if: always()
+        run: docker image prune -f
+
+      - name: Log out of GHCR
+        if: always()
+        run: docker logout ghcr.io || true

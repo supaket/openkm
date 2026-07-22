@@ -1,0 +1,25 @@
+# Keep the Docker build context small and free of secrets / non-site files.
+# NOTE: deploy/ is intentionally NOT ignored — the Dockerfile COPYs deploy/nginx.conf.
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Docs / tooling (never served by the site)
+*.md
+CLAUDE.md
+LICENSE
+
+# Editor / OS / test artifacts
+.DS_Store
+.playwright-mcp
+*.log
+node_modules
+scratchpad
+
+# Secrets — never bake private keys into an image
+id_ed25519*
+*.pem
+*.key

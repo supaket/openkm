@@ -32,3 +32,5 @@ Each HTML page in `books/` and `guides/` is a self-contained document with its o
 ## Deployment
 
 Static site deployed via GitHub Pages from the `main` branch root. No build step — just commit and push.
+
+**Self-hosted (Docker + GitHub Actions self-hosted runner)** — additive, does not replace Pages. On push to `main`, `.github/workflows/deploy.yml` (`runs-on: self-hosted`) builds an nginx image (`Dockerfile` + `deploy/nginx.conf`), pushes it to GHCR (`ghcr.io/supaket/openkm`), then `docker compose pull && up -d` on the runner host (served at root `/`, default port 8080). Local test: `docker compose up -d --build`. Full setup notes in `deploy/README.md`.
