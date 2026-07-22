@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เช่าทรัพย์ เช่าซื้อ LAW2108 · ห้องเรียนแบบ Harvard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#EEF4F1;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#28352F;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#C7DAD1; color:#28352F; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#E2ECE7; }
+  ::-webkit-scrollbar-thumb { background:#A3C6BB; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#4E8D7C; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  /* Flip card */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  /* Quick card hover */
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(60,105,92,.18); }
+
+  /* Reveal animation */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  /* Diagram animations */
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#2F5D50; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(60,105,92,.16); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(78,141,124,.35);} 50%{ box-shadow:0 0 0 8px rgba(78,141,124,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress, Steps,
+        Collapse, Switch, Select, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE (โทนเขียวหยก — เฉพาะวิชา LAW2108) ============ */
+const C = {
+  teal:'#4E8D7C', tealDark:'#38695C', tealLight:'#A3C6BB',
+  jade:'#6FA08F', jadeDark:'#2F5D50',
+  bg:'#EEF4F1', surface:'#E2ECE7', surface2:'#D6E4DD', surface3:'#E9F1ED',
+  border:'#C7DAD1', borderDark:'#A3C6BB',
+  text:'#28352F', text2:'#44554D', text3:'#65786F',
+  white:'#F9FBFA',
+  green:'#4C8A57', greenBg:'#EDF5EE',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#4F7AA0', blueBg:'#EBF1F6',
+  cyan:'#4C8A8A', cyanBg:'#EAF2F2',
+  orange:'#BF7B3F', orangeBg:'#F7F0E5',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.jade, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+const Sec = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.tealDark, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap'}}>ม.{children}</span>
+);
+
+const Dika = ({children}) => (
+  <span className="sec-badge" style={{background:C.redBg, color:C.red, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.red}44`, whiteSpace:'nowrap'}}>ฎ.{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='teal', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    purple:[C.purple,C.purpleBg], cyan:[C.cyan,C.cyanBg], orange:[C.orange,C.orangeBg],
+    teal:[C.tealDark,C.surface3]
+  };
+  const [cc,bb] = map[tone]||map.teal;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+function DiaNode({x, y, w=150, h=62, title, sub, color, active, onClick}) {
+  return (
+    <g style={{cursor:onClick?'pointer':'default'}} onClick={onClick} className={active?'node-pulse':''}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="16"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11.5"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.18 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+/* เข็มทิศ 4 สัญญา — แผนภาพแกนกลางของวิชา: อะไรไหลไป-มาระหว่างคู่สัญญา และกรรมสิทธิ์อยู่ที่ใคร */
+function ContractCompass() {
+  const modes = {
+    lease: {
+      label:'เช่าทรัพย์', color:C.blue,
+      left:{t:'ผู้ให้เช่า', s:'Lessor'}, right:{t:'ผู้เช่า', s:'Lessee'},
+      give:'ให้ "ใช้หรือได้ประโยชน์" ในทรัพย์', back:'ค่าเช่า (ชั่วระยะเวลาจำกัด)',
+      obj:'กรรมสิทธิ์ยังอยู่ที่ผู้ให้เช่าเสมอ',
+      desc:'เช่าทรัพย์ (ม.537–571) คือการ "ยืมใช้แบบมีค่าตอบแทน" — ผู้เช่าได้แค่สิทธิใช้สอย ไม่มีวันได้กรรมสิทธิ์ จุดสอบอยู่ที่แบบของสัญญา (ม.538) หน้าที่คู่สัญญา (ม.552–554) และผลเมื่อโอนทรัพย์ที่เช่า (ม.569)'
+    },
+    hp: {
+      label:'เช่าซื้อ', color:C.green,
+      left:{t:'ผู้ให้เช่าซื้อ', s:'เจ้าของทรัพย์'}, right:{t:'ผู้เช่าซื้อ', s:'ผ่อนเป็นงวด'},
+      give:'ให้เช่า + คำมั่นว่า "จะขาย" เมื่อชำระครบ', back:'ค่าเช่าซื้อเป็นงวด ๆ',
+      obj:'ชำระครบทุกงวด → กรรมสิทธิ์จึงโอน',
+      desc:'เช่าซื้อ (ม.572–574) = เช่า + คำมั่นจะขาย ต้องทำเป็น "หนังสือ" มิฉะนั้นโมฆะ (ม.572 ว.2) จุดตายของข้อสอบคือการบอกเลิก+ริบเงินตาม ม.574 ว.1 และกับดัก "เรียกค่างวดที่เหลือทั้งหมดไม่ได้" (ฎ.859/2524)'
+    },
+    labor: {
+      label:'จ้างแรงงาน', color:C.purple,
+      left:{t:'นายจ้าง', s:'Employer'}, right:{t:'ลูกจ้าง', s:'Employee'},
+      give:'สินจ้าง "ตลอดเวลาที่ทำงาน"', back:'แรงงาน — เน้นกระบวนการทำงาน',
+      obj:'สาระสำคัญ = ตัวลูกจ้าง (เปลี่ยนคนต้องยินยอม ม.577)',
+      desc:'จ้างแรงงาน (ม.575–586) เน้น "กระบวนการ" — ลูกจ้างทำงานให้ นายจ้างจ่ายสินจ้างตลอดเวลาทำงาน จุดสอบคือการโอนสิทธิ/รับคนแทน (ม.577) และการบอกเลิก ม.582 (ต้องบอกล่วงหน้า) vs ม.583 (เลิกทันที)'
+    },
+    work: {
+      label:'จ้างทำของ', color:C.orange,
+      left:{t:'ผู้ว่าจ้าง', s:'Hirer'}, right:{t:'ผู้รับจ้าง', s:'Contractor'},
+      give:'สินจ้าง แลกกับ "ผลสำเร็จ" ของงาน', back:'ทำงานจนสำเร็จ — เน้นผลสำเร็จ',
+      obj:'ยังไม่สำเร็จ = ยังไม่ครบหน้าที่',
+      desc:'จ้างทำของ (ม.587–607) เน้น "ผลสำเร็จ" ไม่ใช่กระบวนการ จุดสอบคือเลิกสัญญาเมื่อผู้รับจ้างชักช้า (ม.593) ข้อยกเว้นสัมภาระ/คำสั่งผู้ว่าจ้างบกพร่อง (ม.591) และสิทธิบอกเลิกได้เสมอแต่ต้องชดใช้ (ม.605)'
+    }
+  };
+  const [m, setM] = useState('lease');
+  const M = modes[m];
+  const L = {x:130, y:95}, R = {x:530, y:95}, O = {x:330, y:290};
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="large"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 660 350" style={{width:'100%', height:'auto', maxHeight:400}}>
+          <DiaEdge id="give" d={`M ${L.x+55} ${L.y-14} Q 330 12 ${R.x-60} ${R.y-14}`} color={M.color}
+            label={M.give} labelX={330} labelY={30} animate dur={2.6} width={3}/>
+          <DiaEdge id="back" d={`M ${R.x-60} ${R.y+22} Q 330 175 ${L.x+58} ${L.y+22}`} color={C.jadeDark}
+            label={M.back} labelX={330} labelY={148} animate dur={2.6} width={3}/>
+          <DiaEdge id="obj1" d={`M ${L.x+12} ${L.y+40} L ${O.x-70} ${O.y-38}`} color={C.cyan}
+            dashed animate dur={3.2} width={2.5}/>
+          <DiaEdge id="obj2" d={`M ${R.x-12} ${R.y+40} L ${O.x+70} ${O.y-38}`} color={C.cyan}
+            dashed animate dur={3.2} reverse width={2.5}/>
+          <DiaNode {...L} title={M.left.t} sub={M.left.s} color={M.color} active />
+          <DiaNode {...R} title={M.right.t} sub={M.right.s} color={C.jadeDark} active />
+          <DiaNode {...O} w={300} title={m==='labor'||m==='work'?'งานที่ทำ':'ทรัพย์สินที่เช่า'} sub={M.obj} color={C.cyan} active />
+        </svg>
+      </div>
+      <Box tone={m==='lease'?'blue':(m==='hp'?'green':(m==='labor'?'purple':'orange'))} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        {M.desc}
+      </Box>
+    </div>
+  );
+}
+
+/* แถบขั้นตอนแนวนอนแบบเคลื่อนไหว */
+function FlowStrip({steps, color=C.teal}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs${color.replace('#','')}${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['ผู้ให้เช่า / ผู้เช่า', 'Lessor / Lessee', 'คนที่ให้ใช้ทรัพย์แลกค่าเช่า กับคนที่จ่ายค่าเช่าเพื่อใช้ทรัพย์ — กรรมสิทธิ์ไม่โอนเด็ดขาด', C.blue],
+    ['เช่าช่วง', 'Sublease', 'ผู้เช่าเอาทรัพย์ที่ตนเช่าไปให้คนอื่นเช่าต่อ — ทำไม่ได้ถ้าผู้ให้เช่าไม่ยินยอม (ม.544)', C.blue],
+    ['เช่าซื้อ', 'Hire-Purchase', 'เจ้าของ "ให้เช่า" + ให้คำมั่นว่าจะ "ขาย" เมื่อผ่อนครบ — ต้องทำเป็นหนังสือ ไม่งั้นโมฆะ (ม.572)', C.green],
+    ['ผู้เช่าซื้อ', 'Hire-Purchaser', 'คนผ่อนเป็นงวด ๆ — ผ่อนครบเมื่อไหร่ กรรมสิทธิ์จึงโอนมาเป็นของตน', C.green],
+    ['นายจ้าง / ลูกจ้าง', 'Employer / Employee', 'จ้างแรงงาน (ม.575) — จ่ายสินจ้าง "ตลอดเวลาทำงาน" เน้นกระบวนการ', C.purple],
+    ['ผู้ว่าจ้าง / ผู้รับจ้าง', 'Hirer / Contractor', 'จ้างทำของ (ม.587) — จ่ายสินจ้างแลก "ผลสำเร็จของงาน"', C.orange],
+    ['สินจ้าง', 'Remuneration', 'ค่าตอบแทนในสัญญาจ้างทั้งสองแบบ — จุดแบ่งคือจ่ายเพราะ "เวลา" หรือเพราะ "ผลสำเร็จ"', C.jadeDark],
+    ['บอกกล่าวก่อน', 'Prior Notice', 'ขั้นตอนบังคับก่อนบอกเลิกในบางมาตรา (เช่น ม.554, 582) — ข้ามขั้น = เลิกโดยมิชอบ', C.red],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>วิชานี้คือเรื่องของ <strong>4 สัญญาในชีวิตประจำวัน</strong>: เช่าหอพัก (เช่าทรัพย์) · ผ่อนรถ (เช่าซื้อ) · ทำงานประจำ (จ้างแรงงาน) · จ้างช่างต่อเติมบ้าน (จ้างทำของ) ทุกมาตราตอบคำถามเดียวกันคือ <strong>"ใครมีหน้าที่ทำอะไร และเลิกสัญญากันอย่างไรจึงจะชอบด้วยกฎหมาย"</strong></span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>🏠 นึกภาพง่าย ๆ ด้วยชีวิตจริง</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          สมมติคุณย้ายมาเรียนที่ราม — คุณ <Pill color={C.blue} bg={C.blueBg}>เช่าหอพัก</Pill> (จ่ายค่าเช่า ใช้ห้อง แต่ห้องไม่ใช่ของคุณ),
+          <Pill color={C.green} bg={C.greenBg}>ผ่อนมอเตอร์ไซค์</Pill> (ผ่อนครบเมื่อไหร่รถเป็นของคุณ),
+          <Pill color={C.purple} bg={C.purpleBg}>ทำงานพาร์ตไทม์</Pill> (นายจ้างจ่ายรายชั่วโมง) และ
+          <Pill color={C.orange} bg={C.orangeBg}>จ้างช่างซ่อมคอม</Pill> (จ่ายเมื่อซ่อมเสร็จ).
+          สี่เรื่องนี้แหละคือทั้งวิชา — ต่างกันตรง <strong>สิ่งที่แลกเปลี่ยน</strong> และ <strong>วิธีเลิกสัญญา</strong>
+        </Paragraph>
+        <FlowStrip color={C.teal} steps={[
+          {icon:'🏠', t:'เช่าทรัพย์ = ใช้ชั่วคราว', bg:C.blueBg},
+          {icon:'🏍️', t:'เช่าซื้อ = ผ่อนจนเป็นเจ้าของ', bg:C.greenBg},
+          {icon:'🧑‍💼', t:'จ้างแรงงาน = จ่ายตามเวลา', bg:C.purpleBg},
+          {icon:'🔧', t:'จ้างทำของ = จ่ายตามผลสำเร็จ', bg:C.orangeBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: อะไรไหลไป-มา และกรรมสิทธิ์อยู่ที่ใคร?</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับโหมดทั้ง 4 สัญญา สังเกตว่า "สิ่งที่วิ่งบนเส้น" เปลี่ยนไป และกล่องล่างบอกว่ากรรมสิทธิ์/สาระสำคัญอยู่ตรงไหน — นี่คือแกนที่ใช้แยกสัญญาในข้อสอบ</Paragraph>
+      <ContractCompass/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 8 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                <span style={{fontWeight:700, fontSize:16, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚖️ เทียบ 4 สัญญาในหน้าเดียว (ตารางที่ต้องหลับตาแล้วนึกออก)</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'', dataIndex:'k', width:130, render:t=><strong style={{color:C.tealDark}}>{t}</strong>},
+          {title:<span style={{color:C.blue}}>เช่าทรัพย์</span>, dataIndex:'lease'},
+          {title:<span style={{color:C.green}}>เช่าซื้อ</span>, dataIndex:'hp'},
+          {title:<span style={{color:C.purple}}>จ้างแรงงาน</span>, dataIndex:'labor'},
+          {title:<span style={{color:C.orange}}>จ้างทำของ</span>, dataIndex:'work'},
+        ]}
+        dataSource={[
+          {key:1, k:'สิ่งที่ได้', lease:'สิทธิใช้ทรัพย์ชั่วคราว', hp:'ใช้ทรัพย์ + จะได้กรรมสิทธิ์เมื่อผ่อนครบ', labor:'แรงงาน (กระบวนการ)', work:'ผลสำเร็จของงาน'},
+          {key:2, k:'แบบ/หลักฐาน', lease:'อสังหาฯ ต้องมีหลักฐานเป็นหนังสือ เกิน 3 ปีต้องจดทะเบียน (538)', hp:'ต้องทำเป็นหนังสือ ไม่งั้นโมฆะ (572)', labor:'ไม่บังคับแบบ', work:'ไม่บังคับแบบ'},
+          {key:3, k:'กรรมสิทธิ์', lease:'ไม่โอนเลย', hp:'โอนเมื่อชำระครบ', labor:'—', work:'—'},
+          {key:4, k:'เลิกสัญญา', lease:'544 ทันที / 554 บอกกล่าวก่อน', hp:'574 ว.1 บอกเลิก+ริบ+ยึด', labor:'582 ล่วงหน้า / 583 ทันที', work:'593 ชักช้า / 605 เลิกได้เสมอแต่ชดใช้'},
+          {key:5, k:'มาตราหลัก', lease:'538, 544, 552–554, 569', hp:'572, 574', labor:'575, 577, 582, 583', work:'587, 591, 593, 605'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        (1) เช่าอสังหาฯ <strong>"3 ปีพอดี"</strong> ไม่ต้องจดทะเบียน — จดทะเบียนบังคับเฉพาะ <strong>"เกินกว่า 3 ปี"</strong> (ม.538)
+        (2) เช่าซื้อไม่ทำเป็นหนังสือ = <strong>โมฆะทันที</strong> (ม.572) — ต่างจากเช่าทรัพย์ที่แค่ฟ้องบังคับไม่ได้/บังคับได้ 3 ปี
+        (3) จ้างแรงงาน vs จ้างทำของ แยกด้วยคำเดียว: <strong>"กระบวนการ" vs "ผลสำเร็จ"</strong>
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+const SRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Sec>{n}</Sec>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+const lessonModules = [
+  {
+    key:'l1', star:3, icon:'📜', title:'เช่าทรัพย์คืออะไร & แบบของสัญญาเช่าอสังหาริมทรัพย์',
+    chips:['537','538'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="หลัก" icon="✅">
+          <SRule n="537">สัญญาเช่าทรัพย์ = ผู้ให้เช่าตกลงให้ผู้เช่า <strong>ได้ใช้หรือได้รับประโยชน์</strong> ในทรัพย์สิน <strong>ชั่วระยะเวลาอันมีจำกัด</strong> และผู้เช่าตกลงให้ <strong>ค่าเช่า</strong> — กรรมสิทธิ์ไม่โอนไปยังผู้เช่าเด็ดขาด</SRule>
+          <SRule n="538">เช่าอสังหาริมทรัพย์ ต้องมี <strong>หลักฐานเป็นหนังสือ</strong> ลงลายมือชื่อฝ่ายที่ต้องรับผิด มิฉะนั้น <strong>ฟ้องร้องบังคับคดีไม่ได้</strong> · ถ้าเช่า <strong>เกินกว่า 3 ปี</strong> หรือกำหนดตลอดอายุของผู้เช่า/ผู้ให้เช่า ต้อง <strong>ทำเป็นหนังสือและจดทะเบียน</strong> ต่อพนักงานเจ้าหน้าที่ มิฉะนั้นฟ้องบังคับได้ <strong>เพียง 3 ปี</strong></SRule>
+        </Box>
+        <Box tone="red" title="จุดสอบ/กับดัก — เส้นแบ่ง 3 ปี (ออกทุกปี)" icon="🎯">
+          อาจารย์ขอย้ำเสียงดัง ๆ ตรงนี้: <strong>"3 ปีพอดี" ไม่ต้องจดทะเบียน!</strong> สัญญาสมบูรณ์บังคับได้เต็ม 3 ปี ·
+          บังคับจดทะเบียนเฉพาะ <strong>"เกินกว่า 3 ปี"</strong> เท่านั้น และแม้ไม่จด สัญญาก็ <strong>ไม่เสียเปล่า</strong> — แค่บังคับกันได้เพียง 3 ปี
+        </Box>
+        <Alert type="warning" showIcon style={{background:C.surface3, border:`1px solid ${C.jade}55`}}
+          message={<span>ตัวอย่างข้อสอบ: เช่าตึกแถว 5 ปี ทำหนังสือแต่ไม่จดทะเบียน → สัญญาไม่โมฆะ แต่ฟ้องร้องบังคับกันได้เพียง <strong>3 ปี</strong> ส่วนที่เกินบังคับไม่ได้ (ม.538 ตอนท้าย)</span>} />
+      </div>
+    )
+  },
+  {
+    key:'l2', star:2, icon:'🔧', title:'หน้าที่ผู้ให้เช่า vs หน้าที่ผู้เช่า — ใครซ่อมอะไร',
+    chips:['552','553'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="หน้าที่ผู้ให้เช่า" icon="🏗️">
+          <SRule n="552">ต้อง <strong>ส่งมอบทรัพย์สินในสภาพซ่อมแซมดีแล้ว</strong> และต้อง <strong>ซ่อมแซมทรัพย์ที่ชำรุดบกพร่อง</strong> ระหว่างสัญญาเช่า (การซ่อมแซมใหญ่)</SRule>
+        </Box>
+        <Box tone="cyan" title="หน้าที่ผู้เช่า" icon="🧹">
+          <SRule n="553">ต้อง <strong>สงวนทรัพย์สินอย่างวิญญูชน</strong> จะพึงสงวนทรัพย์ของตนเอง + <strong>บำรุงรักษาและซ่อมแซมเล็กน้อย</strong></SRule>
+        </Box>
+        <Box tone="teal" title="จุดจำ" icon="🧠">
+          แบ่งงานซ่อมด้วยขนาด: <strong>ซ่อมใหญ่ = ผู้ให้เช่า (ม.552)</strong> · <strong>ซ่อมเล็กน้อย = ผู้เช่า (ม.553)</strong> ·
+          มาตรฐานของผู้เช่าคือ "วิญญูชน" = คนธรรมดาทั่วไป ไม่ใช่ผู้เชี่ยวชาญ
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'🚪', title:'เช่าช่วง–โอนการเช่า (ม.544) vs ไม่สงวนทรัพย์ (ม.554) — เลิกทันที หรือต้องบอกกล่าวก่อน?',
+    chips:['544','554'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.red} steps={[
+          {icon:'🚫', t:'เช่าช่วงไม่ยินยอม (544)', bg:C.redBg},
+          {icon:'⚡', t:'บอกเลิกได้ทันที', bg:C.redBg},
+          {icon:'🧹', t:'ไม่สงวนทรัพย์ (553→554)', bg:C.blueBg},
+          {icon:'📢', t:'บอกกล่าวก่อน → ไม่แก้ → เลิก', bg:C.blueBg},
+        ]}/>
+        <Box tone="red" title="⭐⭐⭐ ม.544 — ห้ามโอนการเช่า / เช่าช่วง" icon="🎯" style={{marginTop:12}}>
+          ผู้เช่า <strong>ห้ามโอนการเช่า</strong> หรือ <strong>ให้เช่าช่วง</strong> โดยไม่ได้รับความยินยอมจากผู้ให้เช่า ·
+          ถ้าฝ่าฝืน → ผู้ให้เช่า <strong>บอกเลิกสัญญาได้ทันที</strong> ไม่ต้องบอกกล่าวก่อน
+        </Box>
+        <Box tone="blue" title="⭐⭐⭐ ม.554 — ผู้เช่าฝ่าฝืนหน้าที่ (ไม่สงวนทรัพย์ ฯลฯ)" icon="📢">
+          ผู้เช่าฝ่าฝืน ม.552/553 หรือข้อสัญญา → ผู้ให้เช่าต้อง <strong>บอกกล่าวก่อน</strong> ให้ปฏิบัติให้ถูกต้อง →
+          ถ้ายัง <strong>ไม่แก้ไข</strong> จึงจะ <strong>บอกเลิกได้</strong>
+        </Box>
+        <Box tone="red" title="กับดักข้อสอบ: สองมาตรานี้ผลต่างกันคนละขั้ว" icon="⚠️">
+          โจทย์ชอบสลับเหตุ: ถ้าเหตุคือ <strong>เช่าช่วง/โอนการเช่า</strong> → เลิก <strong>ทันที</strong> (544) ·
+          ถ้าเหตุคือ <strong>ใช้ทรัพย์ผิดวิธี/ไม่สงวนทรัพย์</strong> → ต้อง <strong>บอกกล่าวก่อนเสมอ</strong> (554) —
+          ผู้ให้เช่าที่ข้ามขั้นตอนบอกกล่าว = บอกเลิกโดยมิชอบ
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:2, icon:'🏷️', title:'ขายทรัพย์ที่เช่า — สัญญาเช่าไม่ระงับ',
+    chips:['569'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="หลัก" icon="✅">
+          <SRule n="569">สัญญาเช่าอสังหาริมทรัพย์ <strong>ไม่ระงับ</strong> ไปเพราะเหตุโอนกรรมสิทธิ์ทรัพย์ที่ให้เช่า —
+          ผู้รับโอน (ผู้ซื้อ) <strong>รับไปทั้งสิทธิและหน้าที่</strong> ของผู้โอนที่มีต่อผู้เช่า</SRule>
+        </Box>
+        <Box tone="teal" title="จุดจำ + เงื่อนไขซ่อน" icon="🧠">
+          ท่องว่า <strong>"ขายไม่ตัดเช่า"</strong> — เจ้าของใหม่ขับไล่ผู้เช่าก่อนครบกำหนดไม่ได้ ·
+          แต่เงื่อนไขสำคัญคือสัญญาเช่านั้นต้อง <strong>สมบูรณ์ตามกฎหมาย</strong> (ผ่านด่าน ม.538 มาก่อน) —
+          ถ้าเช่าเกิน 3 ปีไม่จดทะเบียน ผู้รับโอนก็ผูกพันเพียงเท่าที่บังคับได้คือ 3 ปี
+        </Box>
+        <Alert type="warning" showIcon style={{background:C.surface3, border:`1px solid ${C.jade}55`}}
+          message={<span>แนวข้อสอบ: ระหว่างอายุสัญญาเช่าบ้าน ผู้ให้เช่าขายบ้านให้บุคคลอื่น → ผู้ซื้อจะขับไล่ผู้เช่าก่อนครบกำหนด <strong>ไม่ได้</strong> ต้องยอมให้เช่าอยู่ต่อจนครบกำหนด (ม.569)</span>} />
+      </div>
+    )
+  },
+  {
+    key:'l5', star:3, icon:'🏍️', title:'เช่าซื้อ — นิยาม แบบ และการบอกเลิก+ริบเงิน (ข้อ 2 ตัวจริง)',
+    chips:['572','574'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="นิยาม & แบบ" icon="🏷️">
+          <SRule n="572">เช่าซื้อ = เจ้าของทรัพย์ <strong>"ให้เช่า"</strong> + ให้คำมั่นว่าจะ <strong>"ขาย"</strong> ทรัพย์นั้น (หรือให้ทรัพย์ตกเป็นสิทธิแก่ผู้เช่าซื้อ) เมื่อชำระเงินครบตามงวดที่กำหนด · ต้องทำเป็น <strong>หนังสือ</strong> มิฉะนั้น <strong>โมฆะ</strong></SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.574 วรรคหนึ่ง — บอกเลิก + ริบ + ยึด" icon="🎯">
+          ผู้เช่าซื้อ <strong>ผิดนัดไม่ชำระ 2 คราวติด ๆ กัน</strong> หรือ <strong>ผิดสัญญาในข้อที่เป็นส่วนสำคัญ</strong> →
+          เจ้าของ <strong>บอกเลิกสัญญาได้ทันที</strong> + <strong>ริบ</strong>เงินที่ผู้เช่าซื้อจ่ายมาแล้ว + <strong>ยึดทรัพย์</strong>กลับคืน
+        </Box>
+        <Box tone="red" title="กับดักฎีกา: เรียกค่างวดที่เหลือทั้งหมดไม่ได้!" icon="⚠️">
+          ข้อตกลงให้ผู้เช่าซื้อต้องจ่าย <strong>ค่างวดที่เหลือทั้งหมด</strong> เมื่อสัญญาเลิก → ขัด ม.574 ว.2
+          <strong> ใช้บังคับไม่ได้</strong> (<Dika>859/2524</Dika>) — เจ้าของเรียกได้เฉพาะ <strong>ค่างวดที่ค้างชำระจริงก่อนสัญญาสิ้นสุด</strong> เท่านั้น
+        </Box>
+        <Box tone="teal" title="เทียบให้เห็นภาพ: เช่าทรัพย์ vs เช่าซื้อ เรื่อง 'แบบ'" icon="🔀">
+          เช่าอสังหาฯ ไม่มีหลักฐานเป็นหนังสือ = แค่ <strong>ฟ้องบังคับไม่ได้</strong> (สัญญายังไม่โมฆะ) ·
+          แต่เช่าซื้อไม่ทำเป็นหนังสือ = <strong>โมฆะทันที</strong> — โจทย์ชอบเอาสองผลนี้มาสลับหลอก
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l6', star:2, icon:'🧑‍💼', title:'จ้างแรงงาน — นิยาม & การโอนสิทธิ/รับคนแทน',
+    chips:['575','577'],
+    body:()=>(
+      <div>
+        <Box tone="purple" title="นิยาม" icon="✅">
+          <SRule n="575">จ้างแรงงาน = ลูกจ้างตกลง <strong>ทำงานให้</strong> นายจ้าง และนายจ้างตกลงให้ <strong>สินจ้างตลอดเวลาที่ทำงาน</strong> → สาระอยู่ที่ <strong>"กระบวนการ"</strong> ทำงาน ไม่ใช่ผลสำเร็จ</SRule>
+        </Box>
+        <Box tone="purple" title="⭐⭐⭐ ม.577 — เปลี่ยนตัวคู่สัญญาต้องยินยอม" icon="🔗">
+          <strong>ว.1</strong> นายจ้างจะโอนสิทธิของตนให้บุคคลภายนอกได้ ต่อเมื่อ <strong>ลูกจ้างยินยอม</strong><br/>
+          <strong>ว.2</strong> ลูกจ้างจะให้บุคคลภายนอก <strong>ทำงานแทนตน</strong> ได้ ต่อเมื่อ <strong>นายจ้างยินยอม</strong><br/>
+          <strong>ว.3</strong> ฝ่าฝืน → อีกฝ่าย <strong>บอกเลิกสัญญาได้</strong>
+        </Box>
+        <Box tone="teal" title="จุดจำ" icon="🧠">
+          จ้างแรงงานเป็นสัญญาที่ถือ <strong>"ตัวบุคคล" เป็นสาระสำคัญ</strong> — จะสับเปลี่ยนตัวนายจ้างหรือลูกจ้างฝ่ายเดียวไม่ได้
+          ต้องได้ความยินยอมของอีกฝ่ายเสมอ นี่คือเหตุผลเบื้องหลัง ม.577 ทั้งมาตรา
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:3, icon:'⚡', title:'บอกเลิกจ้างแรงงาน — ม.582 (ล่วงหน้า) vs ม.583 (ทันที)',
+    chips:['582','583'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="⭐⭐⭐ ม.582 — บอกเลิกปกติ (ไม่มีกำหนดเวลา)" icon="📢">
+          สัญญาจ้างที่ <strong>ไม่มีกำหนดเวลา</strong> → ฝ่ายใดฝ่ายหนึ่งบอกเลิกได้โดย <strong>บอกกล่าวล่วงหน้า</strong>
+          ณ คราวจ่ายสินจ้าง เพื่อให้มีผลเลิกสัญญา <strong>เมื่อถึงกำหนดจ่ายสินจ้างคราวถัดไป</strong> แต่ไม่จำต้องบอกกล่าวล่วงหน้า <strong>เกิน 3 เดือน</strong>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.583 — ไล่ออกได้ทันที ไม่ต้องบอกกล่าว" icon="⚡">
+          ลูกจ้าง <strong>จงใจขัดคำสั่ง</strong> อันชอบด้วยกฎหมายของนายจ้าง / <strong>ละเลยไม่นำพา</strong>ต่อคำสั่งเป็นอาจิณ /
+          ทำความผิด <strong>อย่างร้ายแรง</strong> / ทำการ <strong>ไม่สมแก่การปฏิบัติหน้าที่</strong> ของตนให้ลุล่วงโดยถูกต้องสุจริต
+          → นายจ้าง <strong>บอกเลิกได้ทันที</strong> โดยไม่ต้องบอกกล่าวล่วงหน้า
+        </Box>
+        <Box tone="red" title="กับดักข้อสอบ" icon="⚠️">
+          โจทย์จะให้พฤติการณ์ลูกจ้างมา แล้วถามว่านายจ้างไล่ออกทันทีได้ไหม — <strong>เช็กก่อนว่าเข้าเหตุร้ายแรงตาม ม.583 หรือไม่</strong>
+          ถ้าเป็นแค่การเลิกจ้างธรรมดา (เช่น ยุบตำแหน่ง ไม่ถูกใจ) ต้องเดินทาง ม.582 บอกกล่าวล่วงหน้า มิฉะนั้นเลิกโดยมิชอบ
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:3, icon:'🔨', title:'จ้างทำของ — ผลสำเร็จ ความล่าช้า และสิทธิบอกเลิก (ข้อ 3 ตัวจริง)',
+    chips:['587','591','593','605'],
+    body:()=>(
+      <div>
+        <Box tone="orange" title="นิยาม" icon="✅">
+          <SRule n="587">จ้างทำของ = ผู้รับจ้างตกลง <strong>ทำการงานสิ่งใดสิ่งหนึ่งจนสำเร็จ</strong> และผู้ว่าจ้างตกลงให้สินจ้างเพื่อ <strong>ผลสำเร็จ</strong> แห่งการที่ทำนั้น → เน้น <strong>"ผลสำเร็จ"</strong> ต่างจากจ้างแรงงานที่เน้นกระบวนการ</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.593 — ผู้รับจ้างชักช้า → เลิกได้ทันที" icon="🎯">
+          ผู้รับจ้าง (1) <strong>ไม่เริ่มทำการในเวลาอันควร</strong> หรือ (2) <strong>ทำการชักช้าฝ่าฝืนข้อกำหนดแห่งสัญญา</strong>
+          หรือ (3) ทำการชักช้าโดยปราศจากความผิดของผู้ว่าจ้าง <strong>จนคาดหมายได้ว่างานจะไม่เสร็จภายในกำหนด</strong>
+          → ผู้ว่าจ้างมีสิทธิ <strong>เลิกสัญญาได้ทันที</strong> โดยไม่ต้องรอถึงกำหนดส่งมอบ
+        </Box>
+        <Box tone="cyan" title="ม.591 — ข้อยกเว้น: ความบกพร่องมาจากฝั่งผู้ว่าจ้างเอง" icon="🛡️">
+          ถ้าความชำรุดบกพร่อง/ความล่าช้าเกิดเพราะ <strong>สัมภาระที่ผู้ว่าจ้างส่งมอบให้</strong> หรือเพราะ <strong>คำสั่งของผู้ว่าจ้าง</strong>
+          → ผู้รับจ้าง <strong>ไม่ต้องรับผิด</strong> · <strong>เว้นแต่</strong> ผู้รับจ้างรู้อยู่แล้วว่าสัมภาระ/คำสั่งนั้นไม่เหมาะ แต่ <strong>ไม่บอกกล่าวตักเตือน</strong>
+        </Box>
+        <Box tone="orange" title="⭐⭐⭐ ม.605 — ผู้ว่าจ้างบอกเลิกได้เสมอ แต่ต้องจ่าย" icon="💸">
+          ตราบใดที่งานยังไม่เสร็จ ผู้ว่าจ้างจะ <strong>บอกเลิกสัญญาเมื่อใดก็ได้</strong> แม้ผู้รับจ้างเริ่มงานแล้ว —
+          <strong>แต่ต้องชดใช้ค่าสินไหมทดแทน</strong> เพื่อความเสียหายแก่ผู้รับจ้าง
+        </Box>
+        <Box tone="red" title="กับดักคู่: 591 vs 593" icon="⚠️">
+          ล่าช้าเพราะ <strong>ผู้รับจ้างเอง</strong> → ม.593 ผู้ว่าจ้างเลิกได้ทันที ·
+          ล่าช้า/บกพร่องเพราะ <strong>สัมภาระหรือคำสั่งของผู้ว่าจ้าง</strong> → ม.591 ผู้รับจ้างหลุดพ้น (เว้นรู้แล้วไม่เตือน) —
+          อ่านโจทย์ให้ชัดว่าต้นเหตุความล่าช้าอยู่ฝั่งไหน
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l1']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Sec key={c}>{c}</Sec>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>8 โมดูล เรียงตามข้อสอบ: เช่าทรัพย์ → เช่าซื้อ → จ้างแรงงาน → จ้างทำของ</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกครั้ง) · คลิกที่หัวข้อเพื่อกางเนื้อหา · Pattern ข้อสอบ 3 ข้อ × 25 คะแนน: ข้อ 1 เช่าทรัพย์ · ข้อ 2 เช่าซื้อ · ข้อ 3 จ้างแรงงาน+จ้างทำของ</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: CASE LAB (ทำนายก่อนเฉลย) ============ */
+const labCases = [
+  {
+    id:'p1', tag:'เช่าทรัพย์', color:C.blue, star:3,
+    facts:'นายเอกเช่าตึกแถวจากนายโทเพื่อเปิดร้านกาแฟ มีกำหนด 3 ปีพอดี ทำสัญญาเป็นหนังสือลงลายมือชื่อทั้งสองฝ่าย แต่ไม่ได้นำไปจดทะเบียนต่อพนักงานเจ้าหน้าที่',
+    ask:'สัญญาเช่านี้ฟ้องร้องบังคับกันได้เต็ม 3 ปี ใช่หรือไม่?',
+    answer:true, secs:['538'],
+    ruling:'ม.538 บังคับให้ "ทำเป็นหนังสือและจดทะเบียน" เฉพาะการเช่าอสังหาริมทรัพย์ที่มีกำหนด "เกินกว่า 3 ปี" หรือตลอดอายุของผู้เช่า/ผู้ให้เช่าเท่านั้น — เช่า 3 ปีพอดีเพียงมีหลักฐานเป็นหนังสือลงลายมือชื่อก็ฟ้องร้องบังคับคดีได้เต็มตามสัญญา',
+    who:'สัญญาสมบูรณ์ บังคับได้เต็ม 3 ปี',
+    trap:'"3 ปีพอดี" ไม่ต้องจดทะเบียน — กับดักที่ออกสอบทุกปี'
+  },
+  {
+    id:'p2', tag:'เช่าทรัพย์', color:C.blue, star:3,
+    facts:'นางสาวฝนเช่าบ้านจากนายเมฆมีกำหนด 6 ปี ทำสัญญาเช่าเป็นหนังสือ แต่มิได้จดทะเบียนต่อพนักงานเจ้าหน้าที่ อยู่มาได้ 4 ปี นายเมฆบอกให้ออกจากบ้าน',
+    ask:'นางสาวฝนจะอ้างสัญญาเช่าบังคับให้ตนอยู่ต่อจนครบ 6 ปี ได้หรือไม่?',
+    answer:false, secs:['538'],
+    ruling:'การเช่าอสังหาริมทรัพย์เกินกว่า 3 ปี เมื่อมิได้ทำเป็นหนังสือและจดทะเบียนต่อพนักงานเจ้าหน้าที่ สัญญาไม่เสียเปล่าแต่ฟ้องร้องบังคับคดีได้เพียง 3 ปี (ม.538 ตอนท้าย) — เมื่ออยู่มาแล้ว 4 ปี จึงพ้นช่วงเวลาที่กฎหมายให้บังคับได้ นายเมฆให้ออกได้',
+    who:'บังคับได้เพียง 3 ปีแรก — อยู่ต่อจนครบ 6 ปีไม่ได้',
+    trap:'เกิน 3 ปีไม่จด ≠ โมฆะ — แค่ถูกตัดเหลือ 3 ปี'
+  },
+  {
+    id:'p3', tag:'เช่าทรัพย์', color:C.blue, star:3,
+    facts:'นายกล้าเช่าอาคารพาณิชย์จากนางแก้ว ระหว่างอายุสัญญา นายกล้าเอาชั้นสองไปให้เพื่อนเช่าช่วงเก็บค่าเช่าเอง โดยไม่เคยขอความยินยอมจากนางแก้วเลย นางแก้วทราบเรื่องจึงบอกเลิกสัญญาทันทีโดยไม่ได้บอกกล่าวเตือนก่อน',
+    ask:'นางแก้วบอกเลิกสัญญาทันทีโดยไม่บอกกล่าวก่อน ชอบด้วยกฎหมายหรือไม่?',
+    answer:true, secs:['544'],
+    ruling:'ม.544 ห้ามผู้เช่าโอนการเช่าหรือให้เช่าช่วงโดยไม่ได้รับความยินยอมจากผู้ให้เช่า เมื่อฝ่าฝืน ผู้ให้เช่ามีสิทธิบอกเลิกสัญญาได้ทันที — กรณีนี้กฎหมายไม่ได้กำหนดขั้นตอนบอกกล่าวก่อนอย่าง ม.554',
+    who:'บอกเลิกทันทีได้ — ชอบด้วยกฎหมาย',
+    trap:'อย่าสับสนกับ ม.554 — เหตุเช่าช่วงไม่ต้องบอกกล่าวก่อน'
+  },
+  {
+    id:'p4', tag:'เช่าทรัพย์', color:C.blue, star:3,
+    facts:'นายชิตเช่าบ้านของนางชม แต่ปล่อยให้หลังคารั่ว น้ำขังจนพื้นไม้เริ่มผุ ไม่เคยดูแลบำรุงรักษาอย่างที่คนทั่วไปพึงทำ นางชมโมโหมาก จึงบอกเลิกสัญญาเช่าทันทีในวันที่เห็นสภาพบ้าน',
+    ask:'นางชมบอกเลิกสัญญาทันทีโดยไม่บอกกล่าวก่อน ชอบด้วยกฎหมายหรือไม่?',
+    answer:false, secs:['553','554'],
+    ruling:'ผู้เช่าไม่สงวนทรัพย์สินอย่างวิญญูชนเป็นการฝ่าฝืน ม.553 ซึ่งกรณีนี้ ม.554 บังคับให้ผู้ให้เช่าต้อง "บอกกล่าวก่อน" ให้ผู้เช่าปฏิบัติให้ถูกต้อง หากผู้เช่ายังละเลยไม่แก้ไข ผู้ให้เช่าจึงจะบอกเลิกสัญญาได้ — การเลิกทันทีจึงข้ามขั้นตอน ไม่ชอบด้วยกฎหมาย',
+    who:'ต้องบอกกล่าวก่อน → ไม่แก้ไข → จึงบอกเลิกได้',
+    trap:'ม.554 มีขั้นตอนบังคับ ข้ามไม่ได้'
+  },
+  {
+    id:'p5', tag:'เช่าซื้อ', color:C.green, star:3,
+    facts:'นายภพตกลงเช่าซื้อรถยนต์มือสองจากเต็นท์รถของนายเพชร ราคา 300,000 บาท ผ่อน 24 งวด โดยตกลงกันด้วยวาจาต่อหน้าพยาน 2 คน และนายภพรับรถไปใช้แล้ว',
+    ask:'สัญญาเช่าซื้อนี้สมบูรณ์ใช้บังคับได้ ใช่หรือไม่?',
+    answer:false, secs:['572'],
+    ruling:'ม.572 วรรคสอง บังคับว่าสัญญาเช่าซื้อต้อง "ทำเป็นหนังสือ" มิฉะนั้นเป็นโมฆะ — การตกลงด้วยวาจาแม้มีพยานและส่งมอบรถแล้ว สัญญาเช่าซื้อก็ตกเป็นโมฆะตั้งแต่ต้น ใช้บังคับต่อกันไม่ได้',
+    who:'สัญญาเช่าซื้อเป็นโมฆะ',
+    trap:'เช่าซื้อ = ต้องทำเป็นหนังสือเสมอ ไม่ใช่แค่มีหลักฐาน'
+  },
+  {
+    id:'p6', tag:'เช่าซื้อ', color:C.green, star:3,
+    facts:'นางสายผ่อนเช่าซื้อรถกระบะ ชำระตรงมาตลอด แต่ผิดนัดงวดที่ 10 และงวดที่ 11 ติดต่อกันสองคราว บริษัทผู้ให้เช่าซื้อจึงบอกเลิกสัญญา ริบเงินที่นางสายชำระมาแล้วทั้งหมด และยึดรถคืน พร้อมทั้งเรียกให้นางสายชำระ "ค่างวดที่เหลือทั้งหมดจนครบสัญญา" ตามข้อตกลงท้ายสัญญา',
+    ask:'บริษัทเรียกค่างวดที่เหลือทั้งหมดหลังบอกเลิกสัญญา ได้หรือไม่?',
+    answer:false, secs:['574'],
+    ruling:'ผิดนัด 2 คราวติด ๆ กัน เจ้าของบอกเลิกสัญญา ริบเงินที่ชำระแล้ว และยึดทรัพย์คืนได้ตาม ม.574 วรรคหนึ่ง — แต่ข้อตกลงให้จ่ายค่างวดที่เหลือทั้งหมดเมื่อสัญญาเลิก ขัดต่อ ม.574 วรรคสอง ใช้บังคับไม่ได้ (แนว ฎ.859/2524) เรียกได้เฉพาะค่างวดที่ค้างชำระจริงก่อนสัญญาสิ้นสุดเท่านั้น',
+    who:'บอกเลิก+ริบ+ยึดได้ แต่เรียกค่างวดที่เหลือไม่ได้',
+    trap:'ฎ.859/2524 — ข้อตกลงเรียกค่างวดล่วงหน้าทั้งหมดเป็นโมฆะ'
+  },
+  {
+    id:'p7', tag:'จ้างแรงงาน', color:C.purple, star:2,
+    facts:'บริษัทหนึ่งขายกิจการแผนกขนส่งให้อีกบริษัท และตกลงโอนสิทธิความเป็นนายจ้างเหนือพนักงานขับรถทั้งหมดไปยังบริษัทผู้ซื้อ โดยไม่เคยสอบถามหรือได้รับความยินยอมจากพนักงานเลย',
+    ask:'การโอนสิทธินายจ้างโดยลูกจ้างไม่ยินยอมเช่นนี้ ชอบด้วยกฎหมายหรือไม่?',
+    answer:false, secs:['577'],
+    ruling:'ม.577 วรรคหนึ่ง นายจ้างจะโอนสิทธิของตนให้แก่บุคคลภายนอกได้ก็ต่อเมื่อ "ลูกจ้างยินยอมพร้อมใจด้วย" เพราะจ้างแรงงานถือตัวบุคคลเป็นสาระสำคัญ เมื่อโอนโดยไม่ได้รับความยินยอม จึงไม่ชอบ และลูกจ้างมีสิทธิบอกเลิกสัญญาได้ตามวรรคสาม',
+    who:'โอนไม่ได้ — ลูกจ้างบอกเลิกสัญญาได้',
+    trap:'ว.1 ลูกจ้างยินยอม / ว.2 นายจ้างยินยอม — สลับฝั่งให้ถูก'
+  },
+  {
+    id:'p8', tag:'จ้างแรงงาน', color:C.purple, star:3,
+    facts:'นายเข้มเป็นพนักงานคลังสินค้า ได้รับคำสั่งชอบด้วยกฎหมายจากหัวหน้าให้หยุดสูบบุหรี่ในคลังเก็บสารเคมี แต่นายเข้มจงใจฝ่าฝืนสูบต่อหน้าหัวหน้าหลายครั้ง นายจ้างจึงไล่ออกทันทีโดยไม่บอกกล่าวล่วงหน้าและไม่รอถึงกำหนดจ่ายสินจ้าง',
+    ask:'นายจ้างไล่นายเข้มออกทันทีโดยไม่ต้องบอกกล่าวล่วงหน้า ได้หรือไม่?',
+    answer:true, secs:['583'],
+    ruling:'การจงใจขัดคำสั่งอันชอบด้วยกฎหมายของนายจ้าง เป็นเหตุตาม ม.583 ซึ่งให้นายจ้างบอกเลิกสัญญาได้ "ทันที" โดยไม่ต้องบอกกล่าวล่วงหน้าตาม ม.582 — ยิ่งเป็นพฤติการณ์เสี่ยงร้ายแรงต่อความปลอดภัย ยิ่งเข้าเหตุชัดเจน',
+    who:'ไล่ออกทันทีได้ ไม่ต้องบอกกล่าวล่วงหน้า',
+    trap:'แยก ม.582 (เลิกปกติ ต้องล่วงหน้า) กับ ม.583 (เหตุร้ายแรง เลิกทันที)'
+  },
+  {
+    id:'p9', tag:'จ้างทำของ', color:C.orange, star:3,
+    facts:'นางพลอยจ้างนายช่างต้นสร้างรั้วบ้าน กำหนดส่งมอบใน 60 วัน ผ่านไป 45 วัน นายต้นยังไม่เริ่มลงเสาเข็มเลยแม้แต่ต้นเดียว ทั้งที่ไม่มีเหตุขัดข้องจากฝั่งนางพลอย ประเมินอย่างไรก็ไม่มีทางเสร็จทัน นางพลอยจึงบอกเลิกสัญญาทันทีโดยไม่รอให้ครบ 60 วัน',
+    ask:'นางพลอยบอกเลิกสัญญาทันทีโดยไม่รอถึงกำหนดส่งมอบ ได้หรือไม่?',
+    answer:true, secs:['593'],
+    ruling:'ม.593 เมื่อผู้รับจ้างไม่เริ่มทำการในเวลาอันควร หรือทำการชักช้าโดยปราศจากความผิดของผู้ว่าจ้าง จนคาดหมายได้ว่างานจะไม่เสร็จภายในกำหนด ผู้ว่าจ้างมีสิทธิเลิกสัญญาได้ทันที โดยไม่ต้องรอถึงกำหนดส่งมอบ',
+    who:'เลิกสัญญาได้ทันที ไม่ต้องรอครบกำหนด',
+    trap:'อย่าไปตอบ ม.591 — นั่นคือกรณีสัมภาระ/คำสั่งผู้ว่าจ้างบกพร่อง'
+  },
+  {
+    id:'p10', tag:'จ้างทำของ', color:C.orange, star:3,
+    facts:'นายวินจ้างบริษัทตกแต่งภายในทำร้านอาหาร งานเดินไปแล้วครึ่งหนึ่งตามแผน ไม่มีความล่าช้าหรือบกพร่องใด ๆ แต่นายวินเปลี่ยนใจไม่เปิดร้านแล้ว จึงบอกเลิกสัญญากลางคัน และปฏิเสธไม่จ่ายเงินใด ๆ เพิ่ม โดยอ้างว่า "งานยังไม่สำเร็จก็ไม่ต้องจ่าย"',
+    ask:'นายวินบอกเลิกกลางคันโดยไม่ต้องชดใช้อะไรแก่ผู้รับจ้างเลย ได้หรือไม่?',
+    answer:false, secs:['605'],
+    ruling:'ม.605 ให้สิทธิผู้ว่าจ้างบอกเลิกสัญญาได้เสมอตราบที่งานยังไม่แล้วเสร็จ แม้ผู้รับจ้างเริ่มงานแล้ว — แต่มีเงื่อนไขบังคับคือ "ต้องชดใช้ค่าสินไหมทดแทนเพื่อความเสียหาย" แก่ผู้รับจ้าง จะเลิกเปล่า ๆ โดยไม่รับผิดชอบไม่ได้',
+    who:'เลิกได้ แต่ต้องชดใช้ค่าสินไหมทดแทน',
+    trap:'ม.605 = "เลิกได้เสมอ + ต้องจ่าย" สองท่อนต้องมาคู่กัน'
+  },
+];
+
+function PredictCard({c}) {
+  const [picked, setPicked] = useState(null); // null | true | false
+  const revealed = picked !== null;
+  const correct = revealed && picked === c.answer;
+  return (
+    <Card style={{marginBottom:16, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="geekblue" style={{fontWeight:700, background:c.color+'18', color:c.color, border:`1px solid ${c.color}55`}}>{c.tag}</Tag>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.tealDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 10px', fontWeight:700, fontSize:15.5, color:C.text}}>❓ {c.ask}</div>
+      {!revealed ? (
+        <Space wrap>
+          <Button size="large" style={{borderColor:C.green, color:C.green, fontWeight:700}} onClick={()=>setPicked(true)}>✅ ได้ / ใช่</Button>
+          <Button size="large" style={{borderColor:C.red, color:C.red, fontWeight:700}} onClick={()=>setPicked(false)}>⛔ ไม่ได้ / ไม่ใช่</Button>
+        </Space>
+      ) : (
+        <div className="fade-up">
+          <Alert type={correct?'success':'error'} showIcon
+            style={{marginBottom:10, background:correct?C.greenBg:C.redBg, border:`1px solid ${(correct?C.green:C.red)}55`}}
+            message={<span style={{fontWeight:700, color:correct?C.green:C.red}}>
+              {correct ? 'ทำนายถูก! สายตาแบบนักกฎหมายแล้ว 🎯' : `ยังไม่ใช่ — คำตอบที่ถูกคือ "${c.answer?'ได้ / ใช่':'ไม่ได้ / ไม่ใช่'}"`}
+            </span>} />
+          <div style={{marginBottom:10}}>
+            {c.secs.map(s=><span key={s} style={{display:'inline-block', margin:'3px 6px 3px 0', background:c.color, color:C.white, padding:'3px 12px', borderRadius:8, fontWeight:700, fontFamily:"'Noto Serif Thai'"}}>มาตรา {s}</span>)}
+          </div>
+          <div style={{background:C.surface3, borderRadius:12, padding:'13px 16px', border:`1px solid ${C.border}`}}>
+            <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:4}}>คำวินิจฉัย</div>
+            <div style={{color:C.text2, fontSize:14.6, lineHeight:1.85}}>{c.ruling}</div>
+          </div>
+          <div style={{marginTop:12, textAlign:'center'}}>
+            <span style={{display:'inline-block', background:c.color+'1a', color:c.color, border:`1.5px dashed ${c.color}`, borderRadius:30, padding:'7px 18px', fontWeight:700, fontSize:14.5}}>
+              🎯 ผล: {c.who}</span>
+          </div>
+          <Box tone="red" title="กับดัก" icon="⚠️" style={{marginTop:12, marginBottom:0}}>{c.trap}</Box>
+          <div style={{textAlign:'center', marginTop:10}}>
+            <Button size="small" onClick={()=>setPicked(null)}>ลองทายใหม่</Button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CaseLabTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:C.surface3, border:`1px solid ${C.jade}66`}}
+        message={<span style={{fontWeight:700, color:C.jadeDark}}>🧪 Case Lab — "ทำนายก่อนเฉลย" 10 สถานการณ์</span>}
+        description={<span style={{color:C.text2}}>อ่านข้อเท็จจริงแล้ว <strong>ตัดสินเองก่อน</strong> ว่า "ได้/ไม่ได้" เหมือนนั่งเป็นผู้พิพากษา จากนั้นระบบจะเฉลย <strong>มาตราที่ใช้ + คำวินิจฉัย + กับดัก</strong> — วิธีนี้จำแม่นกว่าอ่านเฉลยตรง ๆ หลายเท่า</span>} />
+      {labCases.map(c=><PredictCard key={c.id} c={c}/>)}
+      <Box tone="cyan" title="สังเกตแพตเทิร์นให้ได้" icon="💡" style={{marginTop:6}}>
+        คำถามเกือบทุกข้อของวิชานี้วนอยู่กับสองแกน: <strong>"เลิกทันทีได้ไหม หรือต้องบอกกล่าว/มีเงื่อนไขก่อน"</strong> (544 vs 554 · 582 vs 583 · 593 · 605)
+        และ <strong>"แบบของสัญญาครบไหม"</strong> (538 · 572) — จับสองแกนนี้ได้ ข้อสอบก็อ่านออกทั้งฉบับ
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'เช่าทรัพย์ · แบบ', star:3, topic:'เช่า 5 ปี ไม่จดทะเบียน — บังคับได้เพียงใด',
+    facts:'นายหนึ่งเช่าตึกแถวจากนายสองมีกำหนด 5 ปี ทำสัญญาเช่าเป็นหนังสือลงลายมือชื่อทั้งสองฝ่าย แต่มิได้จดทะเบียนต่อพนักงานเจ้าหน้าที่ — สัญญาเช่านี้ฟ้องร้องบังคับกันได้เพียงใด?',
+    issue:'สัญญาเช่าอสังหาริมทรัพย์ที่มีกำหนดเกินกว่า 3 ปี ซึ่งทำเป็นหนังสือแต่ไม่ได้จดทะเบียนต่อพนักงานเจ้าหน้าที่ มีผลบังคับเพียงใด',
+    rule:['538'],
+    ruleText:'ม.538 การเช่าอสังหาริมทรัพย์ ถ้ามิได้มีหลักฐานเป็นหนังสือลงลายมือชื่อฝ่ายที่ต้องรับผิด จะฟ้องร้องบังคับคดีไม่ได้ และถ้าเช่ามีกำหนดกว่า 3 ปีขึ้นไป หรือกำหนดตลอดอายุของผู้เช่าหรือผู้ให้เช่า หากมิได้ทำเป็นหนังสือและจดทะเบียนต่อพนักงานเจ้าหน้าที่ จะฟ้องร้องบังคับคดีได้เพียง 3 ปี',
+    application:'กรณีตามปัญหา เป็นการเช่าอสังหาริมทรัพย์มีกำหนด 5 ปี ซึ่งเกินกว่า 3 ปี เมื่อคู่สัญญาทำเพียงหนังสือสัญญาแต่มิได้จดทะเบียนต่อพนักงานเจ้าหน้าที่ จึงต้องด้วย ม.538 ตอนท้าย — สัญญาไม่เสียเปล่า แต่ฟ้องร้องบังคับกันได้เพียง 3 ปีเท่านั้น',
+    conclusion:'สัญญาเช่า 5 ปีที่ไม่จดทะเบียน ฟ้องร้องบังคับกันได้เพียง 3 ปี ส่วนระยะเวลาที่เกินจากนั้นไม่อาจบังคับได้ (ม.538)'
+  },
+  {
+    id:'c2', tag:'เช่าทรัพย์ · โอนทรัพย์', star:3, topic:'ขายบ้านระหว่างเช่า — ผู้ซื้อขับไล่ผู้เช่าได้หรือไม่',
+    facts:'ระหว่างอายุสัญญาเช่าบ้าน นายสามผู้ให้เช่าขายบ้านหลังดังกล่าวให้นายสี่ — นายสี่จะขับไล่นายห้าผู้เช่าออกจากบ้านก่อนครบกำหนดเช่าได้หรือไม่?',
+    issue:'เมื่อมีการโอนกรรมสิทธิ์ทรัพย์ที่เช่าระหว่างอายุสัญญาเช่า ผู้รับโอนจะขับไล่ผู้เช่าก่อนครบกำหนดได้หรือไม่',
+    rule:['569'],
+    ruleText:'ม.569 สัญญาเช่าอสังหาริมทรัพย์ย่อมไม่ระงับไปเพราะเหตุโอนกรรมสิทธิ์ทรัพย์สินซึ่งให้เช่า — ผู้รับโอนย่อมรับไปทั้งสิทธิและหน้าที่ของผู้โอนซึ่งมีต่อผู้เช่านั้นด้วย',
+    application:'กรณีตามปัญหา เมื่อสัญญาเช่าระหว่างนายสามกับนายห้าสมบูรณ์และยังไม่ครบกำหนด การที่นายสามโอนขายบ้านให้นายสี่ หาได้ทำให้สัญญาเช่าระงับไม่ นายสี่ผู้รับโอนต้องรับทั้งสิทธิและหน้าที่ตามสัญญาเช่า จึงต้องยอมให้นายห้าเช่าอยู่ต่อไปจนครบกำหนด',
+    conclusion:'นายสี่ขับไล่นายห้าก่อนครบกำหนดเช่าไม่ได้ ตามหลัก "สัญญาเช่าไม่ระงับเพราะการโอน" ใน ม.569'
+  },
+  {
+    id:'c3', tag:'เช่าทรัพย์ · เช่าช่วง', star:3, topic:'เช่าช่วงโดยไม่ยินยอม — บอกเลิกทันทีได้',
+    facts:'นายมั่นเช่าอาคารพาณิชย์จากนางคง 3 ปี สัญญาระบุห้ามเช่าช่วง ต่อมานายมั่นเอาอาคารไปให้นายเสริมเช่าช่วงทั้งหลังโดยนางคงไม่ทราบและไม่เคยยินยอม นางคงทราบเรื่องจึงบอกเลิกสัญญาทันที นายมั่นโต้ว่านางคงต้องบอกกล่าวเตือนก่อนตาม ม.554 — ข้ออ้างของนายมั่นฟังขึ้นหรือไม่?',
+    issue:'ผู้เช่านำทรัพย์ไปให้เช่าช่วงโดยผู้ให้เช่าไม่ยินยอม ผู้ให้เช่าต้องบอกกล่าวก่อนบอกเลิกสัญญาหรือไม่',
+    rule:['544'],
+    ruleText:'ม.544 ผู้เช่าจะโอนการเช่าหรือให้เช่าช่วงไม่ได้ เว้นแต่ได้รับความยินยอมจากผู้ให้เช่า — ถ้าผู้เช่าฝ่าฝืน ผู้ให้เช่าจะบอกเลิกสัญญาเสียก็ได้ (ทันที โดยไม่มีบทบังคับให้บอกกล่าวก่อน ซึ่งต่างจากกรณี ม.554)',
+    application:'กรณีตามปัญหา นายมั่นให้นายเสริมเช่าช่วงโดยนางคงมิได้ยินยอม เป็นการฝ่าฝืน ม.544 โดยตรง ซึ่งกฎหมายให้สิทธิผู้ให้เช่าบอกเลิกสัญญาได้ทันที ข้ออ้างว่าต้องบอกกล่าวก่อนตาม ม.554 ใช้กับกรณีผู้เช่าฝ่าฝืนหน้าที่ตาม ม.552/553 หรือข้อสัญญาอื่น มิใช่กรณีเช่าช่วง',
+    conclusion:'ข้ออ้างของนายมั่นฟังไม่ขึ้น — นางคงบอกเลิกสัญญาได้ทันทีตาม ม.544 โดยไม่ต้องบอกกล่าวก่อน'
+  },
+  {
+    id:'c4', tag:'เช่าซื้อ', star:3, topic:'ผิดนัด 2 คราวติด — บอกเลิก+ริบ แต่เรียกค่างวดที่เหลือไม่ได้',
+    facts:'นายโชคเช่าซื้อรถยนต์จากบริษัทเงินทุน ผ่อนเดือนละ 10,000 บาท รวม 48 งวด นายโชคผิดนัดงวดที่ 20 และ 21 สองคราวติด ๆ กัน บริษัทบอกเลิกสัญญา ยึดรถ ริบเงินที่ชำระแล้ว และอาศัยข้อสัญญาเรียกให้นายโชคชำระค่างวดที่เหลืออีก 27 งวดทั้งหมด — บริษัททำได้เพียงใด?',
+    issue:'เจ้าของทรัพย์บอกเลิกสัญญาเช่าซื้อเพราะผู้เช่าซื้อผิดนัด 2 คราวติดกันได้หรือไม่ และจะเรียกค่างวดที่ยังไม่ถึงกำหนดทั้งหมดตามข้อสัญญาได้หรือไม่',
+    rule:['574'],
+    ruleText:'ม.574 วรรคหนึ่ง ผู้เช่าซื้อผิดนัดไม่ใช้เงินสองคราวติด ๆ กัน หรือกระทำผิดสัญญาในข้อที่เป็นส่วนสำคัญ เจ้าของทรัพย์บอกเลิกสัญญาเสียก็ได้ บรรดาเงินที่ได้ใช้มาแล้วให้ริบเป็นของเจ้าของ และเจ้าของกลับเข้าครองทรัพย์นั้นได้ — ส่วนข้อตกลงให้ชำระค่างวดที่เหลือทั้งหมดเมื่อสัญญาเลิก ขัดต่อ ม.574 วรรคสอง ใช้บังคับไม่ได้ (แนว ฎ.859/2524) เรียกได้เฉพาะค่างวดที่ค้างชำระจริงก่อนสัญญาสิ้นสุด',
+    application:'กรณีตามปัญหา นายโชคผิดนัดงวดที่ 20–21 สองคราวติด ๆ กัน บริษัทจึงมีสิทธิบอกเลิกสัญญาทันที ริบเงินที่ชำระมาแล้ว และยึดรถคืนได้ตาม ม.574 วรรคหนึ่ง แต่ข้อสัญญาที่ให้เรียกค่างวดที่เหลืออีก 27 งวดทั้งหมด เป็นข้อตกลงที่ขัดต่อกฎหมาย ใช้บังคับไม่ได้ตามแนว ฎ.859/2524 บริษัทคงเรียกได้เพียงค่างวดที่ 20–21 ที่ค้างชำระจริงก่อนสัญญาสิ้นสุด',
+    conclusion:'บริษัทบอกเลิกสัญญา ริบเงิน และยึดรถได้ แต่เรียกค่างวดที่เหลือ 27 งวดไม่ได้ — เรียกได้เฉพาะ 2 งวดที่ค้างจริง (ม.574 + ฎ.859/2524)'
+  },
+  {
+    id:'c5', tag:'จ้างแรงงาน', star:3, topic:'ไล่ออกทันที — เข้าเหตุ ม.583 หรือต้องบอกกล่าวตาม ม.582',
+    facts:'นายแดนทำงานเป็นพนักงานบัญชีไม่มีกำหนดเวลา รับสินจ้างทุกสิ้นเดือน วันหนึ่งนายจ้างตรวจพบว่านายแดนจงใจไม่บันทึกรายการตามคำสั่งที่ชอบด้วยกฎหมายซ้ำ ๆ ทั้งที่ถูกกำชับหลายครั้ง เป็นการละเลยไม่นำพาต่อคำสั่งเป็นอาจิณ นายจ้างจึงบอกเลิกจ้างทันทีในวันนั้นโดยไม่บอกกล่าวล่วงหน้า — การเลิกจ้างชอบด้วยกฎหมายหรือไม่?',
+    issue:'ลูกจ้างละเลยไม่นำพาต่อคำสั่งอันชอบด้วยกฎหมายของนายจ้างเป็นอาจิณ นายจ้างจะบอกเลิกสัญญาทันทีโดยไม่บอกกล่าวล่วงหน้าได้หรือไม่',
+    rule:['582','583'],
+    ruleText:'ม.582 สัญญาจ้างไม่มีกำหนดเวลา ฝ่ายใดจะเลิกต้องบอกกล่าวล่วงหน้า ณ คราวจ่ายสินจ้าง เพื่อให้มีผลคราวถัดไป (ไม่ต้องล่วงหน้าเกิน 3 เดือน) · ม.583 ถ้าลูกจ้างจงใจขัดคำสั่งอันชอบด้วยกฎหมาย หรือละเลยไม่นำพาต่อคำสั่งเป็นอาจิณ ทำความผิดร้ายแรง หรือทำการไม่สมแก่การปฏิบัติหน้าที่ นายจ้างบอกเลิกได้ทันทีโดยมิพักต้องบอกกล่าวล่วงหน้า',
+    application:'กรณีตามปัญหา นายแดนจงใจขัดคำสั่งและละเลยไม่นำพาต่อคำสั่งอันชอบด้วยกฎหมายเป็นอาจิณ อันเป็นเหตุตาม ม.583 โดยตรง นายจ้างจึงไม่ต้องเดินตามขั้นตอนบอกกล่าวล่วงหน้าของ ม.582 ซึ่งใช้กับการเลิกจ้างกรณีปกติเท่านั้น',
+    conclusion:'การเลิกจ้างทันทีชอบด้วยกฎหมายตาม ม.583 — นายจ้างไม่ต้องบอกกล่าวล่วงหน้าและไม่ต้องรอถึงคราวจ่ายสินจ้าง'
+  },
+  {
+    id:'c6', tag:'จ้างทำของ · ชักช้า', star:3, topic:'ผู้รับจ้างชักช้าจนคาดว่าไม่เสร็จทัน — เลิกได้ทันที',
+    facts:'นางฟ้าจ้างนายช่างเก่งสร้างโกดังเก็บสินค้า กำหนดแล้วเสร็จใน 6 เดือน ผ่านไป 4 เดือน งานคืบหน้าเพียงร้อยละ 10 โดยความล่าช้ามิได้เกิดจากความผิดของนางฟ้าเลย ประเมินตามสภาพงานแล้วเป็นที่คาดหมายได้แน่ว่างานจะไม่เสร็จภายในกำหนด — นางฟ้าจะเลิกสัญญาทันทีโดยไม่รอให้ครบ 6 เดือน ได้หรือไม่?',
+    issue:'ผู้รับจ้างทำการชักช้าโดยปราศจากความผิดของผู้ว่าจ้าง จนคาดหมายได้ว่างานจะไม่เสร็จภายในกำหนด ผู้ว่าจ้างเลิกสัญญาก่อนถึงกำหนดส่งมอบได้หรือไม่',
+    rule:['593'],
+    ruleText:'ม.593 ถ้าผู้รับจ้างไม่เริ่มทำการในเวลาอันควร หรือทำการชักช้าฝ่าฝืนข้อกำหนดแห่งสัญญา หรือทำการชักช้าโดยปราศจากความผิดของผู้ว่าจ้าง จนอาจคาดหมายล่วงหน้าได้ว่าการนั้นจะไม่สำเร็จภายในกำหนดเวลา ผู้ว่าจ้างชอบที่จะเลิกสัญญาเสียได้ โดยมิพักต้องรอคอยให้ถึงเวลากำหนดส่งมอบ',
+    application:'กรณีตามปัญหา งานคืบหน้าเพียงร้อยละ 10 เมื่อเวลาผ่านไปแล้ว 4 ใน 6 เดือน โดยความล่าช้ามิได้เกิดจากความผิดของนางฟ้า และเป็นที่คาดหมายได้ว่างานจะไม่เสร็จทันกำหนด จึงเข้าเงื่อนไข ม.593 ครบถ้วน นางฟ้ามีสิทธิเลิกสัญญาได้ทันที',
+    conclusion:'นางฟ้าเลิกสัญญาได้ทันทีโดยไม่ต้องรอถึงกำหนดส่งมอบ 6 เดือน ตาม ม.593'
+  },
+  {
+    id:'c7', tag:'จ้างทำของ · สัมภาระ', star:2, topic:'งานบกพร่องเพราะสัมภาระของผู้ว่าจ้าง — ผู้รับจ้างหลุดหรือไม่',
+    facts:'นายภูจ้างนายช่างศรทาสีอาคาร โดยนายภูเป็นผู้จัดหาสีมาส่งมอบให้เอง นายช่างศรเห็นตั้งแต่แรกว่าสีนั้นเสื่อมคุณภาพไม่เหมาะกับงานภายนอก แต่ไม่บอกกล่าวตักเตือน คงทาไปตามนั้น ต่อมาสีลอกทั้งอาคาร — นายช่างศรต้องรับผิดในความชำรุดบกพร่องหรือไม่?',
+    issue:'ความชำรุดบกพร่องเกิดจากสัมภาระที่ผู้ว่าจ้างส่งมอบ แต่ผู้รับจ้างรู้ว่าสัมภาระไม่เหมาะแล้วไม่บอกกล่าวตักเตือน ผู้รับจ้างหลุดพ้นจากความรับผิดหรือไม่',
+    rule:['591'],
+    ruleText:'ม.591 ถ้าความชำรุดบกพร่องหรือความชักช้าเกิดขึ้นเพราะสภาพแห่งสัมภาระที่ผู้ว่าจ้างส่งให้ หรือเพราะคำสั่งของผู้ว่าจ้าง ผู้รับจ้างไม่ต้องรับผิด — เว้นแต่ผู้รับจ้างจะได้รู้อยู่แล้วว่าสัมภาระหรือคำสั่งนั้นไม่เหมาะ แต่มิได้บอกกล่าวตักเตือน',
+    application:'กรณีตามปัญหา แม้ความบกพร่องจะเกิดจากสีซึ่งเป็นสัมภาระที่นายภูผู้ว่าจ้างจัดหามาเอง อันโดยหลักผู้รับจ้างไม่ต้องรับผิด แต่นายช่างศรรู้อยู่แล้วตั้งแต่แรกว่าสีเสื่อมคุณภาพไม่เหมาะกับงาน กลับนิ่งเสียไม่บอกกล่าวตักเตือน จึงเข้าข้อยกเว้นตอนท้ายของ ม.591',
+    conclusion:'นายช่างศรไม่หลุดพ้น — ต้องรับผิดในความชำรุดบกพร่อง เพราะรู้ว่าสัมภาระไม่เหมาะแต่ไม่บอกกล่าวตักเตือน (ม.591 ตอนท้าย)'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0); // 0=facts only, 1..4 reveal I R A C
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.purple, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Sec>{x}</Sec></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'ปรับข้อเท็จจริง (A)', color:C.jadeDark, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="volcano" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.tealDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสตามแนวข้อสอบ ทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น — สูตรเขียนคำตอบ 4 ขั้นของวิชานี้คือ ① วางหลักกฎหมาย "ตาม ป.พ.พ. ..." ② อ้างมาตรา "ม.___ บัญญัติว่า..." ③ วินิจฉัย "กรณีตามปัญหา..." ④ สรุป "ดังนั้น...ตามเหตุผลข้างต้น"</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="teal" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>วางหลักกฎหมาย</b> (ยกมาตราที่เกี่ยว) → <b>วินิจฉัย</b> ("กรณีตามปัญหา… เห็นว่า…") → <b>สรุป</b> ("กล่าวโดยสรุป…") —
+        ห้ามสลับลำดับ ทุกข้อ 25 คะแนน เขียนให้ครบ 3 ท่อนนี้เสมอ และ <b>ต้องยกเลขมาตรา</b> มิฉะนั้นเสียคะแนนแม้วินิจฉัยถูก
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: FLASHCARDS (แฟลชการ์ด) ============ */
+const flashcards = [
+  {q:'เช่าอสังหาริมทรัพย์ "เกินกว่า 3 ปี" ต้องทำอย่างไรจึงบังคับได้เต็มสัญญา?', a:'หนังสือ + จดทะเบียน (ม.538)', d:'ไม่จดทะเบียน = ฟ้องบังคับได้เพียง 3 ปี · "3 ปีพอดี" ไม่ต้องจดทะเบียน — กับดักออกสอบทุกปี', star:3, exam:true},
+  {q:'เช่าอสังหาฯ 3 ปีพอดี ไม่จดทะเบียน สัญญาสมบูรณ์ไหม?', a:'สมบูรณ์ (ม.538)', d:'จดทะเบียนบังคับเฉพาะ "เกินกว่า 3 ปี" หรือตลอดอายุผู้เช่า/ผู้ให้เช่าเท่านั้น', star:3, exam:true},
+  {q:'ผู้เช่าเอาทรัพย์ไปให้เช่าช่วงโดยไม่ได้รับความยินยอม ผลเป็นอย่างไร?', a:'ผู้ให้เช่าบอกเลิกได้ทันที (ม.544)', d:'ไม่ต้องบอกกล่าวก่อน — ต่างจาก ม.554 ที่ต้องบอกกล่าวก่อนเสมอ', star:3, exam:true},
+  {q:'หน้าที่ "ส่งมอบทรัพย์ในสภาพซ่อมแซมดีแล้ว + ซ่อมแซมใหญ่" เป็นของใคร?', a:'ผู้ให้เช่า (ม.552)', d:'ส่วนบำรุงรักษา+ซ่อมแซมเล็กน้อยเป็นหน้าที่ผู้เช่า (ม.553)', star:2, exam:false},
+  {q:'ผู้เช่าต้องสงวนทรัพย์สินที่เช่าในระดับใด?', a:'อย่างวิญญูชน (ม.553)', d:'วิญญูชน = คนธรรมดาทั่วไป ไม่ใช่ผู้เชี่ยวชาญ + ต้องบำรุงรักษาและซ่อมแซมเล็กน้อย', star:2, exam:false},
+  {q:'ผู้เช่าไม่สงวนทรัพย์/ใช้ทรัพย์ผิดหน้าที่ ผู้ให้เช่าบอกเลิกทันทีได้ไหม?', a:'ไม่ได้ — ต้องบอกกล่าวก่อน (ม.554)', d:'บอกกล่าวให้แก้ไข → ไม่แก้ → จึงบอกเลิกได้ · ข้ามขั้นตอน = เลิกโดยมิชอบ', star:3, exam:true},
+  {q:'ขายทรัพย์ที่เช่าระหว่างอายุสัญญา สัญญาเช่าระงับไหม?', a:'ไม่ระงับ (ม.569)', d:'ผู้รับโอนรับไปทั้งสิทธิและหน้าที่ต่อผู้เช่า — ขับไล่ผู้เช่าก่อนครบกำหนดไม่ได้ (สัญญาเช่าต้องสมบูรณ์)', star:3, exam:true},
+  {q:'สัญญาเช่าซื้อไม่ทำเป็นหนังสือ ผลเป็นอย่างไร?', a:'โมฆะ (ม.572)', d:'ต่างจากเช่าทรัพย์ที่ไม่มีหลักฐานเป็นหนังสือ = แค่ฟ้องบังคับไม่ได้ ไม่ถึงกับโมฆะ', star:3, exam:true},
+  {q:'เช่าซื้อคืออะไร ประกอบด้วย 2 ส่วนใด?', a:'"ให้เช่า" + คำมั่นว่าจะ "ขาย" (ม.572)', d:'เจ้าของให้เช่าทรัพย์ และให้คำมั่นว่าจะขายเมื่อผู้เช่าซื้อชำระเงินครบตามงวดที่กำหนด', star:2, exam:false},
+  {q:'เจ้าของบอกเลิกสัญญาเช่าซื้อ + ริบเงิน + ยึดทรัพย์ ได้เมื่อใด?', a:'ผิดนัด 2 คราวติด ๆ กัน หรือผิดข้อสำคัญ (ม.574 ว.1)', d:'บอกเลิกได้ทันที ริบเงินที่ชำระแล้ว และกลับเข้าครองทรัพย์', star:3, exam:true},
+  {q:'สัญญาเช่าซื้อเลิกแล้ว เจ้าของเรียก "ค่างวดที่เหลือทั้งหมด" ได้ไหม?', a:'ไม่ได้ (ฎ.859/2524)', d:'ข้อตกลงเช่นนั้นขัด ม.574 ว.2 ใช้บังคับไม่ได้ — เรียกได้เฉพาะค่างวดที่ค้างจริงก่อนสัญญาสิ้นสุด', star:3, exam:true},
+  {q:'จ้างแรงงาน (ม.575) ต่างจากจ้างทำของ (ม.587) ตรงคำใด?', a:'"กระบวนการ" vs "ผลสำเร็จ"', d:'จ้างแรงงาน: สินจ้างตลอดเวลาทำงาน · จ้างทำของ: สินจ้างแลกผลสำเร็จของงาน', star:3, exam:true},
+  {q:'นายจ้างโอนสิทธิของตนให้บุคคลภายนอก ต้องได้ความยินยอมจากใคร?', a:'ลูกจ้าง (ม.577 ว.1)', d:'ว.2 ลูกจ้างให้คนอื่นทำงานแทน ต้องได้ยินยอมจากนายจ้าง · ว.3 ฝ่าฝืน → อีกฝ่ายบอกเลิกได้', star:3, exam:true},
+  {q:'บอกเลิกจ้างแรงงานที่ไม่มีกำหนดเวลา (กรณีปกติ) ทำอย่างไร?', a:'บอกกล่าวล่วงหน้า (ม.582)', d:'บอก ณ คราวจ่ายสินจ้าง ให้มีผลคราวถัดไป แต่ไม่ต้องบอกล่วงหน้าเกิน 3 เดือน', star:3, exam:true},
+  {q:'ลูกจ้างจงใจขัดคำสั่ง / ละเลยไม่นำพา / ผิดร้ายแรง นายจ้างทำอะไรได้?', a:'บอกเลิกทันที ไม่ต้องบอกกล่าว (ม.583)', d:'ต่างจาก ม.582 ที่ต้องบอกกล่าวล่วงหน้า — คู่เทียบที่ออกสอบบ่อยที่สุดของจ้างแรงงาน', star:3, exam:true},
+  {q:'ผู้รับจ้างไม่เริ่มงานในเวลาอันควร / ชักช้าจนคาดว่าไม่เสร็จทัน ผลเป็นอย่างไร?', a:'ผู้ว่าจ้างเลิกสัญญาได้ทันที (ม.593)', d:'ไม่ต้องรอถึงกำหนดส่งมอบ · 3 กรณี: ไม่เริ่มในเวลาควร / ชักช้าฝ่าฝืนสัญญา / ชักช้าจนคาดว่าไม่เสร็จทัน', star:3, exam:true},
+  {q:'งานบกพร่อง/ล่าช้าเพราะสัมภาระหรือคำสั่งของผู้ว่าจ้าง ผู้รับจ้างรับผิดไหม?', a:'ไม่รับผิด เว้นรู้แล้วไม่ตักเตือน (ม.591)', d:'ถ้ารู้ว่าสัมภาระ/คำสั่งไม่เหมาะแต่นิ่งเสีย ไม่บอกกล่าวตักเตือน → กลับมารับผิด · ระวังสับสนกับ ม.593', star:2, exam:true},
+  {q:'ผู้ว่าจ้างเปลี่ยนใจ บอกเลิกสัญญาจ้างทำของกลางคันได้ไหม?', a:'ได้เสมอ แต่ต้องชดใช้ค่าสินไหม (ม.605)', d:'เลิกได้แม้เริ่มงานแล้ว ตราบที่งานยังไม่เสร็จ — แต่ต้องชดใช้ความเสียหายแก่ผู้รับจ้าง ไม่ใช่เลิกเปล่า ๆ', star:3, exam:true},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length}</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.teal} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:280}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:280}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.teal}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="volcano" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ คำถาม (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:19, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:21, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.teal, borderColor:C.teal}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ TAB 6: QUICK REF + QUIZ ============ */
+const quickSections = [
+  {divider:'🔮 ทำนายข้อสอบ 3 ข้อ (สูตรตอบเร็ว)'},
+  {s:'ข้อ 1', t:'เช่าทรัพย์', b:'เช็กแบบก่อน (538: เกิน 3 ปีต้องจดทะเบียน ไม่งั้นเหลือ 3 ปี) → แล้วดูเหตุเลิก: เช่าช่วง=เลิกทันที (544) / ไม่สงวนทรัพย์=บอกกล่าวก่อน (554) / ขายทรัพย์=เช่าไม่ระงับ (569)', type:'formula'},
+  {s:'ข้อ 2', t:'เช่าซื้อ', b:'ไม่มีหนังสือ=โมฆะ (572) → ผิดนัด 2 คราวติด/ผิดข้อสำคัญ → เลิก+ริบ+ยึด (574 ว.1) → แต่เรียกค่างวดที่เหลือทั้งหมดไม่ได้ (ฎ.859/2524)', type:'formula'},
+  {s:'ข้อ 3', t:'จ้างแรงงาน + จ้างทำของ', b:'แยกสัญญาด้วย "กระบวนการ (575) vs ผลสำเร็จ (587)" → จ้างแรงงานเลิก: 582 ล่วงหน้า / 583 ทันที → จ้างทำของเลิก: 593 ชักช้า / 605 เลิกได้เสมอแต่ชดใช้', type:'formula'},
+
+  {divider:'🧠 เทคนิคช่วยจำ (Mnemonic)'},
+  {s:'538', t:'เส้นแบ่งสามปี', b:'"เกินสามจด สามพอดีไม่จด ไม่จดเหลือสาม" — เกิน 3 ปีต้องจดทะเบียน, 3 ปีพอดีไม่ต้อง, ไม่จดบังคับได้แค่ 3 ปี', type:'mnem'},
+  {s:'ซ่อม', t:'ใครซ่อมอะไร', b:'"ใหญ่ให้–เล็กเช่า" — ซ่อมใหญ่หน้าที่ผู้ให้เช่า (552) · ซ่อมเล็กน้อยหน้าที่ผู้เช่า (553)', type:'mnem'},
+  {s:'574', t:'สามท่อนเช่าซื้อ', b:'"สองติด–เลิก–ริบ–ยึด แต่ห้ามทวงล่วงหน้า" — ผิดนัด 2 คราวติด → เลิก+ริบ+ยึด แต่เรียกค่างวดอนาคตไม่ได้', type:'mnem'},
+  {s:'577', t:'สลับฝั่งยินยอม', b:'"นายโอน–ลูกยอม / ลูกเปลี่ยน–นายยอม" — นายจ้างโอนสิทธิต้องให้ลูกจ้างยินยอม, ลูกจ้างส่งคนแทนต้องให้นายจ้างยินยอม', type:'mnem'},
+
+  {divider:'🔀 เทียบให้ชัด (Contrast)'},
+  {s:'544 vs 554', t:'เลิกทันที vs บอกกล่าวก่อน', b:'เช่าช่วง/โอนการเช่า → เลิกทันที (544) · ไม่สงวนทรัพย์/ฝ่าฝืนหน้าที่ → ต้องบอกกล่าวก่อน ไม่แก้จึงเลิกได้ (554)', type:'contrast'},
+  {s:'582 vs 583', t:'เลิกจ้างปกติ vs เหตุร้ายแรง', b:'เลิกปกติ → บอกกล่าวล่วงหน้า ณ คราวจ่ายสินจ้าง ≤ 3 เดือน (582) · จงใจขัดคำสั่ง/ผิดร้ายแรง → เลิกทันที (583)', type:'contrast'},
+  {s:'591 vs 593', t:'ต้นเหตุความล่าช้าอยู่ฝั่งไหน', b:'สัมภาระ/คำสั่งผู้ว่าจ้างบกพร่อง → ผู้รับจ้างหลุด เว้นรู้แล้วไม่เตือน (591) · ผู้รับจ้างชักช้าเอง → ผู้ว่าจ้างเลิกได้ทันที (593)', type:'contrast'},
+  {s:'538 vs 572', t:'ผลของการไม่ทำตามแบบ', b:'เช่าอสังหาฯ ไม่มีหนังสือ → ฟ้องบังคับไม่ได้/เกิน 3 ปีเหลือ 3 ปี (ไม่โมฆะ) · เช่าซื้อไม่มีหนังสือ → โมฆะทันที', type:'contrast'},
+  {s:'575 vs 587', t:'จ้างแรงงาน vs จ้างทำของ', b:'กระบวนการ vs ผลสำเร็จ · สินจ้างตลอดเวลาทำงาน vs สินจ้างเมื่องานสำเร็จ · เลิกตาม 582/583 vs 605 (ได้เสมอ+ชดใช้)', type:'contrast'},
+
+  {divider:'📝 โครงคำตอบ (Answer Template)'},
+  {s:'โครง', t:'เขียน 4 ขั้นเสมอ', b:'① "ตาม ป.พ.พ. ..." วางหลัก → ② "ม.___ บัญญัติว่า..." อ้างมาตรา → ③ "กรณีตามปัญหา..." วินิจฉัย → ④ "ดังนั้น...ตามเหตุผลข้างต้น" สรุปธง', type:'formula'},
+  {s:'ยกมาตรา', t:'ต้องยกเลขมาตรา', b:'ตอบโดยไม่ยกมาตรา = เสียคะแนน แม้วินิจฉัยถูก — และห้ามสลับลำดับหลัก→วินิจฉัย→สรุป', type:'chunk'},
+];
+
+const quizData = [
+  {q:'นายเอเช่าตึกแถว 6 ปี ทำสัญญาเป็นหนังสือแต่ไม่จดทะเบียน สัญญานี้บังคับกันได้เพียงใด?',
+    opts:['โมฆะทั้งฉบับ','บังคับได้เต็ม 6 ปี','บังคับได้เพียง 3 ปี (ม.538)','บังคับไม่ได้เลยเพราะไม่จดทะเบียน'], correct:2,
+    exp:'ม.538: เช่าเกินกว่า 3 ปี ต้องทำเป็นหนังสือ+จดทะเบียน มิฉะนั้นฟ้องบังคับได้เพียง 3 ปี — สัญญาไม่โมฆะ'},
+  {q:'เช่าอสังหาริมทรัพย์ "3 ปีพอดี" มีหลักฐานเป็นหนังสือแต่ไม่จดทะเบียน ผลเป็นอย่างไร?',
+    opts:['สัญญาสมบูรณ์ บังคับได้เต็ม 3 ปี (ม.538)','บังคับได้แค่ 1 ปี','โมฆียะ','ต้องจดทะเบียนภายใน 30 วัน'], correct:0,
+    exp:'จดทะเบียนบังคับเฉพาะ "เกินกว่า 3 ปี" — 3 ปีพอดีมีหลักฐานเป็นหนังสือก็สมบูรณ์ นี่คือกับดักประจำวิชา'},
+  {q:'ผู้เช่าให้เช่าช่วงโดยผู้ให้เช่าไม่ยินยอม ผู้ให้เช่าทำอะไรได้?',
+    opts:['ต้องบอกกล่าวก่อนจึงเลิกได้','บอกเลิกสัญญาได้ทันที (ม.544)','เลิกไม่ได้เพราะสัญญายังไม่ครบกำหนด','ฟ้องขับไล่ผู้เช่าช่วงได้เท่านั้น'], correct:1,
+    exp:'ม.544: เช่าช่วง/โอนการเช่าโดยไม่ยินยอม → บอกเลิกได้ทันที ไม่ต้องบอกกล่าวก่อน (ต่างจาก ม.554)'},
+  {q:'ผู้เช่าไม่สงวนทรัพย์อย่างวิญญูชน ผู้ให้เช่าจะบอกเลิกสัญญาต้องทำอย่างไร?',
+    opts:['บอกเลิกได้ทันที','บอกกล่าวให้แก้ไขก่อน ไม่แก้จึงบอกเลิกได้ (ม.554)','ต้องฟ้องศาลก่อนเสมอ','ริบเงินประกันแทนการเลิก'], correct:1,
+    exp:'ม.554: ฝ่าฝืน ม.552/553 หรือข้อสัญญา → ต้องบอกกล่าวก่อนเสมอ ข้ามขั้นตอน = เลิกโดยมิชอบ'},
+  {q:'ระหว่างอายุสัญญาเช่า ผู้ให้เช่าขายบ้านให้บุคคลภายนอก ผลต่อสัญญาเช่าคือ?',
+    opts:['สัญญาเช่าระงับทันที','ผู้ซื้อขับไล่ผู้เช่าได้ใน 30 วัน','สัญญาเช่าไม่ระงับ ผู้ซื้อรับทั้งสิทธิและหน้าที่ (ม.569)','ผู้เช่าต้องทำสัญญาใหม่กับผู้ซื้อ'], correct:2,
+    exp:'ม.569: "ขายไม่ตัดเช่า" — สัญญาเช่าไม่ระงับเพราะการโอนกรรมสิทธิ์ ผู้รับโอนรับไปทั้งสิทธิและหน้าที่'},
+  {q:'สัญญาเช่าซื้อที่ตกลงกันด้วยวาจา ผลเป็นอย่างไร?',
+    opts:['สมบูรณ์ถ้ามีพยาน 2 คน','ฟ้องบังคับได้ 3 ปี','เป็นโมฆะ (ม.572)','เป็นโมฆียะ บอกล้างได้'], correct:2,
+    exp:'ม.572 ว.2: เช่าซื้อต้องทำเป็นหนังสือ มิฉะนั้นโมฆะ — เข้มกว่าเช่าทรัพย์ที่แค่ฟ้องบังคับไม่ได้'},
+  {q:'ผู้เช่าซื้อผิดนัดกี่คราวอย่างไร เจ้าของจึงบอกเลิก+ริบเงิน+ยึดทรัพย์ได้ตาม ม.574 ว.1?',
+    opts:['ผิดนัดครั้งเดียว','ผิดนัด 2 คราวติด ๆ กัน หรือผิดสัญญาข้อสำคัญ','ผิดนัดรวม 3 ครั้งไม่ว่าติดกันหรือไม่','ผิดนัดเกินครึ่งของงวดทั้งหมด'], correct:1,
+    exp:'ม.574 ว.1: ผิดนัด 2 คราวติด ๆ กัน หรือกระทำผิดสัญญาในข้อที่เป็นส่วนสำคัญ → เลิกทันที+ริบ+ยึด'},
+  {q:'สัญญาเช่าซื้อเลิกแล้ว ข้อตกลงให้ผู้เช่าซื้อจ่าย "ค่างวดที่เหลือทั้งหมด" ใช้บังคับได้หรือไม่?',
+    opts:['ได้ เพราะเป็นข้อสัญญาที่ตกลงกันเอง','ได้ครึ่งหนึ่ง','ไม่ได้ ขัด ม.574 ว.2 (ฎ.859/2524) เรียกได้แค่ค่างวดที่ค้างจริง','ได้ถ้าทำเป็นหนังสือ'], correct:2,
+    exp:'ฎ.859/2524: ข้อตกลงเรียกค่างวดที่เหลือทั้งหมดขัด ม.574 ว.2 ใช้บังคับไม่ได้ — เรียกได้เฉพาะที่ค้างชำระจริงก่อนสัญญาสิ้นสุด'},
+  {q:'นายจ้างจะโอนสิทธิความเป็นนายจ้างให้บุคคลภายนอก ต้องได้รับความยินยอมจากใคร?',
+    opts:['ลูกจ้าง (ม.577 ว.1)','ศาลแรงงาน','ไม่ต้องขอใคร เพราะเป็นสิทธิของนายจ้าง','กระทรวงแรงงาน'], correct:0,
+    exp:'ม.577 ว.1: นายจ้างโอนสิทธิ → ลูกจ้างต้องยินยอม (ว.2 ลูกจ้างส่งคนแทน → นายจ้างต้องยินยอม; ว.3 ฝ่าฝืน → บอกเลิกได้)'},
+  {q:'ลูกจ้างจงใจขัดคำสั่งอันชอบด้วยกฎหมายของนายจ้าง นายจ้างเลิกจ้างอย่างไรได้?',
+    opts:['ต้องบอกกล่าวล่วงหน้า 3 เดือน','บอกเลิกได้ทันที ไม่ต้องบอกกล่าวล่วงหน้า (ม.583)','ต้องรอครบสัญญา','หักสินจ้างแทนการเลิกจ้างเท่านั้น'], correct:1,
+    exp:'ม.583: จงใจขัดคำสั่ง/ละเลยไม่นำพาเป็นอาจิณ/ผิดร้ายแรง/ไม่สมแก่หน้าที่ → เลิกได้ทันที (ต่างจาก 582 ที่ต้องบอกล่วงหน้า)'},
+  {q:'ผู้รับจ้างทำงานชักช้าโดยปราศจากความผิดของผู้ว่าจ้าง จนคาดได้ว่างานไม่เสร็จทันกำหนด ผู้ว่าจ้างทำอะไรได้?',
+    opts:['ต้องรอให้ถึงกำหนดส่งมอบก่อนจึงเลิกได้','เลิกสัญญาได้ทันที ไม่ต้องรอกำหนดส่งมอบ (ม.593)','หักสินจ้างร้อยละ 10','ฟ้องบังคับให้เร่งงานเท่านั้น'], correct:1,
+    exp:'ม.593: ไม่เริ่มงานในเวลาอันควร / ชักช้าฝ่าฝืนสัญญา / ชักช้าจนคาดว่าไม่เสร็จทัน → เลิกได้ทันที'},
+  {q:'ผู้ว่าจ้างเปลี่ยนใจ บอกเลิกสัญญาจ้างทำของทั้งที่งานเดินตามแผน ผลคือ?',
+    opts:['เลิกไม่ได้เด็ดขาด','เลิกได้และไม่ต้องจ่ายอะไรเพราะงานยังไม่สำเร็จ','เลิกได้เสมอ แต่ต้องชดใช้ค่าสินไหมทดแทนแก่ผู้รับจ้าง (ม.605)','เลิกได้เฉพาะเมื่อผู้รับจ้างยินยอม'], correct:2,
+    exp:'ม.605: ตราบที่งานยังไม่เสร็จ ผู้ว่าจ้างบอกเลิกเมื่อใดก็ได้ แต่ต้องชดใช้ค่าสินไหมทดแทนความเสียหายแก่ผู้รับจ้าง'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=9?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=9?'เก่งมาก! พร้อมสอบระดับหนึ่งแล้ว 🎉':'ทบทวนแท็บบทเรียน & Case Lab อีกรอบแล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.teal, borderColor:C.teal}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="green">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuickQuizTab() {
+  const [view, setView] = useState('quiz');
+  const typeColor = {mnem:C.purple, flow:C.cyan, contrast:C.red, chunk:C.blue, formula:C.jadeDark};
+  const typeBg = {mnem:C.purpleBg, flow:C.cyanBg, contrast:C.redBg, chunk:C.blueBg, formula:'#EAF3EE'};
+  return (
+    <div className="fade-up">
+      <div style={{textAlign:'center', marginBottom:18}}>
+        <Segmented size="large" value={view} onChange={setView}
+          options={[{label:'🎮 ทำควิซ',value:'quiz'},{label:'⚡ การ์ดจำด่วน',value:'quick'}]}/>
+      </div>
+      {view==='quick' ? (
+        <div>
+          {quickSections.map((q,i)=> q.divider ? (
+            <Divider key={i} orientation="left" style={{borderColor:C.border, color:C.tealDark, fontWeight:700, fontSize:16}}>{q.divider}</Divider>
+          ) : (
+            <div key={i} className="qc" style={{background:typeBg[q.type], borderLeft:`4px solid ${typeColor[q.type]}`, borderRadius:'0 12px 12px 0', padding:'12px 16px', marginBottom:10, border:`1px solid ${typeColor[q.type]}22`, borderLeftWidth:4}}>
+              <div style={{display:'flex', gap:10, alignItems:'baseline', flexWrap:'wrap'}}>
+                <span style={{fontWeight:800, color:typeColor[q.type], fontSize:15, minWidth:56, fontFamily:"'Noto Serif Thai'"}}>{q.s}</span>
+                <span style={{fontWeight:700, color:C.text}}>{q.t}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:4}}>{q.b}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+          <Quiz/>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'lab', label:'🧪 Case Lab', children:<CaseLabTab/>},
+    {key:'quiz', label:'🎮 ควิซ + จำด่วน', children:<QuickQuizTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.teal, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.teal, itemActiveColor:C.tealDark, itemSelectedColor:C.tealDark, itemHoverColor:C.jade, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.teal, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.tealDark}, ${C.jade})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(56,105,92,.25)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 2108 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:30, fontWeight:800}}>เช่าทรัพย์ · เช่าซื้อ · จ้างแรงงาน · จ้างทำของ</h1>
+          <div style={{color:'#E9F5EF', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Harvard</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 537–607 (เช่าทรัพย์ · เช่าซื้อ · จ้างแรงงาน · จ้างทำของ) และ ฎ.859/2524 · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>

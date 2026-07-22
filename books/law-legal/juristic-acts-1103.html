@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>นิติกรรมและสัญญา LAW1103 · ห้องเรียนแบบ Harvard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#F4F0F3;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#372E3A;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#DCD0DA; color:#372E3A; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#ECE5EA; }
+  ::-webkit-scrollbar-thumb { background:#B7A0B4; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#8A6B87; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  /* Flip card */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  /* Quick card hover */
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(110,80,110,.18); }
+
+  /* Reveal animation */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  /* Diagram animations */
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#6E4E6B; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(110,80,110,.16); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(138,107,135,.35);} 50%{ box-shadow:0 0 0 8px rgba(138,107,135,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress,
+        Collapse, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE — โทนพลัม-ไวโอเล็ตเชิงวิชาการ (ต่างจากต้นแบบสีทอง) ============ */
+const C = {
+  prim:'#8A6B87', primDark:'#6E4E6B', primLight:'#B7A0B4',
+  plum:'#9A7195', plumDark:'#5C3F59',
+  bg:'#F4F0F3', surface:'#ECE5EA', surface2:'#E4DAE1', surface3:'#F0E9EE',
+  border:'#DCD0DA', borderDark:'#B7A0B4',
+  text:'#372E3A', text2:'#554A57', text3:'#786C7A',
+  white:'#FBF8FA',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85C5C', redBg:'#F5ECEA',
+  gold:'#A8906C', goldBg:'#F5F1E8',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.gold, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+const Sec = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.primDark, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap'}}>ม.{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='prim', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    gold:[C.gold,C.goldBg], cyan:[C.cyan,C.cyanBg], prim:[C.primDark,C.surface3]
+  };
+  const [cc,bb] = map[tone]||map.prim;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+function DiaNode({x, y, w=150, h=62, title, sub, color, active, dim}) {
+  return (
+    <g className={active?'node-pulse':''} style={{opacity:dim?0.22:1, transition:'opacity .4s'}}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="15.5"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.15 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+/* แผนที่ชะตากรรมของนิติกรรม — สมบูรณ์ / โมฆะ / โมฆียะ */
+function FateMap() {
+  const modes = {
+    valid: {
+      label:'สมบูรณ์', color:C.green,
+      desc:'แสดงเจตนาครบ 5 องค์ประกอบตาม ม.149 ไม่มีเหตุบกพร่องใด ๆ → นิติกรรมสมบูรณ์ ก่อ เปลี่ยนแปลง โอน สงวน หรือระงับสิทธิได้ทันที บังคับกันได้ตามกฎหมาย'
+    },
+    void: {
+      label:'โมฆะ', color:C.red,
+      desc:'สะดุดด่าน ม.150 (วัตถุประสงค์ต้องห้าม/พ้นวิสัย/ขัดความสงบเรียบร้อย) หรือ ม.152 (ไม่ทำตามแบบ) หรือ ม.155 ว.1 (เจตนาลวง) → เสียเปล่าตั้งแต่ต้น ใครก็ยกขึ้นอ้างได้ ให้สัตยาบันไม่ได้ ทรัพย์ที่ส่งมอบกันไปต้องคืนตามหลักลาภมิควรได้ (ม.172)'
+    },
+    voidable: {
+      label:'โมฆียะ', color:C.plumDark,
+      desc:'สะดุดเหตุบกพร่องแห่งเจตนา — ผู้เยาว์ (ม.153+21) สำคัญผิด (ม.156, 157) กลฉ้อฉลถึงขนาด (ม.159) หรือข่มขู่ (ม.164) → นิติกรรมยัง "สมบูรณ์" อยู่ แต่รอชี้ชะตา 2 ทาง: บอกล้าง (ม.175) แล้วกลายเป็นโมฆะมาตั้งแต่แรก (ม.176) หรือให้สัตยาบันหลังเหตุบกพร่องหมดไป (ม.177) แล้วสมบูรณ์ถาวร'
+    }
+  };
+  const [m, setM] = useState('valid');
+  const M = modes[m];
+  // node coords
+  const N1 = {x:110, y:80}, N2 = {x:340, y:80}, N3 = {x:575, y:80};
+  const NV = {x:190, y:290}, NB = {x:490, y:290};
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="large"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 690 360" style={{width:'100%', height:'auto', maxHeight:410}}>
+          {/* เจตนา -> นิติกรรม (เสมอ) */}
+          <DiaEdge id="e12" d={`M ${N1.x+72} ${N1.y} L ${N2.x-78} ${N2.y}`} color={C.prim}
+            label="ครบ 5 องค์ประกอบ ม.149" labelX={225} labelY={42} animate dur={2.6} />
+          {/* นิติกรรม -> สิทธิ (โหมดสมบูรณ์) */}
+          <DiaEdge id="e23" d={`M ${N2.x+78} ${N2.y} L ${N3.x-72} ${N3.y}`} color={C.green}
+            label={m==='voidable'?'สัตยาบัน ม.177':'ผูกพันบังคับได้'} labelX={462} labelY={42} animate dur={2.2} width={4}
+            dim={m==='void'} />
+          {/* นิติกรรม -> โมฆะ */}
+          <DiaEdge id="e2v" d={`M ${N2.x-40} ${N2.y+32} L ${NV.x+40} ${NV.y-34}`} color={C.red}
+            label="ม.150 / 152 / 155 ว.1" labelX={210} labelY={188} animate dur={2.2} width={4}
+            dim={m!=='void'} />
+          {/* นิติกรรม -> โมฆียะ */}
+          <DiaEdge id="e2b" d={`M ${N2.x+40} ${N2.y+32} L ${NB.x-40} ${NB.y-34}`} color={C.plumDark}
+            label="ม.153 / 156 / 159 / 164" labelX={470} labelY={188} animate dur={2.2} width={4}
+            dim={m!=='voidable'} />
+          {/* โมฆียะ -> โมฆะ (บอกล้าง) */}
+          <DiaEdge id="ebv" d={`M ${NB.x-88} ${NB.y} L ${NV.x+88} ${NV.y}`} color={C.red}
+            label="บอกล้าง ม.175 → 176" labelX={340} labelY={318} dashed animate dur={2.6} width={3}
+            dim={m!=='voidable'} />
+          {/* โมฆียะ -> สมบูรณ์ (สัตยาบัน) */}
+          {m==='voidable' &&
+            <DiaEdge id="ebs" d={`M ${NB.x+40} ${NB.y-34} L ${N3.x} ${N3.y+34}`} color={C.green}
+              label="สัตยาบัน ม.177" labelX={588} labelY={195} dashed animate dur={2.6} width={3} />}
+          {/* โมฆะ -> คืนทรัพย์ */}
+          {m==='void' &&
+            <DiaEdge id="evr" d={`M ${NV.x-70} ${NV.y-10} Q 40 220 ${N1.x-30} ${N1.y+38}`} color={C.gold}
+              label="คืนทรัพย์ ม.172 ลาภมิควรได้" labelX={118} labelY={195} dashed animate dur={3} width={3} />}
+
+          <DiaNode {...N1} title="การแสดงเจตนา" sub="ชัดแจ้ง/ปริยาย/นิ่ง" color={C.prim} active />
+          <DiaNode {...N2} title="นิติกรรม" sub="ม.149" color={m==='valid'?C.green:(m==='void'?C.red:C.plumDark)} active />
+          <DiaNode {...N3} title="สิทธิเคลื่อนไหว" sub="ก่อ/เปลี่ยน/โอน/สงวน/ระงับ" color={C.green} active={m!=='void'} dim={m==='void'} />
+          <DiaNode {...NV} title="โมฆะ" sub="เสียเปล่าตั้งแต่ต้น" color={C.red} active={m==='void'} dim={m==='valid'} />
+          <DiaNode {...NB} title="โมฆียะ" sub="สมบูรณ์…แต่รอชี้ชะตา" color={C.plumDark} active={m==='voidable'} dim={m!=='voidable'} />
+        </svg>
+      </div>
+      <Box tone={m==='valid'?'green':(m==='void'?'red':'prim')} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        {M.desc}
+      </Box>
+    </div>
+  );
+}
+
+/* แถบขั้นตอนแนวนอนแบบเคลื่อนไหว */
+function FlowStrip({steps, color=C.prim}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs${color.slice(1)}${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['นิติกรรม', 'Juristic Act', 'การกระทำโดยชอบด้วยกฎหมาย ด้วยใจสมัคร มุ่งผูกนิติสัมพันธ์ เพื่อก่อ/เปลี่ยน/โอน/สงวน/ระงับสิทธิ (ม.149)', C.prim],
+    ['โมฆะ', 'Void', 'เสียเปล่าตั้งแต่ต้น (0%) ใครก็อ้างได้ ให้สัตยาบันไม่ได้ — คืนทรัพย์ตามลาภมิควรได้ ม.172', C.red],
+    ['โมฆียะ', 'Voidable', 'สมบูรณ์อยู่จนกว่าจะถูกบอกล้าง (100% → 0%) — บอกล้าง ม.175 / สัตยาบัน ม.177', C.plumDark],
+    ['คำเสนอ', 'Offer', 'ข้อความชัดเจนแน่นอน มุ่งหมายว่าถ้าสนองแล้วสัญญาเกิดทันที (ม.354-356)', C.blue],
+    ['คำสนอง', 'Acceptance', 'การตอบรับที่ต้องตรงกับคำเสนอทุกประการ — ถ้ามีข้อแก้ไข = คำเสนอใหม่ (ม.359 ว.2)', C.cyan],
+    ['มัดจำ', 'Earnest', 'ทรัพย์ที่ส่งมอบวันทำสัญญา เป็นพยานหลักฐาน+ประกันการปฏิบัติ (ม.377-378)', C.gold],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>วิชานี้ตอบคำถามเดียวจากหลายมุม: <strong>"การกระทำนี้ผูกพันทางกฎหมายหรือไม่ และผูกพันแค่ไหน?"</strong> ทุกอย่างเริ่มจาก "การแสดงเจตนา" แล้วไหลผ่านด่านตรวจทีละด่าน — ครบองค์ประกอบไหม? มีเหตุโมฆะ/โมฆียะไหม? ถ้าเป็นสัญญา คำเสนอกับคำสนองตรงกันไหม? อ่านตามลำดับด้านล่างนะ</span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>🍰 นึกภาพง่าย ๆ ด้วยชีวิตจริง</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          คุณเดินไปร้านเค้ก บอกแม่ค้าว่า "ขอชิ้นนี้ครับ" แม่ค้าตอบ "ได้ค่ะ 45 บาท" คุณยื่นเงิน —
+          แค่นี้ก็เกิด <Pill color={C.prim} bg={C.surface3}>นิติกรรม</Pill> สองฝ่าย (สัญญาซื้อขาย) แล้ว
+          เพราะมี <Pill color={C.blue} bg={C.blueBg}>คำเสนอ</Pill> + <Pill color={C.cyan} bg={C.cyanBg}>คำสนอง</Pill> ตรงกัน.
+          แต่ถ้าคุณถูกจ่อมีดบังคับให้ซื้อ (ข่มขู่ ม.164) นิติกรรมจะกลายเป็น <Pill color={C.plumDark} bg={C.surface2}>โมฆียะ</Pill> —
+          และถ้าสิ่งที่ตกลงกันคือ "จ้างไปทำร้ายคน" มันจะ <Pill color={C.red} bg={C.redBg}>โมฆะ</Pill> ตั้งแต่ต้นเลย (ม.150)
+        </Paragraph>
+        <FlowStrip color={C.prim} steps={[
+          {icon:'💬', t:'แสดงเจตนา', bg:C.blueBg},
+          {icon:'📜', t:'ครบ ม.149?', bg:C.surface3},
+          {icon:'🚧', t:'ด่านโมฆะ/โมฆียะ', bg:C.redBg},
+          {icon:'⚖️', t:'ผูกพันบังคับได้', bg:C.greenBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: ชะตากรรม 3 แบบของนิติกรรม</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับโหมดเพื่อดูว่านิติกรรม "ไหลไปทางไหน" — เส้นแดงคือทางลงเหว (โมฆะ) เส้นม่วงคือทางรอชี้ชะตา (โมฆียะ) นี่คือแกนของข้อสอบ 2 ใน 4 ข้อ</Paragraph>
+      <FateMap/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 6 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                <span style={{fontWeight:700, fontSize:16.5, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚔️ โมฆะ vs โมฆียะ — คู่ที่คนสับสนที่สุด (ต้องแยกให้ออก!)</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'', dataIndex:'k', width:120, render:t=><strong style={{color:C.primDark}}>{t}</strong>},
+          {title:<span style={{color:C.red}}>โมฆะ (Void)</span>, dataIndex:'a'},
+          {title:<span style={{color:C.plumDark}}>โมฆียะ (Voidable)</span>, dataIndex:'b'},
+        ]}
+        dataSource={[
+          {key:1, k:'ผล', a:'เสียเปล่าตั้งแต่ต้น', b:'สมบูรณ์อยู่ จนกว่าถูกบอกล้าง'},
+          {key:2, k:'ใครอ้างได้', a:'ใครก็อ้างได้', b:'เฉพาะผู้มีสิทธิบอกล้าง (ม.175)'},
+          {key:3, k:'แก้ไขได้ไหม', a:'ให้สัตยาบันไม่ได้', b:'ให้สัตยาบันได้ (ม.177)'},
+          {key:4, k:'คืนทรัพย์', a:'ม.172 ลาภมิควรได้', b:'บอกล้างแล้ว → ม.176 เป็นโมฆะย้อนหลัง → ม.172'},
+          {key:5, k:'มาตราหลัก', a:'150, 152, 155 ว.1', b:'153, 156, 157, 159, 164'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        อย่าตอบพรวดว่า "โมฆะ" ทุกกรณี! <strong>ผู้เยาว์</strong>ทำนิติกรรมโดยไม่ได้รับความยินยอม = <strong>โมฆียะ</strong> (ม.153 ประกอบ ม.21)
+        แต่<strong>คนไร้ความสามารถ</strong> (ศาลสั่ง) ทำนิติกรรม = <strong>โมฆะ</strong> (ม.29) — คนละผลกันคนละมาตรากัน
+        และ<strong>กลฉ้อฉลไม่ถึงขนาด</strong> (ม.159 ว.2 / ม.161 หลอกแค่เรื่องราคา) บอกล้างไม่ได้เลย ได้แค่เรียกค่าสินไหมทดแทน
+      </Box>
+      <Box tone="gold" title="โครงข้อสอบ LAW1103 (อัตนัย 4 ข้อ ข้อละ 25 คะแนน)" icon="🗺️">
+        ข้อ 1 <strong>โมฆะ</strong> (ม.150/152/156 + ผล ม.172) · ข้อ 2 <strong>โมฆียะ</strong> (ม.153, 175, 176, 177) ·
+        ข้อ 3 <strong>ระยะเวลา+อายุความ</strong> (ม.193/1-193/35) · ข้อ 4 <strong>การเกิดสัญญา</strong> (คำเสนอ+คำสนอง ม.354-361) —
+        เขียนตอบ 3 ท่อนเสมอ: หลักกฎหมาย → วินิจฉัย → สรุป
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+const SRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Sec>{n}</Sec>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+const lessonModules = [
+  {
+    key:'l1', star:3, icon:'📜', title:'นิติกรรมคืออะไร — องค์ประกอบ 5 ข้อของ ม.149',
+    chips:['149'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก ม.149" icon="✅">
+          นิติกรรม = การกระทำของบุคคล <strong>โดยชอบด้วยกฎหมาย</strong> และ <strong>ด้วยใจสมัคร</strong> มุ่งต่อการ <strong>ผูกนิติสัมพันธ์</strong> ระหว่างบุคคล
+          เพื่อจะ <strong>ก่อ เปลี่ยนแปลง โอน สงวน หรือระงับ</strong> ซึ่งสิทธิ
+        </Box>
+        <Box tone="prim" title="ท่องจำ 5 องค์ประกอบ: 'กระ-ชอบ-มุ่ง-ใจ-ก่อ'" icon="🧠">
+          (1) <strong>กระ</strong>ทำโดยแสดงเจตนา — ชัดแจ้ง / ปริยาย / โดยการนิ่ง<br/>
+          (2) <strong>ชอบ</strong>ด้วยกฎหมาย — ไม่ขัด ม.150-152<br/>
+          (3) <strong>มุ่ง</strong>ต่อการผูกนิติสัมพันธ์ — ตั้งใจสร้างผลทางกฎหมายจริง (นัดกินข้าวเฉย ๆ ไม่ใช่นิติกรรม)<br/>
+          (4) ด้วย<strong>ใจ</strong>สมัคร — ไม่ถูกข่มขู่ (ม.164) ไม่ถูกกลฉ้อฉล (ม.159)<br/>
+          (5) <strong>ก่อ</strong>/เปลี่ยนแปลง/โอน/สงวน/ระงับสิทธิ — ทำให้เกิดความเคลื่อนไหวในสิทธิ
+        </Box>
+        <Box tone="cyan" title="ประเภทนิติกรรม" icon="🔹">
+          <strong>ฝ่ายเดียว</strong> — เกิดจากเจตนาของคนเดียว เช่น ทำพินัยกรรม ·
+          <strong> สองฝ่าย (สัญญา)</strong> — เจตนาตรงกันของ 2 ฝ่าย เช่น ซื้อขาย กู้ยืม เช่าทรัพย์
+        </Box>
+        <Box tone="red" title="จุดสอบ" icon="🎯">
+          โจทย์ทุกข้อให้เริ่มเช็คเสมอว่า "เป็นนิติกรรมครบ ม.149 ไหม" ก่อนค่อยไปดูความสมบูรณ์ — เขียนอ้าง ม.149 เปิดหัวได้คะแนนโครงสร้าง
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l2', star:3, icon:'🚫', title:'โมฆะ — ม.150 วัตถุประสงค์ต้องห้าม & ม.152 ไม่ทำตามแบบ',
+    chips:['150','152','172'],
+    body:()=>(
+      <div>
+        <Box tone="red" title="⭐⭐⭐ ม.150 — 3 กรณีโมฆะ" icon="💀">
+          (1) <strong>ต้องห้ามชัดแจ้งโดยกฎหมาย</strong> — เช่น สัญญาจ้างฆ่าคน, ซื้อขายที่ดินที่มีกฎหมายห้ามโอน<br/>
+          (2) <strong>พ้นวิสัย</strong> — เป็นไปไม่ได้เลย เช่น ขายดวงจันทร์<br/>
+          (3) <strong>ขัดต่อความสงบเรียบร้อยหรือศีลธรรมอันดี</strong> ของประชาชน
+        </Box>
+        <Box tone="blue" title="ม.152 — ไม่ทำตามแบบ = โมฆะ (แบบ 4 ประเภท)" icon="📋">
+          (1) ทำเป็นหนังสือ<strong>และ</strong>จดทะเบียนต่อพนักงานเจ้าหน้าที่ (เช่น ซื้อขายอสังหาริมทรัพย์ ม.456)
+          (2) จดทะเบียนต่อพนักงานเจ้าหน้าที่ (3) ทำเป็นหนังสือต่อพนักงานเจ้าหน้าที่ (4) ทำเป็นหนังสือ
+        </Box>
+        <Box tone="gold" title="ผลของโมฆะ — ม.172" icon="↩️">
+          เสียเปล่าตั้งแต่ต้น ไม่มีผลทางกฎหมาย <strong>ใครก็ยกขึ้นอ้างได้ ให้สัตยาบันไม่ได้</strong> —
+          ทรัพย์ที่ส่งมอบกันไปแล้วต้อง <strong>คืนตามหลักลาภมิควรได้</strong> (ม.172 ประกอบ ม.406)
+        </Box>
+        <Box tone="red" title="กับดัก: 150 vs 152 ต่างกันตรงไหน" icon="⚠️">
+          <strong>ม.150 = เนื้อหาผิด</strong> (สิ่งที่ตกลงกันผิดกฎหมาย) · <strong>ม.152 = รูปแบบผิด</strong> (เนื้อหาถูก แต่ไม่ทำตามแบบ เช่น ซื้อขายที่ดินไม่จดทะเบียน) — ทั้งคู่ลงเหวเดียวกันคือโมฆะ แต่ต้องอ้างให้ถูกมาตรา
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'🧒', title:'ความสามารถของบุคคล & ทางแยกของโมฆียะ (ม.153, 175-177)',
+    chips:['153','21','29','175','176','177'],
+    body:()=>(
+      <div>
+        <Box tone="prim" title="⭐⭐⭐ ผู้เยาว์ vs คนไร้ความสามารถ (ออกข้อ 2 บ่อยมาก)" icon="🎯">
+          <SRule n="153">ความสามารถของบุคคล — โยงไปใช้ ม.21-32</SRule>
+          <SRule n="21"><strong>ผู้เยาว์</strong>ทำนิติกรรมโดยไม่ได้รับความยินยอมของผู้แทนโดยชอบธรรม → <strong>โมฆียะ</strong></SRule>
+          <SRule n="29"><strong>คนไร้ความสามารถ</strong> (ศาลสั่ง) ทำนิติกรรม → <strong>โมฆะ</strong>ทันที — คนละผลกับผู้เยาว์!</SRule>
+        </Box>
+        <FlowStrip color={C.plumDark} steps={[
+          {icon:'⚠️', t:'นิติกรรมโมฆียะ', bg:C.surface2},
+          {icon:'🗣️', t:'บอกล้าง ม.175', bg:C.redBg},
+          {icon:'💀', t:'โมฆะตั้งแต่แรก ม.176', bg:C.redBg},
+          {icon:'↩️', t:'คืนทรัพย์ ม.172', bg:C.goldBg},
+        ]}/>
+        <Box tone="red" title="ทางที่ 1: บอกล้าง" icon="🗣️" style={{marginTop:12}}>
+          <SRule n="175">ผู้มีสิทธิบอกล้าง = <strong>ผู้แทนโดยชอบธรรม</strong> หรือ <strong>ตัวผู้เยาว์เองเมื่อบรรลุนิติภาวะแล้ว</strong></SRule>
+          <SRule n="176">บอกล้างแล้ว → ถือว่าเป็น <strong>โมฆะมาตั้งแต่เริ่มแรก</strong> → คืนสู่ฐานะเดิมตามหลักลาภมิควรได้</SRule>
+        </Box>
+        <Box tone="green" title="ทางที่ 2: ให้สัตยาบัน" icon="🤝">
+          <SRule n="177">ให้สัตยาบันได้เมื่อ <strong>เหตุบกพร่องหมดไปแล้ว</strong> (เช่น ผู้เยาว์บรรลุนิติภาวะ) ทำได้ทั้งชัดแจ้งหรือปริยาย → นิติกรรม <strong>สมบูรณ์ตั้งแต่ต้น</strong></SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:3, icon:'🎭', title:'เจตนาไม่ตรงกับใจ — ซ่อนเร้น ลวง อำพราง สำคัญผิด (ม.154-158)',
+    chips:['154','155','156','157','158'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="เจตนาซ่อนเร้น & เจตนาลวง" icon="🫥">
+          <SRule n="154"><strong>เจตนาซ่อนเร้น</strong> — แสดงเจตนาไม่ตรงกับใจจริง → ถือตามเจตนาที่<strong>แสดงออก</strong> (สมบูรณ์) เว้นแต่คู่กรณีอีกฝ่าย<strong>รู้</strong> → โมฆะ</SRule>
+          <SRule n="155">ว.1 <strong>เจตนาลวง</strong> — ทั้ง 2 ฝ่ายสมรู้กันแสดงเจตนาลวง → <strong>โมฆะ</strong> แต่ยกขึ้นต่อสู้<strong>บุคคลภายนอกผู้สุจริต</strong>ไม่ได้</SRule>
+        </Box>
+        <Box tone="prim" title="⭐ ม.155 ว.2 นิติกรรมอำพราง" icon="🎭">
+          ทำนิติกรรมหนึ่งขึ้นบังหน้าเพื่ออำพรางนิติกรรมจริง → <strong>บังคับตามนิติกรรมที่ถูกอำพราง</strong> —
+          เช่น ทำสัญญากู้บังหน้า แต่ของจริงคือจ้างฆ่าคน → บังคับตามสัญญาจ้างฆ่าคน ซึ่งก็โมฆะตาม ม.150 อยู่ดี
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.156 สำคัญผิดในสาระสำคัญ — 3 ประเภท (ออกข้อ 1 ประจำ)" icon="🎯">
+          (1) <strong>ลักษณะของนิติกรรม</strong> — ตั้งใจจะซื้อ กลายเป็นเซ็นสัญญาเช่า<br/>
+          (2) <strong>ตัวบุคคล</strong> — จะจ้าง B แต่ไปจ้าง A<br/>
+          (3) <strong>ตัวทรัพย์สิน</strong> — ตกลงซื้อที่ดินแปลงหนึ่ง แต่โอนอีกแปลงหนึ่ง (ข้อสอบ 1/68 ข้อ 1)<br/>
+          → ทั้งหมด <strong>โมฆียะ</strong>
+        </Box>
+        <Box tone="cyan" title="ม.157 & ม.158" icon="🔍">
+          <SRule n="157">สำคัญผิดใน<strong>คุณสมบัติ</strong>ของบุคคล/ทรัพย์สินที่ตามปกติถือเป็นสาระสำคัญ (เช่น ซื้อแหวนคิดว่าเพชรแท้ ที่จริงเพชรเทียม) → <strong>โมฆียะ</strong></SRule>
+          <SRule n="158">ความสำคัญผิดตาม ม.156/157 ที่เกิดจาก<strong>ประมาทเลินเล่ออย่างร้ายแรง</strong>ของผู้แสดงเอง → ถือเป็นประโยชน์แก่ผู้แสดงไม่ได้ (บอกล้างไม่ได้)</SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l5', star:3, icon:'🪤', title:'กลฉ้อฉล — ถึงขนาด / ไม่ถึงขนาด / โดยการนิ่ง (ม.159-163)',
+    chips:['159','160','161','162'],
+    body:()=>(
+      <div>
+        <Paragraph style={{color:C.text2, marginBottom:6}}>กลฉ้อฉล = ใช้อุบายหลอกลวงให้อีกฝ่ายแสดงเจตนาทำนิติกรรมตามที่ตนต้องการ — จุดชี้ขาดคือ "ถึงขนาด" หรือไม่</Paragraph>
+        <Box tone="red" title="⭐⭐⭐ ม.159 ว.1 กลฉ้อฉลถึงขนาด" icon="🎯">
+          ถ้าไม่มีกลฉ้อฉลนั้น <strong>จะไม่ทำนิติกรรมเลย</strong> → <strong>โมฆียะ</strong> บอกล้างได้ —
+          เช่น หลอกว่าที่ดินไม่ติดทางสาธารณะ ผู้ซื้อเชื่อจึงซื้อ ถ้ารู้ความจริงจะไม่ซื้อเลย
+        </Box>
+        <Box tone="gold" title="ม.159 ว.2 / ม.161 กลฉ้อฉลไม่ถึงขนาด (เพื่อเหตุ)" icon="💱">
+          ยังไงก็ตั้งใจทำนิติกรรมอยู่แล้ว แค่ถูกหลอกเรื่องเงื่อนไข/ราคา → <strong>ไม่โมฆียะ บอกล้างไม่ได้</strong> แต่<strong>เรียกค่าสินไหมทดแทน</strong>ได้ — นี่คือกับดักโปรดของกรรมการออกข้อสอบ
+        </Box>
+        <Box tone="blue" title="กลฉ้อฉลรูปแบบพิเศษ" icon="🤫">
+          <SRule n="159">ว.3 กลฉ้อฉลโดย<strong>บุคคลภายนอก</strong> → โมฆียะได้ต่อเมื่อคู่กรณีอีกฝ่าย<strong>รู้หรือควรรู้</strong></SRule>
+          <SRule n="160">กลฉ้อฉลโดยการนิ่ง — การบอกล้างต้องไม่กระทบ<strong>บุคคลภายนอกผู้สุจริต</strong></SRule>
+          <SRule n="162">นิติกรรมสองฝ่าย ฝ่ายหนึ่ง<strong>จงใจนิ่ง</strong>ไม่แจ้งข้อความจริงที่ควรบอก (เช่น ที่ดินน้ำท่วมทุกปี, รถเคยชนหนัก) → เป็น<strong>กลฉ้อฉล</strong></SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l6', star:2, icon:'👊', title:'ข่มขู่ — เมื่อใจไม่สมัคร (ม.164-166)',
+    chips:['164','165','166'],
+    body:()=>(
+      <div>
+        <Box tone="red" title="ม.164 หลักเกณฑ์การข่มขู่ (ต้องครบทุกข้อ)" icon="👊">
+          (1) ผู้ข่มขู่เป็นคู่กรณีเองหรือบุคคลภายนอกก็ได้ (2) มี<strong>เจตนา</strong>ให้ทำนิติกรรม
+          (3) ขู่ว่าจะให้เกิดภัย <strong>อันใกล้จะถึง + ร้ายแรง</strong> (4) ร้ายแรง<strong>ถึงขนาด</strong>ทำให้มีมูลต้องกลัว → <strong>โมฆียะ</strong>
+        </Box>
+        <Box tone="green" title="ข้อยกเว้น ม.165 — ไม่ถือว่าข่มขู่" icon="🛡️">
+          (1) การ<strong>ใช้สิทธิตามปกตินิยม</strong> เช่น ขู่ว่าจะฟ้องศาลตามสิทธิที่ตนมี
+          (2) ความ<strong>นับถือยำเกรง</strong> เช่น เกรงใจพ่อแม่ครูอาจารย์
+          (3) ขู่เรื่องที่<strong>ไม่เกี่ยว</strong>กับนิติกรรม
+        </Box>
+        <Box tone="red" title="จุดสอบ" icon="🎯">
+          โจทย์ชอบให้ "เจ้าหนี้ขู่ว่าจะฟ้องศาลถ้าไม่เซ็นรับสภาพหนี้" — นักศึกษาหลายคนตอบโมฆียะ ซึ่ง<strong>ผิด</strong>!
+          การขู่ว่าจะใช้สิทธิทางศาลตามปกตินิยม = ไม่เป็นการข่มขู่ (ม.165) นิติกรรมสมบูรณ์
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:3, icon:'🤝', title:'การเกิดสัญญา — คำเสนอ + คำสนอง (ม.354-361)',
+    chips:['354','355','356','358','359','361'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.blue} steps={[
+          {icon:'📣', t:'คำเสนอชัดเจน', bg:C.blueBg},
+          {icon:'✅', t:'คำสนองตรงกัน', bg:C.cyanBg},
+          {icon:'📬', t:'สนองถึงผู้เสนอ ม.361', bg:C.surface3},
+          {icon:'🤝', t:'สัญญาเกิด!', bg:C.greenBg},
+        ]}/>
+        <Box tone="blue" title="คำเสนอ & การถอนคำเสนอ" icon="📣" style={{marginTop:12}}>
+          คำเสนอต้อง<strong>ชัดเจนแน่นอน</strong> + มุ่งหมายว่าถ้าสนองแล้วสัญญาเกิดทันที —
+          คำบรรยาย ประกาศราคา แผ่นพับโฆษณา คำเชิญชวน <strong>ไม่ใช่</strong>คำเสนอ<br/>
+          <SRule n="354">บ่งระยะเวลาไว้ → <strong>ห้ามถอน</strong>ภายในเวลาที่บ่ง</SRule>
+          <SRule n="355">ไม่บ่งเวลา + ทำแก่ผู้อยู่ห่างโดยระยะทาง → ห้ามถอนภายใน<strong>เวลาอันควรคาดหมาย</strong></SRule>
+          <SRule n="356">เฉพาะหน้า → ต้องสนองรับ <strong>ณ ที่นั้น เวลานั้น</strong></SRule>
+        </Box>
+        <Box tone="cyan" title="คำสนอง" icon="📬">
+          <SRule n="358">ส่งคำสนอง<strong>ทัน</strong>แต่มาถึง<strong>ช้า</strong> → ผู้เสนอต้องบอกกล่าว ถ้าไม่บอก → ถือว่าไม่ล่วงเวลา สัญญาเกิด</SRule>
+          <SRule n="359">ว.1 คำสนอง<strong>ล่วงเวลา</strong> → กลายเป็นคำเสนอขึ้นใหม่ · ว.2 คำสนอง<strong>มีข้อแก้ไข/เพิ่มเติม</strong> → บอกปัดคำเสนอเดิม + เป็นคำเสนอขึ้นใหม่</SRule>
+          <SRule n="361">สัญญาระหว่างบุคคลซึ่งอยู่ห่างกัน เกิดเมื่อ<strong>คำสนองไปถึงผู้เสนอ</strong></SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ กับดัก ม.359 ว.2 (ออกข้อ 4 เกือบทุกเทอม)" icon="🎯">
+          ข้อสอบ 1/67 ข้อ 4: เสนอซื้อทุเรียน 50 กก. กิโลละ 170 บาท ผู้ขายตอบ "ขายให้ราคาเพื่อนรัก กิโลละ 300" —
+          คำสนอง<strong>เปลี่ยนราคา</strong> = บอกปัดคำเสนอเดิม + คำเสนอใหม่ → <strong>สัญญายังไม่เกิด</strong>
+          หลักตามฎีกา 411/2490: สัญญาเกิดเมื่อคำเสนอ+คำสนองตรงกัน ไม่จำเป็นต้องทำเป็นหนังสือ เว้นแต่กฎหมายกำหนดแบบไว้
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:2, icon:'💰', title:'ผลของสัญญา — ต่างตอบแทน · บุคคลภายนอก · มัดจำ · เบี้ยปรับ',
+    chips:['369','370','372','374','377','378','380','383'],
+    body:()=>(
+      <div>
+        <Box tone="cyan" title="สัญญาต่างตอบแทน & การชำระหนี้พ้นวิสัย" icon="⚖️">
+          <SRule n="369">คู่สัญญาต่างมีหนี้ตอบแทนกัน → ฝ่ายหนึ่งยังไม่ชำระ อีกฝ่ายปฏิเสธไม่ยอมชำระได้ (<strong>สิทธิยึดหน่วง</strong>)</SRule>
+          <SRule n="370">ทรัพย์สูญ/เสียหายโดย<strong>ไม่ใช่ความผิดลูกหนี้</strong> → ตกเป็นพับแก่เจ้าหนี้ (ผู้ซื้อยังต้องจ่ายเงิน)</SRule>
+          <SRule n="372">ว.1 ลูกหนี้หลุดพ้นแต่ไม่มีสิทธิรับตอบแทน · ว.2 ถ้าโทษเจ้าหนี้ได้ ลูกหนี้ไม่ต้องรับผิดแต่ยังได้ตอบแทน</SRule>
+        </Box>
+        <Box tone="blue" title="สัญญาเพื่อประโยชน์บุคคลภายนอก (ม.374-375)" icon="👥">
+          <SRule n="374">ตกลงชำระหนี้แก่บุคคลภายนอก → บุคคลภายนอก<strong>เรียกชำระหนี้จากลูกหนี้ได้โดยตรง</strong> สิทธิเกิดเมื่อแสดงเจตนาถือเอาประโยชน์</SRule>
+          <SRule n="375">ถือเอาประโยชน์แล้ว → คู่สัญญาจะเปลี่ยนแปลง/ระงับสิทธินั้นภายหลังไม่ได้</SRule>
+        </Box>
+        <Box tone="gold" title="⭐ มัดจำ ม.377-378 — ท่อง 'ชำระ-คืน / วาง-ริบ / รับ-คืน'" icon="💰">
+          มัดจำ = ทรัพย์ที่ส่งให้ไว้<strong>ในวันทำสัญญา</strong> (ไม่จำเป็นต้องเป็นเงิน แต่ต้องมีค่าในตัว) เป็นพยานหลักฐาน+ประกันการปฏิบัติ<br/>
+          ม.378: (1) ชำระหนี้แล้ว → <strong>คืน/หักราคา</strong> (2) ฝ่าย<strong>วาง</strong>มัดจำผิดสัญญา → <strong>ริบ</strong> (3) ฝ่าย<strong>รับ</strong>มัดจำผิดสัญญา → <strong>ส่งคืน</strong>
+        </Box>
+        <Box tone="prim" title="เบี้ยปรับ ม.379-383" icon="📝">
+          กำหนดค่าเสียหายล่วงหน้า<strong>ก่อน</strong>ผิดสัญญา · <SRule n="380">เลือกได้<strong>อย่างเดียว</strong>: ฟ้องบังคับชำระหนี้ หรือ เรียกเบี้ยปรับ</SRule>
+          <SRule n="383">เบี้ยปรับ<strong>สูงเกินส่วน</strong> → ศาลลดลงเป็นจำนวนพอสมควรได้</SRule>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l9', star:3, icon:'❌', title:'การเลิกสัญญา (ม.386-391)',
+    chips:['387','388','391'],
+    body:()=>(
+      <div>
+        <Box tone="red" title="2 ทางเลือกเมื่อลูกหนี้ผิดสัญญา" icon="🔀">
+          (1) <strong>ฟ้องบังคับตามสัญญา</strong> + ค่าเสียหาย (ม.213) <strong>หรือ</strong> (2) <strong>เลิกสัญญา</strong> + เรียกค่าเสียหาย (ม.391)
+        </Box>
+        <Box tone="blue" title="เงื่อนไขการเลิก" icon="⏱️">
+          <SRule n="387">ต้อง<strong>กำหนดระยะเวลาพอสมควร</strong>บอกกล่าวให้ชำระก่อน ไม่ชำระภายในเวลานั้น → เลิกสัญญาได้</SRule>
+          <SRule n="388">ถ้าวัตถุประสงค์ของสัญญาสำเร็จได้ก็แต่ด้วยการชำระ ณ เวลาที่กำหนด → ไม่ชำระ <strong>เลิกได้ทันที</strong>ไม่ต้องบอกกล่าว</SRule>
+        </Box>
+        <Box tone="green" title="⭐⭐⭐ ผลของการเลิก ม.391" icon="↩️">
+          ว.1 คู่สัญญากลับ<strong>คืนสู่ฐานะเดิม</strong> — เงินที่รับไว้ต้องคืนพร้อม<strong>ดอกเบี้ยร้อยละ 3</strong> นับแต่วันที่ได้รับไว้ ·
+          ว.4 การเลิกสัญญา<strong>ไม่กระทบสิทธิเรียกค่าเสียหาย</strong> — เลิกแล้วก็ยังเรียกค่าเสียหายได้อีก
+        </Box>
+        <Box tone="red" title="จุดสอบ (1/68 ข้อ 4)" icon="🎯">
+          ผู้ขายโอนที่ดินให้คนอื่นก่อนวันนัดจดทะเบียน = ผิดสัญญา → ผู้ซื้อเลิกสัญญาได้ + ผู้<strong>รับ</strong>มัดจำเป็นฝ่ายผิด → ต้อง<strong>คืนมัดจำ</strong> (ม.378(3)) + คืนสู่ฐานะเดิม (ม.391)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l10', star:3, icon:'⏳', title:'ระยะเวลา & อายุความ (ม.193/1 - 193/35) — ข้อ 3 ตัวจริง',
+    chips:['193/3','193/5','193/7','193/12','193/28','193/30','193/34','193/35'],
+    body:()=>(
+      <div>
+        <Box tone="cyan" title="การนับระยะเวลา — ท่อง 'ข้าม-ก่อน-หยุดขยาย'" icon="📐">
+          <SRule n="193/3">ว.2 นับเป็นวัน/สัปดาห์/เดือน/ปี → <strong>ไม่นับวันแรก</strong> เริ่มนับวันรุ่งขึ้นเป็นวันแรก (สั้นกว่าวัน เช่น ชั่วโมง → นับทันที)</SRule>
+          <SRule n="193/5">ว.2 นับเป็นสัปดาห์/เดือน/ปี → สิ้นสุด<strong>วันก่อนหน้า</strong>วันที่ตรงกับวันเริ่ม เช่น เริ่ม 15 มี.ค. นับ 1 เดือน → สิ้นสุด 14 เม.ย.</SRule>
+          <SRule n="193/7">วันสุดท้ายตรง<strong>วันหยุด</strong>ราชการ → ขยายถึง<strong>วันทำการแรกถัดไป</strong></SRule>
+        </Box>
+        <Box tone="gold" title="⭐⭐⭐ อายุความ — ท่อง '10-5-2'" icon="⏳">
+          <SRule n="193/30">อายุความ<strong>ทั่วไป 10 ปี</strong> (ถ้าไม่มีกฎหมายเฉพาะ)</SRule>
+          <SRule n="193/33">อายุความ <strong>5 ปี</strong> เฉพาะตามที่บัญญัติ</SRule>
+          <SRule n="193/34">อายุความ <strong>2 ปี</strong> — ค่าเช่าทรัพย์สิน · ค้าปลีก-ส่ง · อุตสาหกรรม-หัตถกรรม · เกษตร · ค่าขนส่ง · โรงแรม-ภัตตาคาร · วิชาชีพอิสระ</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ อายุความสะดุดหยุดลง & ผลเมื่อครบ" icon="🎯">
+          <SRule n="193/28">ว.2 ลูกหนี้ <strong>ชำระหนี้บางส่วน / ชำระดอกเบี้ย / ให้ประกัน / รับสภาพหนี้</strong> → อายุความ<strong>สะดุดหยุดลง เริ่มนับใหม่ทั้งหมด</strong> (ไม่ใช่นับต่อ!)</SRule>
+          <SRule n="193/12">อายุความครบ → ลูกหนี้มีสิทธิ<strong>ปฏิเสธ</strong>การชำระหนี้ (ยกอายุความขึ้นต่อสู้) แต่สิทธิเรียกร้องไม่สูญสิ้น</SRule>
+          <SRule n="193/35">หนี้ขาดอายุความแล้ว ถ้าลูกหนี้<strong>ชำระไปแล้ว → เรียกคืนไม่ได้</strong> แม้ไม่รู้ว่าขาดอายุความ</SRule>
+        </Box>
+        <Box tone="prim" title="แยกให้ออก: ขยาย vs สะดุดหยุดลง" icon="⚔️">
+          <strong>ขยาย</strong> (ม.193/8) = เลื่อนวันครบกำหนดออกไป · <strong>สะดุดหยุดลง</strong> (ม.193/14) = ล้างกระดานเริ่มนับใหม่ตั้งแต่ต้น — ข้อสอบ 1/68 ข้อ 3 วัดตรงนี้เป๊ะ
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l1']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Sec key={c}>{c}</Sec>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>10 โมดูล เรียงจากนิติกรรม → ความสมบูรณ์ → สัญญา → อายุความ</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกครั้ง) · คลิกที่หัวข้อเพื่อกางเนื้อหา · กล่องแดง 🎯 คือจุดสอบ/กับดักที่อาจารย์ชอบวาง</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'1/67 ข้อ 1', star:3, topic:'กฎหมายห้ามโอนที่ดิน — โมฆะ ม.150',
+    facts:'ขณะทำสัญญาซื้อขายที่ดินแปลงหนึ่ง ปรากฏว่าทางราชการได้ออกกฎหมายห้ามโอนที่ดินแปลงดังกล่าวอยู่ก่อนแล้ว — สัญญาซื้อขายมีผลอย่างไร?',
+    issue:'สัญญาซื้อขายที่ดินซึ่งมีกฎหมายห้ามโอนอยู่ในขณะทำสัญญา มีวัตถุประสงค์ต้องห้ามชัดแจ้งโดยกฎหมายหรือไม่ และผลทางกฎหมายเป็นอย่างไร',
+    rule:['150'],
+    ruleText:'ม.150 การใดมีวัตถุประสงค์เป็นการต้องห้ามชัดแจ้งโดยกฎหมาย เป็นการพ้นวิสัย หรือเป็นการขัดต่อความสงบเรียบร้อยหรือศีลธรรมอันดีของประชาชน การนั้นเป็นโมฆะ',
+    application:'วัตถุประสงค์ของสัญญาคือการโอนกรรมสิทธิ์ที่ดิน แต่ขณะทำสัญญาที่ดินแปลงนี้ตกอยู่ภายใต้กฎหมายห้ามโอนอยู่แล้ว การโอนจึงเป็นการต้องห้ามชัดแจ้งโดยกฎหมาย เข้าเหตุโมฆะตาม ม.150 โดยตรง ใครก็ยกความเสียเปล่าขึ้นอ้างได้ และให้สัตยาบันแก้ไขไม่ได้',
+    conclusion:'สัญญาซื้อขายที่ดินเป็นโมฆะตาม ม.150 คู่สัญญาไม่อาจฟ้องบังคับตามสัญญาได้ ทรัพย์/เงินที่ส่งมอบกันไปต้องคืนตามหลักลาภมิควรได้ (ม.172)'
+  },
+  {
+    id:'c2', tag:'1/68 ข้อ 1', star:3, topic:'ซื้อที่ดินคนละแปลง — สำคัญผิดในทรัพย์สิน ม.156',
+    facts:'นางงามต้องการซื้อที่ดินจากนายด้วง โดยไปดูที่ดินแปลงหนึ่งไว้แล้ว แต่ถึงวันนัดทำสัญญา นายด้วงกลับขายที่ดินอีกแปลงหนึ่งให้ — สัญญามีผลอย่างไร นางงามทำอะไรได้บ้าง?',
+    issue:'การทำสัญญาซื้อขายโดยเข้าใจผิดว่าเป็นที่ดินแปลงที่ตนไปดูไว้ ทั้งที่ความจริงเป็นคนละแปลง เป็นความสำคัญผิดในสิ่งที่เป็นสาระสำคัญแห่งนิติกรรมหรือไม่',
+    rule:['156'],
+    ruleText:'ม.156 การแสดงเจตนาโดยสำคัญผิดในสิ่งซึ่งเป็นสาระสำคัญแห่งนิติกรรมเป็นโมฆียะ — สาระสำคัญได้แก่ (1) ลักษณะของนิติกรรม (2) ตัวบุคคลซึ่งเป็นคู่กรณี (3) ทรัพย์สินซึ่งเป็นวัตถุแห่งนิติกรรม',
+    application:'นางงามแสดงเจตนาซื้อโดยเข้าใจว่าเป็นที่ดินแปลงที่ตนไปดูไว้ แต่แปลงที่นายด้วงขายให้เป็นคนละแปลงกัน จึงเป็นการสำคัญผิดใน "ตัวทรัพย์สินซึ่งเป็นวัตถุแห่งนิติกรรม" อันเป็นสาระสำคัญตาม ม.156 ประเภทที่ 3',
+    conclusion:'สัญญาซื้อขายเป็นโมฆียะตาม ม.156 นางงามมีสิทธิบอกล้าง เมื่อบอกล้างแล้วถือว่าเป็นโมฆะมาตั้งแต่เริ่มแรก (ม.176) และคืนสู่ฐานะเดิม'
+  },
+  {
+    id:'c3', tag:'ฝึกวินิจฉัย', star:3, topic:'ปกปิดรถชนหนัก — กลฉ้อฉลถึงขนาด ม.159 + ม.162',
+    facts:'นายโกงขายรถยนต์ให้นายซื่อ โดยปกปิดว่ารถเคยชนหนักและซ่อมทั้งคัน ทั้งที่นายซื่อถามย้ำแล้ว หากนายซื่อรู้ความจริงจะไม่ซื้อ — สัญญาซื้อขายมีผลอย่างไร?',
+    issue:'การจงใจนิ่งไม่แจ้งข้อความจริงเรื่องสภาพรถทั้งที่ถูกถามย้ำ เป็นกลฉ้อฉลถึงขนาดอันทำให้นิติกรรมเป็นโมฆียะหรือไม่',
+    rule:['159','162'],
+    ruleText:'ม.159 การแสดงเจตนาเพราะถูกกลฉ้อฉลเป็นโมฆียะ โดยกลฉ้อฉลต้องถึงขนาดซึ่งถ้ามิได้มีกลฉ้อฉลนั้น การอันเป็นโมฆียะคงจะมิได้กระทำขึ้น · ม.162 ในนิติกรรมสองฝ่าย การที่คู่กรณีฝ่ายหนึ่งจงใจนิ่งเสียไม่แจ้งข้อความจริงที่ควรบอกให้แจ้ง ก็เป็นกลฉ้อฉลได้',
+    application:'นายโกงจงใจปกปิดข้อความจริงเรื่องรถเคยชนหนักทั้งที่ถูกถามย้ำ ซึ่งเป็นข้อสาระสำคัญที่ควรบอกให้แจ้ง (ม.162) และถึงขนาดว่าหากนายซื่อทราบความจริงจะไม่เข้าทำสัญญาเลย จึงเป็นกลฉ้อฉลถึงขนาดตาม ม.159',
+    conclusion:'สัญญาซื้อขายเป็นโมฆียะ นายซื่อมีสิทธิบอกล้างให้ตกเป็นโมฆะมาแต่เริ่มแรก และเรียกค่าเสียหายได้'
+  },
+  {
+    id:'c4', tag:'1/67 ข้อ 4', star:3, topic:'ทุเรียนราคาเพื่อนรัก — คำสนองมีข้อแก้ไข ม.359 ว.2',
+    facts:'ผู้ซื้อเสนอซื้อทุเรียน 50 กก. ราคากิโลกรัมละ 170 บาท ผู้ขายส่งข้อความตอบว่า "จะขายทุเรียนให้ในราคาเพื่อนรัก คือ 50 กก. ราคากิโลกรัมละ 300 บาท" — ถือว่าสัญญาซื้อขายเกิดขึ้นแล้วหรือไม่?',
+    issue:'คำสนองที่เปลี่ยนแปลงราคาจากคำเสนอเดิม ถือเป็นคำสนองที่ทำให้สัญญาเกิด หรือเป็นการบอกปัดคำเสนอ',
+    rule:['359','361'],
+    ruleText:'ม.359 ว.2 คำสนองอันมีข้อความเพิ่มเติม มีข้อจำกัด หรือมีข้อแก้ไขอย่างอื่นประกอบด้วย ถือว่าเป็นคำบอกปัดไม่รับคำเสนอเดิม และเป็นคำเสนอขึ้นใหม่ · ม.361 สัญญาระหว่างบุคคลซึ่งอยู่ห่างกันเกิดเมื่อคำสนองไปถึงผู้เสนอ',
+    application:'คำตอบของผู้ขายเปลี่ยนสาระสำคัญของคำเสนอ (ราคาจาก 170 เป็น 300 บาท/กก.) จึงไม่ใช่คำสนองที่ตรงกับคำเสนอ แต่เป็นคำบอกปัดคำเสนอเดิมและกลายเป็นคำเสนอขึ้นใหม่ตาม ม.359 ว.2 — เมื่อผู้ซื้อยังไม่ได้สนองรับคำเสนอใหม่นี้ คำเสนอกับคำสนองจึงยังไม่ตรงกัน',
+    conclusion:'สัญญาซื้อขายทุเรียนยังไม่เกิดขึ้น จนกว่าผู้ซื้อจะสนองรับราคากิโลกรัมละ 300 บาทตามคำเสนอใหม่'
+  },
+  {
+    id:'c5', tag:'1/68 ข้อ 4', star:3, topic:'ผู้ขายเบี้ยว โอนที่ดินให้คนอื่น — เลิกสัญญา + คืนมัดจำ',
+    facts:'ตกลงซื้อขายที่ดินราคา 1,000,000 บาท วางมัดจำ 100,000 บาท นัดจดทะเบียนโอนวันที่ 15 ต.ค. แต่ปรากฏว่าผู้ขายโอนที่ดินให้บุคคลอื่นไปก่อนแล้วตั้งแต่วันที่ 9 ต.ค. — ผู้ซื้อเลิกสัญญาได้หรือไม่ และเรียกมัดจำคืนได้หรือไม่?',
+    issue:'เมื่อผู้ขาย (ฝ่ายรับมัดจำ) ทำให้การชำระหนี้ของตนเป็นไปไม่ได้โดยโอนทรัพย์ให้บุคคลอื่น ผู้ซื้อมีสิทธิเลิกสัญญาและเรียกมัดจำคืนหรือไม่',
+    rule:['387','391','378'],
+    ruleText:'ม.387 เมื่อคู่สัญญาฝ่ายหนึ่งไม่ชำระหนี้ อีกฝ่ายกำหนดระยะเวลาพอสมควรบอกกล่าวแล้วไม่ชำระ → เลิกสัญญาได้ · ม.391 เมื่อเลิกสัญญา คู่สัญญากลับคืนสู่ฐานะเดิม เงินที่รับไว้ต้องคืนพร้อมดอกเบี้ย และไม่กระทบสิทธิเรียกค่าเสียหาย · ม.378(3) ถ้าฝ่ายที่รับมัดจำเป็นฝ่ายผิดสัญญา ต้องส่งคืนมัดจำ',
+    application:'ผู้ขายโอนที่ดินให้บุคคลอื่นไปก่อนวันนัดจดทะเบียน ทำให้ตนไม่อยู่ในฐานะจะชำระหนี้โอนที่ดินให้ผู้ซื้อได้อีก จึงเป็นฝ่ายผิดสัญญา ผู้ซื้อย่อมใช้สิทธิเลิกสัญญาได้ และเมื่อเลิกสัญญาแล้วคู่สัญญาต้องกลับคืนสู่ฐานะเดิม โดยผู้ขายซึ่งเป็นฝ่ายรับมัดจำและเป็นฝ่ายผิดสัญญา ต้องส่งคืนมัดจำตาม ม.378(3)',
+    conclusion:'ผู้ซื้อเลิกสัญญาได้ และเรียกมัดจำ 100,000 บาทคืนได้พร้อมดอกเบี้ย ทั้งยังมีสิทธิเรียกค่าเสียหายอีกตาม ม.391 ว.4'
+  },
+  {
+    id:'c6', tag:'1/67 ข้อ 3', star:3, topic:'ค้างค่าเช่ารถ — เลิกสัญญา + อายุความ 2 ปี',
+    facts:'เช่ารถยนต์กำหนด 1 ปี ค่าเช่าเดือนละ 30,000 บาท ผู้เช่าค้างชำระค่าเช่า 4 เดือน ผู้ให้เช่าจะบอกเลิกสัญญา เรียกค่าเช่าค้างและค่าเสียหายได้หรือไม่ และสิทธิเรียกร้องค่าเช่ามีอายุความกี่ปี?',
+    issue:'ผู้ให้เช่าจะเลิกสัญญาต้องทำอย่างไร ผลของการเลิกเป็นอย่างไร และสิทธิเรียกร้องค่าเช่าทรัพย์สินมีกำหนดอายุความเท่าใด',
+    rule:['387','391','193/34'],
+    ruleText:'ม.387 กำหนดระยะเวลาพอสมควรบอกกล่าวให้ชำระ ไม่ชำระ → เลิกสัญญาได้ · ม.391 เลิกแล้วคืนสู่ฐานะเดิม และยังเรียกค่าเสียหายได้ (ว.4) · ม.193/34(6) สิทธิเรียกร้องค่าเช่าทรัพย์สินมีอายุความ 2 ปี',
+    application:'ผู้เช่าผิดนัดไม่ชำระค่าเช่า 4 เดือน ผู้ให้เช่าต้องบอกกล่าวกำหนดระยะเวลาพอสมควรให้ชำระก่อน เมื่อครบกำหนดแล้วยังไม่ชำระจึงบอกเลิกสัญญาได้ตาม ม.387 ผลคือคู่สัญญากลับคืนสู่ฐานะเดิม และผู้ให้เช่ายังเรียกค่าเช่าที่ค้างพร้อมค่าเสียหายได้ตาม ม.391 ส่วนสิทธิเรียกร้องค่าเช่าเป็นสิทธิเรียกร้องตาม ม.193/34 ซึ่งมีอายุความ 2 ปี',
+    conclusion:'ผู้ให้เช่าบอกเลิกสัญญาได้เมื่อกำหนดเวลาพอสมควรแล้วผู้เช่ายังไม่ชำระ เรียกค่าเช่าค้าง 120,000 บาทและค่าเสียหายได้ โดยสิทธิเรียกร้องค่าเช่ามีอายุความ 2 ปี (ม.193/34)'
+  },
+  {
+    id:'c7', tag:'1/68 ข้อ 3', star:3, topic:'ชำระหนี้บางส่วน — อายุความสะดุดหยุดลง',
+    facts:'ทำสัญญากู้เงินวันที่ 29 ก.พ. 2555 กำหนดชำระคืนภายใน 1 ปี ลูกหนี้ไม่ชำระ เจ้าหนี้ทวงถามวันที่ 28 ก.พ. 2557 ลูกหนี้ชำระหนี้ให้บางส่วน ต่อมาเจ้าหนี้ฟ้องคดีวันที่ 29 ก.พ. 2567 — คดีขาดอายุความแล้วหรือไม่?',
+    issue:'การที่ลูกหนี้ชำระหนี้บางส่วนมีผลต่ออายุความอย่างไร และเมื่อเริ่มนับอายุความใหม่แล้ว การฟ้องคดีในปี 2567 อยู่ภายในกำหนดหรือไม่',
+    rule:['193/30','193/14','193/28'],
+    ruleText:'ม.193/30 สิทธิเรียกร้องที่ไม่มีกฎหมายกำหนดอายุความเฉพาะ มีอายุความ 10 ปี · ม.193/14 ประกอบ ม.193/28 ว.2 อายุความสะดุดหยุดลงเมื่อลูกหนี้รับสภาพหนี้ เช่น ชำระหนี้ให้บางส่วน ชำระดอกเบี้ย หรือให้ประกัน — เมื่อสะดุดหยุดลงแล้ว ระยะเวลาที่ล่วงไปไม่นับ ให้เริ่มนับอายุความใหม่',
+    application:'หนี้เงินกู้ไม่มีอายุความเฉพาะ จึงมีอายุความ 10 ปีตาม ม.193/30 เมื่อลูกหนี้ชำระหนี้บางส่วนในปี 2557 ถือเป็นการรับสภาพหนี้ ทำให้อายุความสะดุดหยุดลงและเริ่มนับใหม่ 10 ปีนับแต่วันชำระบางส่วนนั้น ดังนั้นต้องนับ 10 ปีจากวันที่รับสภาพหนี้ (ปี 2557) ไม่ใช่จากวันครบกำหนดชำระเดิม แล้วเทียบกับวันฟ้องปี 2567 ว่าเกินกำหนดหรือไม่',
+    conclusion:'อายุความเริ่มนับใหม่ตั้งแต่วันที่ลูกหนี้ชำระหนี้บางส่วน (การรับสภาพหนี้ตาม ม.193/28 ว.2) — จุดชี้ขาดของคดีคือวันชำระบางส่วนเทียบกับวันฟ้อง หากฟ้องเกิน 10 ปีนับแต่วันนั้น คดีขาดอายุความ ลูกหนี้ยกขึ้นปฏิเสธการชำระหนี้ได้ (ม.193/12)'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0);
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.plumDark, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Sec>{x}</Sec></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'ปรับข้อเท็จจริง (A)', color:C.gold, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="volcano" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.primDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสจริงจากข้อสอบ ทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น — ในห้องสอบให้เขียน "วางหลักกฎหมาย → กรณีตามปัญหา…เห็นว่า… → กล่าวโดยสรุป…" ห้ามสลับลำดับ</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="gold" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>วางหลักกฎหมาย</b> (ยกมาตราที่เกี่ยวพร้อมสาระ) → <b>วินิจฉัย</b> ("กรณีตามปัญหา…เห็นว่า…" จับข้อเท็จจริงเข้ากับหลัก) → <b>สรุป</b> ("กล่าวโดยสรุป…" ตอบธงให้ตรงคำถาม). ทุกข้อ 25 คะแนน เขียนครบ 3 ท่อนเสมอ — ตอบถูกแต่ไม่ยกมาตรา = เสียคะแนนฟรี
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: CASE LAB — ทำนายก่อนเฉลย ============ */
+const labCases = [
+  {
+    id:'s1', icon:'🔪', topic:'สัญญากู้บังหน้าจ้างฆ่าคน',
+    facts:'นาย ก. อยากจ้างมือปืนกำจัดคู่อริ จึงทำ "สัญญากู้เงิน 500,000 บาท" ไว้เป็นฉากบังหน้า โดยตกลงกันลับ ๆ ว่าเงินนี้คือค่าจ้างฆ่าคน ต่อมามือปืนทวงเงินตามสัญญากู้',
+    question:'มือปืนฟ้องบังคับตาม "สัญญากู้" ได้หรือไม่?', answer:false,
+    secs:['155','150','172'], tone:'red',
+    ruling:'สัญญากู้เป็นนิติกรรมอำพราง (ม.155 ว.2) ต้องบังคับตามนิติกรรมที่ถูกอำพรางคือสัญญาจ้างฆ่าคน ซึ่งมีวัตถุประสงค์ต้องห้ามชัดแจ้งโดยกฎหมายและขัดต่อความสงบเรียบร้อย จึงเป็นโมฆะตาม ม.150 — ฟ้องบังคับไม่ได้เลยทั้งสองสัญญา',
+    who:'โมฆะทั้งคู่ ฟ้องบังคับไม่ได้'
+  },
+  {
+    id:'s2', icon:'🧒', topic:'ผู้เยาว์ 17 ซื้อรถยนต์',
+    facts:'เด็กชายเอ อายุ 17 ปี แอบเอาเงินเก็บไปทำสัญญาซื้อรถยนต์มือสองราคา 300,000 บาท โดยพ่อแม่ (ผู้แทนโดยชอบธรรม) ไม่รู้เรื่องและไม่ได้ให้ความยินยอม',
+    question:'สัญญาซื้อรถเป็น "โมฆะ" ทันทีใช่หรือไม่?', answer:false,
+    secs:['153','21','175'], tone:'prim',
+    ruling:'ผู้เยาว์ทำนิติกรรมโดยไม่ได้รับความยินยอมของผู้แทนโดยชอบธรรม นิติกรรมเป็นเพียง "โมฆียะ" (ม.153 ประกอบ ม.21) ไม่ใช่โมฆะ — สัญญายังสมบูรณ์อยู่จนกว่าผู้แทนโดยชอบธรรม หรือตัวผู้เยาว์เองเมื่อบรรลุนิติภาวะ จะบอกล้าง (ม.175) ถ้าบอกล้างจึงกลายเป็นโมฆะมาตั้งแต่แรก (ม.176)',
+    who:'โมฆียะ — รอบอกล้างหรือสัตยาบัน'
+  },
+  {
+    id:'s3', icon:'💍', topic:'แหวนเพชรเทียม',
+    facts:'นางสาวบีซื้อแหวนวงหนึ่งราคา 200,000 บาท โดยเข้าใจมาตลอดว่าเป็นเพชรแท้ (ซึ่งเป็นเหตุสำคัญที่ทำให้ยอมจ่ายราคานี้) ภายหลังตรวจพบว่าเป็นเพชรเทียม',
+    question:'นางสาวบีบอกล้างสัญญาได้หรือไม่?', answer:true,
+    secs:['157','176'], tone:'green',
+    ruling:'เป็นการสำคัญผิดในคุณสมบัติของทรัพย์สินซึ่งตามปกติถือว่าเป็นสาระสำคัญ (เพชรแท้ vs เพชรเทียม กำหนดราคาต่างกันมหาศาล) → โมฆียะตาม ม.157 นางสาวบีจึงบอกล้างได้ เมื่อบอกล้างแล้วนิติกรรมเป็นโมฆะมาตั้งแต่เริ่มแรก (ม.176) ต่างฝ่ายต่างคืนทรัพย์',
+    who:'โมฆียะ — บอกล้างได้'
+  },
+  {
+    id:'s4', icon:'🏛️', topic:'ขู่ว่าจะฟ้องศาล',
+    facts:'นายซีค้างหนี้นายดีจริง นายดีจึงบอกว่า "ถ้าไม่ยอมเซ็นหนังสือรับสภาพหนี้ จะฟ้องศาลทันที" นายซีกลัวถูกฟ้องจึงเซ็น ต่อมาอยากบอกล้างอ้างว่าถูกข่มขู่',
+    question:'หนังสือรับสภาพหนี้เป็นโมฆียะเพราะถูกข่มขู่ใช่หรือไม่?', answer:false,
+    secs:['165','164'], tone:'green',
+    ruling:'การขู่ว่าจะฟ้องศาลเป็นการขู่ว่าจะใช้สิทธิตามปกตินิยม ซึ่ง ม.165 บัญญัติชัดว่าไม่ถือเป็นการข่มขู่ตาม ม.164 — นิติกรรมจึงสมบูรณ์ บอกล้างไม่ได้ (จะเป็นข่มขู่ต้องเป็นภัยอันใกล้จะถึง ร้ายแรง และถึงขนาดทำให้มีมูลต้องกลัว)',
+    who:'สมบูรณ์ — ไม่เป็นการข่มขู่'
+  },
+  {
+    id:'s5', icon:'⏰', topic:'ถอนคำเสนอก่อนครบกำหนด',
+    facts:'นายอีส่งจดหมายเสนอขายบ้านให้นายเอฟ ระบุว่า "ยืนราคา 7 วัน" ผ่านไป 3 วัน มีคนให้ราคาสูงกว่า นายอีจึงโทรบอกนายเอฟว่าขอถอนคำเสนอ วันที่ 5 นายเอฟตอบสนองรับซื้อ',
+    question:'นายอีถอนคำเสนอในวันที่ 3 ได้หรือไม่?', answer:false,
+    secs:['354'], tone:'blue',
+    ruling:'คำเสนอที่บ่งระยะเวลาให้ทำคำสนองไว้ จะถอนภายในระยะเวลาที่บ่งไว้ไม่ได้ (ม.354) — คำเสนอ "ยืนราคา 7 วัน" จึงยังมีผลอยู่ เมื่อนายเอฟสนองรับภายในกำหนด สัญญาซื้อขายบ้านเกิดขึ้นแล้ว',
+    who:'ถอนไม่ได้ — สนองทัน สัญญาเกิด'
+  },
+  {
+    id:'s6', icon:'📄', topic:'สนองรับแต่ขอผ่อน 3 งวด',
+    facts:'นายจีเสนอขายเครื่องจักรราคา 900,000 บาท เงินสด นายเอชตอบกลับว่า "ตกลงซื้อ แต่ขอชำระเป็น 3 งวด งวดละ 300,000"',
+    question:'สัญญาซื้อขายเครื่องจักรเกิดขึ้นแล้วใช่หรือไม่?', answer:false,
+    secs:['359'], tone:'cyan',
+    ruling:'คำสนองที่มีข้อแก้ไขเพิ่มเติมเงื่อนไขการชำระ (จากเงินสดเป็นผ่อน 3 งวด) ถือเป็นการบอกปัดคำเสนอเดิม และกลายเป็นคำเสนอขึ้นใหม่ (ม.359 ว.2) — สัญญายังไม่เกิด จนกว่านายจีจะสนองรับเงื่อนไขผ่อนชำระนั้น',
+    who:'สัญญายังไม่เกิด — เป็นคำเสนอใหม่'
+  },
+  {
+    id:'s7', icon:'💸', topic:'ผู้วางมัดจำเบี้ยวเอง',
+    facts:'นายไอตกลงซื้อคอนโดจากนางเจ วางมัดจำ 150,000 บาท ถึงวันนัดโอน นายไอเปลี่ยนใจไม่ซื้อเฉย ๆ โดยนางเจพร้อมโอนทุกอย่าง แล้วนายไอมาขอมัดจำคืน',
+    question:'นายไอเรียกมัดจำ 150,000 คืนได้หรือไม่?', answer:false,
+    secs:['378'], tone:'gold',
+    ruling:'ฝ่ายที่วางมัดจำเป็นฝ่ายผิดสัญญา (ละเลยไม่ชำระหนี้) → มัดจำถูกริบตาม ม.378(2) — ท่องสูตร "ชำระ-คืน / วาง-ริบ / รับ-คืน": ถ้าฝ่ายรับมัดจำผิดสัญญาเสียเอง จึงจะต้องส่งคืนมัดจำ (ม.378(3))',
+    who:'เรียกคืนไม่ได้ — มัดจำถูกริบ'
+  },
+  {
+    id:'s8', icon:'⏳', topic:'จ่ายบางส่วน…อายุความนับต่อไหม?',
+    facts:'หนี้เงินกู้มีอายุความ 10 ปี (ม.193/30) ผ่านไป 8 ปี ลูกหนี้โผล่มาชำระหนี้ให้บางส่วน 10,000 บาท เจ้าหนี้เข้าใจว่าเหลือเวลาฟ้องอีกแค่ 2 ปี',
+    question:'อายุความเหลืออีกแค่ 2 ปี (นับต่อจากเดิม) ใช่หรือไม่?', answer:false,
+    secs:['193/14','193/28'], tone:'red',
+    ruling:'การชำระหนี้บางส่วนเป็นการรับสภาพหนี้ ทำให้อายุความ "สะดุดหยุดลง" (ม.193/14 ประกอบ ม.193/28 ว.2) — ระยะเวลา 8 ปีที่ล่วงไปแล้วไม่นับ ต้องเริ่มนับอายุความ 10 ปีใหม่ทั้งหมดตั้งแต่วันชำระบางส่วน ไม่ใช่นับต่อจากเดิม',
+    who:'ไม่ใช่ — เริ่มนับใหม่ 10 ปีเต็ม'
+  },
+];
+
+function PredictCard({c}) {
+  const [picked, setPicked] = useState(null); // null | true | false
+  const toneColor = {green:C.green, red:C.red, blue:C.blue, prim:C.plumDark, cyan:C.cyan, gold:C.gold}[c.tone];
+  const correct = picked===c.answer;
+  return (
+    <Card style={{marginBottom:16, borderColor:C.border}} bodyStyle={{padding:'16px 18px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:8}}>
+        <span style={{fontSize:22}}>{c.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{c.topic}</span>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'11px 14px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.2}}>
+        {c.facts}
+      </div>
+      <div style={{display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', marginTop:12}}>
+        <span style={{fontWeight:700, color:C.primDark, fontSize:14.5}}>🔮 ทำนายก่อน: {c.question}</span>
+        <Radio.Group value={picked} onChange={e=>setPicked(e.target.value)} optionType="button" buttonStyle="solid"
+          options={[{label:'ใช่', value:true},{label:'ไม่', value:false}]} disabled={picked!==null} />
+      </div>
+      {picked!==null && (
+        <div className="fade-up" style={{marginTop:12}}>
+          <div style={{marginBottom:8}}>
+            {correct
+              ? <Tag color="green" style={{padding:'4px 12px', fontSize:14, fontWeight:700}}>🎯 ทำนายถูก! คำตอบคือ "{c.answer?'ใช่':'ไม่'}"</Tag>
+              : <Tag color="red" style={{padding:'4px 12px', fontSize:14, fontWeight:700}}>📖 ยังไม่ใช่ — คำตอบคือ "{c.answer?'ใช่':'ไม่'}"</Tag>}
+          </div>
+          <div className="glow" style={{background:C.white, border:`2px solid ${toneColor}`, borderRadius:12, padding:'13px 16px'}}>
+            <div style={{marginBottom:8}}>
+              {c.secs.map(s=><span key={s} style={{display:'inline-block', margin:'2px 6px 2px 0', background:toneColor, color:C.white, padding:'2px 12px', borderRadius:8, fontWeight:700, fontFamily:"'Noto Serif Thai'"}}>มาตรา {s}</span>)}
+            </div>
+            <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:3}}>คำวินิจฉัย</div>
+            <div style={{color:C.text2, fontSize:14.4, lineHeight:1.85}}>{c.ruling}</div>
+            <div style={{marginTop:10, textAlign:'center'}}>
+              <span style={{display:'inline-block', background:toneColor+'1a', color:toneColor, border:`1.5px dashed ${toneColor}`, borderRadius:30, padding:'6px 18px', fontWeight:700, fontSize:14.5}}>
+                ⚖️ ผล: {c.who}</span>
+            </div>
+          </div>
+          <div style={{textAlign:'right', marginTop:8}}>
+            <Button size="small" onClick={()=>setPicked(null)}>ลองใหม่</Button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CaseLabTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:C.goldBg, border:`1px solid ${C.gold}66`}}
+        message={<span style={{fontWeight:700, color:C.primDark}}>🧪 Case Lab — ทำนายผลก่อน แล้วค่อยดูเฉลย</span>}
+        description={<span style={{color:C.text2}}>อ่านข้อเท็จจริง → กด <strong>ใช่/ไม่</strong> ตามที่คิด → ระบบเฉลย<strong>คำวินิจฉัย + มาตรา</strong> เหมือนอาจารย์ซักในห้อง Socratic method — ผิดไม่เป็นไร ผิดตรงนี้ดีกว่าผิดในห้องสอบ</span>} />
+      {labCases.map(c=><PredictCard key={c.id} c={c}/>)}
+      <Box tone="cyan" title="สังเกตแพทเทิร์นให้ได้" icon="💡">
+        เคสที่คำตอบ "ไม่" เกือบทั้งหมดคือ<strong>กับดักคลาสสิก</strong>: ผู้เยาว์ ≠ โมฆะทันที · ขู่ฟ้องศาล ≠ ข่มขู่ · สนองแบบแก้ไข ≠ สัญญาเกิด ·
+        ชำระบางส่วน ≠ นับอายุความต่อ — ถ้าจับกลุ่มนี้ได้ ข้อสอบจะหลอกคุณยากขึ้นมาก
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: QUIZ ============ */
+const quizData = [
+  {q:'นาย ก. ทำสัญญาจ้างนาย ข. ไปฆ่าคู่อริ ตกลงค่าจ้าง 1 ล้านบาท สัญญานี้มีผลอย่างไร?',
+    opts:['โมฆียะ บอกล้างได้','โมฆะ (ม.150)','สมบูรณ์แต่ฟ้องไม่ได้','สมบูรณ์ทุกประการ'], correct:1,
+    exp:'วัตถุประสงค์ต้องห้ามชัดแจ้งโดยกฎหมายและขัดต่อความสงบเรียบร้อย/ศีลธรรม → โมฆะตาม ม.150 เสียเปล่าตั้งแต่ต้น'},
+  {q:'ซื้อขายที่ดินกันเองโดยทำหนังสือกันเอง ไม่ได้จดทะเบียนต่อพนักงานเจ้าหน้าที่ ผลคือ?',
+    opts:['สมบูรณ์','โมฆียะ','โมฆะ เพราะไม่ทำตามแบบ (ม.152)','บังคับได้ครึ่งหนึ่ง'], correct:2,
+    exp:'ซื้อขายอสังหาริมทรัพย์ต้องทำเป็นหนังสือและจดทะเบียน (ม.456) ไม่ทำตามแบบ → โมฆะตาม ม.152'},
+  {q:'ผู้เยาว์อายุ 17 ปี ทำสัญญาซื้อรถยนต์โดยผู้แทนโดยชอบธรรมไม่ยินยอม ผลคือ?',
+    opts:['โมฆะทันที','โมฆียะ (ม.153 ประกอบ ม.21)','สมบูรณ์','ตกเป็นพับแก่ผู้ขาย'], correct:1,
+    exp:'ผู้เยาว์ทำนิติกรรมโดยไม่ได้รับความยินยอม → โมฆียะ ไม่ใช่โมฆะ — ระวังสับกับคนไร้ความสามารถ (ม.29) ที่เป็นโมฆะ'},
+  {q:'ตั้งใจจะจ้างนาย B แต่เข้าใจผิดไปทำสัญญาจ้างนาย A แทน เข้ามาตราใด?',
+    opts:['ม.157 สำคัญผิดในคุณสมบัติ','ม.156 สำคัญผิดในสาระสำคัญ (ตัวบุคคล) → โมฆียะ','ม.159 กลฉ้อฉล','ม.154 เจตนาซ่อนเร้น'], correct:1,
+    exp:'สำคัญผิดใน "ตัวบุคคลซึ่งเป็นคู่กรณี" เป็น 1 ใน 3 สาระสำคัญของ ม.156 → โมฆียะ'},
+  {q:'ตั้งใจจะซื้อรถอยู่แล้ว แต่ถูกผู้ขายหลอกเรื่องราคา (กลฉ้อฉลเพื่อเหตุ) ผลคือ?',
+    opts:['โมฆะ','โมฆียะ บอกล้างได้','บอกล้างไม่ได้ แต่เรียกค่าสินไหมทดแทนได้ (ม.161)','ไม่มีผลใดเลย'], correct:2,
+    exp:'กลฉ้อฉลไม่ถึงขนาด (ยังไงก็ทำนิติกรรม แค่เงื่อนไขเปลี่ยน) → ไม่โมฆียะ เรียกได้แค่ค่าสินไหมทดแทน (ม.159 ว.2 / ม.161)'},
+  {q:'เจ้าหนี้ขู่ว่า "ไม่จ่ายจะฟ้องศาล" ลูกหนี้กลัวจึงเซ็นรับสภาพหนี้ นิติกรรมนี้?',
+    opts:['โมฆียะเพราะข่มขู่','โมฆะ','สมบูรณ์ — ขู่ใช้สิทธิตามปกตินิยม ไม่เป็นข่มขู่ (ม.165)','เป็นกลฉ้อฉล'], correct:2,
+    exp:'ม.165: การขู่ว่าจะใช้สิทธิตามปกตินิยม (ฟ้องศาลตามสิทธิ) ไม่ถือเป็นการข่มขู่ตาม ม.164 → นิติกรรมสมบูรณ์'},
+  {q:'ตอบรับคำเสนอแต่เพิ่มเงื่อนไข "ขอชำระเป็น 3 งวด" ผลทางกฎหมายคือ?',
+    opts:['สัญญาเกิดตามเงื่อนไขใหม่','สัญญาเกิดตามคำเสนอเดิม','เป็นคำบอกปัด + คำเสนอขึ้นใหม่ (ม.359 ว.2) สัญญายังไม่เกิด','โมฆียะ'], correct:2,
+    exp:'คำสนองที่มีข้อแก้ไขเพิ่มเติม = บอกปัดคำเสนอเดิมและเป็นคำเสนอขึ้นใหม่ ตาม ม.359 ว.2 — จุดสอบข้อ 4 ประจำ'},
+  {q:'สัญญาระหว่างบุคคลซึ่งอยู่ห่างกันโดยระยะทาง เกิดขึ้นเมื่อใด?',
+    opts:['เมื่อส่งคำสนองออกไป','เมื่อคำสนองไปถึงผู้เสนอ (ม.361)','เมื่อผู้เสนอตอบยืนยันอีกครั้ง','เมื่อทำเป็นหนังสือ'], correct:1,
+    exp:'ม.361: สัญญาระหว่างบุคคลซึ่งอยู่ห่างกัน เกิดเมื่อคำสนองไปถึงผู้เสนอ (ประกอบหลักฎีกา 411/2490 ไม่ต้องทำเป็นหนังสือ เว้นแต่กฎหมายกำหนดแบบ)'},
+  {q:'ฝ่ายที่วางมัดจำเป็นฝ่ายผิดสัญญาเสียเอง มัดจำจะเป็นอย่างไร?',
+    opts:['ต้องคืนผู้วาง','ถูกริบ (ม.378(2))','แบ่งกันคนละครึ่ง','หักเป็นค่าเสียหายแล้วคืนส่วนเหลือเสมอ'], correct:1,
+    exp:'ม.378: (1) ชำระหนี้ → คืน/หักราคา (2) ผู้วางผิดสัญญา → ริบ (3) ผู้รับผิดสัญญา → ส่งคืน — ท่อง "ชำระ-คืน / วาง-ริบ / รับ-คืน"'},
+  {q:'เลิกสัญญาแล้ว เงินที่รับไว้ต้องคืนพร้อมดอกเบี้ยร้อยละเท่าใด?',
+    opts:['ร้อยละ 3 นับแต่วันที่ได้รับไว้ (ม.391)','ร้อยละ 5','ร้อยละ 7.5','ไม่ต้องคืนดอกเบี้ย'], correct:0,
+    exp:'ม.391 ว.1: กลับคืนสู่ฐานะเดิม เงินที่รับไว้คืนพร้อมดอกเบี้ยร้อยละ 3 นับแต่วันที่ได้รับไว้ และยังเรียกค่าเสียหายได้อีก (ว.4)'},
+  {q:'สิทธิเรียกร้องค่าเช่าทรัพย์สิน มีอายุความกี่ปี?',
+    opts:['10 ปี','5 ปี','2 ปี (ม.193/34)','1 ปี'], correct:2,
+    exp:'ม.193/34 กำหนดอายุความ 2 ปีสำหรับค่าเช่าทรัพย์สิน ค้าปลีก-ส่ง อุตสาหกรรม เกษตร ขนส่ง โรงแรม วิชาชีพอิสระ — ต่างจากอายุความทั่วไป 10 ปี (ม.193/30)'},
+  {q:'ลูกหนี้ชำระหนี้ที่ขาดอายุความไปแล้ว ต่อมารู้ความจริง จะเรียกเงินคืนได้หรือไม่?',
+    opts:['ได้ เพราะหนี้ขาดอายุความแล้ว','ได้ครึ่งหนึ่ง','ไม่ได้ (ม.193/35)','ได้ถ้าฟ้องภายใน 1 ปี'], correct:2,
+    exp:'ม.193/35: หนี้ขาดอายุความแล้วถ้าลูกหนี้ชำระไป จะเรียกคืนไม่ได้ แม้ไม่รู้ว่าขาดอายุความ — เพราะอายุความให้แค่ "สิทธิปฏิเสธ" (ม.193/12) หนี้ไม่ได้สูญสิ้น'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=9?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=9?'ยอดเยี่ยม! พร้อมเข้าห้องสอบแล้ว 🎉':'กลับไปทวนแท็บบทเรียน & Case Lab แล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.prim, borderColor:C.prim}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="purple">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuizTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>🎮 ควิซ 12 ข้อ — ตอบแล้วเฉลยพร้อมเหตุผลทันที</span>}
+        description={<span style={{color:C.text2}}>ครอบคลุมทั้ง 4 โซนข้อสอบ: โมฆะ · โมฆียะ · สัญญา · อายุความ — ทำให้ได้ 9+ ก่อนเข้าห้องสอบ</span>} />
+      <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+        <Quiz/>
+      </Card>
+    </div>
+  );
+}
+
+/* ============ TAB 6: FLASHCARDS ============ */
+const flashcards = [
+  {q:'นิติกรรมตาม ม.149 มีองค์ประกอบกี่ข้อ อะไรบ้าง?', a:'5 ข้อ — "กระ-ชอบ-มุ่ง-ใจ-ก่อ"', d:'กระทำโดยแสดงเจตนา · ชอบด้วยกฎหมาย · มุ่งผูกนิติสัมพันธ์ · ด้วยใจสมัคร · ก่อ/เปลี่ยน/โอน/สงวน/ระงับสิทธิ', star:3, exam:true},
+  {q:'โมฆะ กับ โมฆียะ ต่างกันที่จุดไหนสำคัญที่สุด?', a:'โมฆะ = เสียเปล่าตั้งแต่ต้น / โมฆียะ = สมบูรณ์จนกว่าถูกบอกล้าง', d:'โมฆะใครก็อ้างได้ สัตยาบันไม่ได้ (คืนตาม ม.172) · โมฆียะบอกล้างได้เฉพาะผู้มีสิทธิ ม.175 หรือให้สัตยาบัน ม.177', star:3, exam:true},
+  {q:'ม.150 นิติกรรมโมฆะเพราะวัตถุประสงค์ มี 3 กรณีอะไรบ้าง?', a:'ต้องห้ามชัดแจ้ง / พ้นวิสัย / ขัดความสงบเรียบร้อย-ศีลธรรม', d:'เช่น จ้างฆ่าคน (ต้องห้าม) ขายดวงจันทร์ (พ้นวิสัย) — โมฆะทั้งหมด', star:3, exam:true},
+  {q:'ทำสัญญาซื้อขายที่ดินแต่ไม่จดทะเบียนต่อพนักงานเจ้าหน้าที่ ผลคือ?', a:'โมฆะ (ม.152)', d:'ไม่ทำตามแบบที่กฎหมายบังคับ (ซื้อขายอสังหาฯ ต้องทำเป็นหนังสือ+จดทะเบียน ม.456)', star:2, exam:false},
+  {q:'สองฝ่ายสมรู้กันทำสัญญากู้ปลอมไว้อ้างกับคนอื่น เข้ามาตราใด ผลอย่างไร?', a:'ม.155 ว.1 เจตนาลวง → โมฆะ', d:'แต่ยกความเป็นโมฆะขึ้นต่อสู้บุคคลภายนอกผู้สุจริตไม่ได้', star:2, exam:false},
+  {q:'ทำสัญญากู้บังหน้า แต่ของจริงคือจ้างฆ่าคน บังคับตามสัญญาไหน?', a:'ม.155 ว.2 นิติกรรมอำพราง → บังคับตามนิติกรรมที่ถูกอำพราง', d:'สัญญาจ้างฆ่าคนคือของจริง → โมฆะตาม ม.150 อยู่ดี', star:2, exam:true},
+  {q:'สำคัญผิดในสาระสำคัญ (ม.156) มี 3 ประเภทอะไรบ้าง?', a:'ลักษณะนิติกรรม / ตัวบุคคล / ตัวทรัพย์สิน → โมฆียะ', d:'จะซื้อกลายเป็นเช่า · จะจ้าง B ไปจ้าง A · ที่ดินคนละแปลง (ข้อสอบ 1/68 ข้อ 1)', star:3, exam:true},
+  {q:'ซื้อแหวนคิดว่าเพชรแท้ ที่จริงเพชรเทียม เข้ามาตราใด?', a:'ม.157 สำคัญผิดในคุณสมบัติ → โมฆียะ', d:'คุณสมบัติของทรัพย์สินซึ่งตามปกติถือเป็นสาระสำคัญ', star:2, exam:false},
+  {q:'กลฉ้อฉล "ถึงขนาด" กับ "ไม่ถึงขนาด" ผลต่างกันอย่างไร?', a:'ถึงขนาด → โมฆียะ (ม.159 ว.1) / ไม่ถึงขนาด → เรียกสินไหมได้อย่างเดียว (ว.2, ม.161)', d:'ถึงขนาด = ถ้าไม่หลอกจะไม่ทำเลย · ไม่ถึงขนาด = ยังไงก็ทำ แค่เงื่อนไข/ราคาเปลี่ยน', star:3, exam:true},
+  {q:'ผู้ขายรู้ว่าที่ดินน้ำท่วมทุกปี แต่นิ่งเสียไม่บอกผู้ซื้อ เป็นอะไร?', a:'กลฉ้อฉลโดยการนิ่ง (ม.162)', d:'นิติกรรมสองฝ่าย จงใจนิ่งไม่แจ้งข้อความจริงที่ควรบอกให้แจ้ง = กลฉ้อฉล', star:2, exam:false},
+  {q:'ข่มขู่ตาม ม.164 ต้องมีลักษณะอย่างไร และอะไรไม่ถือเป็นข่มขู่?', a:'ภัยใกล้จะถึง + ร้ายแรง + ถึงขนาดทำให้กลัว → โมฆียะ / ม.165 ใช้สิทธิตามปกตินิยมไม่เป็นข่มขู่', d:'ขู่ฟ้องศาลตามสิทธิ นับถือยำเกรง เรื่องไม่เกี่ยวกับนิติกรรม → ไม่เป็นข่มขู่', star:2, exam:true},
+  {q:'ใครบอกล้างโมฆียะกรรมของผู้เยาว์ได้ และผลของการบอกล้างคือ?', a:'ม.175 ผู้แทนโดยชอบธรรม / ผู้เยาว์เมื่อบรรลุนิติภาวะ → ม.176 โมฆะตั้งแต่แรก', d:'บอกล้างแล้วคืนสู่ฐานะเดิมตามหลักลาภมิควรได้ · ทางกลับกันให้สัตยาบันได้เมื่อเหตุบกพร่องหมดไป (ม.177)', star:3, exam:true},
+  {q:'คำเสนอบ่งระยะเวลาไว้ 7 วัน ถอนก่อนครบกำหนดได้ไหม?', a:'ไม่ได้ (ม.354)', d:'คำเสนอที่บ่งระยะเวลาให้ทำคำสนอง จะถอนภายในเวลาที่บ่งไว้ไม่ได้', star:2, exam:false},
+  {q:'คำสนองที่มีข้อแก้ไข/เพิ่มเติม ผลทางกฎหมายคือ?', a:'ม.359 ว.2 — บอกปัดคำเสนอเดิม + เป็นคำเสนอขึ้นใหม่', d:'สัญญายังไม่เกิด จนกว่าอีกฝ่ายสนองรับคำเสนอใหม่ (ข้อสอบทุเรียน 1/67 ข้อ 4)', star:3, exam:true},
+  {q:'สัญญาระหว่างบุคคลซึ่งอยู่ห่างกัน เกิดขึ้นเมื่อใด?', a:'เมื่อคำสนองไปถึงผู้เสนอ (ม.361)', d:'หลักฎีกา 411/2490: คำเสนอ+คำสนองตรงกันสัญญาเกิด ไม่ต้องทำเป็นหนังสือ เว้นแต่กฎหมายกำหนดแบบ', star:2, exam:true},
+  {q:'มัดจำ 3 กรณีตาม ม.378 จำอย่างไร?', a:'"ชำระ-คืน / วาง-ริบ / รับ-คืน"', d:'(1) ชำระหนี้ → คืน/หักราคา (2) ผู้วางมัดจำผิดสัญญา → ริบ (3) ผู้รับมัดจำผิดสัญญา → ส่งคืน', star:3, exam:true},
+  {q:'เลิกสัญญาตาม ม.387 ต้องทำอย่างไร และผลตาม ม.391 คือ?', a:'กำหนดเวลาพอสมควรบอกกล่าว → เลิกได้ → คืนสู่ฐานะเดิม + ดอกเบี้ย 3% + เรียกค่าเสียหายได้', d:'ม.391 ว.4 การเลิกสัญญาไม่กระทบสิทธิเรียกค่าเสียหาย', star:3, exam:true},
+  {q:'เบี้ยปรับสูงเกินส่วน ศาลทำอะไรได้ และเรียกเบี้ยปรับกับฟ้องบังคับหนี้เลือกได้กี่ทาง?', a:'ม.383 ศาลลดได้ / ม.380 เลือกได้อย่างเดียว', d:'เบี้ยปรับ = ค่าเสียหายกำหนดล่วงหน้าก่อนผิดสัญญา', star:2, exam:false},
+  {q:'อายุความทั่วไปกี่ปี และค่าเช่าทรัพย์สินกี่ปี?', a:'ทั่วไป 10 ปี (ม.193/30) / ค่าเช่า 2 ปี (ม.193/34)', d:'ม.193/34 ยังรวม ค้าปลีก-ส่ง อุตสาหกรรม เกษตร ขนส่ง โรงแรม วิชาชีพอิสระ', star:3, exam:true},
+  {q:'ลูกหนี้ชำระหนี้บางส่วน มีผลต่ออายุความอย่างไร?', a:'สะดุดหยุดลง → เริ่มนับใหม่ทั้งหมด (ม.193/14 + 193/28 ว.2)', d:'ชำระบางส่วน/ดอกเบี้ย/ให้ประกัน = รับสภาพหนี้ — เวลาที่ล่วงไปแล้วไม่นับ (ข้อสอบ 1/68 ข้อ 3)', star:3, exam:true},
+  {q:'นับระยะเวลาเป็นวัน/เดือน/ปี เริ่มนับวันไหน และสิ้นสุดวันไหน?', a:'ม.193/3 ว.2 ไม่นับวันแรก / ม.193/5 ว.2 สิ้นสุดวันก่อนหน้าวันตรงกัน', d:'เริ่ม 15 มี.ค. นับ 1 เดือน → สิ้นสุด 14 เม.ย. · วันสุดท้ายตรงวันหยุด → ขยายถึงวันทำการถัดไป (ม.193/7)', star:3, exam:true},
+  {q:'หนี้ขาดอายุความแล้ว ลูกหนี้เผลอชำระไป เรียกคืนได้ไหม?', a:'ไม่ได้ (ม.193/35)', d:'แม้ไม่รู้ว่าขาดอายุความ — เพราะครบอายุความลูกหนี้ได้แค่สิทธิปฏิเสธ (ม.193/12) หนี้ไม่สูญสิ้น', star:3, exam:true},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(((i*7+3)%(i+1)));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length}</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.prim} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:290}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:290}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.prim}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:290}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="volcano" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ คำถาม (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:18.5, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:290}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:19.5, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.prim, borderColor:C.prim}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'lab', label:'🧪 Case Lab', children:<CaseLabTab/>},
+    {key:'quiz', label:'🎮 ควิซ', children:<QuizTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.prim, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.prim, itemActiveColor:C.primDark, itemSelectedColor:C.primDark, itemHoverColor:C.plum, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.prim, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.plumDark}, ${C.prim})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(92,63,89,.25)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 1103 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:30, fontWeight:800}}>นิติกรรมและสัญญา</h1>
+          <div style={{color:'#F3E9F1', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Harvard</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 149-193/35 และ 354-391 (ประกอบ ม.21, 29, 172, 406, 456) · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>

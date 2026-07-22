@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>กฎหมายอาญา ภาค 1 LAW2106 · ห้องเรียนแบบ Harvard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#F7F1EC;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#3B2F2C;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#E3CFC5; color:#3B2F2C; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#EFE6DF; }
+  ::-webkit-scrollbar-thumb { background:#C79E90; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#9A5A4C; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  /* Flip card */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  /* Quick card hover */
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(120,70,60,.18); }
+
+  /* Reveal animation */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  /* Diagram animations */
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#8A4438; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(120,70,60,.16); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(154,90,76,.35);} 50%{ box-shadow:0 0 0 8px rgba(154,90,76,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress, Steps,
+        Collapse, Switch, Select, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE (โทนเลือดหมู–ดินเผา เฉพาะวิชาอาญา) ============ */
+const C = {
+  crimson:'#9A5A4C', crimsonDark:'#7C4437', crimsonLight:'#C79E90',
+  clay:'#A8674B', clayDark:'#7E4E36',
+  bg:'#F7F1EC', surface:'#EFE6DF', surface2:'#E8DBD2', surface3:'#F2E9E2',
+  border:'#DFCEC4', borderDark:'#C79E90',
+  text:'#3B2F2C', text2:'#5C4B45', text3:'#7C6A63',
+  white:'#FBF8F5',
+  green:'#5D8A66', greenBg:'#EFF5F0',
+  red:'#B85555', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3',
+  blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.clay, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+const Sec = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.crimsonDark, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap'}}>ม.{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='crimson', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    purple:[C.purple,C.purpleBg], cyan:[C.cyan,C.cyanBg], crimson:[C.crimsonDark,C.surface3]
+  };
+  const [cc,bb] = map[tone]||map.crimson;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+function DiaNode({x, y, w=150, h=62, title, sub, color, active, dim, onClick}) {
+  return (
+    <g style={{cursor:onClick?'pointer':'default', opacity:dim?0.28:1, transition:'opacity .4s'}} onClick={onClick} className={active?'node-pulse':''}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="15"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.15 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+/* ============ บันไดความรับผิดอาญา 4 ขั้น (Concept Diagram หลักของวิชา) ============ */
+function LiabilityLadder() {
+  const modes = {
+    full: {
+      label:'ผิดเต็ม (ฆ่าโดยเจตนา)', color:C.red, stop:5,
+      verdict:'ผ่านครบทุกขั้น → รับโทษเต็มตามฐานความผิด (เช่น ฆ่าผู้อื่นโดยเจตนา ม.288)',
+      desc:'ตัวอย่าง: นายดำตั้งใจยิงนายแดงตาย — มีการกระทำ ครบองค์ประกอบ (เจตนาประสงค์ต่อผล ม.59) ไม่มีเหตุยกเว้นความผิด ไม่มีเหตุยกเว้น/ลดโทษ → ผิด ม.288 รับโทษเต็ม'
+    },
+    noact: {
+      label:'ไม่มีการกระทำ', color:C.blue, stop:1,
+      verdict:'ตกตั้งแต่ขั้น ๑ — ไม่ใช่ "การกระทำ" ตามกฎหมายอาญา → ไม่ต้องรับผิดเลย จบการวิเคราะห์',
+      desc:'ตัวอย่าง: ละเมอ ชักเพราะโรค หรือถูกคนอื่นจับมือกดลงไป — ไม่ใช่การเคลื่อนไหวร่างกายโดยรู้สำนึกภายใต้บังคับของจิตใจ → ไม่มี "การกระทำ" ไม่ต้องไล่ขั้นต่อ'
+    },
+    defend: {
+      label:'ป้องกัน ม.68', color:C.green, stop:3,
+      verdict:'สะดุดขั้น ๓ — มีเหตุยกเว้นความผิด (ป้องกันพอสมควรแก่เหตุ) → "ไม่มีความผิด" เลย',
+      desc:'ตัวอย่าง: โจรถือมีดวิ่งเข้ามาจะแทง จึงใช้ไม้ตีโจรล้ม — ครบองค์ประกอบทำร้ายก็จริง แต่เป็นการป้องกันสิทธิจากภยันตรายละเมิดกฎหมายที่ใกล้จะถึง พอสมควรแก่เหตุ → ม.68 ยกเว้นความผิด'
+    },
+    insane: {
+      label:'วิกลจริต ม.65', color:C.purple, stop:4,
+      verdict:'สะดุดขั้น ๔ — ผิดครบองค์ประกอบ แต่มีเหตุยกเว้นโทษ → มีความผิดแต่ "ไม่ต้องรับโทษ"',
+      desc:'ตัวอย่าง: คนวิกลจริตที่ไม่สามารถรู้ผิดชอบหรือบังคับตนเองได้ แทงคนตาย — การกระทำครบองค์ประกอบและไม่มีเหตุยกเว้นความผิด แต่ ม.65 ยกเว้นโทษให้ (ถ้ายังรู้ผิดชอบอยู่บ้าง ศาลลดโทษได้)'
+    },
+    rage: {
+      label:'บันดาลโทสะ ม.72', color:C.clayDark, stop:4,
+      verdict:'สะดุดขั้น ๔ — เหตุลดโทษ → ยังมีความผิด แต่ศาลลงโทษน้อยกว่าที่กฎหมายกำหนดได้',
+      desc:'ตัวอย่าง: ถูกข่มเหงอย่างร้ายแรงด้วยเหตุอันไม่เป็นธรรม (ถูกตบหน้าหลายทีต่อหน้าแฟน) จึงกระทำผิดต่อผู้ข่มเหง "ในขณะนั้น" → ม.72 ลดโทษ ไม่ใช่ยกเว้นความผิด'
+    },
+  };
+  const [m, setM] = useState('full');
+  const M = modes[m];
+  const stages = [
+    {t:'๑ การกระทำ', s:'รู้สำนึก+บังคับจิตใจ', x:95},
+    {t:'๒ องค์ประกอบ', s:'ภายนอก + เจตนา/ประมาท', x:275},
+    {t:'๓ ยกเว้นความผิด', s:'ป้องกัน 68 / จำเป็น 67', x:455},
+    {t:'๔ ยกเว้น/ลดโทษ', s:'65 / 70 / 72 / เด็ก', x:635},
+  ];
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="middle"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 730 300" style={{width:'100%', height:'auto', maxHeight:380}}>
+          {stages.slice(0,-1).map((st,i)=>(
+            <DiaEdge key={i} id={`lad${i}`} d={`M ${st.x+78} 80 L ${stages[i+1].x-78} 80`}
+              color={i+2<=M.stop? C.crimson : C.border} animate={i+2<=M.stop} dur={2}
+              width={3} dim={i+2>M.stop} />
+          ))}
+          {stages.map((st,i)=>{
+            const n = i+1;
+            const passed = n < M.stop;
+            const stopped = n === M.stop && M.stop<=4;
+            return (
+              <DiaNode key={i} x={st.x} y={80} w={155} h={64}
+                title={st.t} sub={st.s}
+                color={stopped ? M.color : C.crimson}
+                active={stopped || (m==='full' && passed)}
+                dim={n > M.stop} />
+            );
+          })}
+          <DiaEdge id="toverdict"
+            d={`M ${M.stop<=4 ? stages[M.stop-1].x : 635} 114 Q 365 190 365 208`}
+            color={M.color} animate dur={2.2} width={4}
+            label="ผลทางกฎหมาย" labelX={365} labelY={168} />
+          <g className="breathe">
+            <rect x={95} y={212} width={540} height={64} rx={16} fill={M.color+'18'} stroke={M.color} strokeWidth={2.5}/>
+            <text x={365} y={238} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontWeight="800" fontSize="16" fill={M.color}>⚖️ {M.label}</text>
+            <text x={365} y={262} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fill={C.text2}>{M.verdict.length>78 ? M.verdict.slice(0,78)+'…' : M.verdict}</text>
+          </g>
+        </svg>
+      </div>
+      <Box tone={m==='defend'?'green':(m==='insane'?'purple':(m==='noact'?'blue':'red'))} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        <div style={{marginBottom:6}}>{M.desc}</div>
+        <div style={{fontWeight:700}}>{M.verdict}</div>
+      </Box>
+    </div>
+  );
+}
+
+/* ============ FlowStrip (ท่อลำดับขั้น) ============ */
+function FlowStrip({steps, color=C.crimson}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs${color.replace('#','')}${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['การกระทำ', 'Act', 'เคลื่อนไหวร่างกายโดยรู้สำนึก + อยู่ภายใต้บังคับของจิตใจ (ละเมอ/ชัก/ถูกบังคับกาย = ไม่ใช่)', C.blue],
+    ['เจตนา', 'Intention (ม.59)', 'ประสงค์ต่อผล (มุ่งให้เกิดผลโดยตรง) หรือ ย่อมเล็งเห็นผล (รู้ว่าผลจะเกิดแน่นอน)', C.crimson],
+    ['ประมาท', 'Negligence (ม.59 ว.4)', 'ปราศจากความระมัดระวังตามวิสัยและพฤติการณ์ ทั้งที่อาจใช้ได้แต่หาได้ใช้ให้เพียงพอไม่', C.clayDark],
+    ['ป้องกัน', 'Self-defence (ม.68)', 'ตอบโต้ภยันตรายจากการประทุษร้ายอันละเมิดกฎหมายที่ใกล้จะถึง อย่างพอสมควรแก่เหตุ → ไม่ผิด', C.green],
+    ['จำเป็น', 'Necessity (ม.67)', 'หนีภัยจากธรรมชาติ/สัตว์/สถานการณ์ โดยกระทำต่อบุคคลที่สามได้', C.cyan],
+    ['พยายาม', 'Attempt (ม.80)', 'ลงมือแล้วแต่ทำไปไม่ตลอด หรือทำตลอดแล้วไม่บรรลุผล → โทษ 2 ใน 3', C.purple],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>กฎหมายอาญาภาค 1 (ภาคทั่วไป) ตอบคำถามเดียว: <strong>"คนคนนี้ต้องรับผิดทางอาญาหรือไม่ และรับโทษแค่ไหน?"</strong> เครื่องมือหลักคือ "บันได 4 ขั้น" — ทุกข้อสอบต้องไต่บันไดนี้ทีละขั้นเสมอ ข้ามขั้นเมื่อไหร่ คะแนนหายเมื่อนั้น</span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>🪜 โครงสร้างตอบข้อสอบ 4 ขั้น (หัวใจของทั้งวิชา)</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          ก่อนตอบทุกข้อ ให้ถามตัวเองตามลำดับ:
+          <Pill color={C.blue} bg={C.blueBg}>๑ มี "การกระทำ" ไหม</Pill>
+          <Pill color={C.crimson} bg={C.surface3}>๒ ครบองค์ประกอบความผิดไหม (ภายนอก + เจตนา/ประมาท)</Pill>
+          <Pill color={C.green} bg={C.greenBg}>๓ มีเหตุยกเว้นความผิดไหม (ป้องกัน/จำเป็น/ทำตามคำสั่ง)</Pill>
+          <Pill color={C.purple} bg={C.purpleBg}>๔ มีเหตุยกเว้นโทษ/ลดโทษไหม (วิกลจริต/บันดาลโทสะ/เด็กอายุต่ำกว่า 15 ปี/ป้องกันเกินสมควร)</Pill>
+        </Paragraph>
+        <FlowStrip color={C.crimson} steps={[
+          {icon:'🏃', t:'๑ การกระทำ', bg:C.blueBg},
+          {icon:'🧩', t:'๒ องค์ประกอบความผิด', bg:C.surface3},
+          {icon:'🛡️', t:'๓ เหตุยกเว้นความผิด', bg:C.greenBg},
+          {icon:'⚖️', t:'๔ เหตุยกเว้น/ลดโทษ', bg:C.purpleBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: คดีหนึ่งจะ "จบ" ที่ขั้นไหน?</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับโหมดเพื่อดูว่าข้อเท็จจริงแต่ละแบบทำให้การวิเคราะห์สะดุดที่บันไดขั้นใด และผลทางกฎหมายต่างกันอย่างไร — "ไม่มีความผิด" กับ "ผิดแต่ไม่รับโทษ" ไม่เหมือนกัน! นี่คือจุดตายของข้อสอบ</Paragraph>
+      <LiabilityLadder/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 6 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                <span style={{fontWeight:700, fontSize:16.5, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚖️ 3 คู่มาตราที่คนสับสนที่สุด (ต้องแยกให้ออก!)</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'', dataIndex:'k', width:150, render:t=><strong style={{color:C.crimsonDark}}>{t}</strong>},
+          {title:<span style={{color:C.blue}}>ฝั่งซ้าย</span>, dataIndex:'a'},
+          {title:<span style={{color:C.purple}}>ฝั่งขวา</span>, dataIndex:'b'},
+        ]}
+        dataSource={[
+          {key:1, k:'ม.60 vs ม.61', a:'พลาด: รู้เป้าหมาย แต่ "มือพลาด" ไปถูกคนอื่น', b:'สำคัญผิดในตัวบุคคล: "มองผิดคน" ตั้งแต่ต้น'},
+          {key:2, k:'ม.67 vs ม.68', a:'จำเป็น: ภัยจากธรรมชาติ/สัตว์/สถานการณ์ ทำต่อบุคคลที่สามได้', b:'ป้องกัน: ภัยจากคนที่ประทุษร้ายละเมิดกฎหมาย ตอบโต้ผู้ก่อภัยโดยตรง'},
+          {key:3, k:'ม.83 vs ม.86', a:'ตัวการ: ร่วมลงมือ/ร่วมวางแผนแบ่งหน้าที่ → โทษเท่าผู้ลงมือ', b:'ผู้สนับสนุน: แค่ช่วยเหลือให้ความสะดวก (ให้ยืมปืน) → โทษ 2 ใน 3'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        อย่าสับสน 3 ระดับผล: <strong>ยกเว้นความผิด</strong> (ป้องกัน ม.68, จำเป็น ม.67 → ไม่ผิดเลย) ·
+        <strong> ยกเว้นโทษ</strong> (วิกลจริต ม.65, ทำตามคำสั่ง ม.70 → ผิดแต่ไม่รับโทษ) ·
+        <strong> ลดโทษ</strong> (บันดาลโทสะ ม.72, ป้องกันเกินสมควร ม.69 → ผิดและรับโทษ แต่ศาลลดได้)
+        เขียนสลับระดับ = เสียคะแนนทันทีแม้จำเลขมาตราถูก
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+const SRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Sec>{n}</Sec>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+const lessonModules = [
+  {
+    key:'l1', star:3, icon:'🪜', title:'การกระทำ & โครงสร้างความรับผิด 4 ขั้น',
+    chips:['โครงตอบ'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          "การกระทำ" ตามกฎหมายอาญา = การ<strong>เคลื่อนไหวร่างกายโดยรู้สำนึก</strong> และอยู่<strong>ภายใต้บังคับของจิตใจ</strong>
+          — ถ้าละเมอ ชักเพราะโรค หรือถูกผู้อื่นบังคับทางกาย (จับมือกดลงไป) → ไม่ใช่การกระทำ → <strong>จบการวิเคราะห์ ไม่ต้องรับผิด</strong>
+        </Box>
+        <Box tone="blue" title="ลำดับวิเคราะห์ 4 ขั้น (ห้ามข้าม)" icon="🪜">
+          ๑ มีการกระทำไหม → ๒ ครบองค์ประกอบความผิดไหม (องค์ประกอบภายนอก: ผู้กระทำ/การกระทำ/วัตถุแห่งการกระทำ + องค์ประกอบภายใน: เจตนา ม.59 หรือประมาท)
+          → ๓ มีเหตุยกเว้นความผิดไหม (ป้องกัน ม.68 / จำเป็น ม.67 / ทำตามคำสั่ง ม.70) → ๔ มีเหตุยกเว้นโทษ/ลดโทษไหม (วิกลจริต ม.65 / บันดาลโทสะ ม.72 / เด็กอายุต่ำกว่า 15 ปี / ป้องกันเกินสมควร ม.69)
+        </Box>
+        <Box tone="red" title="จุดสอบ" icon="🎯">
+          ข้อสอบอัตนัยทุกข้อให้เดินตามโครงนี้เสมอ — เขียน "วางหลักกฎหมาย → วินิจฉัย (กรณีตามปัญหา…เห็นว่า…) → สรุป (กล่าวโดยสรุป…)" <strong>ห้ามสลับลำดับ</strong> และต้องยกเลขมาตราทุกครั้ง ตอบถูกแต่ไม่ยกมาตรา = เสียคะแนน
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l2', star:3, icon:'🎯', title:'ม.59 — เจตนา & ประมาท (ออกทุกครั้ง)',
+    chips:['59'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="เจตนา 2 แบบ (ม.59 ว.2)" icon="✅">
+          <strong>ประสงค์ต่อผล</strong> = มุ่งหมายให้เกิดผลนั้นโดยตรง เช่น ตั้งใจยิง ก เพื่อให้ตาย<br/>
+          <strong>ย่อมเล็งเห็นผล</strong> = ไม่ได้ประสงค์โดยตรง แต่<strong>รู้ว่าผลจะเกิดแน่นอน</strong> เช่น วางระเบิดรถฆ่า ก ทั้งที่รู้ว่า ข นั่งข้าง ๆ ต้องตายด้วย → ถือว่ามีเจตนาต่อ ข ด้วย
+        </Box>
+        <Box tone="purple" title="ประมาท (ม.59 ว.4)" icon="🌀">
+          กระทำโดย<strong>ปราศจากความระมัดระวัง</strong>ซึ่งบุคคลในภาวะเช่นนั้นจักต้องมีตาม<strong>วิสัยและพฤติการณ์</strong> และผู้กระทำ<strong>อาจใช้ความระมัดระวังได้ แต่หาได้ใช้ให้เพียงพอไม่</strong> — เช่น ขับรถเร็ว 120 กม./ชม. ในเขตชุมชน ชนคนตาย
+        </Box>
+        <Box tone="cyan" title="วิธีไล่สาย (สูตรวินิจฉัย)" icon="🧪">
+          มีเจตนาไหม? → <strong>มี</strong> → เป็นประสงค์ต่อผล หรือย่อมเล็งเห็นผล → ผิดฐานเจตนา<br/>
+          → <strong>ไม่มี</strong> → ประมาทไหม? → <strong>ประมาท</strong> = ผิดฐานประมาท / <strong>ไม่ประมาท</strong> = เหตุสุดวิสัย ไม่ต้องรับผิด
+        </Box>
+        <Box tone="red" title="กับดัก" icon="⚠️">
+          "ย่อมเล็งเห็นผล" ต้องถึงขั้น <strong>รู้ว่าผลจะเกิดแน่นอน</strong> ไม่ใช่แค่ "อาจจะเกิด" — ถ้าแค่เสี่ยง ๆ อาจเป็นเพียงประมาท ระวังโจทก์หลอกให้ตอบเกิน
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'🏹', title:'ม.60 พลาด vs ม.61 สำคัญผิดในตัวบุคคล',
+    chips:['60','61'],
+    body:()=>(
+      <div>
+        <Box tone="blue" title="ม.60 เจตนาโดยพลาด — 'มือพลาด'" icon="🏹">
+          รู้ว่าเป้าหมายคือใคร แต่ผลของการกระทำ<strong>พลาดไปเกิดแก่อีกคนหนึ่ง</strong> เช่น ยิง ก แต่กระสุนเบี่ยงไปถูก ข ตาย
+          → กฎหมายให้ถือว่า<strong>มีเจตนากระทำต่อผู้ที่ได้รับผลร้าย</strong> (ข) แต่โทษไม่หนักไปกว่ากรณีเจตนาตรง
+          — และอย่าลืมว่าการกระทำต่อเป้าหมายเดิม (ก) ยังเป็น<strong>พยายามฆ่า</strong> (ม.288 ประกอบ ม.80) อีกกระทงหนึ่ง
+        </Box>
+        <Box tone="purple" title="ม.61 สำคัญผิดในตัวบุคคล — 'ตาพลาด มองผิดคน'" icon="👁️">
+          <strong>เข้าใจผิดว่าคนตรงหน้าคือเป้าหมาย</strong> จึงลงมือ เช่น จะฆ่า ก เห็น ข หน้าคล้ายในที่มืด จึงยิง ข ตาย
+          → จะยกความสำคัญผิดเป็นข้อแก้ตัวว่า<strong>มิได้กระทำโดยเจตนาไม่ได้</strong> ต้องรับผิดเสมือนกระทำต่อบุคคลที่เจตนาไว้
+        </Box>
+        <Box tone="red" title="จุดสอบ — แยกให้ขาดใน 1 บรรทัด" icon="🎯">
+          ม.60 = ผู้กระทำ<strong>มองเห็นเป้าหมายจริง แต่มือพลาด</strong> · ม.61 = <strong>มองผิดคนตั้งแต่ต้น</strong> — ข้อสอบชอบเล่าเหตุการณ์กลางคืน/หน้าคล้าย เพื่อหลอกให้ตอบ ม.60 ทั้งที่คือ ม.61
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:2, icon:'❓', title:'ม.62 — สำคัญผิดในข้อเท็จจริง 2 วรรค',
+    chips:['62','68'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="ว.1 สำคัญผิดว่ามีเหตุยกเว้น" icon="🛡️">
+          เข้าใจผิดว่ามีข้อเท็จจริงซึ่งถ้ามีจริงจะทำให้การกระทำไม่เป็นความผิด/ยกเว้นโทษ → <strong>ได้ประโยชน์จากความสำคัญผิดนั้น</strong><br/>
+          ตัวอย่างคลาสสิก: ได้ยินเสียงเปิดประตูตอนดึก เข้าใจว่าโจรจะเข้ามาทำร้าย จึงยิงไป ปรากฏเป็นลูกชายตัวเอง → อ้าง <strong>ป้องกันโดยสำคัญผิด (ม.68 ประกอบ ม.62 ว.1)</strong> ได้
+        </Box>
+        <Box tone="purple" title="ว.2 ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบความผิด" icon="🌲">
+          ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบของความผิด → <strong>ไม่ถือว่ามีเจตนา</strong> (เหลือได้อย่างมากแค่ประมาท)<br/>
+          ตัวอย่าง: ยิงเข้าไปในพุ่มไม้คิดว่าเป็นหมูป่า แท้จริงเป็นคน → ไม่มีเจตนาฆ่า อาจผิดเพียงฐานประมาทเป็นเหตุให้คนตาย
+        </Box>
+        <Box tone="red" title="กับดัก" icon="⚠️">
+          ว.1 ทำให้ "อ้างเหตุยกเว้นได้แม้เหตุไม่มีจริง" ส่วน ว.2 ทำให้ "เจตนาหลุด" — คนละผลกันโดยสิ้นเชิง อ่านโจทย์ว่าผู้กระทำเข้าใจผิดเรื่อง <strong>ภัย</strong> (ว.1) หรือเข้าใจผิดเรื่อง <strong>สิ่งที่ตนกระทำต่อ</strong> (ว.2)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l5', star:2, icon:'💥', title:'ม.63 ผลเกินเจตนา & ความสัมพันธ์ระหว่างการกระทำกับผล',
+    chips:['63','290','295'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="ม.63 ผลเกินเจตนา" icon="💥">
+          ผลที่เกิดขึ้น<strong>เกินกว่า</strong>ที่ผู้กระทำประสงค์หรือย่อมเล็งเห็น → รับผิดสำหรับผลที่เกินเพียงฐาน<strong>ประมาท</strong> (เมื่อกฎหมายบัญญัติให้ลงโทษได้)<br/>
+          ตัวอย่างคลาสสิก: ตั้งใจ<strong>ทำร้าย</strong> (ม.295) ต่อยหนึ่งหมัด แต่เหยื่อล้มหัวฟาดพื้น<strong>ตาย</strong> → ผิดฐานทำร้ายผู้อื่นจนเป็นเหตุให้ถึงแก่ความตาย <strong>ม.290</strong> (ไม่ใช่ฆ่าโดยเจตนา ม.288)
+        </Box>
+        <Box tone="cyan" title="Causation — 2 ทฤษฎี" icon="🔗">
+          <strong>ทฤษฎีเงื่อนไข</strong> (Conditio Sine Qua Non): ถ้าไม่มีการกระทำนี้ ผลจะเกิดไหม? ถ้าไม่เกิด = การกระทำเป็นเหตุ<br/>
+          <strong>ทฤษฎีเหตุที่เหมาะสม</strong> (Adequate Cause): การกระทำนั้นตามปกติวิสัยจะก่อผลเช่นนั้นหรือไม่ — ใช้<strong>ตัดเหตุแทรกซ้อนที่ผิดปกติวิสัย</strong> เช่น ก ทำร้าย ข เล็กน้อย ข นั่งรถพยาบาลไปโรงพยาบาลแล้วรถถูกรถบรรทุกชนจน ข ตาย → รถชนเป็นเหตุแทรกซ้อนผิดปกติวิสัย ก ไม่ต้องรับผิดในผลตาย (รับผิดแค่ทำร้ายร่างกาย)
+        </Box>
+        <Box tone="red" title="จุดสอบ" icon="🎯">
+          เจอโจทย์ "ตั้งใจแค่ทำร้าย แต่ตาย" ให้ท่องสูตร: ทำร้าย 295 → ตาย = ผลเกินเจตนา → <strong>290</strong> เสมอ อย่าเผลอตอบ 288 เพราะไม่มีเจตนาฆ่า
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l6', star:3, icon:'🛡️', title:'ม.68 ป้องกัน · ม.69 เกินสมควร · ม.67 จำเป็น',
+    chips:['67','68','69'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="ม.68 ป้องกัน — องค์ประกอบ 5 ข้อ ต้องครบทุกข้อ" icon="🛡️">
+          (๑) มี<strong>ภยันตราย</strong>จากการประทุษร้ายอันละเมิดต่อกฎหมาย (ต้องมาจาก "คน" ไม่ใช่สัตว์/ธรรมชาติ)
+          (๒) ภยันตราย<strong>ใกล้จะถึง</strong> (กำลังจะเกิดหรือกำลังเกิดอยู่ ไม่ใช่ผ่านไปแล้ว)
+          (๓) กระทำเพื่อ<strong>ป้องกันสิทธิ</strong>ของตนเองหรือผู้อื่นก็ได้
+          (๔) <strong>พอสมควรแก่เหตุ</strong> — ได้สัดส่วนกับภัย
+          (๕) <strong>จำต้องกระทำ</strong> — ไม่มีทางเลือกอื่นที่ดีกว่า<br/>
+          <strong>ครบ 5 ข้อ → ไม่มีความผิดเลย</strong>
+        </Box>
+        <Box tone="red" title="ม.69 ป้องกันเกินสมควรแก่เหตุ" icon="🔥">
+          ป้องกันได้ตามสิทธิ แต่ทำ<strong>เกินสัดส่วน</strong> เช่น ถูกต่อยด้วยมือเปล่า กลับชักปืนยิงตาย → <strong>ยังมีความผิด</strong> แต่ศาลจะลงโทษน้อยกว่าที่กฎหมายกำหนดไว้เพียงใดก็ได้
+        </Box>
+        <Box tone="cyan" title="ม.67 จำเป็น — ภัยจาก 'อย่างอื่น'" icon="🌊">
+          ภัยมาจาก<strong>ธรรมชาติ สัตว์ สถานการณ์</strong> หรือคนที่ไม่ใช่ผู้ทำละเมิด → กระทำต่อทรัพย์สิน/สิทธิของ<strong>บุคคลที่สาม</strong>ได้ ถ้าพอสมควรแก่เหตุ → ไม่มีความผิด<br/>
+          ตัวอย่าง: น้ำท่วมหนัก ทุบกำแพงบ้านคนอื่นเพื่อหนีน้ำ
+        </Box>
+        <Box tone="purple" title="สูตรจำแยก 67/68" icon="🧠">
+          <strong>ม.67 ภัยจากอื่น · ม.68 ภัยจากคน</strong> — ข้อสอบชอบให้หมาไล่กัด (สัตว์ → จำเป็น ม.67) สลับกับโจรถือมีด (คน → ป้องกัน ม.68) แล้วดูว่านักศึกษาหยิบมาตราถูกไหม
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:2, icon:'⚖️', title:'เหตุยกเว้นโทษ/ลดโทษ — ม.65 วิกลจริต · ม.70 ทำตามคำสั่ง · ม.72 บันดาลโทสะ',
+    chips:['65','70','72'],
+    body:()=>(
+      <div>
+        <Box tone="purple" title="ม.65 วิกลจริต" icon="🧠">
+          กระทำผิดขณะ<strong>ไม่สามารถรู้ผิดชอบหรือไม่สามารถบังคับตนเองได้</strong>เพราะจิตบกพร่อง โรคจิต จิตฟั่นเฟือน → <strong>ผิดแต่ไม่ต้องรับโทษ</strong> · ถ้ายังรู้ผิดชอบอยู่บ้าง/บังคับตนได้บ้าง → รับโทษแต่<strong>ศาลลดโทษได้</strong>
+        </Box>
+        <Box tone="blue" title="ม.70 ทำตามคำสั่งเจ้าพนักงาน" icon="📜">
+          กระทำตามคำสั่งของเจ้าพนักงาน <strong>แม้คำสั่งนั้นมิชอบด้วยกฎหมาย</strong> ถ้าผู้กระทำมีหน้าที่หรือ<strong>เชื่อโดยสุจริต</strong>ว่ามีหน้าที่ต้องปฏิบัติตาม → <strong>ไม่ต้องรับโทษ</strong> เว้นแต่รู้ว่าคำสั่งนั้นมิชอบ — ตัวอย่าง: ทหารยิงตามคำสั่งผู้บังคับบัญชาโดยสุจริตเชื่อว่าคำสั่งชอบ
+        </Box>
+        <Box tone="red" title="ม.72 บันดาลโทสะ" icon="😤">
+          ถูก<strong>ข่มเหงอย่างร้ายแรงด้วยเหตุอันไม่เป็นธรรม</strong> จึงกระทำความผิดต่อผู้ข่มเหง<strong>ในขณะนั้น</strong> → ศาลลงโทษน้อยกว่าที่กฎหมายกำหนดเพียงใดก็ได้ (<strong>ลดโทษ ไม่ใช่ยกเว้น</strong>)
+        </Box>
+        <Box tone="crimson" title="จุดสอบ" icon="🎯">
+          ม.72 ต้อง "กระทำในขณะนั้น" — ถ้าโกรธแล้วกลับบ้านไปเอาปืนมายิงวันรุ่งขึ้น = ขาดความต่อเนื่อง อ้างบันดาลโทสะไม่ได้ กลายเป็นฆ่าโดยไตร่ตรอง
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:2, icon:'🔫', title:'ม.80 พยายาม · ม.81 พยายามที่เป็นไปไม่ได้ · ตระเตรียม',
+    chips:['80','81'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="ม.80 พยายามกระทำความผิด" icon="🔫">
+          <strong>ลงมือ</strong>กระทำความผิดแล้ว แต่ (ก) กระทำไปไม่ตลอด หรือ (ข) กระทำไปตลอดแล้วแต่การกระทำไม่บรรลุผล → ระวางโทษ <strong>2 ใน 3</strong> ของโทษที่กำหนดสำหรับความผิดนั้น<br/>
+          ตัวอย่าง: ยิง ก หนึ่งนัดแต่ไม่ถูก → พยายามฆ่า ม.288 ประกอบ ม.80
+        </Box>
+        <Box tone="blue" title="ตระเตรียม ≠ พยายาม" icon="🧳">
+          <strong>ตระเตรียม</strong> = ยังไม่ลงมือ (ซื้อปืน สะกดรอยตาม) → หลักคือ<strong>ไม่ผิด</strong> เว้นแต่กฎหมายบัญญัติเป็นพิเศษ · <strong>พยายาม</strong> = ลงมือแล้วแต่ไม่สำเร็จ → ผิด ม.80 — เส้นแบ่งอยู่ที่คำว่า <strong>"ลงมือ"</strong>
+        </Box>
+        <Box tone="purple" title="ม.81 พยายามที่เป็นไปไม่ได้อย่างแน่แท้" icon="👻">
+          การกระทำที่<strong>ไม่สามารถบรรลุผลได้อย่างแน่แท้</strong> เพราะเหตุปัจจัยหรือวัตถุที่มุ่งกระทำต่อ เช่น ยิงศพที่ตายไปแล้วโดยคิดว่ายังมีชีวิต → ศาลจะ<strong>ไม่ลงโทษก็ได้</strong>
+        </Box>
+        <Box tone="red" title="กับดัก" icon="⚠️">
+          โจทย์เล่ายาวเรื่องซื้อปืน วางแผน สะกดรอย 3 วัน แล้วถามว่า "ผิดพยายามฆ่าไหม" — ถ้ายังไม่ลงมือ ตอบให้ชัด: <strong>ยังเป็นแค่ตระเตรียม ไม่ผิดฐานพยายาม</strong>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l9', star:2, icon:'👥', title:'ม.83–87 ผู้มีส่วนร่วม — ตัวการ ผู้ใช้ ผู้สนับสนุน',
+    chips:['83','84','86','87'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.purple} steps={[
+          {icon:'🗣️', t:'ผู้ใช้ (84) ก่อให้ทำ', bg:C.purpleBg},
+          {icon:'👥', t:'ตัวการ (83) ร่วมลงมือ', bg:C.redBg},
+          {icon:'🤲', t:'ผู้สนับสนุน (86) ช่วยเหลือ', bg:C.cyanBg},
+          {icon:'⚖️', t:'โทษ: เท่ากัน / เท่ากัน / 2 ใน 3', bg:C.surface3},
+        ]}/>
+        <Box tone="red" title="ม.83 ตัวการ" icon="👥" style={{marginTop:12}}>
+          บุคคล<strong>ตั้งแต่ 2 คนขึ้นไปร่วมกันกระทำความผิด</strong> (ร่วมวางแผน + แบ่งหน้าที่ + ร่วมลงมือ) → ทุกคนรับโทษ<strong>เท่ากับผู้ลงมือ</strong> เช่น ก ถือปืน ข ถือถุง เข้าปล้นร้านทองด้วยกัน
+        </Box>
+        <Box tone="crimson" title="ม.84 ผู้ใช้" icon="🗣️">
+          <strong>ก่อให้ผู้อื่นกระทำความผิด</strong> ไม่ว่าด้วยการใช้ บังคับ ขู่เข็ญ จ้าง วาน หรือยุยงส่งเสริม → รับโทษ<strong>เสมือนตัวการ</strong> เช่น จ้าง 50,000 บาทให้ไปฆ่าคน
+        </Box>
+        <Box tone="cyan" title="ม.86 ผู้สนับสนุน · ม.87" icon="🤲">
+          <SRule n="86"><strong>ช่วยเหลือหรือให้ความสะดวก</strong>ก่อนหรือขณะกระทำความผิด (ให้ยืมปืน เปิดประตูให้) → โทษ <strong>2 ใน 3</strong> ของโทษที่กำหนด</SRule>
+          <SRule n="87">ผู้สนับสนุนที่<strong>ให้เงินหรือทรัพย์สิน</strong>ช่วยการกระทำผิด → รับโทษอย่างผู้สนับสนุน</SRule>
+        </Box>
+        <Box tone="red" title="จุดสอบ — เส้นแบ่ง 83/86" icon="🎯">
+          ตัวการ = เป็น "ส่วนหนึ่งของแผน" ร่วมลงมือหรือแบ่งหน้าที่กันทำ · ผู้สนับสนุน = อยู่ "นอกแผนหลัก" แค่ช่วยให้สะดวก — ให้ยืมปืนโดยรู้ว่าจะไปฆ่าคน คือ<strong>ผู้สนับสนุน ม.86</strong> ไม่ใช่ตัวการ
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l2']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Sec key={c}>{c}</Sec>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>9 โมดูล เรียงตามบันไดความรับผิด: การกระทำ → เจตนา → เหตุยกเว้น → พยายาม → ผู้มีส่วนร่วม</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกครั้ง: ม.59, ม.60/61, ม.68/69) · คลิกที่หัวข้อเพื่อกางเนื้อหา</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'แนวข้อสอบ · เจตนาโดยพลาด', star:3, topic:'ยิงพลาด — ม.60 + พยายามฆ่า',
+    facts:'นายกอใช้ปืนยิงนายขอด้วยเจตนาฆ่า แต่กระสุนพลาดไปถูกนายคอที่ยืนอยู่ใกล้กันถึงแก่ความตาย นายกอมีความผิดฐานใดบ้าง?',
+    issue:'ผู้ที่เจตนาฆ่าคนหนึ่ง แต่ผลไปเกิดแก่อีกคนหนึ่งโดยพลาด ต้องรับผิดต่อทั้งสองคนอย่างไร',
+    rule:['60','288','80'],
+    ruleText:'ม.60 ผู้ใดเจตนากระทำต่อบุคคลหนึ่ง แต่ผลของการกระทำเกิดแก่อีกบุคคลหนึ่งโดยพลาดไป ให้ถือว่าผู้นั้นกระทำโดยเจตนาแก่บุคคลซึ่งได้รับผลร้าย (เจตนาโดยพลาด) · ม.288 ฐานฆ่าผู้อื่น · ม.80 การพยายามกระทำความผิด ระวางโทษ 2 ใน 3',
+    application:'นายกอมีเจตนาฆ่านายขอและได้ลงมือยิงแล้ว แม้กระสุนไม่ถูกนายขอ การกระทำต่อนายขอจึงเป็นการลงมือที่ไม่บรรลุผล = พยายามฆ่า (ม.288 ประกอบ ม.80) ส่วนผลที่เกิดแก่นายคอโดยพลาดไปนั้น กฎหมายให้ถือว่านายกอมีเจตนาต่อนายคอด้วยตาม ม.60 นายกอจึงผิดฐานฆ่านายคอโดยเจตนา (โดยพลาด)',
+    conclusion:'นายกอผิดฐานฆ่านายคอโดยเจตนาโดยพลาด (ม.288 ประกอบ ม.60) กระทงหนึ่ง และพยายามฆ่านายขอ (ม.288 ประกอบ ม.80) อีกกระทงหนึ่ง'
+  },
+  {
+    id:'c2', tag:'แนวข้อสอบ · ป้องกันเกินสมควร', star:3, topic:'ถูกชกมือเปล่า ยิงตอบ — ม.68/69',
+    facts:'นายเสือชกนายสิงห์ด้วยมือเปล่า นายสิงห์จึงชักปืนยิงนายเสือถึงแก่ความตายทันที นายสิงห์อ้างป้องกันโดยชอบด้วยกฎหมายได้หรือไม่?',
+    issue:'การใช้ปืนยิงตอบโต้ภยันตรายที่เป็นเพียงการชกด้วยมือเปล่า เป็นการป้องกันพอสมควรแก่เหตุหรือไม่',
+    rule:['68','69'],
+    ruleText:'ม.68 การป้องกันโดยชอบต้องเป็นการป้องกันสิทธิให้พ้นภยันตรายจากการประทุษร้ายอันละเมิดต่อกฎหมาย เป็นภยันตรายที่ใกล้จะถึง และกระทำพอสมควรแก่เหตุ · ม.69 ถ้าเกินสมควรแก่เหตุ ยังคงมีความผิด แต่ศาลจะลงโทษน้อยกว่าที่กฎหมายกำหนดเพียงใดก็ได้',
+    application:'นายสิงห์เผชิญภยันตรายซึ่งละเมิดต่อกฎหมายและใกล้จะถึงจริง จึงมีสิทธิป้องกันได้ แต่ภัยเป็นเพียงการชกด้วยมือเปล่า การชักปืนยิงจนถึงแก่ความตายย่อมไม่ได้สัดส่วนกับภยันตรายที่ได้รับ จึงเป็นการป้องกันเกินสมควรแก่เหตุ',
+    conclusion:'นายสิงห์อ้างป้องกันโดยชอบเต็มรูปตาม ม.68 ไม่ได้ คงเป็นการป้องกันเกินสมควรแก่เหตุตาม ม.69 — ยังมีความผิด แต่ศาลลงโทษน้อยกว่าที่กฎหมายกำหนดเพียงใดก็ได้'
+  },
+  {
+    id:'c3', tag:'แนวข้อสอบ · สำคัญผิด ว.2', star:2, topic:'ยิงพุ่มไม้คิดว่าหมูป่า — ม.62 ว.2',
+    facts:'นายพรานยิงปืนเข้าไปในพุ่มไม้โดยเข้าใจว่าเป็นหมูป่า แต่ปรากฏว่าเป็นคนซ่อนอยู่ ถูกกระสุนถึงแก่ความตาย นายพรานมีความผิดฐานฆ่าคนตายโดยเจตนาหรือไม่?',
+    issue:'ผู้กระทำที่ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบของความผิด (ไม่รู้ว่าสิ่งที่ยิงคือ "คน") ถือว่ามีเจตนาฆ่าหรือไม่',
+    rule:['62','59'],
+    ruleText:'ม.62 ว.2 ผู้กระทำที่ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบของความผิด จะถือว่ากระทำโดยเจตนาไม่ได้ · ม.59 ว.4 ถ้าการไม่รู้นั้นเกิดจากความปราศจากความระมัดระวังที่ควรมีตามวิสัยและพฤติการณ์ อาจต้องรับผิดฐานประมาท',
+    application:'องค์ประกอบของความผิดฐานฆ่าคือกระทำต่อ "ผู้อื่น" เมื่อนายพรานไม่รู้ว่าสิ่งที่อยู่ในพุ่มไม้เป็นคน โดยเข้าใจว่าเป็นหมูป่า จึงขาดเจตนาฆ่าตาม ม.62 ว.2 แต่การยิงเข้าไปในพุ่มไม้โดยไม่ตรวจสอบให้แน่ก่อน เป็นการปราศจากความระมัดระวังซึ่งบุคคลในภาวะเช่นนั้นจักต้องมี',
+    conclusion:'นายพรานไม่ผิดฐานฆ่าคนตายโดยเจตนา แต่อาจต้องรับผิดฐานกระทำโดยประมาทเป็นเหตุให้ผู้อื่นถึงแก่ความตาย (ม.62 ว.2 ประกอบ ม.59 ว.4)'
+  },
+  {
+    id:'c4', tag:'แนวข้อสอบ · ผลเกินเจตนา', star:3, topic:'ต่อยหนึ่งหมัด หัวฟาดพื้นตาย — ม.63',
+    facts:'นายหมัดต่อยนายโหน่งที่หน้า 1 หมัดด้วยเจตนาเพียงทำร้าย แต่นายโหน่งเสียหลักล้มหัวฟาดพื้นถึงแก่ความตาย นายหมัดต้องรับผิดฐานฆ่าคนตายโดยเจตนาหรือไม่?',
+    issue:'ผู้ที่มีเจตนาเพียงทำร้าย แต่ผลที่เกิดขึ้นคือความตายซึ่งเกินกว่าเจตนา ต้องรับผิดฐานใด',
+    rule:['63','295','290'],
+    ruleText:'ม.63 ถ้าผลของการกระทำเกิดขึ้นเกินกว่าที่ผู้กระทำประสงค์หรือย่อมเล็งเห็น ผู้กระทำต้องรับผิดสำหรับผลที่เกินเพียงฐานประมาทเมื่อกฎหมายบัญญัติให้ลงโทษได้ · ม.295 ทำร้ายร่างกาย · ม.290 ทำร้ายผู้อื่นจนเป็นเหตุให้ถึงแก่ความตาย',
+    application:'นายหมัดมีเจตนาเพียงทำร้ายร่างกาย (ม.295) มิได้ประสงค์หรือย่อมเล็งเห็นว่าการต่อยเพียงหนึ่งหมัดจะทำให้ถึงแก่ความตาย ความตายจึงเป็นผลเกินเจตนาตาม ม.63 เมื่อกฎหมายมีบทเฉพาะรองรับคือ ม.290 ทำร้ายจนเป็นเหตุให้ถึงแก่ความตาย จึงลงโทษตามบทนั้น',
+    conclusion:'นายหมัดไม่ผิดฐานฆ่าโดยเจตนา (ม.288) แต่ผิดฐานทำร้ายผู้อื่นจนเป็นเหตุให้ถึงแก่ความตาย ม.290 ประกอบหลักผลเกินเจตนา ม.63'
+  },
+  {
+    id:'c5', tag:'แนวข้อสอบ · ผู้ใช้และผู้สนับสนุน', star:2, topic:'จ้างฆ่า + ให้ยืมปืน — ม.84/86',
+    facts:'นายเฮงจ้างนายโหดไปฆ่านายดวงโดยให้เงิน 50,000 บาท ส่วนนายเก๋ารู้ว่านายโหดจะไปฆ่าคน จึงให้นายโหดยืมปืน นายโหดยิงนายดวงตาย — นายเฮงและนายเก๋าต้องรับผิดอย่างไร?',
+    issue:'ผู้ที่จ้างวานให้ผู้อื่นกระทำผิด กับผู้ที่ช่วยเหลือให้ความสะดวกก่อนกระทำผิด ต้องรับผิดฐานะใดและโทษเพียงใด',
+    rule:['84','86','288'],
+    ruleText:'ม.84 ผู้ใดก่อให้ผู้อื่นกระทำความผิด ไม่ว่าด้วยการใช้ บังคับ ขู่เข็ญ จ้าง วาน หรือยุยงส่งเสริม ผู้นั้นเป็นผู้ใช้ เมื่อความผิดได้กระทำลง รับโทษเสมือนตัวการ · ม.86 ผู้ใดช่วยเหลือหรือให้ความสะดวกในการที่ผู้อื่นกระทำความผิดก่อนหรือขณะกระทำ เป็นผู้สนับสนุน รับโทษ 2 ใน 3',
+    application:'นายเฮง "จ้าง" นายโหดให้ไปฆ่า เป็นการก่อให้ผู้อื่นกระทำความผิด เมื่อนายโหดลงมือฆ่าสำเร็จ นายเฮงจึงเป็นผู้ใช้ตาม ม.84 รับโทษเสมือนตัวการฐานฆ่า ม.288 · ส่วนนายเก๋าเพียงให้ยืมปืนโดยรู้ว่าจะนำไปฆ่าคน เป็นการช่วยเหลือให้ความสะดวกก่อนกระทำผิด ไม่ได้ร่วมวางแผนหรือลงมือ จึงเป็นผู้สนับสนุนตาม ม.86',
+    conclusion:'นายเฮงเป็นผู้ใช้ (ม.84) รับโทษเสมือนตัวการฐานฆ่า ม.288 · นายเก๋าเป็นผู้สนับสนุน (ม.86) รับโทษ 2 ใน 3 ของโทษฐานฆ่า'
+  },
+  {
+    id:'c6', tag:'แนวข้อสอบ · ตระเตรียม/พยายาม', star:2, topic:'ซื้อปืนสะกดรอย ยังไม่ลงมือ — ม.80',
+    facts:'นายแค้นตั้งใจจะฆ่านายคู่อริ จึงไปซื้อปืนและสะกดรอยตามเป็นเวลา 3 วัน แต่ยังไม่ทันได้ลงมือ ตำรวจจับได้เสียก่อน นายแค้นผิดฐานพยายามฆ่าหรือไม่?',
+    issue:'การซื้ออาวุธและสะกดรอยตามโดยยังไม่ได้ลงมือกระทำ ถือเป็นการ "พยายาม" กระทำความผิดแล้วหรือยัง',
+    rule:['80'],
+    ruleText:'ม.80 ผู้ใดลงมือกระทำความผิดแต่กระทำไปไม่ตลอด หรือกระทำไปตลอดแล้วแต่การกระทำไม่บรรลุผล ผู้นั้นพยายามกระทำความผิด — จุดตัดคือต้อง "ลงมือ" แล้ว ส่วนการตระเตรียมการโดยหลักไม่เป็นความผิด เว้นแต่กฎหมายบัญญัติไว้เป็นพิเศษ',
+    application:'การซื้อปืนและสะกดรอยตามเป็นเพียงขั้น "ตระเตรียมการ" นายแค้นยังไม่ได้ลงมือกระทำการอันใกล้ชิดต่อผลคือการฆ่า (เช่น ยกปืนเล็งยิง) เมื่อยังไม่ถึงขั้นลงมือ จึงไม่เข้าองค์ประกอบของการพยายามตาม ม.80',
+    conclusion:'นายแค้นไม่ผิดฐานพยายามฆ่า เพราะการกระทำยังอยู่เพียงขั้นตระเตรียม ยังไม่ได้ลงมือตามความหมายของ ม.80'
+  },
+  {
+    id:'c7', tag:'แนวข้อสอบ · จำเป็น', star:2, topic:'น้ำท่วมทุบกำแพงบ้านคนอื่น — ม.67',
+    facts:'เกิดน้ำท่วมฉับพลันรุนแรง นายหนีน้ำทุบกำแพงบ้านของนายเพื่อนบ้านเพื่อหนีน้ำเอาชีวิตรอด ทำให้กำแพงเสียหาย นายหนีน้ำมีความผิดฐานทำให้เสียทรัพย์หรือไม่?',
+    issue:'การทำลายทรัพย์สินของบุคคลที่สามเพื่อให้พ้นภยันตรายจากธรรมชาติ อ้างเหตุจำเป็นเพื่อไม่ต้องรับผิดได้หรือไม่',
+    rule:['67'],
+    ruleText:'ม.67 ผู้ใดกระทำความผิดด้วยความจำเป็น เพื่อให้ตนเองหรือผู้อื่นพ้นจากภยันตรายที่ใกล้จะถึงและไม่สามารถหลีกเลี่ยงให้พ้นโดยวิธีอื่นใดได้ เมื่อภยันตรายนั้นตนมิได้ก่อให้เกิดขึ้นเพราะความผิดของตน ถ้าการกระทำนั้นไม่เป็นการเกินสมควรแก่เหตุ → ไม่ต้องรับโทษ (ภัยจากธรรมชาติ/สัตว์/สถานการณ์ กระทำต่อบุคคลที่สามได้ ต่างจากป้องกัน ม.68 ที่ภัยต้องมาจากคนผู้ละเมิด)',
+    application:'ภยันตรายมาจากน้ำท่วมซึ่งเป็นภัยธรรมชาติ มิใช่การประทุษร้ายอันละเมิดกฎหมายจากคน จึงอ้างป้องกัน ม.68 ไม่ได้ แต่เข้าเหตุจำเป็น ม.67 — ภัยใกล้จะถึง นายหนีน้ำมิได้ก่อภัยเอง ไม่มีทางหลีกเลี่ยงอื่น และการทุบกำแพงเพื่อเอาชีวิตรอดได้สัดส่วนพอสมควรแก่เหตุ',
+    conclusion:'นายหนีน้ำอ้างเหตุจำเป็นตาม ม.67 ได้ จึงไม่ต้องรับผิดฐานทำให้เสียทรัพย์ (แต่ระวัง: ถ้าตอบเป็น "ป้องกัน ม.68" จะผิด เพราะภัยไม่ได้มาจากคน)'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0);
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.purple, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Sec>{x}</Sec></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'วินิจฉัย — ปรับข้อเท็จจริง (A)', color:C.clayDark, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="volcano" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.crimsonDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสจริง ทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น เพื่อฝึกโครงการเขียนตอบแบบได้คะแนนเต็ม — สังเกตว่าขั้น A จะขึ้นต้นด้วย "กรณีตามปัญหา…" และขั้น C ปิดด้วยธงคำตอบเสมอ</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="crimson" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>วางหลักกฎหมาย</b> (ยกมาตราที่เกี่ยว) → <b>วินิจฉัย</b> ("กรณีตามปัญหา…เห็นว่า…" เอาข้อเท็จจริงจับกับหลักทีละองค์ประกอบ) → <b>สรุป</b> ("กล่าวโดยสรุป…" ตอบคำถามให้ตรงธง) ห้ามสลับลำดับ และไล่บันได 4 ขั้นก่อนเสมอ
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: CASE LAB — ทำนายก่อนเฉลย ============ */
+const labCases = [
+  {
+    id:'p1', icon:'🔪', topic:'โจรถือมีดจะแทง',
+    facts:'โจรถือมีดวิ่งเข้ามาจะแทงนายกล้า นายกล้าคว้าท่อนไม้ตีโจร 1 ทีจนโจรล้มสลบ',
+    question:'นายกล้าอ้าง "ป้องกันโดยชอบ" (ม.68) จนไม่มีความผิดเลย ได้หรือไม่?',
+    answer:true, secs:['68'],
+    verdict:'ได้ — ภยันตรายมาจากการประทุษร้ายอันละเมิดกฎหมาย (โจรถือมีดจะแทง) ใกล้จะถึง นายกล้าป้องกันสิทธิในชีวิตร่างกายของตน ใช้ท่อนไม้ตีเพียง 1 ที ได้สัดส่วนกับภัยจากมีด และจำต้องกระทำ → ครบองค์ประกอบทั้ง 5 ข้อของ ม.68 = ไม่มีความผิด',
+    trap:'ครบ 5 ข้อ = "ไม่มีความผิด" ไม่ใช่แค่ "ไม่ต้องรับโทษ" — สองคำนี้ต่างระดับกัน'
+  },
+  {
+    id:'p2', icon:'🔫', topic:'ถูกต่อยมือเปล่า ยิงตอบ',
+    facts:'นายเดือดถูกนายดุต่อยหน้า 1 หมัดด้วยมือเปล่า นายเดือดชักปืนยิงนายดุถึงแก่ความตาย',
+    question:'นายเดือดไม่มีความผิดเลยเพราะเป็นการป้องกันตัว — ใช่หรือไม่?',
+    answer:false, secs:['68','69'],
+    verdict:'ไม่ใช่ — มีสิทธิป้องกันจริง (ภัยละเมิดกฎหมาย ใกล้จะถึง) แต่ถูกต่อยด้วยมือเปล่าแล้วใช้ปืนยิงถึงตาย = ไม่ได้สัดส่วน เป็นการป้องกัน "เกินสมควรแก่เหตุ" ตาม ม.69 → ยังมีความผิด แต่ศาลจะลงโทษน้อยกว่าที่กฎหมายกำหนดเพียงใดก็ได้',
+    trap:'ม.69 คือ "ลดโทษ" ไม่ใช่ "ยกเว้นความผิด" — ข้อสอบวัดตรงนี้เกือบทุกปี'
+  },
+  {
+    id:'p3', icon:'👻', topic:'ยิงศพ',
+    facts:'นายแค้นยิงนายเคราะห์ซึ่งตายไปแล้ว 2 ชั่วโมง โดยเข้าใจว่านายเคราะห์ยังนอนหลับอยู่',
+    question:'นายแค้นผิดฐานพยายามฆ่าตาม ม.80 และรับโทษ 2 ใน 3 ตามปกติ — ใช่หรือไม่?',
+    answer:false, secs:['81'],
+    verdict:'ไม่ใช่ — การยิง "ศพ" เป็นการกระทำที่ไม่สามารถบรรลุผลฆ่าได้อย่างแน่แท้ เพราะวัตถุแห่งการกระทำ (คนตายแล้ว) ไม่มีทางถูกฆ่าได้อีก จึงเป็นพยายามที่เป็นไปไม่ได้อย่างแน่แท้ตาม ม.81 → ศาลจะไม่ลงโทษก็ได้',
+    trap:'ม.80 พยายามปกติ = โทษ 2 ใน 3 · ม.81 เป็นไปไม่ได้อย่างแน่แท้ = ศาลไม่ลงโทษก็ได้ — จำคู่ให้แม่น'
+  },
+  {
+    id:'p4', icon:'🚪', topic:'คิดว่าโจร ยิงลูกชาย',
+    facts:'กลางดึก นายพ่อได้ยินเสียงเปิดประตูบ้าน เข้าใจว่าโจรบุกเข้ามาจะทำร้าย จึงยิงไป 1 นัด ปรากฏว่าเป็นลูกชายที่กลับบ้านดึก',
+    question:'นายพ่ออ้าง "ป้องกันโดยสำคัญผิด" (ม.68 ประกอบ ม.62 ว.1) ได้หรือไม่?',
+    answer:true, secs:['62','68'],
+    verdict:'ได้ — นายพ่อสำคัญผิดว่ามีภยันตรายละเมิดกฎหมายใกล้จะถึง (คิดว่าโจร) แม้ข้อเท็จจริงไม่มีภัยจริง ม.62 ว.1 ให้ผู้กระทำได้รับประโยชน์จากความสำคัญผิดนั้น จึงอ้างป้องกันได้เสมือนมีภัยจริง = ป้องกันโดยสำคัญผิด',
+    trap:'อย่าสับสนกับ ม.61 (สำคัญผิดตัวบุคคล) — ที่นี่ผิดเรื่อง "มีภัยหรือไม่" (ว.1) ไม่ใช่ผิดตัวคน'
+  },
+  {
+    id:'p5', icon:'💣', topic:'วางระเบิด รู้ว่ามีคนนั่งข้าง',
+    facts:'นายร้ายวางระเบิดรถของนายเป้าเพื่อฆ่านายเป้า ขณะนั้นนายซวยนั่งอยู่ในรถด้วย นายร้ายรู้แน่ว่านายซวยต้องตายด้วย แต่ก็กดระเบิด ทั้งสองตาย',
+    question:'นายร้ายมีเจตนาฆ่านายซวยด้วย — ใช่หรือไม่?',
+    answer:true, secs:['59'],
+    verdict:'ใช่ — แม้นายร้ายไม่ได้ "ประสงค์ต่อผล" ต่อนายซวยโดยตรง แต่รู้อยู่แล้วว่าผล (ความตายของนายซวย) จะเกิดขึ้นแน่นอน = เจตนาแบบ "ย่อมเล็งเห็นผล" ตาม ม.59 ว.2 จึงผิดฐานฆ่านายซวยโดยเจตนาเช่นกัน',
+    trap:'อย่าตอบ ม.60 (พลาด) — ไม่มีอะไรพลาดเลย ผู้กระทำ "รู้แน่" ตั้งแต่ต้นว่าผลจะเกิดกับคนข้าง ๆ'
+  },
+  {
+    id:'p6', icon:'🌊', topic:'น้ำท่วม ทุบกำแพงบ้านคนอื่น',
+    facts:'น้ำท่วมฉับพลัน นายรอดทุบกำแพงบ้านของนายข้างเคียงเพื่อหนีน้ำเอาชีวิตรอด',
+    question:'นายรอดต้องรับผิดฐานทำให้เสียทรัพย์ — ใช่หรือไม่?',
+    answer:false, secs:['67'],
+    verdict:'ไม่ต้องรับผิด — ภัยมาจากธรรมชาติ (น้ำท่วม) ไม่ใช่จากคน จึงเป็นเหตุ "จำเป็น" ตาม ม.67 ซึ่งยอมให้กระทำต่อทรัพย์สินของบุคคลที่สามได้ เมื่อภัยใกล้จะถึง หลีกเลี่ยงวิธีอื่นไม่ได้ ตนไม่ได้ก่อภัย และไม่เกินสมควรแก่เหตุ',
+    trap:'ตอบ "ป้องกัน ม.68" = ผิด เพราะ ม.68 ภัยต้องมาจากการประทุษร้ายอันละเมิดกฎหมายของ "คน" เท่านั้น'
+  },
+  {
+    id:'p7', icon:'🚑', topic:'รถพยาบาลถูกชน',
+    facts:'นายหนึ่งทำร้ายนายสองบาดเจ็บเล็กน้อย นายสองนั่งรถพยาบาลไปโรงพยาบาล ระหว่างทางรถพยาบาลถูกรถบรรทุกชน นายสองถึงแก่ความตาย',
+    question:'นายหนึ่งต้องรับผิดในผล "ความตาย" ของนายสองด้วย — ใช่หรือไม่?',
+    answer:false, secs:['ทฤษฎีเหตุที่เหมาะสม'],
+    verdict:'ไม่ — ตามทฤษฎีเหตุที่เหมาะสม (Adequate Cause) การทำร้ายเล็กน้อยตามปกติวิสัยไม่ก่อผลถึงตาย ความตายเกิดจากรถบรรทุกชนซึ่งเป็น "เหตุแทรกซ้อนที่ผิดปกติวิสัย" ตัดความสัมพันธ์ระหว่างการกระทำกับผล → นายหนึ่งรับผิดเพียงฐานทำร้ายร่างกาย ไม่ต้องรับผิดในผลตาย',
+    trap:'ทฤษฎีเงื่อนไขอย่างเดียวจะลากให้รับผิดถึงตาย — ต้องใช้ทฤษฎีเหตุที่เหมาะสมมา "ตัด" เหตุแทรกซ้อนผิดปกติวิสัย'
+  },
+  {
+    id:'p8', icon:'🔧', topic:'ให้ยืมปืน',
+    facts:'นายเก๋ารู้ว่านายโหดกำลังจะไปฆ่าคน จึงให้นายโหดยืมปืน นายโหดนำปืนไปยิงเหยื่อตาย (นายเก๋าไม่ได้ร่วมวางแผนหรือไปด้วย)',
+    question:'นายเก๋าเป็น "ตัวการร่วม" ตาม ม.83 — ใช่หรือไม่?',
+    answer:false, secs:['86'],
+    verdict:'ไม่ใช่ — นายเก๋าไม่ได้ร่วมลงมือหรือร่วมวางแผนแบ่งหน้าที่ เพียง "ช่วยเหลือให้ความสะดวก" ก่อนการกระทำผิด (ให้ยืมปืน) จึงเป็นผู้สนับสนุนตาม ม.86 รับโทษ 2 ใน 3 ของโทษฐานฆ่า ไม่ใช่ตัวการ ม.83',
+    trap:'เส้นแบ่ง 83/86: เป็นส่วนหนึ่งของแผน+ลงมือ = ตัวการ · อยู่นอกแผน แค่ช่วยให้สะดวก = ผู้สนับสนุน'
+  },
+];
+
+function PredictCard({c}) {
+  const [pick, setPick] = useState(null);
+  const revealed = pick !== null;
+  const correct = revealed && pick === c.answer;
+  return (
+    <Card className={revealed?'':'hoverlift'} style={{marginBottom:16, borderColor:revealed?(correct?C.green:C.red):C.border, borderWidth:revealed?2:1}} bodyStyle={{padding:'16px 18px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:8, flexWrap:'wrap'}}>
+        <span style={{fontSize:22}}>{c.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{c.topic}</span>
+        {revealed && <Tag color={correct?'green':'red'} style={{fontWeight:700}}>{correct?'🎯 ทำนายถูก!':'📖 ทำนายพลาด — อ่านเฉลยดี ๆ'}</Tag>}
+      </div>
+      <div style={{background:C.surface3, borderRadius:10, padding:'10px 14px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.2, marginBottom:10}}>
+        {c.facts}
+      </div>
+      <div style={{display:'flex', gap:12, alignItems:'center', flexWrap:'wrap'}}>
+        <span style={{fontWeight:700, color:C.crimsonDark, fontSize:14.5, flex:'1 1 260px'}}>❓ {c.question}</span>
+        <Radio.Group value={pick} disabled={revealed} onChange={e=>setPick(e.target.value)} optionType="button" buttonStyle="solid"
+          options={[{label:'ใช่',value:true},{label:'ไม่ใช่',value:false}]} />
+      </div>
+      {revealed && (
+        <div className="fade-up" style={{marginTop:12}}>
+          <div style={{marginBottom:8}}>
+            {c.secs.map(s=><span key={s} style={{display:'inline-block', margin:'3px 6px 3px 0', background:correct?C.green:C.red, color:C.white, padding:'3px 12px', borderRadius:8, fontWeight:700, fontFamily:"'Noto Serif Thai'"}}>{s.length>4? s : 'มาตรา '+s}</span>)}
+            <Tag color={c.answer?'blue':'purple'} style={{fontWeight:700}}>คำตอบที่ถูก: {c.answer?'ใช่':'ไม่ใช่'}</Tag>
+          </div>
+          <div style={{background:C.white, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`}}>
+            <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:4}}>คำวินิจฉัย</div>
+            <div style={{color:C.text2, fontSize:14.5, lineHeight:1.85}}>{c.verdict}</div>
+          </div>
+          <Box tone="red" title="กับดักข้อสอบ" icon="⚠️" style={{marginTop:10, marginBottom:0}}>{c.trap}</Box>
+          <div style={{textAlign:'right', marginTop:8}}>
+            <Button size="small" onClick={()=>setPick(null)}>ลองใหม่</Button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CaseLabTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:C.surface3, border:`1px solid ${C.clay}66`}}
+        message={<span style={{fontWeight:700, color:C.clayDark}}>🧪 Case Lab — ทำนายก่อน แล้วค่อยดูเฉลย</span>}
+        description={<span style={{color:C.text2}}>อ่านข้อเท็จจริง ตัดสินใจตอบ <strong>ใช่/ไม่ใช่</strong> ก่อน แล้วระบบจะเฉลยคำวินิจฉัย + มาตรา + กับดักข้อสอบ เหมือนอาจารย์ซักในห้องเรียนแบบ Socratic — วิจัยชี้ว่าการ "เดาก่อนเฉลย" ทำให้จำแม่นกว่าอ่านเฉย ๆ หลายเท่า</span>} />
+      {labCases.map(c=><PredictCard key={c.id} c={c}/>)}
+      <Box tone="cyan" title="เล่นซ้ำอีกรอบ" icon="💡">
+        ข้อไหนทำนายพลาด กด "ลองใหม่" แล้วอธิบายเหตุผลให้ตัวเองฟังก่อนกดตอบ — ถ้าอธิบายได้ว่า "ทำไมมาตรานี้ ไม่ใช่มาตราโน้น" แปลว่าพร้อมเขียนตอบจริงแล้ว
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: QUIZ ============ */
+const quizData = [
+  {q:'นายร้ายวางระเบิดรถเพื่อฆ่านาย ก โดยรู้แน่ว่านาย ข ที่นั่งข้าง ๆ ต้องตายด้วย นายร้ายมีเจตนาต่อนาย ข แบบใด?',
+    opts:['ประสงค์ต่อผล','ย่อมเล็งเห็นผล (ม.59 ว.2)','ประมาท (ม.59 ว.4)','ไม่มีเจตนาเลย'], correct:1,
+    exp:'รู้ว่าผลจะเกิดแน่นอนแม้ไม่ได้มุ่งโดยตรง = เจตนาย่อมเล็งเห็นผล ตาม ม.59 ว.2'},
+  {q:'นาย ก ยิงนาย ข แต่กระสุนเบี่ยงไปถูกนาย ค ตาย กรณีนี้ใช้มาตราใด?',
+    opts:['ม.61 สำคัญผิดในตัวบุคคล','ม.60 เจตนาโดยพลาด','ม.62 สำคัญผิดในข้อเท็จจริง','ม.63 ผลเกินเจตนา'], correct:1,
+    exp:'รู้เป้าหมายชัด แต่ "มือพลาด" ไปถูกคนอื่น = ม.60 ถือว่ามีเจตนาต่อนาย ค ผู้รับผลร้าย'},
+  {q:'นาย ก จะฆ่านาย ข เห็นนาย ค หน้าคล้ายในที่มืด จึงยิงนาย ค ตาย กรณีนี้ใช้มาตราใด?',
+    opts:['ม.60 พลาด','ม.61 สำคัญผิดในตัวบุคคล','ม.81 พยายามเป็นไปไม่ได้','ม.72 บันดาลโทสะ'], correct:1,
+    exp:'"มองผิดคน" ตั้งแต่ต้น = สำคัญผิดในตัวบุคคล ม.61 — ยกเป็นข้อแก้ตัวว่าไม่มีเจตนาไม่ได้'},
+  {q:'ยิงเข้าไปในพุ่มไม้คิดว่าเป็นหมูป่า แท้จริงเป็นคน ถูกยิงตาย ผลทางกฎหมายคือ?',
+    opts:['ผิดฐานฆ่าโดยเจตนา ม.288','ไม่มีเจตนา อาจผิดเพียงฐานประมาท (ม.62 ว.2)','ผิดฐานพยายามฆ่า','ไม่ผิดเลยทุกกรณี'], correct:1,
+    exp:'ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบ (ไม่รู้ว่าเป็นคน) → ไม่ถือว่ามีเจตนา ตาม ม.62 ว.2 เหลือพิจารณาเพียงประมาท'},
+  {q:'ตั้งใจต่อยทำร้าย 1 หมัด แต่เหยื่อล้มหัวฟาดพื้นตาย ผู้กระทำผิดฐานใด?',
+    opts:['ฆ่าโดยเจตนา ม.288','ทำร้ายจนถึงแก่ความตาย ม.290 (ผลเกินเจตนา ม.63)','ประมาทเป็นเหตุให้ตายอย่างเดียว','ไม่ผิดเพราะไม่ได้ตั้งใจฆ่า'], correct:1,
+    exp:'เจตนาแค่ทำร้าย (295) แต่ผลคือตาย = ผลเกินเจตนา ม.63 → ลงโทษตาม ม.290 ไม่ใช่ 288'},
+  {q:'หมาบ้าน (สัตว์) ไล่กัดนาย ก นาย ก จึงพังรั้วบ้านนาย ข หนีเข้าไป — อ้างเหตุใดไม่ต้องรับผิดฐานทำให้เสียทรัพย์?',
+    opts:['ป้องกัน ม.68','จำเป็น ม.67','บันดาลโทสะ ม.72','ทำตามคำสั่ง ม.70'], correct:1,
+    exp:'ภัยจากสัตว์/ธรรมชาติ ไม่ใช่จากการประทุษร้ายของคน → จำเป็น ม.67 (ทำต่อทรัพย์ของบุคคลที่สามได้)'},
+  {q:'ถูกต่อยด้วยมือเปล่า แต่ชักปืนยิงคนต่อยตาย ผลทางกฎหมายคือ?',
+    opts:['ไม่ผิดเลย (ป้องกันโดยชอบ ม.68)','ผิด แต่ศาลลงโทษน้อยกว่าที่กฎหมายกำหนดได้ (ม.69)','ผิดและรับโทษเต็มทุกกรณี','ไม่ต้องรับโทษ (ม.65)'], correct:1,
+    exp:'มีสิทธิป้องกัน แต่เกินสัดส่วน = ป้องกันเกินสมควรแก่เหตุ ม.69 ยังผิดอยู่ แค่ศาลลดโทษได้'},
+  {q:'โทษของ "การพยายามกระทำความผิด" ตาม ม.80 คือเท่าใด?',
+    opts:['เท่าโทษความผิดสำเร็จ','กึ่งหนึ่ง','2 ใน 3 ของโทษที่กำหนดสำหรับความผิดนั้น','ศาลไม่ลงโทษก็ได้เสมอ'], correct:2,
+    exp:'ม.80 พยายาม = ระวางโทษ 2 ใน 3 · ส่วน "ศาลไม่ลงโทษก็ได้" คือพยายามที่เป็นไปไม่ได้อย่างแน่แท้ ม.81'},
+  {q:'นาย ก จ้างนาย ข ไปฆ่านาย ค ด้วยเงิน 50,000 บาท นาย ข ฆ่าสำเร็จ นาย ก อยู่ในฐานะใด?',
+    opts:['ตัวการ ม.83','ผู้ใช้ ม.84 รับโทษเสมือนตัวการ','ผู้สนับสนุน ม.86 โทษ 2 ใน 3','ไม่ผิดเพราะไม่ได้ลงมือ'], correct:1,
+    exp:'จ้าง/วาน/ยุยงให้ผู้อื่นกระทำผิด = ผู้ใช้ ม.84 เมื่อความผิดได้กระทำลง รับโทษเสมือนตัวการ'},
+  {q:'รู้ว่าเพื่อนจะไปฆ่าคน จึงให้ยืมปืน (ไม่ได้ร่วมวางแผน/ไปด้วย) อยู่ในฐานะใด?',
+    opts:['ตัวการ ม.83 โทษเท่าผู้ลงมือ','ผู้ใช้ ม.84','ผู้สนับสนุน ม.86 โทษ 2 ใน 3','ไม่ผิดเพราะไม่ได้ยิงเอง'], correct:2,
+    exp:'ช่วยเหลือ/ให้ความสะดวกก่อนกระทำผิด โดยไม่ได้เป็นส่วนของแผน = ผู้สนับสนุน ม.86 โทษ 2 ใน 3'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=7?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=7?'เก่งมาก! บันได 4 ขั้นแม่นแล้ว พร้อมสอบ 🎉':'กลับไปทบทวนแท็บบทเรียน & Case Lab อีกรอบแล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.crimson, borderColor:C.crimson}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="volcano">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const quickRef = [
+  {s:'59', t:'เจตนา (ประสงค์/เล็งเห็น) + ประมาท', c:C.red},
+  {s:'60', t:'พลาด — มือพลาด', c:C.blue},
+  {s:'61', t:'สำคัญผิดตัวบุคคล — ตาพลาด', c:C.purple},
+  {s:'62', t:'สำคัญผิดข้อเท็จจริง (ว.1 อ้างเหตุยกเว้น / ว.2 เจตนาหลุด)', c:C.purple},
+  {s:'63', t:'ผลเกินเจตนา → รับผิดฐานประมาทสำหรับส่วนเกิน', c:C.clayDark},
+  {s:'65', t:'วิกลจริต → ไม่ต้องรับโทษ / ลดโทษ', c:C.cyan},
+  {s:'67', t:'จำเป็น — ภัยจากอื่น (ธรรมชาติ/สัตว์)', c:C.cyan},
+  {s:'68', t:'ป้องกัน — ภัยจากคน ครบ 5 ข้อ = ไม่ผิด', c:C.green},
+  {s:'69', t:'ป้องกันเกินสมควร → ผิด แต่ลดโทษได้', c:C.red},
+  {s:'70', t:'ทำตามคำสั่ง จพง. โดยสุจริต → ไม่ต้องรับโทษ', c:C.blue},
+  {s:'72', t:'บันดาลโทสะ → ลดโทษ (ต้องทำ "ขณะนั้น")', c:C.red},
+  {s:'80', t:'พยายาม → โทษ 2 ใน 3 (ตระเตรียม = ยังไม่ผิด)', c:C.crimson},
+  {s:'81', t:'พยายามเป็นไปไม่ได้แน่แท้ → ไม่ลงโทษก็ได้', c:C.purple},
+  {s:'83', t:'ตัวการ — ร่วมทำ โทษเท่ากัน', c:C.crimsonDark},
+  {s:'84', t:'ผู้ใช้ — ก่อให้ทำ โทษเสมือนตัวการ', c:C.clayDark},
+  {s:'86-87', t:'ผู้สนับสนุน — ช่วยให้สะดวก โทษ 2 ใน 3', c:C.cyan},
+];
+
+function QuizTab() {
+  const [view, setView] = useState('quiz');
+  return (
+    <div className="fade-up">
+      <div style={{textAlign:'center', marginBottom:18}}>
+        <Segmented size="large" value={view} onChange={setView}
+          options={[{label:'🎮 ทำควิซ',value:'quiz'},{label:'⚡ สูตรจำด่วนก่อนสอบ',value:'quick'}]}/>
+      </div>
+      {view==='quiz' ? (
+        <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+          <Quiz/>
+        </Card>
+      ) : (
+        <div>
+          <Box tone="crimson" title="กวาดตา 60 วินาทีก่อนเข้าห้องสอบ" icon="⚡">
+            ไล่จากบนลงล่างหนึ่งรอบ แล้วท่องโครง 4 ขั้น: <strong>การกระทำ → องค์ประกอบ → ยกเว้นความผิด → ยกเว้น/ลดโทษ</strong>
+          </Box>
+          <Row gutter={[10,10]}>
+            {quickRef.map((q,i)=>(
+              <Col xs={24} sm={12} key={i}>
+                <div className="qc" style={{background:C.white, border:`1px solid ${C.border}`, borderLeft:`4px solid ${q.c}`, borderRadius:'0 12px 12px 0', padding:'10px 14px', height:'100%'}}>
+                  <span style={{fontWeight:800, color:q.c, fontFamily:"'Noto Serif Thai'", marginRight:10, fontSize:15}}>ม.{q.s}</span>
+                  <span style={{color:C.text2, fontSize:14}}>{q.t}</span>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============ TAB 6: FLASHCARDS ============ */
+const flashcards = [
+  {q:'นาย ก ใช้ปืนยิงนาย ข แต่กระสุนพลาดไปถูกนาย ค ที่ยืนอยู่ข้าง ๆ ถึงแก่ความตาย', a:'มาตรา 60', d:'เจตนาโดยพลาด — รู้เป้าหมาย (ข) แต่ "มือพลาด" ไปถูกคนอื่น (ค) → ถือว่ามีเจตนาต่อ ค', star:3, exam:true},
+  {q:'นาย ก ต้องการฆ่านาย ข เห็นนาย ค หน้าคล้ายนาย ข ในที่มืด จึงยิงนาย ค ตาย', a:'มาตรา 61', d:'สำคัญผิดในตัวบุคคล — "เข้าใจผิด" ว่า ค คือ ข → ผิดเสมือนกระทำต่อ ข', star:3, exam:true},
+  {q:'นาย ก ยิงปืนเข้าไปในพุ่มไม้ คิดว่าเป็นหมูป่า แต่เป็นคนซ่อนอยู่ ถูกยิงตาย', a:'มาตรา 62 วรรค 2', d:'ไม่รู้ข้อเท็จจริงอันเป็นองค์ประกอบความผิด (ไม่รู้ว่าเป็นคน) → ไม่มีเจตนาฆ่า อาจเป็นประมาท', star:2, exam:true},
+  {q:'ได้ยินเสียงเปิดประตูตอนดึก เข้าใจว่าโจร จึงยิงไป 1 นัด ปรากฏว่าเป็นลูกชายตัวเอง', a:'มาตรา 62 วรรค 1 ประกอบ มาตรา 68', d:'สำคัญผิดว่ามีภยันตราย → ป้องกันโดยสำคัญผิด → ได้ประโยชน์จากความสำคัญผิดนั้น', star:2, exam:true},
+  {q:'ต่อยหน้า 1 หมัด ตั้งใจแค่ทำร้าย แต่เหยื่อล้มหัวฟาดพื้นถึงแก่ความตาย', a:'มาตรา 63', d:'ผลเกินเจตนา — ตั้งใจทำร้าย (ม.295) แต่ผลคือตาย → ม.290 ทำร้ายจนถึงตาย (ไม่ใช่ ม.288)', star:3, exam:true},
+  {q:'วางระเบิดรถนาย ข ขณะนาย ค นั่งอยู่ด้วย รู้แน่ว่า ค ต้องตาย แต่ก็ทำ', a:'มาตรา 59 วรรค 2 (ย่อมเล็งเห็นผล)', d:'ไม่ได้ประสงค์ต่อ ค โดยตรง แต่ "รู้ว่าผลจะเกิดแน่นอน" → ถือว่ามีเจตนาต่อ ค', star:3, exam:true},
+  {q:'น้ำท่วมหนัก นาย ก ทุบกำแพงบ้านนาย ข เพื่อหนีน้ำ', a:'มาตรา 67', d:'จำเป็น — ภัยจากธรรมชาติ ไม่ใช่จากคน → ทำต่อทรัพย์สินบุคคลที่สามได้ (ต่างจาก ม.68 ป้องกัน)', star:2, exam:true},
+  {q:'โจรถือมีดวิ่งเข้ามาจะแทง จึงหยิบท่อนไม้ตีโจร 1 ที จนโจรล้มสลบ', a:'มาตรา 68', d:'ป้องกัน — ภัยจากคนละเมิดกฎหมาย + ใกล้จะถึง + ป้องกันสิทธิ + พอสมควร + จำต้องทำ = ไม่มีความผิด', star:3, exam:true},
+  {q:'ถูกต่อยหน้า 1 หมัดด้วยมือเปล่า จึงชักปืนยิงคนต่อยตาย', a:'มาตรา 69 (ป้องกันเกินสมควร)', d:'ถูกต่อยมือเปล่าแต่ยิงปืนตอบ = ไม่ได้สัดส่วน → ยังผิด แต่ศาลลดโทษได้เพียงใดก็ได้', star:3, exam:true},
+  {q:'ตั้งใจฆ่า ยิงไป 1 นัดแต่พลาดไม่ถูก เหยื่อวิ่งหนีไปได้', a:'มาตรา 80', d:'พยายาม — ลงมือแล้วแต่ไม่บรรลุผล → ม.288 ประกอบ ม.80 โทษ 2 ใน 3', star:2, exam:true},
+  {q:'จ้างคนอื่นไปฆ่าโดยให้เงิน 50,000 บาท', a:'มาตรา 84', d:'ผู้ใช้ — ก่อให้ผู้อื่นกระทำผิด (จ้างวาน) → รับโทษเสมือนตัวการ', star:2, exam:true},
+  {q:'สองคนร่วมกันวางแผนปล้นร้านทอง คนหนึ่งถือปืน อีกคนถือถุง เข้าไปด้วยกัน', a:'มาตรา 83', d:'ตัวการ — ตั้งแต่ 2 คนร่วมกันกระทำผิด (ร่วมแผน + แบ่งหน้าที่ + ร่วมลงมือ) → โทษเท่ากัน', star:2, exam:false},
+  {q:'รู้ว่าเพื่อนจะไปฆ่าคน จึงให้เพื่อนยืมปืน', a:'มาตรา 86', d:'ผู้สนับสนุน — ช่วยเหลือ/ให้ความสะดวกก่อนกระทำผิด → โทษ 2 ใน 3', star:2, exam:true},
+  {q:'คนวิกลจริตที่ไม่สามารถรู้ผิดชอบได้ ใช้มีดแทงคนตาย', a:'มาตรา 65', d:'วิกลจริต — ไม่รู้ผิดชอบ/บังคับตนไม่ได้ → มีความผิดแต่ไม่ต้องรับโทษ (รู้บ้าง → ลดโทษ)', star:1, exam:false},
+  {q:'ถูกตบหน้า 3 ทีต่อหน้าแฟน โกรธมากจึงแทงผู้ตบทันที', a:'มาตรา 72', d:'บันดาลโทสะ — ถูกข่มเหงร้ายแรงด้วยเหตุอันไม่เป็นธรรม + กระทำขณะนั้น → ผิด แต่ศาลลดโทษได้', star:2, exam:true},
+  {q:'ทหารยิงตามคำสั่งผู้บังคับบัญชา โดยสุจริตเชื่อว่าคำสั่งชอบด้วยกฎหมาย', a:'มาตรา 70', d:'ทำตามคำสั่งเจ้าพนักงาน — สุจริตเชื่อว่าคำสั่งชอบ + ไม่เกินสมควร → ไม่ต้องรับโทษ', star:1, exam:false},
+  {q:'ขับรถ 120 กม./ชม. ในเขตชุมชน ชนคนข้ามถนนตาย', a:'มาตรา 59 วรรค 4 (ประมาท)', d:'ไม่มีเจตนา แต่ปราศจากความระมัดระวังที่ควรมีตามวิสัยและพฤติการณ์ → ผิดฐานประมาท', star:2, exam:true},
+  {q:'ยิงศพคนที่ตายไปแล้ว 2 ชั่วโมง โดยคิดว่ายังมีชีวิต', a:'มาตรา 81', d:'พยายามที่เป็นไปไม่ได้อย่างแน่แท้ — วัตถุ (ศพ) ไม่มีทางถูกฆ่าได้ → ศาลจะไม่ลงโทษก็ได้', star:1, exam:false},
+  {q:'ทำร้ายเหยื่อเล็กน้อย เหยื่อนั่งรถพยาบาลแล้วรถถูกชน เหยื่อตาย ต้องรับผิดฐานฆ่าไหม?', a:'ไม่ — ทฤษฎีเหตุที่เหมาะสม', d:'รถชน = เหตุแทรกซ้อนผิดปกติวิสัย ตัดความสัมพันธ์การกระทำกับผล → รับผิดแค่ทำร้ายร่างกาย', star:2, exam:false},
+  {q:'ซื้อปืน สะกดรอยตามเหยื่อ 3 วัน แต่ยังไม่ได้ลงมือ ผิดฐานพยายามฆ่าไหม?', a:'ไม่ผิด — เป็นเพียง "ตระเตรียม"', d:'ยังไม่ "ลงมือ" → ไม่เข้า ม.80 (หลัก: ตระเตรียมไม่ผิด เว้นกฎหมายบัญญัติพิเศษ)', star:2, exam:true},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length} · โจทย์คือ "สถานการณ์" — ทายมาตราให้ได้ก่อนพลิก</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.crimson} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:280}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:280}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.crimson}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="volcano" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ สถานการณ์ — เดามาตรา (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:18, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:280}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:21, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.crimson, borderColor:C.crimson}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'lab', label:'🧪 Case Lab', children:<CaseLabTab/>},
+    {key:'quiz', label:'🎮 ควิซ + จำด่วน', children:<QuizTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.crimson, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.crimson, itemActiveColor:C.crimsonDark, itemSelectedColor:C.crimsonDark, itemHoverColor:C.clay, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.crimson, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.crimsonDark}, ${C.clay})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(120,70,60,.25)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 2106 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:30, fontWeight:800}}>กฎหมายอาญา ภาค 1 (ภาคทั่วไป)</h1>
+          <div style={{color:'#FCEDE6', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Harvard</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงประมวลกฎหมายอาญา มาตรา 59–63, 65, 67–70, 72, 80–81, 83–87 (และบทเฉพาะ ม.288, 290, 295) · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>

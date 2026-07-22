@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>กฎหมายประกันภัย LAW2112 · ห้องเรียนแบบ Harvard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body {
+    background:#EEF3F4;
+    line-height:1.85;
+    font-family:'Noto Sans Thai', -apple-system, sans-serif;
+    color:#28353B;
+    margin:0;
+  }
+  h1,h2,h3,h4 { font-family:'Noto Serif Thai','Noto Sans Thai',serif; }
+  ::selection { background:#C9DDE4; color:#28353B; }
+  ::-webkit-scrollbar { width:11px; height:11px; }
+  ::-webkit-scrollbar-track { background:#E2EAEC; }
+  ::-webkit-scrollbar-thumb { background:#9BB8C2; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover { background:#5E8CA0; }
+  .ant-table-cell { line-height:1.9 !important; }
+
+  /* Flip card */
+  .fc-perspective { perspective:1600px; }
+  .fc-card { position:relative; width:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1); cursor:pointer; }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; flex-direction:column; }
+  .fc-back { transform:rotateY(180deg); }
+
+  /* Quick card hover */
+  .qc { transition:transform .18s ease, box-shadow .18s ease; }
+  .qc:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(46,110,142,.16); }
+
+  /* Reveal animation */
+  @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-up { animation:fadeUp .5s ease both; }
+
+  /* Diagram animations */
+  @keyframes dash { to { stroke-dashoffset:0; } }
+  @keyframes pulseNode { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  @keyframes floatY { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+  .node-pulse { animation:pulseNode 2.6s ease-in-out infinite; transform-origin:center; }
+  .breathe { animation:floatY 3.4s ease-in-out infinite; }
+
+  .lesson-body strong { color:#1F5064; }
+  .tag-chip { display:inline-block; padding:1px 9px; border-radius:20px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+  .sec-badge { font-family:'Noto Serif Thai'; font-weight:700; }
+
+  .hoverlift { transition:transform .16s ease, box-shadow .16s ease; }
+  .hoverlift:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(46,110,142,.15); }
+
+  @keyframes glowRing { 0%,100%{ box-shadow:0 0 0 0 rgba(46,110,142,.35);} 50%{ box-shadow:0 0 0 8px rgba(46,110,142,0);} }
+  .glow { animation:glowRing 2.2s ease-in-out infinite; }
+
+/* responsive antd (UX audit 2026-07): กันแท็บ/หัวข้อดันหน้าล้นจอบนมือถือ */
+@media (max-width: 820px) {
+  .ant-layout-content { max-width: 100vw !important; }
+  .ant-tabs-nav-list { flex-wrap: wrap !important; }
+  .ant-tabs-nav-list .ant-tabs-tab { margin: 2px !important; }
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, .ant-card-head-title { overflow-wrap: anywhere; white-space: normal; }
+  .ant-tag { white-space: normal !important; height: auto !important; }
+  .ant-typography, .ant-typography strong { white-space: normal !important; overflow-wrap: anywhere; }
+  .ant-layout-content table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .ant-space { flex-wrap: wrap !important; }
+  html, body { overflow-x: hidden; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button,
+        Row, Col, Divider, Alert, Statistic, Flex, Segmented, Radio, Progress,
+        Collapse, Result, Tooltip, Badge, Empty } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============ PALETTE — โทน "ครามทะเล" ประจำวิชาประกันภัย ============ */
+const C = {
+  primary:'#2E6E8E', primaryDark:'#1F5064', primaryLight:'#7FA8BC',
+  amber:'#B08A4F', amberDark:'#8A6A38',
+  bg:'#EEF3F4', surface:'#E2EAEC', surface2:'#D8E2E5', surface3:'#E9F0F1',
+  border:'#C9D6DA', borderDark:'#9BB8C2',
+  text:'#28353B', text2:'#455A62', text3:'#6A7E85',
+  white:'#F9FCFC',
+  green:'#4F8A61', greenBg:'#EBF4EE',
+  red:'#B25757', redBg:'#F6ECEA',
+  purple:'#75689B', purpleBg:'#EFEDF6',
+  blue:'#4E77A8', blueBg:'#EAF0F7',
+  cyan:'#4E8A8A', cyanBg:'#EAF3F3',
+};
+
+/* ============ SHARED HELPERS ============ */
+const Stars = ({n}) => <span style={{color:C.amber, letterSpacing:1}}>{'★'.repeat(n)}<span style={{color:C.border}}>{'★'.repeat(3-n)}</span></span>;
+
+const Sec = ({children}) => (
+  <span className="sec-badge" style={{background:C.surface2, color:C.primaryDark, padding:'1px 8px', borderRadius:7, border:`1px solid ${C.border}`, whiteSpace:'nowrap'}}>ม.{children}</span>
+);
+
+const Pill = ({color, bg, children}) => (
+  <span className="tag-chip" style={{background:bg, color:color, border:`1px solid ${color}33`}}>{children}</span>
+);
+
+const Box = ({tone='primary', title, icon, children, style}) => {
+  const map = {
+    green:[C.green,C.greenBg], red:[C.red,C.redBg], blue:[C.blue,C.blueBg],
+    purple:[C.purple,C.purpleBg], cyan:[C.cyan,C.cyanBg], primary:[C.primaryDark,C.surface3],
+    amber:[C.amberDark,'#F5EFE3']
+  };
+  const [cc,bb] = map[tone]||map.primary;
+  return (
+    <div className="lesson-body" style={{background:bb, border:`1px solid ${cc}33`, borderLeft:`4px solid ${cc}`, borderRadius:12, padding:'13px 16px', margin:'10px 0', ...style}}>
+      {title && <div style={{fontWeight:700, color:cc, marginBottom:6, fontSize:15}}>{icon} {title}</div>}
+      <div style={{color:C.text2, fontSize:14.5}}>{children}</div>
+    </div>
+  );
+};
+
+/* ============ ANIMATED SVG DIAGRAM ENGINE ============ */
+function DiaNode({x, y, w=158, h=62, title, sub, color, active, onClick}) {
+  return (
+    <g style={{cursor:onClick?'pointer':'default'}} onClick={onClick} className={active?'node-pulse':''}>
+      <rect x={x-w/2} y={y-h/2} width={w} height={h} rx={14}
+        fill={active ? color : C.white}
+        stroke={color} strokeWidth={active?3:2}
+        style={{filter: active?`drop-shadow(0 4px 10px ${color}55)`:'none', transition:'all .4s'}} />
+      <text x={x} y={sub? y-6 : y+5} textAnchor="middle"
+        fontFamily="'Noto Sans Thai'" fontWeight="700" fontSize="15.5"
+        fill={active ? C.white : color}>{title}</text>
+      {sub && <text x={x} y={y+14} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="11.5"
+        fill={active ? C.white : C.text3}>{sub}</text>}
+    </g>
+  );
+}
+
+function DiaEdge({id, d, color, label, labelX, labelY, dashed, animate, dur=2.6, reverse, width=3, dim}) {
+  const op = dim ? 0.18 : 1;
+  return (
+    <g style={{opacity:op, transition:'opacity .4s'}}>
+      <path id={id} d={d} fill="none" stroke={color} strokeWidth={width}
+        strokeDasharray={dashed?'7 7':'none'} strokeLinecap="round"
+        markerEnd={`url(#arrow-${id})`} />
+      <defs>
+        <marker id={`arrow-${id}`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill={color}/>
+        </marker>
+      </defs>
+      {animate && !dim &&
+        <circle r="6.5" fill={color}>
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" keyPoints={reverse?'1;0':'0;1'} keyTimes="0;1" rotate="0">
+            <mpath href={`#${id}`}/>
+          </animateMotion>
+        </circle>}
+      {label &&
+        <g>
+          <rect x={labelX-label.length*4.1-8} y={labelY-13} width={label.length*8.2+16} height={22} rx={11}
+            fill={C.white} stroke={color+'55'} />
+          <text x={labelX} y={labelY+2} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5"
+            fontWeight="600" fill={color}>{label}</text>
+        </g>}
+    </g>
+  );
+}
+
+/* สามเหลี่ยมประกันภัย — 3 โหมด: วินาศภัย / ค้ำจุน / ชีวิต */
+function InsuranceTriangle() {
+  const modes = {
+    indemnity: {
+      label:'ประกันวินาศภัย', color:C.blue, third:'บุคคลภายนอก', thirdSub:'ผู้ก่อวินาศภัย',
+      desc:'บุคคลภายนอกก่อวินาศภัยแก่ทรัพย์ที่เอาประกันไว้ → ผู้รับประกันภัยใช้ค่าสินไหมทดแทนแก่ผู้เอาประกันภัย (ม.877) แล้ว "เข้ารับช่วงสิทธิ" ของผู้เอาประกันภัยไปไล่เบี้ยเอาจากผู้ก่อภัยได้เท่าจำนวนที่จ่ายไป (ม.880) — อายุความเรียกร้องตามสัญญา 2 ปีนับแต่วันเกิดวินาศภัย (ม.882)'
+    },
+    liability: {
+      label:'ประกันภัยค้ำจุน', color:C.purple, third:'ผู้เสียหาย', thirdSub:'บุคคลภายนอก',
+      desc:'ผู้เอาประกันภัยไปก่อความเสียหายแก่บุคคลภายนอก → ผู้เสียหายแม้ไม่ใช่คู่สัญญา ก็ชอบที่จะเรียกค่าสินไหมทดแทนจากผู้รับประกันภัย "โดยตรง" (ม.887 ว.2) และเมื่อผู้รับประกันภัยจ่ายให้ผู้เสียหายแล้ว ย่อมรับช่วงสิทธิไปไล่เบี้ยจากผู้เอาประกันภัยผู้ก่อเหตุได้ (ม.880 ประกอบ ม.887)'
+    },
+    life: {
+      label:'ประกันชีวิต', color:C.green, third:'ผู้รับประโยชน์', thirdSub:'Beneficiary',
+      desc:'ผู้รับประกันภัยตกลงจะ "ใช้เงินจำนวนหนึ่ง" เมื่อผู้เอาประกันถึงแก่ความตาย หรือมีชีวิตอยู่จนถึงเวลาที่กำหนด (ม.889) โดยจ่ายแก่ผู้รับประโยชน์ — จุดต่างสำคัญ: ประกันชีวิต "ไม่มีรับช่วงสิทธิ" (ม.896) และผู้เอาประกันเปลี่ยนผู้รับประโยชน์ได้ (ม.891 — ข้อยกเว้นของ ม.375)'
+    }
+  };
+  const [m, setM] = useState('indemnity');
+  const M = modes[m];
+  const P = {x:130, y:90}, I = {x:530, y:90}, T = {x:330, y:290};
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:12}}>
+        <Segmented value={m} onChange={setM} size="large"
+          options={Object.keys(modes).map(k=>({label:modes[k].label, value:k}))} />
+      </div>
+      <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:16, padding:'8px 4px'}}>
+        <svg viewBox="0 0 660 350" style={{width:'100%', height:'auto', maxHeight:400}}>
+          {/* สัญญาประกันภัย P<->I เสมอ */}
+          <DiaEdge id="pi" d={`M ${P.x+55} ${P.y+18} Q 330 30 ${I.x-60} ${I.y+18}`} color={C.amber}
+            label="สัญญาประกันภัย + เบี้ยประกัน (ม.861)" labelX={330} labelY={38} dashed animate dur={3} />
+          {m==='indemnity' && <g>
+            <DiaEdge id="tp" d={`M ${T.x-70} ${T.y-38} L ${P.x+10} ${P.y+44}`} color={C.red}
+              label="ก่อวินาศภัย" labelX={168} labelY={225} animate dur={2.2} width={3.5} />
+            <DiaEdge id="ip" d={`M ${I.x-70} ${I.y+8} L ${P.x+82} ${P.y+8}`} color={C.blue}
+              label="จ่ายค่าสินไหม (ม.877)" labelX={330} labelY={112} animate dur={2.4} width={3.5} />
+            <DiaEdge id="it" d={`M ${I.x-8} ${I.y+42} L ${T.x+80} ${T.y-32}`} color={C.cyan}
+              label="รับช่วงสิทธิไล่เบี้ย (ม.880)" labelX={498} labelY={228} animate dur={2.6} width={3.5} />
+          </g>}
+          {m==='liability' && <g>
+            <DiaEdge id="pt" d={`M ${P.x+10} ${P.y+44} L ${T.x-70} ${T.y-38}`} color={C.red}
+              label="ก่อความเสียหาย (ละเมิด)" labelX={172} labelY={225} animate dur={2.2} width={3.5} />
+            <DiaEdge id="ti" d={`M ${T.x+80} ${T.y-32} L ${I.x-8} ${I.y+42}`} color={C.purple}
+              label="เรียกโดยตรง (ม.887 ว.2)" labelX={500} labelY={228} animate dur={2.4} width={4} />
+            <DiaEdge id="ip2" d={`M ${I.x-70} ${I.y+8} L ${P.x+82} ${P.y+8}`} color={C.cyan}
+              label="จ่ายแล้วไล่เบี้ยผู้เอาประกัน (ม.880)" labelX={330} labelY={112} animate dur={2.8} width={3} dashed />
+          </g>}
+          {m==='life' && <g>
+            <DiaEdge id="it2" d={`M ${I.x-8} ${I.y+42} L ${T.x+80} ${T.y-32}`} color={C.green}
+              label="ใช้เงินจำนวนหนึ่ง (ม.889)" labelX={498} labelY={228} animate dur={2.4} width={4} />
+            <DiaEdge id="noSub" d={`M ${P.x+10} ${P.y+44} L ${T.x-70} ${T.y-38}`} color={C.text3}
+              label="ไม่มีรับช่วงสิทธิ (ม.896)" labelX={172} labelY={225} dashed width={2.5} />
+          </g>}
+          <DiaNode {...P} title="ผู้เอาประกันภัย" sub="Insured" color={C.primary} active />
+          <DiaNode {...I} title="ผู้รับประกันภัย" sub="Insurer (บริษัท)" color={M.color} active />
+          <DiaNode {...T} title={M.third} sub={M.thirdSub} color={C.cyan} active />
+        </svg>
+      </div>
+      <Box tone={m==='life'?'green':(m==='liability'?'purple':'blue')} title={`โหมด: ${M.label}`} icon="🎬" style={{marginTop:12}}>
+        {M.desc}
+      </Box>
+    </div>
+  );
+}
+
+/* แถบ Flow แนวนอน */
+function FlowStrip({steps, color=C.primary}) {
+  return (
+    <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:14, padding:'16px 10px', overflowX:'auto'}}>
+      <svg viewBox={`0 0 ${steps.length*180} 130`} style={{width:'100%', minWidth:steps.length*150, height:'auto'}}>
+        {steps.map((s,i)=>{
+          const x = 90 + i*180;
+          return (
+            <g key={i}>
+              {i<steps.length-1 &&
+                <DiaEdge id={`fs-${color.slice(1)}-${i}`} d={`M ${x+62} 55 L ${x+118} 55`} color={color} animate dur={1.8} width={2.5}/>}
+              <circle cx={x} cy={55} r={34} fill={s.bg||C.surface3} stroke={color} strokeWidth={2.5} className="node-pulse"/>
+              <text x={x} y={60} textAnchor="middle" fontSize="24">{s.icon}</text>
+              <text x={x} y={112} textAnchor="middle" fontFamily="'Noto Sans Thai'" fontSize="12.5" fontWeight="600" fill={C.text2}>
+                {s.t}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/* ============ TAB 1: FOUNDATIONS (ปูพื้นฐาน) ============ */
+function FoundationsTab() {
+  const vocab = [
+    ['ผู้รับประกันภัย', 'Insurer', 'บริษัทประกัน — ผู้ตกลงจะใช้ค่าสินไหมทดแทนหรือใช้เงินจำนวนหนึ่ง', C.blue],
+    ['ผู้เอาประกันภัย', 'Insured', 'ผู้ทำสัญญาเอาประกันและจ่ายเบี้ยประกันภัย', C.primary],
+    ['ผู้รับประโยชน์', 'Beneficiary', 'บุคคลที่จะได้รับค่าสินไหมทดแทน/เงินประกัน (อาจเป็นบุคคลภายนอกตาม ม.374)', C.green],
+    ['ส่วนได้เสีย', 'Insurable Interest', 'ความสัมพันธ์กับเหตุที่เอาประกัน — ไม่มีส่วนได้เสีย สัญญาไม่ผูกพัน (ม.863)', C.red],
+    ['ค่าสินไหมทดแทน', 'Indemnity', 'เงินชดใช้ความเสียหายจากวินาศภัย มี 3 ประเภทตาม ม.877', C.purple],
+    ['รับช่วงสิทธิ', 'Subrogation', 'ผู้รับประกันจ่ายแล้ว เข้าสวมสิทธิของผู้เอาประกันไปไล่เบี้ยผู้ก่อภัย (ม.880)', C.cyan],
+  ];
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:18, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue, fontSize:16}}>เริ่มจากศูนย์ก็เข้าใจได้ 👋</span>}
+        description={<span style={{color:C.text2}}>วิชานี้ว่าด้วยคำถามเดียว: <strong>"เมื่อภัยเกิดขึ้น ใครต้องจ่ายเงินให้ใคร และจ่ายแล้วไปไล่เบี้ยใครต่อได้?"</strong> ม.861–897 ทั้งหมดตอบคำถามนี้ใน 4 ฉาก: บททั่วไป (861–868) → วินาศภัย (869–882) → ค้ำจุน (887–888) → ชีวิต (889–897)</span>} />
+
+      <Card style={{marginBottom:18, borderColor:C.border, background:C.surface3}} bodyStyle={{padding:'18px 20px'}}>
+        <Title level={4} style={{marginTop:0, color:C.text}}>🚗 นึกภาพง่าย ๆ ด้วยชีวิตจริง</Title>
+        <Paragraph style={{color:C.text2, fontSize:15}}>
+          คุณทำประกันรถยนต์ไว้ — คุณคือ <Pill color={C.primary} bg={C.surface3}>ผู้เอาประกันภัย</Pill>
+          บริษัทประกันคือ <Pill color={C.blue} bg={C.blueBg}>ผู้รับประกันภัย</Pill>.
+          วันหนึ่งนายซิ่ง <Pill color={C.red} bg={C.redBg}>บุคคลภายนอก</Pill> ขับรถประมาทมาชนรถคุณ
+          → บริษัทจ่ายค่าซ่อมให้คุณ (ค่าสินไหมทดแทน ม.877) แล้วบริษัท "สวมสิทธิ" ของคุณไปฟ้องไล่เบี้ยนายซิ่งเอง (รับช่วงสิทธิ ม.880).
+          นี่คือโครงเรื่องหลักที่ข้อสอบเอามาแต่งเป็นโจทย์ทุกเทอม
+        </Paragraph>
+        <FlowStrip color={C.primary} steps={[
+          {icon:'📝', t:'ทำสัญญา (861)', bg:C.surface3},
+          {icon:'🔑', t:'มีส่วนได้เสีย (863)', bg:C.blueBg},
+          {icon:'💥', t:'เกิดวินาศภัย', bg:C.redBg},
+          {icon:'💰', t:'จ่ายค่าสินไหม (877)', bg:C.greenBg},
+          {icon:'🔁', t:'รับช่วงสิทธิ (880)', bg:C.cyanBg},
+        ]}/>
+      </Card>
+
+      <Title level={4} style={{color:C.text}}>🎬 แผนภาพเคลื่อนไหว: เงินไหลจากใครไปใคร?</Title>
+      <Paragraph style={{color:C.text3, marginTop:-4}}>กดสลับ 3 โหมด แล้วสังเกตว่า "ลูกศรเงิน" กับ "ลูกศรไล่เบี้ย" เปลี่ยนทิศอย่างไร — จุดตายของข้อสอบคือแยก 3 ฉากนี้ให้ออก</Paragraph>
+      <InsuranceTriangle/>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>📚 คำศัพท์แกนหลัก 6 คำ (จำให้ได้ก่อนเลย)</Title>
+      <Row gutter={[12,12]}>
+        {vocab.map((v,i)=>(
+          <Col xs={24} sm={12} key={i}>
+            <Card className="hoverlift" size="small" style={{borderLeft:`4px solid ${v[3]}`, borderColor:C.border, height:'100%'}} bodyStyle={{padding:'12px 14px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                <span style={{fontWeight:700, fontSize:16.5, color:v[3]}}>{v[0]}</span>
+                <span style={{fontSize:12, color:C.text3, fontStyle:'italic'}}>{v[1]}</span>
+              </div>
+              <div style={{color:C.text2, fontSize:14, marginTop:2}}>{v[2]}</div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Divider/>
+      <Title level={4} style={{color:C.text}}>⚖️ วินาศภัย vs ค้ำจุน vs ชีวิต (ต้องแยกให้ออก!)</Title>
+      <Table pagination={false} size="middle" style={{marginTop:8}}
+        columns={[
+          {title:'', dataIndex:'k', width:150, render:t=><strong style={{color:C.primaryDark}}>{t}</strong>},
+          {title:<span style={{color:C.blue}}>ประกันวินาศภัย</span>, dataIndex:'a'},
+          {title:<span style={{color:C.purple}}>ประกันภัยค้ำจุน</span>, dataIndex:'b'},
+          {title:<span style={{color:C.green}}>ประกันชีวิต</span>, dataIndex:'c'},
+        ]}
+        dataSource={[
+          {key:1, k:'สิ่งที่จ่าย', a:'ค่าสินไหมทดแทน (877)', b:'ค่าสินไหมในนามผู้เอาประกัน', c:'เงินจำนวนหนึ่ง (889)'},
+          {key:2, k:'จ่ายให้ใคร', a:'ผู้เอาประกัน/ผู้รับประโยชน์', b:'ผู้เสียหายเรียกตรงได้ (887 ว.2)', c:'ผู้รับประโยชน์'},
+          {key:3, k:'รับช่วงสิทธิ', a:'มี (880)', b:'มี — ไล่เบี้ยผู้เอาประกัน (880+887)', c:'ไม่มี (896)'},
+          {key:4, k:'มาตราหลัก', a:'869, 877, 879, 880, 882', b:'887, 888', c:'889, 891, 894, 895, 897'},
+          {key:5, k:'อายุความ/กำหนดเวลาเด่น', a:'2 ปีนับแต่เกิดวินาศภัย (882)', b:'ใช้หลักวินาศภัย', c:'ฆ่าตัวตาย ≤1 ปี ไม่จ่าย (895) · เวนคืนเมื่อส่งเบี้ยครบ 3 ปี (894)'},
+        ]}/>
+      <Box tone="red" title="กับดักข้อสอบที่เจอบ่อยที่สุด" icon="⚠️" style={{marginTop:14}}>
+        (1) ผู้เอาประกันไม่ใช่ "เจ้าของกรรมสิทธิ์" ก็มีส่วนได้เสียได้ — ผู้ครอบครอง ผู้เช่า ตัวแทนผู้มีหน้าที่รับผิดต่อตัวการ ล้วนมีส่วนได้เสียตาม <strong>ม.863</strong> อย่าหลงตอบว่าสัญญาไม่ผูกพัน ·
+        (2) <strong>ประกันชีวิตไม่มีรับช่วงสิทธิ</strong> (ม.896) — โจทย์ชอบหลอกให้บริษัทไปไล่เบี้ยคนทำให้ตาย ·
+        (3) โอน "สิทธิเช่าซื้อ" ไม่ใช่โอนกรรมสิทธิ์ → ไม่ใช่การโอนวัตถุตาม <strong>ม.875</strong>
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 2: LESSONS (บทเรียน) ============ */
+const SRule = ({n, children}) => (
+  <div style={{display:'flex', gap:10, alignItems:'flex-start', margin:'7px 0'}}>
+    <Sec>{n}</Sec>
+    <span style={{color:C.text2, fontSize:14.3, flex:1}}>{children}</span>
+  </div>
+);
+
+const lessonModules = [
+  {
+    key:'l1', star:2, icon:'📜', title:'สัญญาประกันภัยคืออะไร & บุคคล 3 ฝ่าย',
+    chips:['861','862','867'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="861">สัญญาประกันภัย = สัญญาซึ่งบุคคลหนึ่ง (<strong>ผู้รับประกันภัย</strong>) ตกลงจะ <strong>ใช้ค่าสินไหมทดแทน</strong> หรือ <strong>ใช้เงินจำนวนหนึ่ง</strong> ในกรณีที่มีวินาศภัยหรือเหตุอย่างอื่นในอนาคตดังระบุไว้ในสัญญา</SRule>
+          <SRule n="862">บุคคลในสัญญามี 3 ฝ่าย: <strong>ผู้รับประกันภัย</strong> (บริษัท ผู้ตกลงชดใช้) · <strong>ผู้เอาประกันภัย</strong> (ผู้ทำสัญญาและจ่ายเบี้ย) · <strong>ผู้รับประโยชน์</strong> (ผู้ที่จะได้รับค่าสินไหม/เงินประกัน)</SRule>
+        </Box>
+        <Box tone="red" title="จุดสอบ — ม.867 หลักฐานเป็นหนังสือ ไม่ใช่ 'แบบ'" icon="🎯">
+          สัญญาประกันภัยต้องมี <strong>หลักฐานเป็นหนังสือ</strong> จึงจะฟ้องร้องบังคับคดีได้ — แต่นี่ <strong>ไม่ใช่ "แบบ"</strong> ของสัญญา ดังนั้นไม่ทำเป็นหนังสือ สัญญา<strong>ไม่โมฆะ</strong> เพียงแต่ฟ้องร้องบังคับกันไม่ได้ อย่าเขียนตอบว่า "โมฆะ" เด็ดขาด
+        </Box>
+        <Box tone="cyan" title="สอนสด" icon="🎓">
+          สังเกตคำใน ม.861 ให้ดี: "ใช้ค่าสินไหมทดแทน" = ฝั่ง<strong>วินาศภัย</strong> (ชดใช้ตามความเสียหายจริง) ส่วน "ใช้เงินจำนวนหนึ่ง" = ฝั่ง<strong>ประกันชีวิต</strong> (จ่ายตามจำนวนที่ตกลง ไม่ต้องพิสูจน์ความเสียหาย) — คำนิยามเดียวซ่อนการแบ่งวิชาทั้งเล่มไว้แล้ว
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l2', star:3, icon:'🔑', title:'ส่วนได้เสีย (Insurable Interest) — ประตูด่านแรกของทุกข้อ',
+    chips:['863'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="863">ผู้เอาประกันภัยต้อง <strong>มีส่วนได้เสีย</strong> ในเหตุที่ประกันภัยไว้ → ถ้า <strong>ไม่มีส่วนได้เสีย</strong> สัญญาประกันภัย <strong>ไม่ผูกพัน</strong>คู่สัญญา</SRule>
+        </Box>
+        <Box tone="blue" title="ใครบ้างที่ 'มีส่วนได้เสีย'" icon="🧭">
+          ไม่ใช่แค่เจ้าของกรรมสิทธิ์! ได้แก่ <strong>เจ้าของกรรมสิทธิ์ · ผู้ครอบครอง · ผู้เช่า · ตัวแทน · ผู้รับฝากทรัพย์</strong> ฯลฯ — แนวฎีกา: ตัวแทนที่มีหน้าที่และความรับผิดต่อตัวการ ย่อมมีส่วนได้เสียเอาประกันทรัพย์ของตัวการได้ (ออกสอบ 2/66 ข้อ 1)
+        </Box>
+        <Box tone="red" title="กับดัก" icon="⚠️">
+          โจทย์ชอบให้จำเลย/บริษัทต่อสู้ว่า "ผู้เอาประกันไม่ใช่เจ้าของรถ สัญญาจึงไม่ผูกพัน" — ถ้าข้อเท็จจริงฟังได้ว่าผู้เอาประกันเป็นผู้ครอบครอง/ตัวแทน/ผู้รับฝาก <strong>ข้อต่อสู้นั้นฟังไม่ขึ้น</strong> เพราะมีส่วนได้เสียตาม ม.863 แล้ว
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l3', star:3, icon:'🤐', title:'ไม่เปิดเผยข้อความจริง → โมฆียะ (หัวใจข้อสอบทุกเทอม)',
+    chips:['865','866'],
+    body:()=>(
+      <div>
+        <Box tone="red" title="⭐⭐⭐ ม.865 ว.1 — ปิดบัง/แถลงเท็จ = โมฆียะ" icon="🎯">
+          ถ้าผู้เอาประกันภัยรู้อยู่แล้ว <strong>ละเว้นไม่เปิดเผยข้อความจริง</strong> ซึ่งอาจจูงใจผู้รับประกันภัยให้เรียกเบี้ยสูงขึ้นหรือบอกปัดไม่ยอมทำสัญญา หรือ <strong>แถลงข้อความอันเป็นเท็จ</strong> → สัญญาเป็น <strong>โมฆียะ</strong> (ไม่ใช่โมฆะ — สัญญายังสมบูรณ์จนกว่าจะถูกบอกล้าง)
+        </Box>
+        <Box tone="purple" title="ม.865 ว.2 — นาฬิกาสิทธิบอกล้าง" icon="⏱️">
+          สิทธิบอกล้างของผู้รับประกันภัยระงับเมื่อ (ก) พ้น <strong>1 เดือน</strong> นับแต่ทราบมูลอันจะบอกล้างได้ หรือ (ข) พ้น <strong>5 ปี</strong> นับแต่วันทำสัญญา — แล้วแต่อย่างใดถึงก่อน. เกินกำหนด = บอกล้างไม่ได้ ต้องจ่าย
+        </Box>
+        <Box tone="green" title="ม.866 — ข้อยกเว้น: บริษัทรู้อยู่แล้ว" icon="✅">
+          ถ้าผู้รับประกันภัย <strong>รู้ข้อความจริงอยู่แล้ว</strong> หรือ <strong>ควรจะได้รู้</strong> → สัญญา<strong>สมบูรณ์</strong> ยกขึ้นบอกล้างไม่ได้
+        </Box>
+        <Box tone="cyan" title="สูตรวินิจฉัย 3 จังหวะ" icon="🧪">
+          (1) ข้อความที่ปิดบังเป็น "สาระสำคัญ" ที่อาจจูงใจบริษัทไหม (เช่น เป็นโรคร้ายแรง) → (2) ถ้าใช่ สัญญาโมฆียะตาม ม.865 ว.1 → (3) เช็กนาฬิกา ว.2: บริษัททราบมูลเมื่อไร บอกล้างภายใน 1 เดือนไหม และยังไม่พ้น 5 ปีนับแต่ทำสัญญาไหม — <span style={{color:C.cyan}}>ออกสอบ 1/67, 1/68, 2/67</span>
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l4', star:3, icon:'🔥', title:'ประกันวินาศภัย — ค่าสินไหม 3 ประเภท & ข้อยกเว้น ม.879',
+    chips:['869','877','879','881','882'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="869">ผู้รับประกันภัยต้องใช้ค่าสินไหมทดแทน เพื่อวินาศภัยอันเกิดขึ้นเพราะ <strong>ภัยที่ระบุไว้ในสัญญา</strong></SRule>
+          <SRule n="877">ค่าสินไหมทดแทนมี <strong>3 ประเภท</strong>: (1) ความเสียหายแก่ทรัพย์สินที่เอาประกัน (2) ความบุบสลายอันเป็น<strong>ผลต่อเนื่อง</strong> (3) <strong>ค่าใช้จ่ายในการบรรเทาภัย</strong>ที่สมควร</SRule>
+          <SRule n="881">เกิดวินาศภัยต้อง <strong>บอกกล่าวผู้รับประกันภัยโดยไม่ชักช้า</strong> — ฝ่าฝืน ผู้รับประกันหลุดพ้นความรับผิดเฉพาะส่วนที่เสียหายเพิ่มขึ้น</SRule>
+          <SRule n="882">อายุความสิทธิเรียกร้องตามสัญญาประกันวินาศภัย = <strong>2 ปี</strong> นับแต่วันเกิดวินาศภัย</SRule>
+        </Box>
+        <Box tone="red" title="⭐⭐⭐ ม.879 — เส้นแบ่ง 'ประมาทร้ายแรง' กับ 'ประมาทธรรมดา'" icon="🎯">
+          <strong>ว.1</strong> วินาศภัยเกิดเพราะ <strong>ความทุจริต</strong> หรือ <strong>ความประมาทเลินเล่ออย่างร้ายแรง</strong> ของผู้เอาประกันภัย/ผู้รับประโยชน์ → ผู้รับประกันภัย <strong>ไม่ต้องรับผิด</strong><br/>
+          <strong>ว.2</strong> ถ้าเป็นความประมาทเลินเล่อ <strong>ธรรมดา</strong> → ผู้รับประกันภัย <strong>ยังต้องรับผิด</strong> — โจทย์ "ลูกจ้างเผลอทำเพลิงไหม้" คือประมาทธรรมดา บริษัทปฏิเสธจ่ายไม่ได้ (ออกสอบ 1/67, 2/67 ข้อ 2)
+        </Box>
+        <Box tone="amber" title="จุดจำ" icon="📌">
+          ท่อง 3 ประเภทค่าสินไหมด้วยรหัส <strong>"ทปร"</strong>: <strong>ท</strong>=ทรัพย์สินที่เอาประกัน · <strong>ป</strong>=ผลต่อเนื่อง (บุบสลาย) · <strong>ร</strong>=ค่าบรรเทาภัย (Rescue)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l5', star:2, icon:'🔄', title:'โอนวัตถุที่เอาประกันภัย — กรรมสิทธิ์เท่านั้น',
+    chips:['875'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="875">เมื่อมีการ <strong>โอนวัตถุ</strong>ที่เอาประกันภัย → สิทธิตามสัญญาประกันภัย <strong>โอนตามไปด้วย</strong></SRule>
+        </Box>
+        <Box tone="red" title="กับดักตัวแม่ (ข้อสอบ 2/66 ข้อ 2)" icon="⚠️">
+          ต้องเป็นการโอน <strong>"กรรมสิทธิ์"</strong> เท่านั้น! ถ้าเป็นแค่การโอน <strong>สิทธิตามสัญญาเช่าซื้อ</strong> (ซึ่งเป็นเพียงการโอน "การครอบครอง") → <strong>ไม่ใช่</strong>การโอนวัตถุตาม ม.875 → ผู้รับโอนไม่ได้สิทธิตามกรมธรรม์ แม้จะถือกรมธรรม์อยู่ในมือ บริษัทก็ปฏิเสธจ่ายได้
+        </Box>
+        <Box tone="cyan" title="สอนสด" icon="🎓">
+          เวลาเจอโจทย์ "เช่าซื้อ + มอบกรมธรรม์ให้" ให้ถามตัวเองก่อนเลยว่า <strong>กรรมสิทธิ์ย้ายหรือยัง?</strong> เช่าซื้อยังไม่ผ่อนครบ กรรมสิทธิ์ยังอยู่กับผู้ให้เช่าซื้อ ผู้โอนจึงไม่มีกรรมสิทธิ์จะโอน — จบตรงนี้ทันที
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l6', star:3, icon:'🔁', title:'รับช่วงสิทธิ (Subrogation) — อาวุธของบริษัทประกัน',
+    chips:['880'],
+    body:()=>(
+      <div>
+        <FlowStrip color={C.cyan} steps={[
+          {icon:'💥', t:'บุคคลภายนอกก่อภัย', bg:C.redBg},
+          {icon:'💰', t:'บริษัทจ่ายค่าสินไหม', bg:C.greenBg},
+          {icon:'🔁', t:'เข้ารับช่วงสิทธิ (880)', bg:C.cyanBg},
+          {icon:'⚖️', t:'ไล่เบี้ยผู้ก่อภัย', bg:C.blueBg},
+        ]}/>
+        <Box tone="green" title="หลัก" icon="✅" style={{marginTop:12}}>
+          <SRule n="880">ถ้าวินาศภัยเกิดเพราะ <strong>การกระทำของบุคคลภายนอก</strong> เมื่อผู้รับประกันภัยได้ใช้ค่าสินไหมทดแทนไปเป็นจำนวนเพียงใด ย่อม <strong>เข้ารับช่วงสิทธิ</strong>ของผู้เอาประกันภัยอันมีต่อบุคคลภายนอก <strong>เพียงนั้น</strong> (ไล่เบี้ยได้ไม่เกินจำนวนที่จ่ายจริง)</SRule>
+        </Box>
+        <Box tone="red" title="จุดสอบ 2 ชั้น" icon="🎯">
+          (1) เงื่อนไขก่อนรับช่วงสิทธิ: บริษัทต้อง <strong>จ่ายค่าสินไหมแล้ว</strong> จึงจะสวมสิทธิได้ ·
+          (2) รับช่วงสิทธิใช้ได้เฉพาะ <strong>ประกันวินาศภัย</strong> — ประกันชีวิต <strong>ไม่มีรับช่วงสิทธิ</strong> (ม.896) อย่าเผลอเอา 880 ไปใช้ข้ามฝั่ง
+        </Box>
+        <Box tone="cyan" title="ตัวอย่างแนวข้อสอบ" icon="🧪">
+          2/66 ข้อ 1: บริษัทจ่ายค่าสินไหมกรณีรถถูกโจรกรรมแล้วไล่เบี้ยผู้รับฝากรถ — ผู้รับฝากต่อสู้ว่าผู้เอาประกันไม่ใช่เจ้าของ → ฟังไม่ขึ้น เพราะตัวแทนมีส่วนได้เสีย (863) สัญญาผูกพัน บริษัทจึงรับช่วงสิทธิได้ (880)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l7', star:3, icon:'🛡️', title:'ประกันภัยค้ำจุน — ผู้เสียหายเรียกตรงได้',
+    chips:['887','888'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="887">ว.1 ประกันภัยค้ำจุน = ผู้รับประกันภัยตกลงจะใช้ค่าสินไหมทดแทน <strong>ในนามผู้เอาประกันภัย</strong> เพื่อความวินาศภัยอันเกิดแก่ <strong>บุคคลอีกคนหนึ่ง</strong> (ผู้เสียหาย) · ว.2 ผู้ต้องเสียหายชอบที่จะ <strong>เรียกร้องค่าสินไหมทดแทนจากผู้รับประกันภัยโดยตรง</strong></SRule>
+          <SRule n="888">ค่าสินไหมทดแทนที่ผู้เสียหายเรียกได้ = ตาม ม.877 ทั้ง 3 ประเภท</SRule>
+        </Box>
+        <Box tone="purple" title="ทำไมเรียกตรงได้ทั้งที่ไม่ใช่คู่สัญญา?" icon="🔗">
+          เพราะ ม.887 ว.2 บัญญัติให้สิทธิไว้ <strong>ชัดแจ้ง</strong> — สอดคล้องกับหลักสัญญาเพื่อประโยชน์บุคคลภายนอก (ม.374) ที่บุคคลภายนอกมีสิทธิเรียกชำระหนี้จากลูกหนี้โดยตรง (ออกสอบ 1/68 ข้อ 2)
+        </Box>
+        <Box tone="red" title="ครบวงจรให้เขียนตอบ" icon="🎯">
+          ผู้เอาประกันทำละเมิด → ผู้เสียหายเรียกจากบริษัทโดยตรง (887 ว.2) → บริษัทจ่ายผู้เสียหายแล้ว → <strong>รับช่วงสิทธิไปไล่เบี้ยจากผู้เอาประกันภัยผู้ก่อเหตุ</strong> (880 ประกอบ 887) — เขียนให้ครบทั้งขาไปขากลับจึงได้คะแนนเต็ม
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l8', star:3, icon:'❤️', title:'ประกันชีวิต — นิยาม เปลี่ยนผู้รับประโยชน์ เวนคืน',
+    chips:['889','891','893','894'],
+    body:()=>(
+      <div>
+        <Box tone="green" title="หลัก" icon="✅">
+          <SRule n="889">ประกันชีวิต = สัญญาซึ่งผู้รับประกันภัยตกลงจะ <strong>ใช้เงินจำนวนหนึ่ง</strong> เมื่อบุคคล <strong>ถึงแก่ความตาย</strong> หรือ <strong>มีชีวิตอยู่จนถึงเวลาที่กำหนด</strong></SRule>
+          <SRule n="891">ผู้เอาประกันภัยชอบที่จะ <strong>โอนประโยชน์แห่งสัญญา</strong> (เปลี่ยนผู้รับประโยชน์) ให้บุคคลอื่นได้ — ต้อง <strong>บอกกล่าวเป็นหนังสือ</strong>ไปยังผู้รับประกันภัย</SRule>
+          <SRule n="893">แถลง <strong>อายุคลาดเคลื่อน</strong> — ถ้าอายุจริงอยู่ <strong>นอกจำกัดอัตราตามทางค้าปกติ</strong> → สัญญาไม่สมบูรณ์ / ถ้ายังอยู่ในจำกัด → ปรับเบี้ยตามอายุจริง</SRule>
+          <SRule n="894">ส่งเบี้ยประกันภัยครบ <strong>3 ปี</strong> แล้ว → ผู้เอาประกันภัยมีสิทธิ <strong>เวนคืนกรมธรรม์</strong> ได้</SRule>
+        </Box>
+        <Box tone="purple" title="⭐ ม.891 คือ 'ข้อยกเว้น' ของ ม.375" icon="🔗">
+          หลักทั่วไป ม.375: เมื่อบุคคลภายนอกแสดงเจตนาถือเอาประโยชน์จากสัญญาแล้ว คู่สัญญาจะเปลี่ยนแปลง/ระงับสิทธินั้น <strong>ไม่ได้</strong> — แต่ ม.891 เป็น <strong>บทบัญญัติพิเศษ</strong> ให้ผู้เอาประกันชีวิตเปลี่ยนผู้รับประโยชน์ได้ นี่คือจุดโยงข้ามลักษณะที่อาจารย์ชอบออก (เกร็งข้อ 1)
+        </Box>
+      </div>
+    )
+  },
+  {
+    key:'l9', star:3, icon:'⚰️', title:'ข้อยกเว้นไม่จ่าย ม.895 & เงินเข้ากองมรดก ม.897',
+    chips:['895','896','897'],
+    body:()=>(
+      <div>
+        <Box tone="red" title="⭐⭐⭐ ม.895 ข้อยกเว้นไม่ต้องใช้เงิน 2 กรณี" icon="🎯">
+          <strong>(1) อัตวินิบาตกรรม (ฆ่าตัวตาย)</strong> ภายใน <strong>1 ปี</strong> นับแต่วันทำสัญญาหรือวันต่ออายุสัญญา → ไม่ต้องจ่าย (เกิน 1 ปี → ต้องจ่าย)<br/>
+          <strong>(2) ผู้รับประโยชน์ฆ่าผู้เอาประกันภัยตายโดยเจตนา</strong> → ไม่ต้องจ่ายเงินแก่ผู้รับประโยชน์คนนั้น แต่ต้องใช้ <strong>ค่าไถ่ถอนกรมธรรม์</strong> คืนแก่ผู้เอาประกันภัยหรือทายาท — ผู้รับประโยชน์คนอื่นที่ไม่เกี่ยวข้อง <strong>ยังมีสิทธิรับเงินส่วนของตน</strong>
+        </Box>
+        <Box tone="blue" title="ม.896 — ไม่มีรับช่วงสิทธิ" icon="🚫">
+          ประกันชีวิต → ผู้รับประกันภัย <strong>ไม่มีสิทธิรับช่วงสิทธิ</strong> ไปไล่เบี้ยผู้ทำให้ตาย (ต่างจากวินาศภัย ม.880 อย่างสิ้นเชิง)
+        </Box>
+        <Box tone="green" title="⭐⭐⭐ ม.897 — เงินประกันชีวิตกับกองมรดก" icon="💼">
+          <strong>ว.1</strong> ถ้า<strong>ไม่ระบุ</strong>ผู้รับประโยชน์ (หรือระบุแต่ตายไปก่อน) → เงินประกัน <strong>ตกเข้ากองมรดก</strong>ของผู้เอาประกันทั้งหมด<br/>
+          <strong>ว.2</strong> ถ้า<strong>ระบุผู้รับประโยชน์เฉพาะเจาะจง</strong> → เงินเป็นของผู้รับประโยชน์ <strong>เฉพาะจำนวนเบี้ยประกันที่ผู้เอาประกันส่งไป</strong>เท่านั้นที่ตกเข้ากองมรดก (เจ้าหนี้ของผู้เอาประกันเรียกได้เท่าเบี้ย)
+        </Box>
+        <Box tone="amber" title="กับดัก (ข้อสอบ 2/66 ข้อ 3)" icon="⚠️">
+          <strong>เจ้าหนี้ของ "ผู้รับประโยชน์"</strong> จะมาขอรับเงินประกันก่อนไม่ได้ — ม.897 ว.2 พูดถึงเจ้าหนี้ของ <strong>"ผู้เอาประกันภัย"</strong> เท่านั้น (และได้เพียงเท่าเบี้ยที่ส่ง) อ่านโจทย์ให้ดีว่าเป็นเจ้าหนี้ของใคร
+        </Box>
+      </div>
+    )
+  },
+];
+
+function LessonsTab() {
+  const [open, setOpen] = useState(['l3']);
+  const items = lessonModules.map(l=>({
+    key:l.key,
+    label:(
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+        <span style={{fontSize:20}}>{l.icon}</span>
+        <span style={{fontWeight:700, fontSize:15.5, color:C.text}}>{l.title}</span>
+        <Stars n={l.star}/>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>
+          {l.chips.map(c=><Sec key={c}>{c}</Sec>)}
+        </span>
+      </div>
+    ),
+    children:<div className="fade-up">{l.body()}</div>,
+    style:{marginBottom:12, background:C.white, border:`1px solid ${C.border}`, borderRadius:14, overflow:'hidden'}
+  }));
+  return (
+    <div className="fade-up">
+      <Alert type="success" showIcon style={{marginBottom:16, background:C.greenBg, border:`1px solid ${C.green}44`}}
+        message={<span style={{color:C.green, fontWeight:700}}>9 โมดูล เรียงจากบททั่วไป → วินาศภัย → ค้ำจุน → ชีวิต</span>}
+        description={<span style={{color:C.text2}}>ดาว ★ = ความถี่ในการออกสอบ (★★★ ออกเกือบทุกครั้ง) · คลิกที่หัวข้อเพื่อกางเนื้อหา</span>} />
+      <Collapse items={items} activeKey={open} onChange={setOpen} bordered={false}
+        style={{background:'transparent'}} expandIconPosition="end" />
+    </div>
+  );
+}
+
+/* ============ TAB 3: IRAC WALKTHROUGH (เดินเคส) ============ */
+const iracCases = [
+  {
+    id:'c1', tag:'2/66 ข้อ 1', star:3, topic:'ส่วนได้เสียของตัวแทน + รับช่วงสิทธิ',
+    facts:'นายชัยได้รับมอบอำนาจจากนายเทพให้นำรถยนต์ของนายเทพไปทำประกันภัยไว้กับ บมจ.ประกันภัย ต่อมารถถูกโจรกรรมขณะอยู่ในความดูแลของนายมึน (ผู้รับฝากรถ) บมจ.จ่ายค่าสินไหมทดแทนแล้วเข้ารับช่วงสิทธิฟ้องไล่เบี้ยนายมึน นายมึนต่อสู้ว่านายชัยผู้เอาประกันไม่ใช่เจ้าของกรรมสิทธิ์รถ สัญญาประกันภัยจึงไม่ผูกพัน — ข้อต่อสู้ฟังขึ้นหรือไม่?',
+    issue:'ตัวแทนซึ่งไม่ใช่เจ้าของกรรมสิทธิ์ทรัพย์ มีส่วนได้เสียที่จะเอาประกันภัยทรัพย์ของตัวการหรือไม่ และผู้รับประกันภัยที่จ่ายค่าสินไหมแล้วรับช่วงสิทธิไล่เบี้ยได้หรือไม่',
+    rule:['863','880'],
+    ruleText:'ม.863 ผู้เอาประกันภัยต้องมีส่วนได้เสียในเหตุที่ประกันภัยไว้ มิฉะนั้นสัญญาไม่ผูกพัน — ส่วนได้เสียมิได้จำกัดเฉพาะเจ้าของกรรมสิทธิ์ ผู้ครอบครอง ผู้เช่า ตัวแทนที่มีหน้าที่และความรับผิดต่อตัวการ ย่อมมีส่วนได้เสีย · ม.880 เมื่อวินาศภัยเกิดเพราะการกระทำของบุคคลภายนอก ผู้รับประกันภัยที่ใช้ค่าสินไหมทดแทนไปแล้ว ย่อมเข้ารับช่วงสิทธิของผู้เอาประกันภัยอันมีต่อบุคคลภายนอกเพียงจำนวนที่จ่ายไป',
+    application:'นายชัยเป็นตัวแทนผู้ได้รับมอบอำนาจจากนายเทพ มีหน้าที่และความรับผิดต่อตัวการเกี่ยวกับรถคันดังกล่าว จึงเป็นผู้มีส่วนได้เสียตาม ม.863 แม้ไม่ใช่เจ้าของกรรมสิทธิ์ สัญญาประกันภัยย่อมผูกพันคู่สัญญา เมื่อ บมจ.จ่ายค่าสินไหมทดแทนไปแล้ว จึงเข้ารับช่วงสิทธิของผู้เอาประกันภัยไปไล่เบี้ยเอาจากนายมึนผู้รับฝากซึ่งต้องรับผิดในการที่รถหายได้ตาม ม.880',
+    conclusion:'ข้อต่อสู้ของนายมึนฟังไม่ขึ้น — สัญญาประกันภัยผูกพัน และ บมจ.มีสิทธิรับช่วงสิทธิไล่เบี้ยนายมึนได้ (ม.863 ประกอบ ม.880)'
+  },
+  {
+    id:'c2', tag:'2/66 ข้อ 2', star:3, topic:'โอนสิทธิเช่าซื้อ ≠ โอนวัตถุตาม ม.875',
+    facts:'นายนริศเช่าซื้อรถยนต์และเอาประกันภัยรถไว้ ต่อมาโอนสิทธิตามสัญญาเช่าซื้อให้นางนิตยา พร้อมมอบกรมธรรม์ประกันภัยให้ด้วย ภายหลังรถถูกขโมย นางนิตยาเรียกค่าสินไหมทดแทนจาก บมจ.ประกันภัย แต่ บมจ.ปฏิเสธ — บมจ.ต้องจ่ายหรือไม่?',
+    issue:'การโอนสิทธิตามสัญญาเช่าซื้อพร้อมมอบกรมธรรม์ เป็นการ "โอนวัตถุที่เอาประกันภัย" อันทำให้สิทธิตามสัญญาประกันภัยโอนตามไปด้วยตาม ม.875 หรือไม่',
+    rule:['875'],
+    ruleText:'ม.875 เมื่อมีการโอนวัตถุที่เอาประกันภัย สิทธิตามสัญญาประกันภัยย่อมโอนตามไปด้วย — แต่ต้องเป็นการโอน "กรรมสิทธิ์" ในวัตถุที่เอาประกันภัย ไม่ใช่เพียงโอนการครอบครอง',
+    application:'การโอนสิทธิตามสัญญาเช่าซื้อเป็นเพียงการโอนสิทธิการครอบครองและสิทธิที่จะได้กรรมสิทธิ์เมื่อผ่อนครบ กรรมสิทธิ์ในรถยังไม่ได้โอนมายังนายนริศและย่อมโอนต่อให้นางนิตยาไม่ได้ กรณีจึงไม่ใช่การโอนวัตถุที่เอาประกันภัยตาม ม.875 สิทธิตามสัญญาประกันภัยไม่โอนไปยังนางนิตยา แม้จะได้รับมอบกรมธรรม์ไว้ก็ตาม',
+    conclusion:'นางนิตยาไม่มีสิทธิเรียกค่าสินไหมทดแทน — บมจ.ปฏิเสธการจ่ายได้ชอบแล้ว (ม.875)'
+  },
+  {
+    id:'c3', tag:'2/66 ข้อ 3', star:3, topic:'เจ้าหนี้ของผู้รับประโยชน์ vs เงินประกันชีวิต',
+    facts:'นายปรีชาเอาประกันชีวิตตนเองวงเงิน 1 ล้านบาท ระบุนางบุญมี (ภรรยา) เป็นผู้รับประโยชน์ ต่อมานายปรีชาถึงแก่ความตาย นายเจริญซึ่งเป็นเจ้าหนี้ของนางบุญมี ขอรับเงินประกัน 1 ล้านบาทก่อนเพื่อชำระหนี้ของนางบุญมี — ทำได้หรือไม่?',
+    issue:'เจ้าหนี้ของผู้รับประโยชน์มีสิทธิเรียกเอาเงินประกันชีวิตก่อนผู้รับประโยชน์หรือไม่ และเงินประกันตกเป็นของใคร',
+    rule:['889','897'],
+    ruleText:'ม.889 ประกันชีวิต = ผู้รับประกันภัยตกลงจะใช้เงินจำนวนหนึ่งเมื่อบุคคลถึงแก่ความตาย · ม.897 ว.2 ถ้าระบุผู้รับประโยชน์เฉพาะเจาะจงไว้ เงินประกันเป็นสิทธิของผู้รับประโยชน์ เฉพาะจำนวนเบี้ยประกันที่ผู้เอาประกันส่งไปเท่านั้นที่ตกเข้ากองมรดก ซึ่งเจ้าหนี้ของผู้เอาประกันภัยเรียกได้',
+    application:'นายปรีชาระบุนางบุญมีเป็นผู้รับประโยชน์เฉพาะเจาะจง เมื่อนายปรีชาตาย นางบุญมีจึงมีสิทธิรับเงิน 1 ล้านบาทตาม ม.889 ส่วนนายเจริญเป็นเพียงเจ้าหนี้ของ "นางบุญมีผู้รับประโยชน์" มิใช่เจ้าหนี้ของ "นายปรีชาผู้เอาประกันภัย" จึงไม่เข้ากรณี ม.897 ว.2 ที่จะเรียกเอาจากกองมรดกได้ และไม่มีบทกฎหมายให้สิทธิรับเงินประกันก่อนผู้รับประโยชน์',
+    conclusion:'นายเจริญขอรับเงินประกันก่อนไม่ได้ — นางบุญมีผู้รับประโยชน์มีสิทธิรับเงิน 1 ล้านบาท (ม.889 ประกอบ ม.897)'
+  },
+  {
+    id:'c4', tag:'1/67 & 2/67 ข้อ 2', star:3, topic:'ลูกจ้างประมาทธรรมดา — ม.879 ว.2 + รับช่วงสิทธิ',
+    facts:'นายยงชัยทำประกันอัคคีภัยโรงงานวงเงิน 1.5 ล้านบาท ต่อมาลูกจ้างของนายยงชัยเผลอทำให้เกิดเพลิงไหม้โรงงานเสียหาย นายยงชัยบอกกล่าวบริษัทโดยไม่ชักช้าและเรียกค่าสินไหมทดแทน บริษัทปฏิเสธอ้างว่าเพลิงไหม้เกิดจากความประมาทเลินเล่อ — บริษัทปฏิเสธได้หรือไม่ และจ่ายแล้วมีสิทธิอะไรต่อ?',
+    issue:'วินาศภัยที่เกิดจากความประมาทเลินเล่อ "ธรรมดา" ของลูกจ้าง ทำให้ผู้รับประกันภัยหลุดพ้นความรับผิดหรือไม่ และเมื่อจ่ายแล้วมีสิทธิไล่เบี้ยหรือไม่',
+    rule:['879','881','880'],
+    ruleText:'ม.879 ว.1 ผู้รับประกันภัยไม่ต้องรับผิดเมื่อวินาศภัยเกิดเพราะความทุจริตหรือความประมาทเลินเล่ออย่างร้ายแรงของผู้เอาประกันภัย/ผู้รับประโยชน์ — แต่ ว.2 ความประมาทเลินเล่อธรรมดา ผู้รับประกันภัยยังต้องรับผิด · ม.881 เกิดวินาศภัยต้องบอกกล่าวโดยไม่ชักช้า · ม.880 จ่ายค่าสินไหมแล้วรับช่วงสิทธิไล่เบี้ยบุคคลภายนอกผู้ก่อภัย',
+    application:'ลูกจ้าง "เผลอ" ทำให้เกิดเพลิงไหม้ เป็นความประมาทเลินเล่อธรรมดา ทั้งมิใช่การกระทำของผู้เอาประกันภัยหรือผู้รับประโยชน์เองที่ทุจริตหรือประมาทร้ายแรง จึงไม่เข้าข้อยกเว้น ม.879 ว.1 บริษัทยังต้องรับผิดใช้ค่าสินไหมทดแทน เมื่อนายยงชัยบอกกล่าวโดยไม่ชักช้าตาม ม.881 แล้ว บริษัทปฏิเสธไม่ได้ และเมื่อบริษัทจ่ายค่าสินไหมแล้ว ย่อมรับช่วงสิทธิของนายยงชัยไปไล่เบี้ยเอาจากลูกจ้างผู้ก่อภัยได้ตาม ม.880',
+    conclusion:'บริษัทปฏิเสธการจ่ายไม่ได้ (ม.879 ว.2) ต้องใช้ค่าสินไหมทดแทน และเมื่อจ่ายแล้วรับช่วงสิทธิไล่เบี้ยลูกจ้างได้ (ม.880)'
+  },
+  {
+    id:'c5', tag:'1/68 ข้อ 1', star:3, topic:'ปกปิดโรค (865) + ผู้รับประโยชน์ฆ่าตาย (895(2))',
+    facts:'นายแดงทำประกันชีวิตกับหัวหมากประกันภัย โดยไม่เปิดเผยว่าตนเป็นโรคหัวใจ ระบุนายดำเป็นผู้รับประโยชน์ ต่อมานายดำวางยาพิษฆ่านายแดงถึงแก่ความตาย — หัวหมากประกันภัยต้องจ่ายเงินตามกรมธรรม์หรือไม่?',
+    issue:'สัญญาที่ผู้เอาประกันปกปิดโรคร้ายแรงมีผลอย่างไร และเมื่อผู้รับประโยชน์เป็นผู้ฆ่าผู้เอาประกันตาย ผู้รับประกันภัยต้องใช้เงินหรือไม่',
+    rule:['865','895'],
+    ruleText:'ม.865 ว.1 ละเว้นไม่เปิดเผยข้อความจริงซึ่งอาจจูงใจผู้รับประกันภัยให้เรียกเบี้ยสูงขึ้นหรือบอกปัดไม่ทำสัญญา → สัญญาเป็นโมฆียะ (ยังสมบูรณ์จนกว่าจะบอกล้าง — สิทธิบอกล้าง 1 เดือนนับแต่ทราบมูล/5 ปีนับแต่ทำสัญญา ตาม ว.2) · ม.895(2) ผู้รับประโยชน์ฆ่าผู้เอาประกันภัยตายโดยเจตนา → ผู้รับประกันภัยไม่ต้องใช้เงินแก่ผู้รับประโยชน์คนนั้น แต่ต้องใช้ค่าไถ่ถอนกรมธรรม์แก่ผู้เอาประกันภัยหรือทายาท',
+    application:'การเป็นโรคหัวใจเป็นข้อความจริงสาระสำคัญที่อาจจูงใจบริษัทให้บอกปัดหรือเรียกเบี้ยสูงขึ้น เมื่อนายแดงปกปิด สัญญาจึงเป็นโมฆียะตาม ม.865 ว.1 แต่ตราบใดที่บริษัทยังไม่บอกล้าง สัญญายังสมบูรณ์ใช้บังคับได้ — ครั้นนายดำผู้รับประโยชน์วางยาพิษฆ่านายแดงตาย จึงเข้า ม.895(2) บริษัทไม่ต้องจ่ายเงินประกันแก่นายดำ คงต้องใช้เพียงค่าไถ่ถอนกรมธรรม์คืนแก่ทายาทของนายแดง',
+    conclusion:'หัวหมากประกันภัยไม่ต้องจ่ายเงินประกันแก่นายดำ (ม.895(2)) — ทายาทของนายแดงมีสิทธิเรียกค่าไถ่ถอนกรมธรรม์คืน และบริษัทยังอาจบอกล้างสัญญาตาม ม.865 ได้ภายในกำหนด'
+  },
+  {
+    id:'c6', tag:'2/67 ข้อ 1', star:3, topic:'ผู้ครอบครองมีส่วนได้เสีย + ค้ำจุนเรียกตรง',
+    facts:'นายพีทำประกันภัยรถยนต์ (รวมประกันภัยค้ำจุนความรับผิดต่อบุคคลภายนอก) ทั้งที่รถเป็นรถเช่า นายพีเป็นเพียงผู้ครอบครอง ต่อมารถที่นายพีขับเฉี่ยวชนนายแก่นได้รับบาดเจ็บ เสียหาย 4 แสนบาท นายแก่นเรียกค่าสินไหมทดแทนจากบริษัทประกันโดยตรง บริษัทต่อสู้ว่านายพีไม่ใช่เจ้าของรถ สัญญาไม่ผูกพัน — ข้อต่อสู้ฟังขึ้นหรือไม่ นายแก่นเรียกตรงได้หรือไม่?',
+    issue:'ผู้ครอบครองรถ (ผู้เช่า) มีส่วนได้เสียเอาประกันภัยหรือไม่ และผู้เสียหายซึ่งเป็นบุคคลภายนอกเรียกค่าสินไหมจากผู้รับประกันภัยค้ำจุนโดยตรงได้หรือไม่',
+    rule:['863','887','880'],
+    ruleText:'ม.863 ผู้เอาประกันภัยต้องมีส่วนได้เสีย — ผู้ครอบครอง/ผู้เช่ามีส่วนได้เสีย · ม.887 ว.2 ผู้ต้องเสียหายชอบที่จะเรียกร้องค่าสินไหมทดแทนจากผู้รับประกันภัยโดยตรง · ม.880 ผู้รับประกันภัยจ่ายแล้วรับช่วงสิทธิ',
+    application:'นายพีแม้ไม่ใช่เจ้าของกรรมสิทธิ์ แต่เป็นผู้เช่า/ผู้ครอบครองรถ ซึ่งต้องรับผิดต่อเจ้าของและต่อบุคคลภายนอกจากการใช้รถ จึงมีส่วนได้เสียตาม ม.863 สัญญาประกันภัยผูกพัน ข้อต่อสู้ของบริษัทฟังไม่ขึ้น — และเมื่อเป็นประกันภัยค้ำจุน นายแก่นผู้ต้องเสียหายย่อมเรียกค่าสินไหมทดแทน 4 แสนบาทจากบริษัทได้โดยตรงตาม ม.887 ว.2 แม้ไม่ใช่คู่สัญญา',
+    conclusion:'ข้อต่อสู้ฟังไม่ขึ้น — นายแก่นเรียกค่าสินไหมจากบริษัทโดยตรงได้ (ม.863 + ม.887 ว.2) และบริษัทจ่ายแล้วย่อมรับช่วงสิทธิตาม ม.880'
+  },
+  {
+    id:'c7', tag:'2/67 ข้อ 3', star:3, topic:'ผู้รับประโยชน์เป็นเหตุให้ตาย + กองมรดก',
+    facts:'นางกนกทำประกันชีวิตวงเงิน 10 ล้านบาท ระบุนายพีระและนายฤทธิ์เป็นผู้รับประโยชน์คนละ 5 ล้านบาท ต่อมาขณะเดินทางด้วยกัน นายฤทธิ์ขับรถด้วยความเร็วสูงเกิดอุบัติเหตุ ทำให้นางกนกถึงแก่ความตาย และนายฤทธิ์เองก็เสียชีวิตด้วย — เงินประกัน 10 ล้านบาทจะจัดการอย่างไร?',
+    issue:'ผู้รับประโยชน์ซึ่งเป็นผู้กระทำให้ผู้เอาประกันถึงแก่ความตาย ยังมีสิทธิรับเงินหรือไม่ และส่วนของผู้รับประโยชน์ที่ตายแล้วตกแก่ใคร',
+    rule:['895','897'],
+    ruleText:'ม.895(2) ผู้รับประโยชน์เป็นผู้กระทำให้ผู้เอาประกันภัยถึงแก่ความตาย → ผู้รับประกันภัยไม่ต้องใช้เงินส่วนของผู้รับประโยชน์คนนั้น ต้องใช้ค่าไถ่ถอนกรมธรรม์แก่ทายาท — ผู้รับประโยชน์คนอื่นที่ไม่มีส่วนเกี่ยวข้องยังมีสิทธิรับส่วนของตน · ม.897 ผู้รับประโยชน์ที่ระบุไว้ตายไปก่อน/ไม่อาจรับได้ → เงินส่วนนั้นตกเข้ากองมรดกของผู้เอาประกันภัย',
+    application:'นายฤทธิ์เป็นผู้รับประโยชน์ที่ขับรถโดยเร็วเป็นเหตุให้นางกนกผู้เอาประกันถึงแก่ความตาย จึงต้องด้วย ม.895(2) บริษัทไม่ต้องจ่ายเงิน 5 ล้านส่วนของนายฤทธิ์ ทายาทของนางกนกคงเรียกได้เพียงค่าไถ่ถอนกรมธรรม์ในส่วนนั้น — ส่วนนายพีระผู้รับประโยชน์อีกคนไม่มีส่วนเกี่ยวข้องกับการตาย ยังมีสิทธิรับ 5 ล้านส่วนของตนตามสัญญา (หากผู้รับประโยชน์คนใดตายก่อนได้รับเงิน เงินส่วนนั้นย่อมตกเข้ากองมรดกของผู้เอาประกันตามแนว ม.897)',
+    conclusion:'บริษัทไม่ต้องจ่ายส่วนของนายฤทธิ์ (ม.895(2)) — ทายาทนางกนกเรียกค่าไถ่ถอนกรมธรรม์ส่วนนั้นได้ ส่วนนายพีระยังรับ 5 ล้านของตนได้ตามปกติ'
+  },
+];
+
+function IracCard({c}) {
+  const [step, setStep] = useState(0);
+  const parts = [
+    {k:'Issue', th:'ประเด็น (I)', color:C.blue, body:c.issue},
+    {k:'Rule', th:'หลักกฎหมาย (R)', color:C.purple, body:<span>{c.rule.map(x=><span key={x} style={{marginRight:6}}><Sec>{x}</Sec></span>)}<div style={{marginTop:8}}>{c.ruleText}</div></span>},
+    {k:'Application', th:'ปรับข้อเท็จจริง (A)', color:C.amberDark, body:c.application},
+    {k:'Conclusion', th:'สรุป (C)', color:C.green, body:c.conclusion},
+  ];
+  return (
+    <Card style={{marginBottom:18, borderColor:C.border}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:10}}>
+        <Tag color="volcano" style={{fontWeight:700}}>{c.tag}</Tag>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.topic}</span>
+        <Stars n={c.star}/>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3}}>
+        <strong style={{color:C.primaryDark}}>ข้อเท็จจริง: </strong>{c.facts}
+      </div>
+      <div style={{margin:'14px 0 6px'}}>
+        {parts.slice(0,step).map((p,i)=>(
+          <div key={i} className="fade-up" style={{borderLeft:`4px solid ${p.color}`, background:p.color+'12', borderRadius:'0 10px 10px 0', padding:'11px 15px', marginBottom:10}}>
+            <div style={{fontWeight:700, color:p.color, marginBottom:3}}>{p.th}</div>
+            <div style={{color:C.text2, fontSize:14.3}}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{textAlign:'center', marginTop:6}}>
+        {step<4
+          ? <Button type="primary" size="large" onClick={()=>setStep(step+1)}
+              style={{background:parts[step].color, borderColor:parts[step].color}}>
+              เปิดขั้น {parts[step].th} ▸</Button>
+          : <Space>
+              <Tag color="green" style={{padding:'6px 14px', fontSize:14}}>✅ ครบ IRAC แล้ว</Tag>
+              <Button onClick={()=>setStep(0)}>เริ่มใหม่</Button>
+            </Space>}
+      </div>
+    </Card>
+  );
+}
+
+function IracTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>เดินเคสจริงจากข้อสอบ ทีละขั้น Issue → Rule → Application → Conclusion</span>}
+        description={<span style={{color:C.text2}}>ลองคิดคำตอบในใจก่อน แล้วค่อยกดเปิดทีละขั้น เพื่อฝึกโครงการเขียนตอบแบบได้คะแนนเต็ม (ข้อละ 25 คะแนน)</span>} />
+      {iracCases.map(c=><IracCard key={c.id} c={c}/>)}
+      <Box tone="primary" title="โครงเขียนตอบให้ได้คะแนน (จำเป็นมาก)" icon="✍️">
+        <b>หลักกฎหมาย</b> (ยกมาตราที่เกี่ยว) → <b>วินิจฉัย</b> ("กรณีตามปัญหา… เห็นว่า…" เอาข้อเท็จจริงจับกับหลัก) → <b>สรุป</b> ("กล่าวโดยสรุป…" ตอบคำถามให้ตรง) — ห้ามสลับลำดับ และตอบโดยไม่ยกมาตรา = เสียคะแนนแม้วินิจฉัยถูก
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 4: CASE LAB (ทำนายก่อนเฉลย) ============ */
+const labCases = [
+  {
+    id:'lab1', icon:'🚙', title:'ตัวแทนเอาประกันรถของตัวการ',
+    scenario:'นายชัยเป็นตัวแทนได้รับมอบอำนาจจากนายเทพ นำรถของนายเทพไปทำประกันภัย ต่อมารถถูกโจรกรรม บริษัทจ่ายค่าสินไหมแล้วไล่เบี้ยนายมึนผู้รับฝากรถ นายมึนต่อสู้ว่า "นายชัยไม่ใช่เจ้าของรถ สัญญาประกันภัยไม่ผูกพัน"',
+    question:'ข้อต่อสู้ของนายมึนฟังขึ้นหรือไม่?',
+    answer:false, yesLabel:'ฟังขึ้น', noLabel:'ฟังไม่ขึ้น',
+    secs:['863','880'],
+    verdict:'ฟังไม่ขึ้น — ตัวแทนที่มีหน้าที่และความรับผิดต่อตัวการ ย่อมมี "ส่วนได้เสีย" ตาม ม.863 แม้ไม่ใช่เจ้าของกรรมสิทธิ์ สัญญาประกันภัยจึงผูกพัน เมื่อบริษัทจ่ายค่าสินไหมแล้วย่อมเข้ารับช่วงสิทธิไล่เบี้ยนายมึนได้ตาม ม.880',
+    trap:'ส่วนได้เสีย ≠ กรรมสิทธิ์ — ผู้ครอบครอง ผู้เช่า ตัวแทน ผู้รับฝาก ล้วนมีส่วนได้เสียได้'
+  },
+  {
+    id:'lab2', icon:'📄', title:'โอนสิทธิเช่าซื้อพร้อมกรมธรรม์',
+    scenario:'นายนริศเช่าซื้อรถและทำประกันภัยไว้ แล้วโอนสิทธิเช่าซื้อให้นางนิตยาพร้อมมอบกรมธรรม์ให้ ต่อมารถถูกขโมย นางนิตยาเรียกค่าสินไหมจากบริษัท',
+    question:'บริษัทต้องจ่ายค่าสินไหมให้นางนิตยาหรือไม่?',
+    answer:false, yesLabel:'ต้องจ่าย', noLabel:'ไม่ต้องจ่าย',
+    secs:['875'],
+    verdict:'ไม่ต้องจ่าย — การโอนสิทธิเช่าซื้อเป็นเพียงโอน "การครอบครอง" ไม่ใช่โอน "กรรมสิทธิ์" จึงไม่ใช่การโอนวัตถุที่เอาประกันภัยตาม ม.875 สิทธิตามสัญญาประกันภัยไม่โอนตามไปยังนางนิตยา แม้ถือกรมธรรม์ไว้ก็ตาม',
+    trap:'เจอคำว่า "เช่าซื้อ" ให้ถามทันที: กรรมสิทธิ์ย้ายหรือยัง? ผ่อนไม่ครบ = ยังไม่ย้าย'
+  },
+  {
+    id:'lab3', icon:'🔥', title:'ลูกจ้างเผลอทำเพลิงไหม้',
+    scenario:'นายยงชัยทำประกันอัคคีภัยโรงงาน ลูกจ้างของเขา "เผลอ" ทำให้เกิดเพลิงไหม้เสียหาย นายยงชัยบอกกล่าวบริษัทโดยไม่ชักช้าและเรียกค่าสินไหม บริษัทปฏิเสธอ้างว่าเกิดจากความประมาทเลินเล่อ',
+    question:'บริษัทปฏิเสธการจ่ายได้หรือไม่?',
+    answer:false, yesLabel:'ปฏิเสธได้', noLabel:'ปฏิเสธไม่ได้',
+    secs:['879','880','881'],
+    verdict:'ปฏิเสธไม่ได้ — ลูกจ้างเผลอ = ประมาทเลินเล่อธรรมดา ไม่ใช่ความทุจริตหรือประมาทร้ายแรงของผู้เอาประกัน/ผู้รับประโยชน์ตาม ม.879 ว.1 บริษัทยังต้องรับผิด (ว.2) และเมื่อจ่ายแล้วย่อมรับช่วงสิทธิไปไล่เบี้ยลูกจ้างผู้ก่อภัยได้ตาม ม.880',
+    trap:'ม.879 ว.1 ยกเว้นเฉพาะ "ทุจริต/ประมาทร้ายแรง" ของผู้เอาประกันหรือผู้รับประโยชน์ — ประมาทธรรมดา บริษัทจ่ายเสมอ'
+  },
+  {
+    id:'lab4', icon:'🛡️', title:'ผู้เสียหายเรียกจากบริษัทโดยตรง',
+    scenario:'นายพีทำประกันภัยค้ำจุนรถยนต์ไว้ ต่อมาขับรถเฉี่ยวชนนายแก่นบาดเจ็บ เสียหาย 4 แสนบาท นายแก่นไม่ฟ้องนายพี แต่ไปเรียกค่าสินไหมทดแทนจากบริษัทประกันโดยตรง ทั้งที่ตนไม่ใช่คู่สัญญาประกันภัย',
+    question:'นายแก่นเรียกจากบริษัทโดยตรงได้หรือไม่?',
+    answer:true, yesLabel:'ได้', noLabel:'ไม่ได้',
+    secs:['887','888'],
+    verdict:'ได้ — ประกันภัยค้ำจุนตาม ม.887 ว.2 บัญญัติชัดแจ้งว่าผู้ต้องเสียหายชอบที่จะเรียกร้องค่าสินไหมทดแทนจากผู้รับประกันภัยโดยตรง แม้ไม่ใช่คู่สัญญา โดยค่าสินไหมที่เรียกได้เป็นไปตาม ม.877 ทั้ง 3 ประเภท (ม.888)',
+    trap:'นี่คือข้อยกเว้นหลักสัญญาผูกพันเฉพาะคู่สัญญา — สอดคล้องหลักสัญญาเพื่อประโยชน์บุคคลภายนอก ม.374'
+  },
+  {
+    id:'lab5', icon:'🫀', title:'ปกปิดโรคหัวใจ แล้วบริษัทเพิ่งรู้หลัง 6 ปี',
+    scenario:'นายป่วยปกปิดว่าตนเป็นโรคหัวใจขณะขอเอาประกันชีวิต บริษัทเพิ่งตรวจพบความจริงเมื่อพ้น 6 ปีนับแต่วันทำสัญญา จึงประกาศบอกล้างสัญญาทันที',
+    question:'บริษัทบอกล้างสัญญาได้หรือไม่?',
+    answer:false, yesLabel:'บอกล้างได้', noLabel:'บอกล้างไม่ได้',
+    secs:['865'],
+    verdict:'บอกล้างไม่ได้ — แม้การปกปิดโรคหัวใจทำให้สัญญาเป็นโมฆียะตาม ม.865 ว.1 แต่สิทธิบอกล้างระงับเมื่อพ้น 5 ปีนับแต่วันทำสัญญา (ว.2) เมื่อบริษัทเพิ่งรู้หลัง 6 ปี สิทธิบอกล้างจึงระงับไปแล้ว สัญญาสมบูรณ์ บริษัทต้องจ่าย',
+    trap:'นาฬิกา 2 เรือนของ ม.865 ว.2: 1 เดือนนับแต่ทราบมูล และ 5 ปีนับแต่ทำสัญญา — พ้นเรือนใดเรือนหนึ่งก็จบ'
+  },
+  {
+    id:'lab6', icon:'☠️', title:'ผู้รับประโยชน์วางยาพิษฆ่าผู้เอาประกัน',
+    scenario:'นายแดงทำประกันชีวิต ระบุนายดำเป็นผู้รับประโยชน์ ต่อมานายดำวางยาพิษฆ่านายแดงถึงแก่ความตาย เพื่อหวังเงินประกัน',
+    question:'บริษัทต้องจ่ายเงินประกันแก่นายดำหรือไม่?',
+    answer:false, yesLabel:'ต้องจ่าย', noLabel:'ไม่ต้องจ่าย',
+    secs:['895'],
+    verdict:'ไม่ต้องจ่าย — ม.895(2) ผู้รับประโยชน์ฆ่าผู้เอาประกันภัยตายโดยเจตนา ผู้รับประกันภัยไม่ต้องใช้เงินแก่ผู้รับประโยชน์คนนั้น แต่ต้องใช้ "ค่าไถ่ถอนกรมธรรม์" คืนแก่ผู้เอาประกันภัยหรือทายาท — ผู้รับประโยชน์คนอื่นที่ไม่เกี่ยวข้องยังรับส่วนของตนได้',
+    trap:'อย่าตอบแค่ "ไม่จ่าย" — ต้องเขียนต่อว่าทายาทเรียกค่าไถ่ถอนกรมธรรม์คืนได้ จึงจะได้คะแนนเต็ม'
+  },
+  {
+    id:'lab7', icon:'💼', title:'เจ้าหนี้ของผู้รับประโยชน์ขอตัดหน้า',
+    scenario:'นายปรีชาทำประกันชีวิต 1 ล้านบาท ระบุนางบุญมีภรรยาเป็นผู้รับประโยชน์ นายปรีชาตาย นายเจริญซึ่งเป็นเจ้าหนี้ของ "นางบุญมี" ขอรับเงินประกันก่อนเพื่อหักชำระหนี้',
+    question:'นายเจริญขอรับเงินก่อนได้หรือไม่?',
+    answer:false, yesLabel:'ได้', noLabel:'ไม่ได้',
+    secs:['889','897'],
+    verdict:'ไม่ได้ — นางบุญมีผู้รับประโยชน์มีสิทธิรับเงิน 1 ล้านตาม ม.889 ส่วน ม.897 ว.2 ให้สิทธิเฉพาะ "เจ้าหนี้ของผู้เอาประกันภัย" เรียกจากกองมรดกได้เพียงเท่าจำนวนเบี้ยประกันที่ส่งไป นายเจริญเป็นเจ้าหนี้ของผู้รับประโยชน์ ไม่ใช่เจ้าหนี้ของผู้เอาประกัน จึงไม่มีสิทธิใด',
+    trap:'อ่านโจทย์ให้ขาด: เจ้าหนี้ของใคร? ของผู้เอาประกัน (ได้เท่าเบี้ย) หรือของผู้รับประโยชน์ (ไม่ได้เลย)'
+  },
+  {
+    id:'lab8', icon:'🕯️', title:'ฆ่าตัวตายหลังทำสัญญา 2 ปี',
+    scenario:'นายเศร้าทำประกันชีวิตไว้ ผ่านไป 2 ปีนับแต่วันทำสัญญา นายเศร้ากระทำอัตวินิบาตกรรม (ฆ่าตัวตาย) ทายาทเรียกเงินตามกรมธรรม์ บริษัทปฏิเสธอ้างข้อยกเว้นเรื่องฆ่าตัวตาย',
+    question:'บริษัทต้องจ่ายเงินประกันหรือไม่?',
+    answer:true, yesLabel:'ต้องจ่าย', noLabel:'ไม่ต้องจ่าย',
+    secs:['895'],
+    verdict:'ต้องจ่าย — ม.895(1) ยกเว้นความรับผิดเฉพาะกรณีฆ่าตัวตายภายใน "1 ปี" นับแต่วันทำสัญญาหรือวันต่ออายุสัญญา เมื่อนายเศร้าฆ่าตัวตายหลังทำสัญญา 2 ปี พ้นกำหนด 1 ปีแล้ว บริษัทจึงต้องใช้เงินตามกรมธรรม์',
+    trap:'ตัวเลขที่ชอบสลับกันในข้อสอบ: ฆ่าตัวตาย 1 ปี (895) · บอกล้าง 1 เดือน/5 ปี (865) · เวนคืน 3 ปี (894) · อายุความวินาศภัย 2 ปี (882)'
+  },
+];
+
+function LabCard({c}) {
+  const [pick, setPick] = useState(null);
+  const revealed = pick!==null;
+  const correct = revealed && pick===c.answer;
+  return (
+    <Card className={revealed?'':'hoverlift'} style={{marginBottom:16, borderColor: revealed?(correct?C.green:C.red):C.border, borderWidth:revealed?2:1}} bodyStyle={{padding:'18px 20px'}}>
+      <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:8}}>
+        <span style={{fontSize:24}}>{c.icon}</span>
+        <span style={{fontWeight:700, fontSize:16, color:C.text}}>{c.title}</span>
+        <span style={{marginLeft:'auto', display:'flex', gap:4, flexWrap:'wrap'}}>{c.secs.map(s=><Sec key={s}>{s}</Sec>)}</span>
+      </div>
+      <div style={{background:C.surface3, borderRadius:12, padding:'12px 15px', border:`1px solid ${C.border}`, color:C.text2, fontSize:14.3, marginBottom:12}}>
+        {c.scenario}
+      </div>
+      <div style={{display:'flex', alignItems:'center', gap:12, flexWrap:'wrap'}}>
+        <span style={{fontWeight:700, color:C.primaryDark, fontSize:15}}>🔮 ทำนาย: {c.question}</span>
+        {!revealed &&
+          <Space>
+            <Button size="large" style={{borderColor:C.green, color:C.green, fontWeight:700}} onClick={()=>setPick(true)}>{c.yesLabel}</Button>
+            <Button size="large" style={{borderColor:C.red, color:C.red, fontWeight:700}} onClick={()=>setPick(false)}>{c.noLabel}</Button>
+          </Space>}
+        {revealed &&
+          <Tag color={correct?'green':'red'} style={{fontSize:14, padding:'4px 14px', fontWeight:700}}>
+            {correct?'🎯 ทำนายถูก!':'❌ ทำนายพลาด'} — คำตอบ: {c.answer?c.yesLabel:c.noLabel}
+          </Tag>}
+      </div>
+      {revealed && (
+        <div className="fade-up">
+          <div style={{marginTop:12, background:(correct?C.greenBg:C.redBg), borderRadius:12, padding:'13px 16px', border:`1px solid ${(correct?C.green:C.red)}33`}}>
+            <div style={{fontSize:12.5, color:C.text3, fontWeight:700, marginBottom:4}}>คำวินิจฉัย</div>
+            <div style={{color:C.text2, fontSize:14.6, lineHeight:1.85}}>{c.verdict}</div>
+          </div>
+          <div style={{marginTop:10, display:'flex', gap:8, alignItems:'flex-start', background:'#F5EFE3', border:`1px dashed ${C.amberDark}66`, borderRadius:10, padding:'9px 13px'}}>
+            <span>⚠️</span>
+            <span style={{color:C.amberDark, fontSize:13.5, fontWeight:600}}>กับดัก: {c.trap}</span>
+          </div>
+          <div style={{textAlign:'right', marginTop:8}}>
+            <Button size="small" onClick={()=>setPick(null)}>ลองใหม่</Button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CaseLabTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="warning" showIcon style={{marginBottom:16, background:'#F5EFE3', border:`1px solid ${C.amber}66`}}
+        message={<span style={{fontWeight:700, color:C.amberDark}}>🧪 ห้องทดลองเคส — ทำนายก่อน แล้วค่อยดูเฉลย</span>}
+        description={<span style={{color:C.text2}}>อ่านสถานการณ์ แล้ว <strong>เลือกคำตอบที่คิดว่าใช่</strong> ระบบจะเฉลยคำวินิจฉัยพร้อม <strong>มาตราที่ใช้</strong> และกับดักที่ซ่อนอยู่ — เหมือนอาจารย์ซักในห้องเรียนแบบ Socratic</span>} />
+      {labCases.map(c=><LabCard key={c.id} c={c}/>)}
+      <Box tone="cyan" title="เทคนิคจากห้องนี้" icon="💡">
+        สังเกตว่าเกินครึ่งของเคสเฉลยว่า "ไม่" — ข้อสอบประกันภัยชอบวางเหยื่อให้ตอบตามสามัญสำนึก (สงสารผู้เรียกเงิน) แต่คำตอบทางกฎหมายขึ้นกับ <strong>องค์ประกอบมาตรา</strong> เท่านั้น: มีส่วนได้เสียไหม · โอนกรรมสิทธิ์ไหม · ประมาทระดับไหน · นาฬิกาเดินพ้นกำหนดหรือยัง
+      </Box>
+    </div>
+  );
+}
+
+/* ============ TAB 5: QUIZ ============ */
+const quizData = [
+  {q:'ผู้เอาประกันภัยไม่มี "ส่วนได้เสีย" ในเหตุที่ประกันภัยไว้ ผลของสัญญาคือ?',
+    opts:['โมฆะ','โมฆียะ','ไม่ผูกพันคู่สัญญา (ม.863)','สมบูรณ์แต่ฟ้องไม่ได้'], correct:2,
+    exp:'ม.863: ไม่มีส่วนได้เสีย → สัญญาประกันภัย "ไม่ผูกพัน" — ระวังอย่าสับสนกับโมฆะ/โมฆียะ'},
+  {q:'ผู้เอาประกันภัยปกปิดว่าตนเป็นโรคร้ายแรง ผลของสัญญาคือ?',
+    opts:['โมฆะทันที','โมฆียะ (ม.865 ว.1)','ไม่ผูกพัน','เลิกกันโดยปริยาย'], correct:1,
+    exp:'ม.865 ว.1: ละเว้นไม่เปิดเผยข้อความจริง/แถลงเท็จ → สัญญาเป็นโมฆียะ ยังสมบูรณ์จนกว่าจะถูกบอกล้าง'},
+  {q:'สิทธิบอกล้างสัญญาตาม ม.865 ว.2 ระงับเมื่อใด?',
+    opts:['พ้น 1 ปีนับแต่ทำสัญญา','พ้น 1 เดือนนับแต่ทราบมูล หรือพ้น 5 ปีนับแต่ทำสัญญา','พ้น 2 ปีนับแต่เกิดภัย','พ้น 3 ปีนับแต่ส่งเบี้ย'], correct:1,
+    exp:'ม.865 ว.2: นาฬิกา 2 เรือน — 1 เดือนนับแต่ทราบมูลอันจะบอกล้าง หรือ 5 ปีนับแต่วันทำสัญญา แล้วแต่อย่างใดถึงก่อน'},
+  {q:'ค่าสินไหมทดแทนตาม ม.877 ไม่รวมข้อใด?',
+    opts:['ความเสียหายแก่ทรัพย์สินที่เอาประกัน','ความบุบสลายอันเป็นผลต่อเนื่อง','ค่าใช้จ่ายในการบรรเทาภัยที่สมควร','ค่าเสียหายทางจิตใจของผู้เอาประกัน'], correct:3,
+    exp:'ม.877 มี 3 ประเภท: ทรัพย์สินที่เอาประกัน + ผลต่อเนื่อง + ค่าบรรเทาภัย ("ทปร") — ไม่มีค่าเสียหายทางจิตใจ'},
+  {q:'ลูกจ้างของผู้เอาประกัน "เผลอ" ทำให้เกิดเพลิงไหม้ บริษัทประกันอัคคีภัยต้องจ่ายไหม?',
+    opts:['ไม่จ่าย เพราะเป็นความประมาท','จ่าย เพราะเป็นประมาทธรรมดา (ม.879 ว.2)','จ่ายครึ่งเดียว','ไม่จ่าย เพราะลูกจ้างไม่ใช่คู่สัญญา'], correct:1,
+    exp:'ม.879 ยกเว้นเฉพาะทุจริต/ประมาทร้ายแรงของผู้เอาประกัน-ผู้รับประโยชน์ (ว.1) — ประมาทธรรมดา บริษัทยังต้องรับผิด (ว.2)'},
+  {q:'บริษัทจ่ายค่าสินไหมทดแทนวินาศภัยที่เกิดจากบุคคลภายนอกแล้ว มีสิทธิอะไร?',
+    opts:['เรียกเบี้ยเพิ่ม','เข้ารับช่วงสิทธิไล่เบี้ยผู้ก่อภัย (ม.880)','บอกเลิกสัญญา','ริบเบี้ยประกัน'], correct:1,
+    exp:'ม.880: จ่ายไปเพียงใด เข้ารับช่วงสิทธิของผู้เอาประกันภัยต่อบุคคลภายนอกเพียงนั้น'},
+  {q:'อายุความสิทธิเรียกร้องตามสัญญาประกันวินาศภัยคือ?',
+    opts:['1 ปีนับแต่ทำสัญญา','2 ปีนับแต่วันเกิดวินาศภัย (ม.882)','5 ปีนับแต่ทำสัญญา','10 ปี'], correct:1,
+    exp:'ม.882: 2 ปีนับแต่วันเกิดวินาศภัย'},
+  {q:'ประกันภัยค้ำจุน ผู้เสียหาย (บุคคลภายนอก) เรียกค่าสินไหมจากใครได้?',
+    opts:['เรียกได้เฉพาะผู้เอาประกัน','เรียกจากผู้รับประกันภัยโดยตรงได้ (ม.887 ว.2)','ต้องฟ้องผู้เอาประกันก่อนเสมอ','เรียกไม่ได้เพราะไม่ใช่คู่สัญญา'], correct:1,
+    exp:'ม.887 ว.2 บัญญัติชัดแจ้ง: ผู้ต้องเสียหายชอบที่จะเรียกร้องจากผู้รับประกันภัยโดยตรง'},
+  {q:'ผู้เอาประกันชีวิตฆ่าตัวตายภายใน 1 ปีนับแต่วันทำสัญญา ผลคือ?',
+    opts:['บริษัทต้องจ่ายเต็มจำนวน','บริษัทไม่ต้องจ่าย (ม.895(1))','จ่ายครึ่งเดียว','จ่ายเฉพาะเบี้ยที่ส่ง'], correct:1,
+    exp:'ม.895(1): อัตวินิบาตกรรมภายใน 1 ปีนับแต่วันทำสัญญา/ต่ออายุ → ไม่ต้องจ่าย (เกิน 1 ปี → ต้องจ่าย)'},
+  {q:'ผู้เอาประกันชีวิตตายโดยไม่ได้ระบุผู้รับประโยชน์ไว้ เงินประกันตกแก่ใคร?',
+    opts:['ตกเป็นของบริษัท','ตกเข้ากองมรดกของผู้เอาประกัน (ม.897 ว.1)','ตกเป็นของแผ่นดิน','แบ่งครึ่งบริษัทกับทายาท'], correct:1,
+    exp:'ม.897 ว.1: ไม่ระบุผู้รับประโยชน์ → เงินทั้งหมดตกเข้ากองมรดก / ว.2 ถ้าระบุเฉพาะเจาะจง → เฉพาะเบี้ยที่ส่งเข้ากองมรดก'},
+  {q:'ประกันชีวิต บริษัทจ่ายเงินแล้วจะรับช่วงสิทธิไปไล่เบี้ยผู้ทำให้ตายได้หรือไม่?',
+    opts:['ได้ตาม ม.880','ไม่ได้ — ประกันชีวิตไม่มีรับช่วงสิทธิ (ม.896)','ได้ถ้าตกลงกันไว้','ได้เฉพาะครึ่งจำนวน'], correct:1,
+    exp:'ม.896: ประกันชีวิตไม่มีรับช่วงสิทธิ — ต่างจากวินาศภัย (ม.880) โจทย์ชอบหลอกตรงนี้'},
+  {q:'หลักทั่วไป ม.375 ห้ามคู่สัญญาเปลี่ยนแปลงสิทธิของบุคคลภายนอกที่ถือเอาประโยชน์แล้ว แต่ประกันชีวิตเปลี่ยนผู้รับประโยชน์ได้เพราะมาตราใด?',
+    opts:['ม.865','ม.891 — บทบัญญัติพิเศษยกเว้น ม.375','ม.894','ม.897'], correct:1,
+    exp:'ม.891: ผู้เอาประกันชีวิตโอนประโยชน์แห่งสัญญา (เปลี่ยนผู้รับประโยชน์) ได้ โดยบอกกล่าวเป็นหนังสือ — เป็นข้อยกเว้นของ ม.375'},
+];
+
+function Quiz() {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const Qd = quizData[i];
+  const choose = (k)=>{ if(picked!==null) return; setPicked(k); if(k===Qd.correct) setScore(s=>s+1); };
+  const next = ()=>{ if(i+1>=quizData.length){ setDone(true); } else { setI(i+1); setPicked(null);} };
+  const restart = ()=>{ setI(0); setPicked(null); setScore(0); setDone(false); };
+
+  if(done) return (
+    <Result status={score>=9?'success':'info'}
+      title={`ได้ ${score} / ${quizData.length} คะแนน`}
+      subTitle={score>=9?'เยี่ยมมาก! มาตราแม่นระดับพร้อมสอบแล้ว 🎉':'ทบทวนแท็บบทเรียน & เดินเคส IRAC อีกรอบแล้วลองใหม่นะ 💪'}
+      extra={<Button type="primary" style={{background:C.primary, borderColor:C.primary}} onClick={restart}>ทำใหม่อีกครั้ง</Button>}/>
+  );
+  return (
+    <div>
+      <Flex justify="space-between" align="center" style={{marginBottom:10}}>
+        <Text style={{color:C.text3}}>ข้อ {i+1} / {quizData.length}</Text>
+        <Tag color="blue">คะแนน {score}</Tag>
+      </Flex>
+      <Progress percent={Math.round((i)/quizData.length*100)} showInfo={false} strokeColor={C.green} trailColor={C.surface2} style={{marginBottom:16}}/>
+      <div style={{fontSize:17, fontWeight:600, color:C.text, marginBottom:16, lineHeight:1.7}}>{Qd.q}</div>
+      <Space direction="vertical" style={{width:'100%'}} size={10}>
+        {Qd.opts.map((o,k)=>{
+          let bg=C.white, bd=C.border, cc=C.text;
+          if(picked!==null){
+            if(k===Qd.correct){ bg=C.greenBg; bd=C.green; cc=C.green; }
+            else if(k===picked){ bg=C.redBg; bd=C.red; cc=C.red; }
+          }
+          return (
+            <div key={k} onClick={()=>choose(k)} className={picked===null?'hoverlift':''}
+              style={{cursor:picked===null?'pointer':'default', background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:'12px 16px', color:cc, fontSize:15, fontWeight:500, transition:'all .25s'}}>
+              <span style={{fontWeight:700, marginRight:8}}>{'กขคง'[k]}.</span>{o}
+              {picked!==null && k===Qd.correct && <span style={{float:'right'}}>✅</span>}
+              {picked===k && k!==Qd.correct && <span style={{float:'right'}}>❌</span>}
+            </div>
+          );
+        })}
+      </Space>
+      {picked!==null && (
+        <div className="fade-up">
+          <Box tone={picked===Qd.correct?'green':'red'} title={picked===Qd.correct?'ถูกต้อง!':'ยังไม่ใช่'} icon={picked===Qd.correct?'🎯':'📖'} style={{marginTop:14}}>
+            {Qd.exp}
+          </Box>
+          <div style={{textAlign:'center', marginTop:12}}>
+            <Button type="primary" size="large" style={{background:C.green, borderColor:C.green}} onClick={next}>
+              {i+1>=quizData.length?'ดูผลคะแนน':'ข้อถัดไป ▸'}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuizTab() {
+  return (
+    <div className="fade-up">
+      <Alert type="info" showIcon style={{marginBottom:16, background:C.blueBg, border:`1px solid ${C.blue}44`}}
+        message={<span style={{fontWeight:700, color:C.blue}}>ควิซ 12 ข้อ — ตอบแล้วเฉลยพร้อมเหตุผลทันที</span>}
+        description={<span style={{color:C.text2}}>ครอบคลุมทั้ง 4 หมวด: บททั่วไป · วินาศภัย · ค้ำจุน · ชีวิต + จุดโยง ม.374-375</span>} />
+      <Card style={{borderColor:C.border, maxWidth:680, margin:'0 auto'}} bodyStyle={{padding:'22px 24px'}}>
+        <Quiz/>
+      </Card>
+    </div>
+  );
+}
+
+/* ============ TAB 6: FLASHCARDS ============ */
+const flashcards = [
+  {q:'สัญญาประกันภัยคืออะไร? (นิยาม)', a:'ม.861', d:'สัญญาที่ผู้รับประกันภัยตกลงจะใช้ค่าสินไหมทดแทนหรือใช้เงินจำนวนหนึ่ง ในกรณีวินาศภัยหรือเหตุอย่างอื่นในอนาคตดังระบุในสัญญา', star:2, exam:false},
+  {q:'บุคคลในสัญญาประกันภัยมีใครบ้าง?', a:'ม.862 — 3 ฝ่าย', d:'ผู้รับประกันภัย (บริษัท) · ผู้เอาประกันภัย (จ่ายเบี้ย) · ผู้รับประโยชน์ (ผู้ได้รับเงิน)', star:1, exam:false},
+  {q:'ผู้เอาประกันภัยไม่มีส่วนได้เสีย → สัญญามีผลอย่างไร?', a:'ม.863 — ไม่ผูกพัน', d:'ต้องมีส่วนได้เสียในเหตุที่ประกันภัยไว้ — เจ้าของ ผู้ครอบครอง ผู้เช่า ตัวแทน ผู้รับฝาก ล้วนมีส่วนได้เสียได้', star:3, exam:true},
+  {q:'ปกปิดข้อความจริง/แถลงเท็จ → ผลเป็นอย่างไร? บอกล้างได้ถึงเมื่อไร?', a:'ม.865 — โมฆียะ', d:'ว.1 โมฆียะ / ว.2 สิทธิบอกล้างระงับเมื่อพ้น 1 เดือนนับแต่ทราบมูล หรือพ้น 5 ปีนับแต่ทำสัญญา', star:3, exam:true},
+  {q:'ผู้รับประกันภัยรู้ข้อความจริงอยู่แล้ว ยังบอกล้างได้ไหม?', a:'ม.866 — ไม่ได้', d:'รู้อยู่แล้วหรือควรจะได้รู้ → สัญญาสมบูรณ์ ยกขึ้นบอกล้างไม่ได้', star:2, exam:false},
+  {q:'สัญญาประกันภัยต้องทำเป็นหนังสือหรือไม่?', a:'ม.867 — หลักฐานเป็นหนังสือ', d:'ไม่ใช่ "แบบ" → ไม่ทำไม่โมฆะ เพียงแต่ต้องมีหลักฐานเป็นหนังสือจึงจะฟ้องร้องบังคับคดีได้', star:2, exam:false},
+  {q:'โอนวัตถุที่เอาประกันภัย → สิทธิตามสัญญาเป็นอย่างไร?', a:'ม.875 — โอนตามไปด้วย', d:'ต้องเป็นการโอน "กรรมสิทธิ์" — โอนสิทธิเช่าซื้อ (แค่ครอบครอง) ไม่เข้า ม.875', star:3, exam:true},
+  {q:'ค่าสินไหมทดแทนวินาศภัยมีกี่ประเภท?', a:'ม.877 — 3 ประเภท', d:'(1) ความเสียหายแก่ทรัพย์สินที่เอาประกัน (2) ความบุบสลายเป็นผลต่อเนื่อง (3) ค่าใช้จ่ายบรรเทาภัย — รหัส "ทปร"', star:2, exam:true},
+  {q:'วินาศภัยเกิดจากทุจริต/ประมาทร้ายแรงของผู้เอาประกัน → บริษัทต้องจ่ายไหม?', a:'ม.879 ว.1 — ไม่ต้องจ่าย', d:'ทุจริต/ประมาทร้ายแรง → ไม่รับผิด / แต่ประมาทธรรมดา (ว.2) → ยังต้องรับผิด', star:3, exam:true},
+  {q:'บริษัทจ่ายค่าสินไหมแล้ว มีสิทธิอะไรต่อผู้ก่อวินาศภัย?', a:'ม.880 — รับช่วงสิทธิ', d:'เข้ารับช่วงสิทธิของผู้เอาประกันภัยไปไล่เบี้ยบุคคลภายนอก เท่าจำนวนที่จ่ายไปจริง', star:3, exam:true},
+  {q:'เกิดวินาศภัยแล้ว ผู้เอาประกันต้องทำอะไรก่อน?', a:'ม.881 — บอกกล่าวโดยไม่ชักช้า', d:'ฝ่าฝืน → ผู้รับประกันหลุดพ้นความรับผิดเฉพาะส่วนที่เสียหายเพิ่มขึ้น', star:2, exam:false},
+  {q:'อายุความเรียกร้องตามสัญญาประกันวินาศภัย?', a:'ม.882 — 2 ปี', d:'นับแต่วันเกิดวินาศภัย', star:2, exam:false},
+  {q:'ประกันภัยค้ำจุน ผู้เสียหายเรียกจากบริษัทโดยตรงได้ไหม?', a:'ม.887 ว.2 — ได้', d:'ผู้ต้องเสียหายชอบที่จะเรียกร้องค่าสินไหมทดแทนจากผู้รับประกันภัยโดยตรง แม้ไม่ใช่คู่สัญญา (ค่าสินไหมตาม ม.877 ผ่าน ม.888)', star:3, exam:true},
+  {q:'ประกันชีวิตคืออะไร? (นิยาม)', a:'ม.889', d:'ผู้รับประกันภัยตกลงจะใช้ "เงินจำนวนหนึ่ง" เมื่อบุคคลถึงแก่ความตาย หรือมีชีวิตอยู่จนถึงเวลาที่กำหนด', star:2, exam:false},
+  {q:'ผู้เอาประกันชีวิตเปลี่ยนผู้รับประโยชน์ได้ไหม?', a:'ม.891 — ได้', d:'โอนประโยชน์แห่งสัญญาได้ โดยบอกกล่าวเป็นหนังสือไปยังผู้รับประกันภัย — เป็นบทพิเศษยกเว้นหลัก ม.375', star:3, exam:true},
+  {q:'เวนคืนกรมธรรม์ประกันชีวิตได้เมื่อไร?', a:'ม.894 — ส่งเบี้ยครบ 3 ปี', d:'จ่ายเบี้ยประกันภัยมาแล้วอย่างน้อย 3 ปี → มีสิทธิเวนคืนกรมธรรม์', star:2, exam:false},
+  {q:'ฆ่าตัวตายภายใน 1 ปีนับแต่ทำสัญญา → บริษัทจ่ายไหม?', a:'ม.895(1) — ไม่จ่าย', d:'อัตวินิบาตกรรมภายใน 1 ปีนับแต่วันทำสัญญาหรือวันต่ออายุ → ไม่ต้องจ่าย / เกิน 1 ปี → ต้องจ่าย', star:3, exam:true},
+  {q:'ผู้รับประโยชน์ฆ่าผู้เอาประกันชีวิตตาย → ผลเป็นอย่างไร?', a:'ม.895(2)', d:'ไม่ต้องจ่ายเงินแก่ผู้รับประโยชน์คนนั้น → ผู้เอาประกัน/ทายาทเรียก "ค่าไถ่ถอนกรมธรรม์" คืนได้ — ผู้รับประโยชน์คนอื่นที่ไม่เกี่ยวข้องยังได้ส่วนของตน', star:3, exam:true},
+  {q:'ประกันชีวิต บริษัทรับช่วงสิทธิไล่เบี้ยผู้ทำให้ตายได้ไหม?', a:'ม.896 — ไม่ได้', d:'ประกันชีวิตไม่มีรับช่วงสิทธิ (ต่างจากวินาศภัย ม.880)', star:2, exam:true},
+  {q:'ผู้เอาประกันชีวิตตายโดยไม่ระบุผู้รับประโยชน์ → เงินไปไหน?', a:'ม.897 ว.1 — กองมรดก', d:'เงินทั้งหมดตกเข้ากองมรดกของผู้เอาประกัน / ว.2 ถ้าระบุเฉพาะเจาะจง → เฉพาะจำนวนเบี้ยที่ส่งไปตกเข้ากองมรดก (เจ้าหนี้ของผู้เอาประกันเรียกได้เท่าเบี้ย)', star:3, exam:true},
+  {q:'ผู้รับประโยชน์ในประกันภัย โยงกับสัญญาเพื่อประโยชน์บุคคลภายนอกอย่างไร?', a:'ม.374 + ม.862', d:'ผู้รับประโยชน์ (ม.862) = บุคคลภายนอกตาม ม.374 ว.1 → เรียกชำระหนี้จากผู้รับประกันโดยตรงได้ / สิทธิเกิดเมื่อแสดงเจตนาถือเอาประโยชน์ (ว.2)', star:3, exam:true},
+  {q:'ม.375 ห้ามเปลี่ยนสิทธิบุคคลภายนอกที่ถือเอาประโยชน์แล้ว — แล้ว ม.891 ล่ะ?', a:'ม.891 เป็นข้อยกเว้นของ ม.375', d:'หลัก ม.375: เปลี่ยนแปลง/ระงับสิทธิไม่ได้ → แต่ ม.891 บทพิเศษ: ผู้เอาประกันชีวิตเปลี่ยนผู้รับประโยชน์ได้', star:3, exam:true},
+  {q:'แถลงอายุคลาดเคลื่อนตอนทำประกันชีวิต → สัญญาเป็นอย่างไร?', a:'ม.893', d:'อายุจริงอยู่นอกจำกัดอัตราตามทางค้าปกติ → สัญญาไม่สมบูรณ์ / ยังอยู่ในจำกัด → ปรับเบี้ยตามอายุจริง', star:1, exam:false},
+  {q:'[ข้อสอบ 2/66 ข้อ 1] ตัวแทนเอาประกันรถของตัวการ — บริษัทรับช่วงสิทธิไล่เบี้ยผู้รับฝากได้ไหม?', a:'ม.863 + ม.880 — ได้', d:'ตัวแทนมีหน้าที่และความรับผิดต่อตัวการ = มีส่วนได้เสีย สัญญาผูกพัน → จ่ายแล้วรับช่วงสิทธิได้ ข้อต่อสู้เรื่องไม่ใช่เจ้าของฟังไม่ขึ้น', star:3, exam:true},
+];
+
+function FlashcardTab() {
+  const [mode, setMode] = useState('all');
+  const pool = useMemo(()=>{
+    let p = flashcards;
+    if (mode==='exam') p = flashcards.filter(c=>c.exam);
+    if (mode==='star3') p = flashcards.filter(c=>c.star===3);
+    return p;
+  },[mode]);
+  const [order, setOrder] = useState(()=>flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [score, setScore] = useState({c:0,w:0});
+
+  useEffect(()=>{ setOrder(pool.map((_,i)=>i)); setIdx(0); setFlip(false); setScore({c:0,w:0}); },[mode]);
+
+  const card = pool[order[idx]] || pool[0];
+  const go = (dir)=>{ setFlip(false); setTimeout(()=>setIdx(i=>Math.max(0,Math.min(pool.length-1,i+dir))),120); };
+  const shuffle = ()=>{ const o=[...Array(pool.length).keys()]; for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];} setOrder(o); setIdx(0); setFlip(false); };
+  const mark = (ok)=>{ setScore(s=>({c:s.c+(ok?1:0), w:s.w+(ok?0:1)})); go(1); };
+
+  if(!card) return <Empty description="ไม่มีการ์ด"/>;
+  return (
+    <div className="fade-up">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={10} style={{marginBottom:14}}>
+        <Segmented value={mode} onChange={setMode}
+          options={[{label:`ทั้งหมด (${flashcards.length})`,value:'all'},{label:`ออกสอบ (${flashcards.filter(c=>c.exam).length})`,value:'exam'},{label:`★★★ (${flashcards.filter(c=>c.star===3).length})`,value:'star3'}]}/>
+        <Space>
+          <Tag color="green">ถูก {score.c}</Tag>
+          <Tag color="red">ผิด {score.w}</Tag>
+          <Button size="small" onClick={shuffle}>🔀 สุ่ม</Button>
+        </Space>
+      </Flex>
+      <div style={{textAlign:'center', color:C.text3, marginBottom:8}}>การ์ด {idx+1} / {pool.length}</div>
+      <Progress percent={Math.round((idx+1)/pool.length*100)} showInfo={false} strokeColor={C.primary} trailColor={C.surface2} style={{marginBottom:14}}/>
+      <div className="fc-perspective" style={{maxWidth:640, margin:'0 auto', minHeight:290}}>
+        <div className={'fc-card'+(flip?' flipped':'')} style={{minHeight:290}} onClick={()=>setFlip(f=>!f)}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.primary}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:290}}>
+            <div style={{position:'absolute', top:14, left:16}}><Stars n={card.star}/></div>
+            {card.exam && <Tag color="volcano" style={{position:'absolute', top:12, right:12}}>ข้อสอบ</Tag>}
+            <div style={{fontSize:12.5, color:C.text3, marginBottom:10}}>❓ คำถาม (แตะเพื่อพลิก)</div>
+            <div style={{fontSize:18, fontWeight:600, color:C.text, textAlign:'center', lineHeight:1.7}}>{card.q}</div>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.green}`, padding:'26px', justifyContent:'center', alignItems:'center', minHeight:290}}>
+            <div style={{fontSize:12.5, color:C.green, marginBottom:8, fontWeight:700}}>✅ คำตอบ</div>
+            <div style={{fontSize:21, fontWeight:800, color:C.green, textAlign:'center', marginBottom:card.d?12:0}}>{card.a}</div>
+            {card.d && <div style={{fontSize:14.5, color:C.text2, textAlign:'center', lineHeight:1.8}}>{card.d}</div>}
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" align="center" gap={10} style={{marginTop:20}} wrap="wrap">
+        <Button onClick={()=>go(-1)} disabled={idx===0}>◂ ก่อนหน้า</Button>
+        {flip
+          ? <Space>
+              <Button danger onClick={()=>mark(false)}>✗ ยังไม่แม่น</Button>
+              <Button type="primary" style={{background:C.green, borderColor:C.green}} onClick={()=>mark(true)}>✓ จำได้</Button>
+            </Space>
+          : <Button type="primary" style={{background:C.primary, borderColor:C.primary}} onClick={()=>setFlip(true)}>พลิกดูคำตอบ</Button>}
+        <Button onClick={()=>go(1)} disabled={idx===pool.length-1}>ถัดไป ▸</Button>
+      </Flex>
+    </div>
+  );
+}
+
+/* ============ TAB 7: QUICK REF (จำด่วน) ============ */
+const quickSections = [
+  {divider:'🔮 ทำนายข้อสอบ 3 ข้อ (สูตรตอบเร็ว)'},
+  {s:'ข้อ 1', t:'ส่วนได้เสีย + รับช่วงสิทธิ', b:'863 (มีส่วนได้เสียไหม — เจ้าของ/ครอบครอง/เช่า/ตัวแทน) → 879 (ตรวจทุจริต/ประมาท) → 877 (ค่าสินไหม 3 ประเภท) → 880 (จ่ายแล้วรับช่วงสิทธิ) → 881 (บอกกล่าว)', type:'formula'},
+  {s:'ข้อ 2', t:'ค้ำจุน + โอนวัตถุ + ปิดบัง', b:'887 ว.2 (ผู้เสียหายเรียกตรง) → 875 (โอนกรรมสิทธิ์เท่านั้น) → 865 (ปิดบัง=โมฆียะ 1 เดือน/5 ปี) → 882 (อายุความ 2 ปี)', type:'formula'},
+  {s:'ข้อ 3', t:'ประกันชีวิต', b:'889 (นิยาม) → 891 (เปลี่ยนผู้รับ — ยกเว้น 375) → 895 (ฆ่าตัวตาย 1 ปี / ผู้รับฆ่าตาย→ค่าไถ่ถอน) → 896 (ไม่มีรับช่วงสิทธิ) → 897 (กองมรดก)', type:'formula'},
+
+  {divider:'🧠 เทคนิคช่วยจำ (Mnemonic)'},
+  {s:'สปกช', t:'4 หมวดของวิชา', b:'ส=ส่วนทั่วไป (861-868) · ป=ประกันวินาศภัย (869-882) · ก=ค้ำจุน (887-888) · ช=ชีวิต (889-897)', type:'mnem'},
+  {s:'สปเห', t:'ใครมีส่วนได้เสีย (863)', b:'ส=เจ้าของกรรมสิทธิ์ · ป=ผู้ครอบครอง · เ=ผู้เช่า · ห=ผู้มีหน้าที่รับผิด (ตัวแทน/ผู้รับฝาก)', type:'mnem'},
+  {s:'ทปร', t:'ค่าสินไหม 3 ประเภท (877)', b:'ท=ทรัพย์สินที่เอาประกัน · ป=ผลต่อเนื่อง (บุบสลาย) · ร=ค่าบรรเทาภัย (Rescue)', type:'mnem'},
+  {s:'ฆตต', t:'ข้อยกเว้นชีวิต (895)', b:'ฆ=ฆ่าตัวตาย ≤1 ปี · ต=ผู้รับประโยชน์ฆ่าตาย → ต=ทายาทเรียกค่าไถ่ถอนกรมธรรม์', type:'mnem'},
+  {s:'ปิดโม', t:'ม.865', b:'ปิด=ไม่เปิดเผยข้อความจริง/แถลงเท็จ → โม=โมฆียะ / 866=บริษัทรู้แล้ว→สมบูรณ์', type:'mnem'},
+
+  {divider:'🔀 เทียบให้ชัด (Contrast)'},
+  {s:'880 vs 896', t:'รับช่วงสิทธิ', b:'วินาศภัย: รับช่วงสิทธิได้ (880) ✓ / ชีวิต: ไม่มีรับช่วงสิทธิ (896) ✗', type:'contrast'},
+  {s:'879 ว.1 vs ว.2', t:'ระดับความประมาท', b:'ทุจริต+ประมาทร้ายแรง → ไม่จ่าย ✗ / ประมาทธรรมดา → ยังต้องจ่าย ✓', type:'contrast'},
+  {s:'865 vs 866', t:'ไม่เปิดเผยข้อความจริง', b:'865 ผู้เอาประกันปิดบัง → โมฆียะ / 866 ผู้รับประกันรู้อยู่แล้ว → สมบูรณ์', type:'contrast'},
+  {s:'875 vs เช่าซื้อ', t:'โอนวัตถุประกัน', b:'โอนกรรมสิทธิ์ → สิทธิโอนตาม ✓ / โอนสิทธิเช่าซื้อ (ครอบครอง) → ไม่เข้า 875 ✗', type:'contrast'},
+  {s:'897 ว.1 vs ว.2', t:'เงินเข้ากองมรดก', b:'ว.1 ไม่ระบุผู้รับ → ทั้งหมดเข้ากองมรดก / ว.2 ระบุเฉพาะเจาะจง → เฉพาะเบี้ยที่ส่งเข้ากองมรดก', type:'contrast'},
+  {s:'375 vs 891', t:'เปลี่ยนผู้รับประโยชน์', b:'หลัก 375: ถือเอาประโยชน์แล้วเปลี่ยนไม่ได้ / ข้อยกเว้น 891: ประกันชีวิตเปลี่ยนผู้รับได้ (บอกกล่าวเป็นหนังสือ)', type:'contrast'},
+
+  {divider:'⏱️ ตัวเลขที่ห้ามสลับ'},
+  {s:'1 เดือน/5 ปี', t:'สิทธิบอกล้าง (865 ว.2)', b:'1 เดือนนับแต่ทราบมูล หรือ 5 ปีนับแต่วันทำสัญญา — แล้วแต่อย่างใดถึงก่อน', type:'chunk'},
+  {s:'2 ปี', t:'อายุความวินาศภัย (882)', b:'นับแต่วันเกิดวินาศภัย', type:'chunk'},
+  {s:'3 ปี', t:'เวนคืนกรมธรรม์ (894)', b:'ส่งเบี้ยประกันภัยครบ 3 ปี → เวนคืนได้', type:'chunk'},
+  {s:'1 ปี', t:'ฆ่าตัวตาย (895(1))', b:'ภายใน 1 ปีนับแต่ทำสัญญา/ต่ออายุ → ไม่จ่าย · เกิน 1 ปี → จ่าย', type:'chunk'},
+
+  {divider:'📝 โครงคำตอบ (Answer Template)'},
+  {s:'โครง', t:'เขียน 3 ท่อนเสมอ', b:'หลักกฎหมาย (ยกมาตรา) → วินิจฉัย ("กรณีตามปัญหา… เห็นว่า…") → สรุป ("กล่าวโดยสรุป…" ตอบให้ตรงคำถาม)', type:'formula'},
+  {s:'ยกมาตรา', t:'ต้องยกเลขมาตรา', b:'ตอบโดยไม่ยกมาตรา = เสียคะแนน แม้วินิจฉัยถูก — ทุกข้อ 25 คะแนน', type:'chunk'},
+];
+
+function QuickTab() {
+  const typeColor = {mnem:C.purple, flow:C.cyan, contrast:C.red, chunk:C.blue, formula:C.amberDark};
+  const typeBg = {mnem:C.purpleBg, flow:C.cyanBg, contrast:C.redBg, chunk:C.blueBg, formula:'#F5EFE3'};
+  return (
+    <div className="fade-up">
+      {quickSections.map((q,i)=> q.divider ? (
+        <Divider key={i} orientation="left" style={{borderColor:C.border, color:C.primaryDark, fontWeight:700, fontSize:16}}>{q.divider}</Divider>
+      ) : (
+        <div key={i} className="qc" style={{background:typeBg[q.type]||C.surface3, borderLeft:`4px solid ${typeColor[q.type]||C.primary}`, borderRadius:'0 12px 12px 0', padding:'12px 16px', marginBottom:10, border:`1px solid ${(typeColor[q.type]||C.primary)}22`, borderLeftWidth:4}}>
+          <div style={{display:'flex', gap:10, alignItems:'baseline', flexWrap:'wrap'}}>
+            <span style={{fontWeight:800, color:typeColor[q.type]||C.primary, fontSize:15, minWidth:56, fontFamily:"'Noto Serif Thai'"}}>{q.s}</span>
+            <span style={{fontWeight:700, color:C.text}}>{q.t}</span>
+          </div>
+          <div style={{color:C.text2, fontSize:14, marginTop:4}}>{q.b}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ============ APP SHELL ============ */
+function App() {
+  const [tab, setTab] = useState('found');
+  const items = [
+    {key:'found', label:'🏛️ ปูพื้นฐาน', children:<FoundationsTab/>},
+    {key:'lesson', label:'📖 บทเรียน', children:<LessonsTab/>},
+    {key:'irac', label:'⚖️ เดินเคส IRAC', children:<IracTab/>},
+    {key:'lab', label:'🧪 ห้องทดลองเคส', children:<CaseLabTab/>},
+    {key:'quiz', label:'🎮 ควิซ', children:<QuizTab/>},
+    {key:'flash', label:'🃏 แฟลชการ์ด', children:<FlashcardTab/>},
+    {key:'quick', label:'⚡ จำด่วน', children:<QuickTab/>},
+  ];
+  return (
+    <ConfigProvider theme={{
+      algorithm: theme.defaultAlgorithm,
+      token:{
+        colorPrimary:C.primary, colorBgBase:C.bg, colorTextBase:C.text,
+        colorBgContainer:C.white, colorBorder:C.border, colorBorderSecondary:C.border,
+        borderRadius:12, fontFamily:"'Noto Sans Thai', sans-serif",
+        colorBgLayout:C.bg, fontSize:15,
+      },
+      components:{
+        Tabs:{ inkBarColor:C.primary, itemActiveColor:C.primaryDark, itemSelectedColor:C.primaryDark, itemHoverColor:C.primaryLight, titleFontSize:15.5 },
+        Segmented:{ itemSelectedBg:C.primary, itemSelectedColor:C.white, trackBg:C.surface2 },
+        Collapse:{ headerBg:'transparent' },
+      }
+    }}>
+      <Layout style={{minHeight:'100vh', background:C.bg}}>
+        <div style={{background:`linear-gradient(135deg, ${C.primaryDark}, ${C.primary})`, padding:'26px 16px 22px', textAlign:'center', boxShadow:'0 2px 14px rgba(31,80,100,.25)'}}>
+          <div style={{color:C.white, fontSize:13, letterSpacing:3, opacity:.9}}>LAW 2112 · มหาวิทยาลัยรามคำแหง</div>
+          <h1 style={{color:C.white, margin:'6px 0 4px', fontSize:30, fontWeight:800}}>กฎหมายประกันภัย</h1>
+          <div style={{color:'#E4F1F6', fontSize:14.5}}>ห้องเรียนอินเทอร์แอกทีฟ · เรียนจากศูนย์ถึงเขียนตอบข้อสอบได้ · สไตล์ Harvard</div>
+        </div>
+        <Layout.Content style={{padding:'22px 16px 10px'}}>
+          <div style={{maxWidth:940, margin:'0 auto'}}>
+            <Tabs activeKey={tab} onChange={setTab} items={items} centered type="card" size="large"/>
+          </div>
+        </Layout.Content>
+        <Layout.Footer style={{textAlign:'center', background:'transparent', color:C.text3, fontSize:13}}>
+          จัดทำเพื่อการทบทวนของนักศึกษา · อ้างอิงประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 861–897 (และ ม.374–375) · แนวคำตอบยึดตามแนวข้อสอบรามคำแหง
+        </Layout.Footer>
+      </Layout>
+    </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../../assets/ink-tool.js" defer></script>
+</body>
+</html>
