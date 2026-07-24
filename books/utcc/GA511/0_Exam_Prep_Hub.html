@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Managerial Accounting — ศูนย์รวมเตรียมสอบ (Ch.4·9·12·13·14)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai', sans-serif; margin:0; }
+::-webkit-scrollbar { width:10px; height:10px; }
+::-webkit-scrollbar-track { background:#EDE8DF; }
+::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:5px; }
+::selection { background:#DDD3C1; color:#3D3229; }
+.ant-table-cell { line-height:1.9 !important; }
+.fadein { animation: fadeInUp .6s ease both; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:translateY(0);} }
+.chcard { transition: all .25s ease; cursor:pointer; text-decoration:none; display:block; }
+.chcard:hover { transform:translateY(-4px); box-shadow:0 10px 24px rgba(61,50,41,.18); }
+.pulse-dot { animation: pd 1.6s ease infinite; }
+@keyframes pd { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+/* ==== iPad / touch-friendly (injected) ==== */
+* { -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+button, .ant-btn, .ant-tabs-tab, .ant-checkbox-wrapper, a, .chcard, .sortitem { touch-action: manipulation; }
+.ant-btn { min-height: 40px; }
+.ant-tabs-tab { padding: 10px 16px !important; }
+/* slider: dragging the handle must NOT scroll the page */
+.ant-slider { touch-action: none; padding: 10px 0; }
+.ant-slider-handle { width: 22px !important; height: 22px !important; margin-top: -9px !important; }
+.ant-slider-handle::after { width: 22px !important; height: 22px !important; }
+input[type=range] { touch-action: none; -webkit-appearance: none; appearance: none; height: 8px; border-radius: 5px; background: #DDD3C1; outline: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #A8906C; cursor: pointer; }
+.ant-switch { min-width: 48px; height: 26px; }
+.ant-checkbox-inner { width: 20px; height: 20px; }
+@media (max-width: 820px) {
+  .ant-tabs-nav { flex-wrap: wrap; }
+  .ant-statistic-content { font-size: 15px !important; }
+  .ant-table { font-size: 13px; }
+}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Progress, Collapse, Checkbox } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState } = React;
+
+const C = {
+  gold:'#A8906C', goldDark:'#8B7355', goldLight:'#C4B49A',
+  bg:'#F5F0E8', surface:'#EDE8DF', surface2:'#E5DFD4', surface3:'#F0EBE2',
+  border:'#DDD3C1', borderDark:'#C4B49A',
+  text:'#3D3229', text2:'#5C4F42', text3:'#7A6E62', white:'#FAF7F2',
+  green:'#5D8A66', greenBg:'#EFF5F0', red:'#B85C5C', redBg:'#F5ECEA',
+  purple:'#7B6B8A', purpleBg:'#F0ECF3', blue:'#5B7A9E', blueBg:'#ECF0F5',
+  cyan:'#5B8A8A', cyanBg:'#ECF2F2',
+};
+
+const chapters = [
+  { file:'CVP_Ch4_Interactive_Review.html', ch:'4', color:C.blue,
+    title:'CVP Analysis', sub:'ต้นทุน–ปริมาณ–กำไร',
+    icon:'📊',
+    must:['BE (หน่วย) = F ÷ CM ต่อหน่วย', 'BE (เงิน) = F ÷ CM ratio', 'Target: (F+กำไรเป้า) ÷ CM'],
+    lo:'จุดคุ้มทุน · target profit · กราฟ · หลายสินค้า · margin of safety & DOL' },
+  { file:'Budgeting_Ch9_Review.html', ch:'9', color:C.green,
+    title:'Profit Planning', sub:'งบประมาณ (Budgeting)',
+    icon:'💰',
+    must:['ผลิต = ขาย + EI − BI', 'BI งวดนี้ = EI งวดก่อน', 'ค่าเสื่อมห้ามอยู่ในงบเงินสด'],
+    lo:'Master budget · operating budgets 8 ตัว · cash budget · พฤติกรรมงบ' },
+  { file:'Performance_Ch12_Review.html', ch:'12', color:C.purple,
+    title:'Performance Evaluation', sub:'วัดผลแผนก & Transfer Pricing',
+    icon:'📗',
+    must:['ROI = OI ÷ สินทรัพย์เฉลี่ย = Margin × Turnover', 'RI = OI − (ขั้นต่ำ% × สินทรัพย์)', 'TP: floor ผู้ขาย ↔ ceiling ผู้ซื้อ'],
+    lo:'decentralization · ROI/RI/EVA · transfer pricing · Balanced Scorecard' },
+  { file:'Decisions_Ch13_Review.html', ch:'13', color:C.red,
+    title:'Short-Run Decisions', sub:'Relevant Costing',
+    icon:'⚖️',
+    must:['relevant = อนาคต + ต่างกันระหว่างทางเลือก', 'special order: ราคา > ต้นทุนส่วนเพิ่ม', 'keep/drop: ดู segment margin'],
+    lo:'relevant cost · make-or-buy · special order · keep-or-drop · joint · product mix · pricing' },
+  { file:'Capital_Investment_Ch14_Review.html', ch:'14', color:C.cyan,
+    title:'Capital Investment', sub:'ตัดสินใจลงทุนระยะยาว',
+    icon:'🏗️',
+    must:['NPV = Σ CF×df − ลงทุน (≥0 รับ)', 'IRR: df = ลงทุน ÷ CF แล้วเปิดตาราง', 'ขัดกันเชื่อ NPV'],
+    lo:'payback · ARR · NPV · IRR · postaudit · NPV vs IRR' },
+];
+
+const ChapterCard = ({c}) => (
+  <a className="chcard" href={c.file} target="_blank" rel="noopener">
+    <Card style={{background:C.white, borderColor:c.color, borderTop:`4px solid ${c.color}`, height:'100%'}}>
+      <Flex justify="space-between" align="start">
+        <div style={{fontSize:34}}>{c.icon}</div>
+        <Tag color="default" style={{color:c.color, borderColor:c.color, fontWeight:700}}>Ch.{c.ch}</Tag>
+      </Flex>
+      <Title level={4} style={{color:C.text, margin:'6px 0 0'}}>{c.title}</Title>
+      <Text style={{color:C.text3}}>{c.sub}</Text>
+      <Divider style={{margin:'10px 0'}}/>
+      <Text strong style={{color:c.color, fontSize:13}}>3 สูตร/หลักที่ต้องแม่น</Text>
+      <ul style={{margin:'4px 0 8px', paddingLeft:18}}>
+        {c.must.map((m,i)=><li key={i}><Text style={{color:C.text, fontSize:13}}>{m}</Text></li>)}
+      </ul>
+      <Text style={{color:C.text3, fontSize:12}}>{c.lo}</Text>
+      <div style={{marginTop:10}}>
+        <Button type="primary" size="small" style={{background:c.color, borderColor:c.color}}>เปิดบทนี้ →</Button>
+      </div>
+    </Card>
+  </a>
+);
+
+/* ---------- ปูพื้นข้ามบท (สำหรับคนไม่มีพื้นเลย) ---------- */
+const FoundationCard = ({icon, title, color, children, uses}) => (
+  <Card size="small" className="fadein" style={{marginBottom:12, background:C.white, borderColor:color, borderLeft:`5px solid ${color}`}}>
+    <Space align="start">
+      <div style={{fontSize:26}}>{icon}</div>
+      <div>
+        <Text strong style={{color, fontSize:15}}>{title}</Text>
+        {children}
+        <div style={{marginTop:6}}><Text style={{color:C.text3, fontSize:12}}>ใช้ในบท: {uses}</Text></div>
+      </div>
+    </Space>
+  </Card>
+);
+const CostSplitDemo = () => {
+  const [units, setUnits] = useState(100);
+  const rent = 9000, perCup = 40;
+  const total = rent + perCup*units;
+  return (
+    <Card size="small" style={{background:C.surface3, borderColor:C.gold, marginTop:8}}>
+      <Text style={{color:C.text2}}>ร้านกาแฟขายได้ <Text strong style={{color:C.goldDark}}>{units.toLocaleString()}</Text> แก้ว/เดือน</Text>
+      <input type="range" min="0" max="400" value={units} onChange={e=>setUnits(+e.target.value)}
+        style={{width:'100%', height:36, touchAction:'none'}}/>
+      <Row gutter={8}>
+        <Col span={8}><Statistic title="ค่าเช่า (คงที่)" value={rent.toLocaleString()} valueStyle={{fontSize:15, color:C.purple}}/></Col>
+        <Col span={8}><Statistic title="ค่าของ (ผันแปร)" value={(perCup*units).toLocaleString()} valueStyle={{fontSize:15, color:C.red}}/></Col>
+        <Col span={8}><Statistic title="ต้นทุนรวม" value={total.toLocaleString()} valueStyle={{fontSize:15, color:C.text}}/></Col>
+      </Row>
+      <Text style={{color:C.text3, fontSize:12}}>ลากดู: ค่าเช่านิ่งเท่าเดิมเสมอ (คงที่) ส่วนค่าของโตตามจำนวนแก้ว (ผันแปร) — เข้าใจสองคำนี้ = เข้าใจครึ่งวิชา</Text>
+    </Card>
+  );
+};
+const FoundationTab = () => (
+  <div>
+    <Alert type="success" style={{marginBottom:12}} message={<Text strong>ยังไม่เคยเรียนบัญชีบริหารมาก่อน? อ่านตรงนี้ให้จบก่อน แล้วทุกบทจะง่ายขึ้นทันที — 6 แนวคิดที่เป็นรากของทั้ง 5 บท</Text>}/>
+    <FoundationCard icon="⚖️" title="1. ต้นทุนคงที่ vs ต้นทุนผันแปร" color={C.purple} uses="Ch.4, 9, 13">
+      <Paragraph style={{color:C.text, margin:'4px 0'}}>
+        ต้นทุน <Text strong>คงที่ (fixed)</Text> ไม่เปลี่ยนตามจำนวนที่ผลิต/ขาย เช่น ค่าเช่า เงินเดือนประจำ ค่าเสื่อมเครื่องจักร ·
+        ต้นทุน <Text strong>ผันแปร (variable)</Text> โตตามจำนวน เช่น วัตถุดิบ ค่าคอมมิชชั่น — แยกสองอย่างนี้ให้ออกคือด่านแรกของแทบทุกโจทย์
+      </Paragraph>
+      <CostSplitDemo/>
+    </FoundationCard>
+    <FoundationCard icon="💵" title="2. Contribution Margin (กำไรส่วนเกิน)" color={C.cyan} uses="Ch.4, 13">
+      <Paragraph style={{color:C.text, margin:'4px 0'}}>
+        CM = ราคาขาย − ต้นทุนผันแปร = เงินที่เหลือจากการขาย 1 หน่วย ไว้ "ช่วยจ่าย" ต้นทุนคงที่ก่อน พอจ่ายครบที่เหลือคือกำไร ·
+        กาแฟแก้วละ 100 ต้นทุนของ 40 → CM = 60 บาท/แก้ว · ขายกี่แก้วถึงพอจ่ายค่าเช่า 9,000? = 9,000 ÷ 60 = 150 แก้ว (นี่คือจุดคุ้มทุน)
+      </Paragraph>
+    </FoundationCard>
+    <FoundationCard icon="🏦" title="3. กำไร ไม่เท่ากับ เงินสด" color={C.blue} uses="Ch.9, 14">
+      <Paragraph style={{color:C.text, margin:'4px 0'}}>
+        กำไรทางบัญชีนับตอน "ขายได้" แม้ยังไม่ได้เงิน และหักค่าเสื่อมที่ไม่มีเงินออกจริง · เงินสดนับตอน "เงินเข้า-ออกจริง" ·
+        ธุรกิจขายดีแต่ล้มได้ถ้าลูกค้าจ่ายช้า — เพราะเหตุนี้ Ch.9 จึงมีทั้งงบกำไรและงบเงินสดแยกกัน และ Ch.14 ใช้ "กระแสเงินสด" ไม่ใช่กำไร
+      </Paragraph>
+    </FoundationCard>
+    <FoundationCard icon="⏳" title="4. เงินวันนี้ มีค่ามากกว่าเงินอนาคต (Time Value of Money)" color={C.gold} uses="Ch.14">
+      <Paragraph style={{color:C.text, margin:'4px 0'}}>
+        เงิน 100 วันนี้ เอาไปฝาก/ลงทุนได้ ปีหน้าจึงกลายเป็นมากกว่า 100 · ดังนั้นจะเทียบเงินคนละปีต้อง "ดึงกลับมาเป็นค่าวันนี้" ก่อน (คิดลด/discount) ·
+        ตาราง PV ในข้อสอบก็คือค่า 1 ÷ (1+r) ยกกำลังจำนวนปี ที่คำนวณไว้ให้แล้ว
+      </Paragraph>
+    </FoundationCard>
+    <FoundationCard icon="🗑️" title="5. ต้นทุนที่ 'เกี่ยว' กับการตัดสินใจ (Relevant Cost)" color={C.red} uses="Ch.12, 13">
+      <Paragraph style={{color:C.text, margin:'4px 0'}}>
+        ต้นทุนจะเกี่ยวก็ต่อเมื่อ (1) เกิดในอนาคต และ (2) ต่างกันระหว่างทางเลือก · เงินที่จ่ายไปแล้ว (sunk cost เช่น ราคาเครื่องจักรเก่า) ไม่มีวันเกี่ยว ·
+        ต้นทุนที่ถูก "ปันส่วน" มา (common cost) ก็มักไม่เกี่ยว — โยนทิ้งจากการเทียบได้เลย
+      </Paragraph>
+    </FoundationCard>
+    <FoundationCard icon="🔢" title="6. อ่านตัวเลข 'ต่อหน่วย' กับ 'ก้อนรวม' ให้แยกออก" color={C.green} uses="ทุกบท">
+      <Paragraph style={{color:C.text, margin:'4px 0'}}>
+        ตัวหลอกยอดฮิต: "fixed cost ต่อหน่วย" ดูเหมือนผันแปรแต่ก้อนรวมไม่เปลี่ยน — อย่าเอาไปคูณจำนวนหน่วยเวลาตัดสินใจ ·
+        เคล็ด: เจอเลขต่อหน่วยเมื่อไร ลองแปลงกลับเป็นก้อนรวมก่อนคิดเสมอ (เจอบ่อยมากใน Ch.13 special order และ Ch.4)
+      </Paragraph>
+    </FoundationCard>
+    <Alert type="info" message={<span><Text strong>พร้อมแล้ว? </Text>กลับไปคลิกการ์ดบทด้านบน เริ่มที่ Ch.4 (CVP) ซึ่งใช้แนวคิด 1–2 ตรง ๆ แล้วไล่ไป 9 → 12 → 13 → 14</span>}/>
+  </div>
+);
+
+/* ---------- Master formula sheet ---------- */
+const formulaCol = [
+  {title:'หัวข้อ', dataIndex:'t', key:'t', width:200, render:t=><Text strong style={{color:C.goldDark}}>{t}</Text>},
+  {title:'สูตร / หลักการ', dataIndex:'f', key:'f'},
+  {title:'ตัวเลขตัวอย่าง', dataIndex:'e', key:'e'},
+];
+const sheets = {
+  '4': [
+    {t:'CM ต่อหน่วย', f:'ราคา P − ต้นทุนผันแปร V', e:'400 − 325 = 75'},
+    {t:'CM ratio', f:'CM ÷ P (= 1 − VC ratio)', e:'75 ÷ 400 = 18.75%'},
+    {t:'BE หน่วย', f:'F ÷ CM ต่อหน่วย', e:'45,000 ÷ 75 = 600'},
+    {t:'BE ยอดขาย', f:'F ÷ CM ratio', e:'45,000 ÷ 0.1875 = 240,000'},
+    {t:'Target (หน่วย)', f:'(F + กำไรเป้า) ÷ CM', e:'(45,000+37,500)÷75 = 1,100'},
+    {t:'Δกำไร (ทางลัด)', f:'CM ratio × Δยอดขาย', e:'0.1875 × 40,000 = 7,500'},
+    {t:'Margin of Safety', f:'ยอดขายจริง − ยอดขาย ณ BE', e:'1,000 − 600 = 400 หน่วย'},
+    {t:'DOL', f:'CM รวม ÷ Operating income', e:'75,000 ÷ 30,000 = 2.5'},
+    {t:'Multi-product', f:'BE แพ็ก = F ÷ CM ต่อแพ็ก (mix เป็นหน่วย)', e:'ปัดขึ้นเสมอ'},
+  ],
+  '9': [
+    {t:'Production budget', f:'ผลิต = ขาย + EI ที่ต้องการ − BI', e:'1,000 + 240 − 180 = 1,060'},
+    {t:'กฎเชื่อมงวด', f:'BI งวดนี้ = EI งวดก่อน', e:'คอลัมน์ปีใช้ EI ปลายปี/BI ต้นปี'},
+    {t:'DM purchases', f:'ซื้อ = (ผลิต×DM/หน่วย) + EI − BI แล้ว × ราคา', e:'โครงเดียวกับ production'},
+    {t:'Direct labor', f:'หน่วยผลิต × ชม./หน่วย × ค่าแรง/ชม.', e:'1,060 × 0.12 × 10'},
+    {t:'Overhead', f:'(ชม.DL × VOH rate) + FOH คงที่', e:'FOH มีค่าเสื่อมซ่อน'},
+    {t:'Cash budget', f:'ต้นงวด + รับ − จ่าย = เกิน/ขาด → กู้/คืน → ปลายงวด', e:'ตัดค่าเสื่อมทิ้ง!'},
+    {t:'เงินรับจากขาย', f:'ขายสด% + เก็บลูกหนี้งวดนี้% + ค้างงวดก่อน%', e:'3,000+8,100+750 = 11,850'},
+  ],
+  '12': [
+    {t:'ROI', f:'OI ÷ สินทรัพย์เฉลี่ย = Margin × Turnover', e:'10% × 1.6 = 16%'},
+    {t:'สินทรัพย์เฉลี่ย', f:'(ต้นปี + ปลายปี) ÷ 2', e:'(277,000+323,000)÷2 = 300,000'},
+    {t:'Residual Income', f:'OI − (ขั้นต่ำ% × สินทรัพย์เฉลี่ย)', e:'48,000 − 36,000 = 12,000'},
+    {t:'EVA', f:'OI หลังภาษี − (ต้นทุนเงินทุนจริง% × เงินทุน)', e:'33,600 − 30,000 = 3,600'},
+    {t:'Transfer price', f:'floor ผู้ขาย (VC + CM ที่เสีย) ≤ TP ≤ ceiling ผู้ซื้อ (ราคานอก)', e:'มีกำลังเหลือ → floor = VC'},
+    {t:'MCE', f:'value-added time ÷ total time', e:'12 ÷ 15 = 80%'},
+  ],
+  '13': [
+    {t:'Relevant cost', f:'อนาคต + ต่างกันระหว่างทางเลือก (ทิ้ง sunk/ปันส่วน)', e:'—'},
+    {t:'Special order', f:'รับถ้า ราคา > ต้นทุนส่วนเพิ่ม (มีกำลังเหลือ)', e:'11 > 8.25 → +16,500'},
+    {t:'Make or buy', f:'ทำเอง = VC + fixed ที่เลี่ยงได้ ± opportunity cost', e:'1.30M vs 1.42M → ทำเอง'},
+    {t:'Keep or drop', f:'เลิกถ้า segment margin < 0', e:'CM − direct fixed = −5,000 → เลิก'},
+    {t:'Process further', f:'ต่อถ้า รายได้เพิ่ม > ต้นทุนแปรรูปเพิ่ม (joint cost ไม่เกี่ยว)', e:'ต่อหน่วย/ต่อปอนด์'},
+    {t:'Product mix', f:'เรียงตาม CM ต่อหน่วยของทรัพยากรที่ขาด', e:'Y $20/ชม. > X $12.50/ชม.'},
+    {t:'Pricing', f:'Markup: cost×(1+%) | Target: ราคา − กำไรที่ต้องการ', e:'82,800 | 170'},
+  ],
+  '14': [
+    {t:'Payback (เท่ากัน)', f:'เงินลงทุน ÷ เงินสดรับต่อปี', e:'1,750,000 ÷ 350,000 = 5 ปี'},
+    {t:'Payback (ไม่เท่า)', f:'นับสะสม + เศษ = ที่ขาด ÷ เงินสดปีนั้น', e:'3 + 235/470 = 3.5 ปี'},
+    {t:'ARR', f:'กำไรสุทธิเฉลี่ย ÷ เงินลงทุน (ใช้ค่าเสื่อม)', e:'686,666.67 ÷ 3,000,000 = 22.9%'},
+    {t:'NPV', f:'Σ (CF × discount factor) − เงินลงทุน (≥0 รับ)', e:'A: 19,400 · B: 16,560.50'},
+    {t:'IRR (annuity)', f:'af = ลงทุน ÷ CF แล้วเปิดตารางไล่หา %', e:'220,000 ÷ 88,500 = 2.486 → ~10%'},
+    {t:'NPV vs IRR', f:'ขัดกันเมื่อจัดอันดับ → เชื่อ NPV เสมอ', e:'เงินจริง > เปอร์เซ็นต์'},
+    {t:'ไส้ในโจทย์ NPV', f:'ปี 0: เครื่อง + working capital | ปีท้าย: CF + ซาก + WC คืน', e:'CS 14.3 → 117,968'},
+  ],
+};
+const FormulaSheet = () => {
+  const items = chapters.map(c => ({
+    key:c.ch,
+    label: <Text strong style={{color:c.color}}>{c.icon} Ch.{c.ch} — {c.title}</Text>,
+    children: <Table size="small" pagination={false} columns={formulaCol} dataSource={sheets[c.ch].map((r,i)=>({...r,key:i}))}/>,
+  }));
+  return (
+    <div>
+      <Alert type="warning" style={{marginBottom:12}} message={<Text strong>ชีตสูตรรวมทุกบท — เปิดหน้านี้ค้างไว้ตอนสอบ (ถ้าอนุญาต) หรือใช้ทวนรอบสุดท้ายก่อนเข้าห้อง</Text>}/>
+      <Collapse items={items} defaultActiveKey={['4']} accordion={false}/>
+    </div>
+  );
+};
+
+/* ---------- Study plan ---------- */
+const StudyPlan = () => (
+  <div>
+    <Alert type="info" style={{marginBottom:12}} message={<Text strong>ลำดับติวที่แนะนำ — บทพื้นฐานก่อน แล้วต่อยอด</Text>}/>
+    <Row gutter={[12,12]}>
+      {[
+        {n:'รอบ 1 · เข้าใจ', d:'เปิดแท็บ "🌱 ปูพื้นก่อน" ของทุกบท เล่นตัวจำลอง (ร้านกาแฟ, ถังสินค้า, ไทม์แมชชีน) จนเห็นภาพ ไม่ต้องท่องสูตร', col:C.blue},
+        {n:'รอบ 2 · ทำเป็น', d:'แท็บ "🧪 ห้องทดลอง" เลื่อน slider หา "จุดที่คำตอบพลิก" + แท็บ "🎓 เคส" ปิดเฉลยแล้วลองตอบ cold call เอง', col:C.green},
+        {n:'รอบ 3 · จำแม่น', d:'แท็บ "🎴 Flashcard" กรองเฉพาะ ⭐⭐⭐ และแนวข้อสอบ จับเวลาทำจนตอบถูกเกิน 90%', col:C.purple},
+        {n:'ก่อนเข้าห้อง', d:'อ่านชีตสูตรรวม (แท็บข้าง ๆ) + ตาราง "กับดักรวม" ด้านล่าง 1 รอบ — โฟกัสจุดที่คนพลาดบ่อย', col:C.red},
+      ].map((s,i)=>(
+        <Col xs={24} md={12} key={i}>
+          <Card size="small" style={{background:C.white, borderColor:s.col, borderLeft:`5px solid ${s.col}`, height:'100%'}}>
+            <Text strong style={{color:s.col}}>{s.n}</Text><br/>
+            <Text style={{color:C.text}}>{s.d}</Text>
+          </Card>
+        </Col>
+      ))}
+    </Row>
+    <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginTop:12}}>
+      <Text strong style={{color:C.text2}}>เคล็ดอ่านโจทย์ 10 วินาทีแรก (ใช้ได้ทุกบท): </Text>
+      <Text style={{color:C.text}}>1) โจทย์ให้ "เงินสด" หรือ "กำไร"? 2) ถามอะไร (หน่วย/เงิน/รับ-ไม่รับ/เลิก-ไม่เลิก)? 3) มีตัวหลอกไหม (fixed ต่อหน่วย, sunk cost, common cost ที่ปันส่วน, joint cost)? แล้วค่อยเลือกสูตร</Text>
+    </Card>
+  </div>
+);
+
+/* ---------- Cross-chapter traps ---------- */
+const traps = [
+  {ch:'4', t:'หาร BE ด้วย VC ratio', r:'ต้องหารด้วย CM ratio (VC ratio ไว้เช็ค 1−CMratio)'},
+  {ch:'4', t:'เอายอดขายที่วางแผนมาหา BE', r:'BE ใช้แค่ F, P, V เท่านั้น'},
+  {ch:'9', t:'คอลัมน์ปี = 4 ไตรมาสบวกกัน', r:'ใช้ EI ปลายปี และ BI ต้นปี เท่านั้น'},
+  {ch:'9', t:'ใส่ค่าเสื่อมในงบเงินสด', r:'ค่าเสื่อมไม่ใช่เงินสด ตัดออกจาก disbursements'},
+  {ch:'12', t:'ตัดสินแผนกด้วยบรรทัดสุดท้าย', r:'ใช้ segment margin (ก่อน common cost)'},
+  {ch:'12', t:'สลับ floor/ceiling ของ TP', r:'คนขายตั้ง floor · คนซื้อตั้ง ceiling'},
+  {ch:'13', t:'เทียบ special order กับ full cost', r:'เทียบกับต้นทุนส่วนเพิ่ม (11 > 8.25 รับได้)'},
+  {ch:'13', t:'ใช้ allocated joint cost ตัดสินขาย/แปรรูป', r:'joint cost เป็น sunk — เทียบ incremental เท่านั้น'},
+  {ch:'13', t:'เรียง product mix ด้วย CM ต่อชิ้น', r:'เรียงด้วย CM ต่อหน่วยทรัพยากรที่ขาด'},
+  {ch:'14', t:'เอาค่าเสื่อมไปหักใน NPV/payback', r:'ค่าเสื่อมใช้เฉพาะ ARR — ที่เหลือใช้เงินสด'},
+  {ch:'14', t:'จัดอันดับโครงการด้วย IRR', r:'ใช้ NPV (จำนวนเงิน) เมื่อเลือกได้อันเดียว'},
+  {ch:'14', t:'ลืม working capital คืนปีสุดท้าย', r:'WC ลงปี 0 และได้คืนปีสุดท้าย + ซาก'},
+];
+const chColor = {'4':C.blue,'9':C.green,'12':C.purple,'13':C.red,'14':C.cyan};
+const TrapTable = () => {
+  const [f, setF] = useState('all');
+  const rows = traps.filter(x => f==='all' || x.ch===f);
+  return (
+    <div>
+      <Alert type="error" style={{marginBottom:12}} message={<Text strong>กับดักรวมทุกบท — จุดที่ทำให้เสียคะแนนบ่อยที่สุด อ่านซ้ำก่อนสอบ</Text>}/>
+      <Flex gap={6} wrap="wrap" style={{marginBottom:10}}>
+        <Button size="small" type={f==='all'?'primary':'default'} onClick={()=>setF('all')}>ทั้งหมด</Button>
+        {chapters.map(c=><Button key={c.ch} size="small" type={f===c.ch?'primary':'default'} onClick={()=>setF(c.ch)} style={f===c.ch?{background:c.color,borderColor:c.color}:{}}>Ch.{c.ch}</Button>)}
+      </Flex>
+      <Table size="small" pagination={false} columns={[
+        {title:'บท', dataIndex:'ch', key:'ch', width:60, render:ch=><Tag style={{color:chColor[ch],borderColor:chColor[ch]}}>Ch.{ch}</Tag>},
+        {title:'❌ ที่คนพลาด', dataIndex:'t', key:'t', render:t=><Text style={{color:C.red}}>{t}</Text>},
+        {title:'✅ ที่ถูกต้อง', dataIndex:'r', key:'r', render:t=><Text style={{color:C.green}}>{t}</Text>},
+      ]} dataSource={rows.map((r,i)=>({...r,key:i}))}/>
+    </div>
+  );
+};
+
+/* ---------- Readiness checklist ---------- */
+const checkItems = [
+  'Ch.4 — หา BE ทั้งหน่วยและยอดขายได้ + target profit + แยก multi-product',
+  'Ch.4 — อธิบาย margin of safety และ DOL ได้',
+  'Ch.9 — ทำ production & DM purchases budget (ขาย+EI−BI) ได้',
+  'Ch.9 — ทำ cash budget โดยตัดค่าเสื่อม + schedule เก็บเงิน/จ่ายเงิน',
+  'Ch.12 — คำนวณ ROI (margin×turnover), RI, EVA ได้',
+  'Ch.12 — หา bargaining range ของ transfer price ได้',
+  'Ch.13 — แยก relevant/irrelevant + ทำครบ 4 เคส (SO/MoB/KoD/PF)',
+  'Ch.13 — product mix ด้วยทรัพยากรจำกัด + pricing',
+  'Ch.14 — payback, ARR, NPV, IRR จากตาราง',
+  'Ch.14 — อธิบายว่าทำไม NPV ชนะ IRR เมื่อโครงการขัดกัน',
+];
+const Readiness = () => {
+  const [done, setDone] = useState([]);
+  const pct = Math.round(done.length / checkItems.length * 100);
+  return (
+    <div>
+      <Alert type="success" style={{marginBottom:12}} message={<Text strong>เช็กความพร้อม — ติ๊กหัวข้อที่ทำได้เองโดยไม่เปิดเฉลย</Text>}/>
+      <Progress percent={pct} strokeColor={pct===100?C.green:C.gold} style={{marginBottom:12}}/>
+      {pct===100 && <Alert type="success" style={{marginBottom:12}} message="พร้อมสอบแล้ว! ทวนกับดักรวมอีกรอบแล้วพักผ่อนให้พอ"/>}
+      <Space direction="vertical" style={{width:'100%'}}>
+        {checkItems.map((it,i)=>(
+          <Card key={i} size="small" style={{background: done.includes(i)?C.greenBg:C.white, borderColor: done.includes(i)?C.green:C.border}}>
+            <Checkbox checked={done.includes(i)} onChange={e=>setDone(d=> e.target.checked ? [...d,i] : d.filter(x=>x!==i))}>
+              <Text style={{color:C.text}}>{it}</Text>
+            </Checkbox>
+          </Card>
+        ))}
+      </Space>
+    </div>
+  );
+};
+
+const App = () => (
+  <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm, token:{
+    colorPrimary:C.gold, colorBgBase:C.bg, colorTextBase:C.text, colorBgContainer:C.white,
+    colorBorder:C.border, borderRadius:10, fontFamily:"'Noto Sans Thai', sans-serif" }}}>
+    <Layout style={{minHeight:'100vh', background:C.bg}}>
+      <Layout.Content style={{maxWidth:1000, width:'100%', margin:'0 auto', padding:'32px 16px'}}>
+        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>🎓 ศูนย์รวมเตรียมสอบ Managerial Accounting</Title>
+        <Paragraph style={{textAlign:'center', color:C.text3, marginBottom:8}}>
+          Cornerstones of Managerial Accounting, 5e · Chapter 4 · 9 · 12 · 13 · 14 · คลิกการ์ดเพื่อเข้าบทเรียนแต่ละบท
+        </Paragraph>
+        <Alert type="info" showIcon style={{marginBottom:20}} message={<Text><span className="pulse-dot">●</span> เปิดไฟล์นี้ไว้เป็นหน้าแรก แล้วคลิกการ์ดบทเพื่อเปิดบทเรียน (ทุกไฟล์ต้องอยู่โฟลเดอร์เดียวกัน) — แต่ละบทมี 5–6 แท็บ: ปูพื้น → สรุป → ห้องทดลอง → เคส → flashcard → การ์ดจำด่วน</Text>}/>
+
+        <Row gutter={[16,16]} style={{marginBottom:24}}>
+          {chapters.map(c => <Col xs={24} sm={12} lg={8} key={c.ch} className="fadein"><ChapterCard c={c}/></Col>)}
+          <Col xs={24} sm={12} lg={8} className="fadein">
+            <Card style={{background:C.surface3, borderColor:C.borderDark, height:'100%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <div style={{textAlign:'center'}}>
+                <div style={{fontSize:34}}>🧭</div>
+                <Text strong style={{color:C.text}}>ทุกบทใช้โครงเดียวกัน</Text><br/>
+                <Text style={{color:C.text3, fontSize:13}}>เปิดชิน 1 บท ใช้เป็นทุกบท</Text>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
+        <Tabs centered type="card" defaultActiveKey="found" items={[
+          { key:'found', label:'🌱 ปูพื้น', children:<FoundationTab/> },
+          { key:'sheet', label:'📋 ชีตสูตรรวม', children:<FormulaSheet/> },
+          { key:'plan', label:'🗓️ แผนติว', children:<StudyPlan/> },
+          { key:'traps', label:'🚨 กับดักรวม', children:<TrapTable/> },
+          { key:'ready', label:'✅ เช็กความพร้อม', children:<Readiness/> },
+        ]}/>
+
+        <Divider/>
+        <Text style={{display:'block', textAlign:'center', color:C.text3}}>
+          รวมจากสไลด์ MA_5e_PPT (Ch.4/9/12/13/14) · ทุกตัวเลขตัวอย่างตรงกับ Cornerstone ในหนังสือ · เปิดในเบราว์เซอร์ใดก็ได้ ใช้ออฟไลน์ได้
+        </Text>
+      </Layout.Content>
+    </Layout>
+  </ConfigProvider>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<script src="../../../assets/ink-tool.js?v=3" defer></script>
+</body>
+</html>

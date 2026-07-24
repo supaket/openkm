@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ink Tool — ชุดทดสอบอัตโนมัติ</title>
+<style>
+  body { font-family: -apple-system, "IBM Plex Sans Thai", Sarabun, sans-serif; margin: 0; color: #111; }
+  #filler { height: 3000px; background: linear-gradient(#fff, #eef); padding: 20px; }
+  #report { position: fixed; left: 8px; bottom: 8px; z-index: 5; background: #111; color: #eee;
+    font: 12px/1.5 ui-monospace, monospace; padding: 8px 12px; border-radius: 8px; max-width: 60vw; }
+  .pass { color: #4ade80; } .fail { color: #f87171; }
+  h1 { font-size: 1.2rem; padding: 16px 20px 0; }
+</style>
+</head>
+<body>
+  <h1>Ink Tool — หน้าเป้าหมายสำหรับทดสอบ (เนื้อหาสูง 3000px เพื่อทดสอบการเลื่อน)</h1>
+  <div id="filler">เนื้อหาจำลอง — ใช้ยืนยันว่าเส้นวาดตรงตำแหน่งเอกสารทั้งก่อน/หลังเลื่อนหน้า</div>
+  <div id="report">กำลังโหลด…</div>
+
+  <!-- ตัวเครื่องมือจริง -->
+  <script src="../assets/ink-tool.js?v=3" defer></script>
+
+  <script>
+  // ============ ชุดทดสอบ ============
+  // ขับ ink-tool.js ผ่าน PointerEvent สังเคราะห์ แล้วตรวจทั้งสถานะและ "หมึกจริงบน canvas"
+  // (hasInkNear/pixelAt) เพื่อพิสูจน์ว่าเขียนติดและตรงตำแหน่ง
+  const results = [];
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const raf2 = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  function ok(name, cond, extra) { results.push({ name, pass: !!cond, extra: extra || '' }); }
+
+  function pe(type, x, y, opts = {}) {
+    // x,y = พิกัดหน้าจอ (client). สร้าง PointerEvent แล้ว dispatch ที่ document
+    const ev = new PointerEvent(type, Object.assign({
+      bubbles: true, cancelable: true, composed: true,
+      pointerId: opts.pointerId || 1, pointerType: opts.pointerType || 'pen',
+      pressure: opts.pressure != null ? opts.pressure : 0.5,
+      clientX: x, clientY: y, buttons: type === 'pointerup' ? 0 : 1
+    }, opts));
+    // pageX/pageY อ่านอย่างเดียว — เผื่อ engine ไม่คำนวณให้ กำหนดเองให้ = client + scroll
+    try { Object.defineProperty(ev, 'pageX', { value: x + window.scrollX, configurable: true }); } catch (e) {}
+    try { Object.defineProperty(ev, 'pageY', { value: y + window.scrollY, configurable: true }); } catch (e) {}
+    document.dispatchEvent(ev);
+    return ev;
+  }
+  // ลากเส้นหนึ่งเส้น: คืนจุดกึ่งกลางในพิกัดเอกสาร (page)
+  function drag(cx, cy, opts = {}) {
+    const n = opts.n || 8, dx = opts.dx || 6, dy = opts.dy || 2, pt = opts.pointerType || 'pen';
+    pe('pointerdown', cx, cy, { pressure: 0.4, pointerType: pt });
+    for (let i = 1; i <= n; i++) pe('pointermove', cx + i * dx, cy + i * dy, { pressure: 0.6, pointerType: pt });
+    pe('pointerup', cx + n * dx, cy + n * dy, { pressure: 0, pointerType: pt });
+    return { pageX: cx + (n / 2) * dx + window.scrollX, pageY: cy + (n / 2) * dy + window.scrollY };
+  }
+  function btn(act) { document.querySelector('#inkToolbar [data-act="' + act + '"]').click(); }
+
+  async function run() {
+    const D = window.__inkDebug;
+    // 0) bootstrap
+    ok('debug hook พร้อม', !!D);
+    if (!D) return finish();
+    D.clearAll();
+
+    // 1) canvas เป็น absolute + สูงเท่าเอกสาร (สถาปัตยกรรมกันเส้นลอย)
+    const ci = D.canvasInfo();
+    ok('canvas เป็น position:absolute', ci.pos === 'absolute', ci.pos);
+    const contentH = D.contentH();
+    ok('canvas สูงคลุมทั้งเอกสาร', Math.abs(parseFloat(ci.cssH) - contentH) <= 4, ci.cssH + ' vs ' + contentH);
+    ok('backing canvas ไม่เกินลิมิต iOS', ci.w <= 8192 && ci.h <= 8192 && ci.w * ci.h <= 16e6, ci.w + 'x' + ci.h);
+
+    // 2) เปิดปากกา
+    D.open();
+    ok('เปิดแล้ว tool=pen', D.tool() === 'pen', D.tool());
+    ok('palm เริ่มต้น = any (นิ้วเขียนได้)', D.palm() === 'any', D.palm());
+
+    // 3) วาดเส้นปากกา → เส้นเพิ่ม + มีหมึกจริงตรงตำแหน่ง (พิสูจน์ "เขียนติด" และ "ตรง")
+    let before = D.strokes();
+    let mid = drag(80, 300);
+    await raf2();
+    ok('วาดปากกาแล้วเส้นเพิ่ม 1', D.strokes() === before + 1, before + '→' + D.strokes());
+    ok('มีหมึกจริงตรงจุดที่วาด (ไม่ "เขียนไม่ติด")', D.hasInkNear(mid.pageX, mid.pageY, 20));
+
+    // 4) จุดเดียว (แตะ) ต้องติด — เดิม v2 ทิ้งเส้น <3 จุด
+    before = D.strokes();
+    pe('pointerdown', 200, 260, { pressure: 0.5 });
+    pe('pointerup', 200, 260, { pressure: 0 });
+    await raf2();
+    ok('แตะจุดเดียวก็ติดเป็นเส้น', D.strokes() === before + 1, before + '→' + D.strokes());
+    ok('มีหมึกจริงที่จุดแตะ', D.hasInkNear(200 + window.scrollX, 260 + window.scrollY, 14));
+
+    // 5) ตรงตำแหน่งหลังเลื่อนหน้า (absolute canvas → พิกัดเอกสารคงที่)
+    window.scrollTo(0, 900);
+    await raf2();
+    before = D.strokes();
+    let mid2 = drag(120, 180);   // client y=180 ขณะ scroll 900 → page y≈1080
+    await raf2();
+    ok('วาดหลังเลื่อนหน้า เส้นเพิ่ม', D.strokes() === before + 1);
+    ok('หมึกตรงพิกัดเอกสารหลังเลื่อน (ไม่ "ไม่ตรง")', D.hasInkNear(mid2.pageX, mid2.pageY, 20), 'page=' + Math.round(mid2.pageY));
+    window.scrollTo(0, 0);
+    await raf2();
+
+    // 6) ไฮไลต์
+    before = D.strokes();
+    btn('hl'); ok('เลือกไฮไลต์', D.tool() === 'hl');
+    let midH = drag(90, 500, { pointerType: 'pen' });
+    await raf2();
+    ok('วาดไฮไลต์แล้วเส้นเพิ่ม', D.strokes() === before + 1);
+    ok('มีหมึกไฮไลต์จริง', D.hasInkNear(midH.pageX, midH.pageY, 20));
+
+    // 7) undo
+    before = D.strokes();
+    btn('undo');
+    ok('undo ลบเส้นล่าสุด', D.strokes() === before - 1, before + '→' + D.strokes());
+
+    // 8) ยางลบ — ลบเส้นที่แตะโดน
+    btn('pen');
+    let me = drag(300, 700);
+    await raf2();
+    let cntAfterDraw = D.strokes();
+    btn('eraser'); ok('เลือกยางลบ', D.tool() === 'eraser');
+    // แตะกลางเส้นที่เพิ่งวาด (client coord = page coord เพราะ scroll 0)
+    pe('pointerdown', me.pageX - window.scrollX, me.pageY - window.scrollY, { pressure: 0.5 });
+    pe('pointerup', me.pageX - window.scrollX, me.pageY - window.scrollY, { pressure: 0 });
+    await raf2();
+    ok('ยางลบเอาเส้นออก', D.strokes() === cntAfterDraw - 1, cntAfterDraw + '→' + D.strokes());
+
+    // 9) palm: pen ทำให้ auto เป็น 'pen'; แล้วนิ้วต้องเขียนไม่ได้
+    D.setPalm('pen'); btn('pen');
+    before = D.strokes();
+    drag(150, 400, { pointerType: 'touch' });  // นิ้ว ในโหมด pen → ต้องไม่วาด
+    await raf2();
+    ok('โหมด Pencil-เท่านั้น: นิ้วไม่วาด (กันฝ่ามือ)', D.strokes() === before, before + '→' + D.strokes());
+    // สลับกลับ any แล้วนิ้ววาดได้
+    D.setPalm('any');
+    drag(150, 400, { pointerType: 'touch' });
+    await raf2();
+    ok('โหมดนิ้ว: นิ้ววาดได้', D.strokes() === before + 1);
+
+    // 10) auto-arm: ปากกาแตะครั้งแรกสลับ palm เป็น pen เอง
+    D.setPalm('any'); btn('pen');
+    drag(250, 450, { pointerType: 'pen' });
+    await raf2();
+    ok('พบ Pencil → palm auto = pen', D.palm() === 'pen', D.palm());
+
+    // 11) persistence — reload แล้วเส้นต้องคืน
+    const cntBeforeReload = D.strokes();
+    await sleep(550);  // ให้ debounce persist ทำงาน
+    let raw = null; try { raw = JSON.parse(localStorage.getItem('ink:' + location.pathname)); } catch (e) {}
+    ok('บันทึกลง localStorage แล้ว', raw && raw.s && raw.s.length === cntBeforeReload, (raw && raw.s ? raw.s.length : 'none') + '/' + cntBeforeReload);
+
+    // 12) save-image compositing (ไม่ดาวน์โหลด/ไม่ต่อเน็ต)
+    let comp = null; try { comp = D.composeInkCanvas('full'); } catch (e) {}
+    ok('สร้างภาพเส้น (compose) ได้', !!comp && comp.width > 0 && comp.height > 0, comp ? comp.width + 'x' + comp.height : 'null');
+    ok('shotScale อยู่ในช่วงสมเหตุผล', (() => { const s = D.shotScale(1200, 3000); return s > 0 && s <= 2; })());
+
+    // 13) clear (แตะยืนยัน 2 ครั้ง)
+    btn('clear');
+    const armed = document.querySelector('#inkToolbar [data-act="clear"]').classList.contains('armed');
+    ok('clear ครั้งแรก = ต้องยืนยัน (armed)', armed);
+    btn('clear');
+    ok('clear ครั้งสอง = ล้างหมด', D.strokes() === 0, D.strokes());
+
+    // 14) close
+    D.close();
+    ok('ปิดแล้ว tool=null', D.tool() === null);
+
+    finish();
+  }
+
+  function finish() {
+    const passed = results.filter(r => r.pass).length;
+    const total = results.length;
+    const html = results.map(r =>
+      '<div class="' + (r.pass ? 'pass' : 'fail') + '">' + (r.pass ? '✓' : '✗') + ' ' + r.name + (r.extra ? ' — ' + r.extra : '') + '</div>'
+    ).join('');
+    document.getElementById('report').innerHTML =
+      '<b>' + passed + '/' + total + ' ผ่าน</b>' + (passed === total ? ' 🎉' : ' ⚠️') + '<br>' + html;
+    // ให้ตัวทดสอบภายนอกอ่านผลได้
+    window.__inkTestResult = { passed, total, allPass: passed === total, results };
+    document.title = (passed === total ? 'PASS ' : 'FAIL ') + passed + '/' + total + ' — Ink Tool tests';
+  }
+
+  // รอ ink-tool (defer) โหลด + init เสร็จ
+  window.addEventListener('load', async () => {
+    let tries = 0;
+    while (!window.__inkDebug && tries++ < 100) await sleep(20);
+    await sleep(50);
+    run().catch(err => { results.push({ name: 'ข้อผิดพลาดระหว่างทดสอบ: ' + err.message, pass: false }); finish(); });
+  });
+  </script>
+</body>
+</html>

@@ -2,8 +2,8 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Short-Run Decisions & Transfer Pricing — Ch 12–13 Review</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Short-Run Decision Making — Chapter 13 Review</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
@@ -38,6 +38,27 @@ body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai', sans-s
 .sortitem:hover { transform:translateY(-2px); }
 .step-line { padding:6px 12px; border-left:3px solid #A8906C; margin:6px 0; background:#F0EBE2; border-radius:0 8px 8px 0; }
 .tpbar { transition:all .5s ease; }
+
+/* ==== iPad / touch-friendly (injected) ==== */
+* { -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+button, .ant-btn, .ant-tabs-tab, .ant-checkbox-wrapper, a, .chcard, .sortitem { touch-action: manipulation; }
+.ant-btn { min-height: 40px; }
+.ant-tabs-tab { padding: 10px 16px !important; }
+/* slider: dragging the handle must NOT scroll the page */
+.ant-slider { touch-action: none; padding: 10px 0; }
+.ant-slider-handle { width: 22px !important; height: 22px !important; margin-top: -9px !important; }
+.ant-slider-handle::after { width: 22px !important; height: 22px !important; }
+input[type=range] { touch-action: none; -webkit-appearance: none; appearance: none; height: 8px; border-radius: 5px; background: #DDD3C1; outline: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #A8906C; cursor: pointer; }
+.ant-switch { min-width: 48px; height: 26px; }
+.ant-checkbox-inner { width: 20px; height: 20px; }
+@media (max-width: 820px) {
+  .ant-tabs-nav { flex-wrap: wrap; }
+  .ant-statistic-content { font-size: 15px !important; }
+  .ant-table { font-size: 13px; }
+}
+
 </style>
 </head>
 <body>
@@ -121,7 +142,6 @@ const vocab = [
   {key:5, w:'Segment margin', m:'CM ของแผนก − direct fixed ของแผนก = กำไรที่แผนกนั้นสร้างจริง ๆ ใช้ตัดสินว่าควรเลิกแผนกไหม'},
   {key:6, w:'Common fixed cost', m:'ต้นทุนส่วนกลางที่ถูก "ปันส่วน" มาให้แผนก — เลิกแผนกก็ไม่หาย ห้ามใช้ตัดสินใจ'},
   {key:7, w:'Special order', m:'ออร์เดอร์พิเศษราคาต่ำกว่าปกติ — รับได้ถ้าราคา > ต้นทุนส่วนเพิ่ม และมีกำลังการผลิตเหลือ'},
-  {key:8, w:'Transfer price', m:'ราคาซื้อขาย "ระหว่างแผนกในบริษัทเดียวกัน" เช่น แผนกขาผลิตขาเก้าอี้ขายให้แผนกประกอบ'},
   {key:9, w:'Joint products / Split-off point', m:'สินค้าหลายตัวที่เกิดจากกระบวนการเดียวกัน / จุดที่สินค้าแยกร่างออกจากกัน'},
   {key:10, w:'Joint cost', m:'ต้นทุนก่อนจุดแยกร่าง — ถึงเวลาตัดสินใจ "ขายเลยหรือแปรรูปต่อ" มันกลายเป็นต้นทุนจมไปแล้ว'},
 ];
@@ -129,7 +149,7 @@ const vocab = [
 const BasicsTab = () => (
   <div>
     <Card className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border}}
-      title={<Text strong style={{color:C.text}}>🎓 สองบทนี้เรียนอะไร (แบบ case method)</Text>}>
+      title={<Text strong style={{color:C.text}}>🎓 บทนี้เรียนอะไร (แบบ case method)</Text>}>
       <Paragraph style={{color:C.text}}>
         ผู้บริหารเจอคำถามแบบนี้ทุกวัน: "ออร์เดอร์ราคาถูกมา รับไหม?" "ชิ้นส่วนนี้ทำเองหรือซื้อ?" "แผนกขาดทุน ปิดเลยดีไหม?"
         — คำตอบผิด ๆ มักมาจากการเอา "ตัวเลขบัญชีทุกตัว" มาคิด ทั้งที่บางตัวไม่เกี่ยวกับการตัดสินใจเลย
@@ -159,11 +179,12 @@ const BasicsTab = () => (
    TAB 1 — สรุปเนื้อหา
    ============================================================ */
 const flowNodes = [
-  {t:'1. ตั้งโจทย์ให้ชัด', d:'ปัญหาคืออะไร ทางเลือกมีอะไรบ้าง (ทำเอง vs ซื้อ / รับ vs ไม่รับ / เก็บ vs เลิก)', icon:'🎯'},
-  {t:'2. ลิสต์เงินอนาคตของแต่ละทาง', d:'รายได้และต้นทุนที่ "จะเกิด" ภายใต้แต่ละทางเลือก รวม opportunity cost ที่ไม่อยู่ในบัญชีด้วย', icon:'📋'},
-  {t:'3. โยนของไม่เกี่ยวทิ้ง', d:'ตัด sunk cost, common fixed ที่ปันส่วน, และต้นทุนที่เท่ากันทุกทางเลือก', icon:'🗑️'},
-  {t:'4. เทียบเฉพาะส่วนต่าง', d:'เหลือแต่ตัวเลขที่ต่างกัน (differential) — เทียบกันตรง ๆ ว่าทางไหนกำไรมากกว่า', icon:'⚖️'},
-  {t:'5. เช็คปัจจัยคุณภาพ', d:'ตัวเลขไม่ใช่ทุกอย่าง: คุณภาพ supplier, ความสัมพันธ์ลูกค้า, ขวัญพนักงาน, ผลระยะยาว', icon:'🧭'},
+  {t:'1. ระบุปัญหาให้ชัด', d:'Recognize & define the problem — เช่น กำลังผลิตไม่พอ ต้องการพื้นที่เพิ่ม ต้นทุนชิ้นส่วนกำลังจะขึ้น 20%', icon:'🎯'},
+  {t:'2. ลิสต์ทางเลือกที่เป็นไปได้', d:'Identify alternatives — แล้วคัดทางที่เสี่ยงเกิน/แพงเกิน/ขัดกลยุทธ์ระยะยาวทิ้งก่อน เหลือแต่ feasible', icon:'🗺️'},
+  {t:'3. ระบุต้นทุน-ประโยชน์ + คัด relevant', d:'Identify costs & benefits ของแต่ละทาง แล้วแยก relevant/irrelevant — โยน sunk, ของที่เท่ากัน, common ที่ปันส่วนทิ้ง', icon:'🗑️'},
+  {t:'4. ประมาณตัวเลขและเทียบส่วนต่าง', d:'Estimate relevant costs & benefits — รวม opportunity cost ที่ไม่อยู่ในบัญชี แล้วดู differential ระหว่างทางเลือก', icon:'🧮'},
+  {t:'5. ชั่งปัจจัยคุณภาพ', d:'Assess qualitative factors — คุณภาพ supplier, product safety, กระแสสังคม/การเมือง, ความสัมพันธ์ลูกค้า, ขวัญพนักงาน', icon:'🧭'},
+  {t:'6. ตัดสินใจ', d:'เลือกทางที่ประโยชน์รวมสูงสุด — โดยไม่สละเป้าระยะยาวแลกตัวเลขระยะสั้น (มิติจริยธรรมของ step นี้ออกสอบทฤษฎีได้)', icon:'✅'},
 ];
 const FlowAnimation = () => {
   const [step, setStep] = useState(-1);
@@ -180,7 +201,7 @@ const FlowAnimation = () => {
   }, [playing]);
   return (
     <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
-      title={<Text strong style={{color:C.text}}>🎬 สูตรสำเร็จตัดสินใจ 5 ขั้น — ใช้กับทุกเคสในบท (กด Play)</Text>}>
+      title={<Text strong style={{color:C.text}}>🎬 Decision Model 6 ขั้นตามตำรา — ใช้กับทุกเคสในบท (กด Play)</Text>}>
       <Flex gap={8} style={{marginBottom:12}}>
         <Button type="primary" className={playing?'':'pulse'} disabled={playing} onClick={()=>{setStep(0); setPlaying(true);}}>▶ Play</Button>
         <Button onClick={()=>{setPlaying(false); setStep(-1);}}>รีเซ็ต</Button>
@@ -188,7 +209,7 @@ const FlowAnimation = () => {
       </Flex>
       <Row gutter={[8,8]}>
         {flowNodes.map((n,i)=>(
-          <Col xs={12} md={i<3?8:12} key={i}>
+          <Col xs={12} md={8} key={i}>
             <div className={'node' + (i===step?' active':'') + (i<step?' done':'')}>
               <div style={{fontSize:20}}>{n.icon}</div>{n.t}
             </div>
@@ -198,7 +219,7 @@ const FlowAnimation = () => {
       <div style={{minHeight:56, marginTop:12}}>
         {step>=0
           ? <Alert type="info" message={<span><Text strong>{flowNodes[step].icon} {flowNodes[step].t}: </Text>{flowNodes[step].d}</span>}/>
-          : <Alert type="warning" message="ทุกเคส (special order, make-or-buy, keep-or-drop, process further, transfer pricing) ใช้ 5 ขั้นเดียวกันหมด — ต่างกันแค่ว่าอะไรคือ relevant"/>}
+          : <Alert type="warning" message="ทุกเคส (special order, make-or-buy, keep-or-drop, process further, product mix, transfer pricing) เดินตาม 6 ขั้นเดียวกันหมด — ต่างกันแค่ว่าขั้นที่ 3 อะไรคือ relevant"/>}
       </div>
     </Card>
   );
@@ -210,7 +231,6 @@ const dMeta = [
   {k:'mb', name:'Make or Buy', color:C.green},
   {k:'kd', name:'Keep or Drop', color:C.red},
   {k:'pf', name:'Process Further', color:C.cyan},
-  {k:'tp', name:'Transfer Price', color:C.purple},
 ];
 const dAspects = [
   {a:'❓ คำถาม', so:'รับออร์เดอร์ราคาถูกไหม', mb:'ทำเองหรือซื้อจากข้างนอก', kd:'เลิกแผนก/สินค้าไหม', pf:'ขายที่จุดแยกร่าง หรือแปรรูปต่อ', tp:'ตั้งราคาซื้อขายระหว่างแผนกเท่าไร'},
@@ -266,7 +286,28 @@ const summaryData = [
     )
   },
   {
-    key:'so', title:'📦 Special Order — Tyler Company', tags:[['เคสที่ 3','blue']],
+    key:'costbehav', title:'🎭 กับดักพฤติกรรมต้นทุน: "ผันแปร = เกี่ยว, คงที่ = ไม่เกี่ยว" ไม่จริงเสมอ!', tags:[['สไลด์ 20–21','purple'],['ทฤษฎีชอบหลอก','red']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>
+          หลักที่ถูกต้องไม่ใช่ดูว่าต้นทุน "ผันแปรหรือคงที่" แต่ดูว่า <strong>การใช้จ่ายทรัพยากร (resource spending) เปลี่ยนตามทางเลือกไหม</strong>
+        </Paragraph>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.greenBg, borderColor:C.green, height:'100%'}}>
+            <Text strong style={{color:C.green}}>Fixed แต่ "เกี่ยว"</Text><br/>
+            <Text style={{color:C.text}}>ค่าเช่าเครื่องจักรรายปีสำหรับผลิตชิ้นส่วน — ถ้าเปลี่ยนไปซื้อจากข้างนอก สัญญาเช่าเลิกได้ เงินก้อนนี้หายจริง → relevant (นี่คือ avoidable fixed ของเคส Junior: $100,000)</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.redBg, borderColor:C.red, height:'100%'}}>
+            <Text strong style={{color:C.red}}>Variable แต่ "ไม่เกี่ยว"</Text><br/>
+            <Text style={{color:C.text}}>เลือกวิธีผลิต 2 แบบที่ใช้วัตถุดิบเท่ากันเป๊ะ — DM เป็นต้นทุนผันแปรก็จริง แต่สองทางจ่ายเท่ากัน → ตัดออกจากการเทียบได้เลย</Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:8}} type="info" message="วิธีเช็คขั้นสุดท้ายเหมือนเดิมเสมอ: เงินก้อนนี้ 'เกิดในอนาคต' และ 'ต่างกันระหว่างทางเลือก' ไหม — พฤติกรรมต้นทุนเป็นแค่ตัวช่วยเดา ไม่ใช่คำตอบ"/>
+      </div>
+    )
+  },
+  {
+    key:'so', title:'📦 Special Order — Tyler Company', tags:[['ข้อ 3 ในชีท','blue']],
     content: () => (
       <div>
         <Paragraph style={{color:C.text}}>
@@ -281,7 +322,7 @@ const summaryData = [
     )
   },
   {
-    key:'mb', title:'🔧 Make or Buy — Junior Company', tags:[['เคสที่ 2','green']],
+    key:'mb', title:'🔧 Make or Buy — Junior Company', tags:[['ข้อ 2 ในชีท','green']],
     content: () => (
       <div>
         <Paragraph style={{color:C.text}}>ซัพพลายเออร์ขึ้นราคาเป็น $48 (40 × 1.2) — ทำเอง 30,000 หน่วยดีไหม?</Paragraph>
@@ -301,7 +342,7 @@ const summaryData = [
     )
   },
   {
-    key:'kd', title:'✂️ Keep or Drop — Grant Corporation', tags:[['เคสที่ 4','red']],
+    key:'kd', title:'✂️ Keep or Drop — Grant Corporation', tags:[['ข้อ 4 ในชีท','red']],
     content: () => (
       <div>
         <Paragraph style={{color:C.text}}>
@@ -312,11 +353,15 @@ const summaryData = [
           <Text style={{color:C.text}}>เลิก Roach: กำไรรวม = segment margin ของ Fix − common ทั้งก้อน = 27,500 − 17,500 = <strong>$10,000</strong> (เดิม $5,000) → <strong style={{color:C.green}}>เลิกแล้วกำไรเพิ่ม $5,000</strong> = |segment margin ที่ติดลบ| พอดี</Text>
         </Card>
         <Text style={{color:C.text3}}>common cost 17,500 ไม่หายไปไหน — มันแค่ย้ายไปกองที่แผนกที่เหลือ</Text>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple, marginTop:8}}>
+          <Text strong style={{color:C.purple}}>ขั้นสูง (CS 13.4) Complementary effects: </Text>
+          <Text style={{color:C.text}}>ถ้าสินค้าสองสายขายเกื้อกัน (ลูกค้าซื้อคู่กัน) เลิกสายหนึ่ง → ยอดสายที่เหลือตกด้วย ต้องบวก "CM ที่หายของสายข้างเคียง" เข้าไปในฝั่งเสียก่อนตัดสิน — สมมติเลิก Roach แล้วยอด Fix ตก 10% จะเสีย CM เพิ่ม 40,000×10% = 4,000 → ผลดีจากการเลิก 5,000 เหลือแค่ 1,000 (เกือบพลิกคำตอบ!)</Text>
+        </Card>
       </div>
     )
   },
   {
-    key:'pf', title:'🧪 Sell or Process Further — Mickey Company', tags:[['เคสที่ 5','cyan']],
+    key:'pf', title:'🧪 Sell or Process Further — Mickey Company', tags:[['ข้อ 5 ในชีท','cyan']],
     content: () => (
       <div>
         <Paragraph style={{color:C.text}}>สินค้าร่วม X, Y, Z จากกระบวนการเดียวกัน (joint cost $30,000 — <strong>ไม่เกี่ยว!</strong> จมไปแล้ว ณ จุดแยกร่าง) เทียบทีละตัว "ต่อปอนด์":</Paragraph>
@@ -336,7 +381,7 @@ const summaryData = [
     )
   },
   {
-    key:'tp', title:'🔁 Transfer Pricing — Zimmer Company (Ch.12)', tags:[['เคสที่ 1','purple']],
+    key:'tp', title:'🔁 Transfer Pricing — Zimmer Company', tags:[['Ch.12 LO-4','purple'],['ข้อ 1 ในชีท','gold']],
     content: () => (
       <div>
         <Paragraph style={{color:C.text}}>
@@ -356,21 +401,190 @@ const summaryData = [
           <Text strong style={{color:C.purple}}>กรอบเจรจา (bargaining range): </Text>
           <Text style={{color:C.text}}>ขั้นต่ำผู้ขาย = VC + CM ที่เสียไปจากการขายภายนอก | เพดานผู้ซื้อ = ราคาที่หาซื้อได้ข้างนอก — มีกำลังผลิตเหลือ → ขั้นต่ำ = VC เท่านั้น ($8.25) ไปลองลากในห้องทดลองได้</Text>
         </Card>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginTop:8}}>
+          <Text strong style={{color:C.text2}}>ตัวอย่างตำรา (Cornerstone 12.4 — Omni Inc.): </Text>
+          <Text style={{color:C.text}}>Alpha ขายแผงวงจร cb-117 ให้ Delta · ตลาด $14 · full cost $9 — นโยบาย full cost: Delta ชอบใจแต่ Alpha ไม่ยอมโอน (ขายนอกได้ 14) | นโยบายตลาด: ทั้งคู่ยอมที่ $14 | เจรจา: Alpha ประหยัดค่าขาย $3 → ขั้นต่ำ 14−3 = <strong>$11</strong>, เพดาน = <strong>$14</strong> → กรอบต่อรอง $11–14 ใครได้เท่าไรอยู่ที่ฝีมือเจรจา</Text>
+        </Card>
+        <Paragraph style={{color:C.text3, marginTop:8}}>นโยบายในทางปฏิบัติมี 3 ตระกูล: market price (ดีสุดถ้ามีตลาดแข่งขัน) · cost-based (ง่ายแต่ฝั่งขายไม่มีกำไร มักใช้ cost-plus) · negotiated (เหมาะเมื่อตลาดไม่สมบูรณ์ เช่น ขายในเครือประหยัดค่าขาย)</Paragraph>
+      </div>
+    )
+  },
+  {
+    key:'qual', title:'🧭 Step 5–6: ปัจจัยคุณภาพ + จริยธรรม (ส่วนที่เลขไม่บอก)', tags:[['สไลด์ 12–15, 36–38','purple']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>ตัวเลข relevant เป็นแค่ครึ่งเดียวของการตัดสินใจ — สไลด์ยกตัวอย่างปัจจัยคุณภาพที่เคยพลิกคำตอบมาแล้วจริง:</Paragraph>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>ตัวอย่างปัจจัยคุณภาพ</Text>
+            <ul style={{margin:'4px 0'}}>
+              <li><Text style={{color:C.text}}><strong>แรงกดดันสังคม/การเมือง</strong> — ย้ายฐานผลิตไปต่างประเทศ (offshoring) ประหยัดค่าแรง แต่กระแสตีกลับอาจกดยอดขายระยะยาวเกินที่ประหยัดได้</Text></li>
+              <li><Text style={{color:C.text}}><strong>ความปลอดภัยสินค้า</strong> — outsource แล้วคุมคุณภาพไม่ได้ ความเสี่ยง recall มหาศาล</Text></li>
+              <li><Text style={{color:C.text}}>ความน่าเชื่อถือ/ส่งตรงเวลาของ supplier · ผลต่อขวัญพนักงาน · ความสัมพันธ์ลูกค้า</Text></li>
+            </ul>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.redBg, borderColor:C.red, height:'100%'}}>
+            <Text strong style={{color:C.red}}>มุมจริยธรรม (step 6)</Text><br/>
+            <Text style={{color:C.text}}>อย่าสละเป้าหมายระยะยาวเพื่อตัวเลขระยะสั้น เช่น ตัดงบความปลอดภัยให้เดือนนี้ผ่านเป้า — และต้นทุนที่มี "นัยจริยธรรม" ต้องถูกนับใน analysis เสมอ ไม่ใช่ซุกไว้</Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:8}} type="info" message={<span><Text strong>เคสจริงจากสไลด์ (สนามกีฬา New York): </Text>Yankees ($1.2B) กับ Mets ($800M) สร้างสนามใหม่โดยประมาณ relevant revenue พลาด — ที่นั่งแพงหลังโฮมเพลตขายไม่ออกจนต้องลดราคา บทเรียน: การประมาณรายได้-ต้นทุนส่วนเพิ่มในชีวิตจริงคือส่วนที่ยากที่สุดของ decision model</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'decen', title:'🏢 Ch.12 LO-1: Decentralization — ทำไมต้องมอบอำนาจ แล้ววัดยังไง', tags:[['ทฤษฎีออกบ่อย','volcano']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>Centralized</Text><br/>
+            <Text style={{color:C.text}}>ตัดสินใจที่ยอด ผู้จัดการล่างมีหน้าที่ "ทำตาม" — คุมง่ายแต่ช้า และคนบนไม่รู้ข้อมูลหน้างาน</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.greenBg, borderColor:C.green, height:'100%'}}>
+            <Text strong style={{color:C.green}}>Decentralized</Text><br/>
+            <Text style={{color:C.text}}>มอบอำนาจลงไปตามลำดับชั้น (มักจัดเป็น divisions) — เร็ว ใกล้ข้อมูล แต่ต้องมีระบบวัดผลที่ดี ไม่งั้นต่างคนต่างทำ</Text>
+          </Card></Col>
+        </Row>
+        <Paragraph style={{color:C.text, marginTop:8}}>
+          เหตุผล 4 ข้อของการ decentralize: <strong>ข้อมูลท้องถิ่น</strong> (คนหน้างานรู้ลูกค้า/ราคาแถวนั้นดีกว่า) · <strong>ปลดภาระผู้บริหารใหญ่</strong> ให้โฟกัสกลยุทธ์ ·
+          <strong> สนามฝึกผู้จัดการ</strong> (ให้ตัดสินใจจริง พลาดจริง โตจริง) · <strong>ปล่อยให้เจอแรงแข่งขัน</strong> — แต่ละ division ถูกตลาดตรวจข้อสอบเอง
+        </Paragraph>
+        <Paragraph style={{color:C.text}}>
+          การแบ่ง division ทำได้ 3 แนว: ตามสินค้า/บริการ (เช่น PepsiCo แยกตามสายผลิตภัณฑ์ และยังมี interdependency — Pepsi ขายในร้าน KFC/Pizza Hut ของเครือ) ·
+          ตามภูมิศาสตร์ (ต้องวัดผลโดยคำนึงถึงสภาพแวดล้อมต่างกัน) · ตามความรับผิดชอบ (responsibility centers 4 แบบ — ดูตารางในแท็บปูพื้น)
+        </Paragraph>
+        <Alert type="warning" message={<span><Text strong>โครงเรื่องของทั้ง Ch.12: </Text>พอมอบอำนาจถึงขั้น investment center → ต้องมีไม้บรรทัดวัดผู้จัดการ (ROI → RI → EVA การ์ดถัดไป) และกติกาซื้อขายข้ามแผนก (transfer pricing) — decentralization คือ "เหตุ" ของทุกเรื่องในบทนี้</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'roi', title:'📈 Ch.12 LO-2: ROI — เกรดเฉลี่ยของ Investment Center', tags:[['สูตรออกสอบชัวร์','volcano']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text style={{color:C.text, fontSize:16}}><strong>ROI = Operating income ÷ สินทรัพย์ดำเนินงานเฉลี่ย = Margin × Turnover</strong></Text><br/>
+          <Text style={{color:C.text}}>Margin = OI ÷ Sales (ขาย $1 เหลือกำไรกี่เซนต์) | Turnover = Sales ÷ สินทรัพย์เฉลี่ย (สินทรัพย์ $1 ปั่นยอดขายได้กี่รอบ)</Text>
+        </Card>
+        <Paragraph style={{color:C.text}}>
+          ตัวอย่างตำรา (CS 12.1 — Celimar, Western Division): Sales 480,000 · OI 48,000 · สินทรัพย์ต้นปี 277,000 ปลายปี 323,000
+          → เฉลี่ย = (277,000+323,000)÷2 = <strong>300,000</strong> → Margin = 48,000÷480,000 = <strong>10%</strong> · Turnover = 480,000÷300,000 = <strong>1.6</strong> → ROI = 0.10×1.6 = <strong>16%</strong>
+        </Paragraph>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>ข้อดี</Text><br/>
+            <Text style={{color:C.text}}>บังคับให้มองครบ ขาย-ต้นทุน-เงินลงทุน · กระตุ้นประหยัดต้นทุน · กระตุ้นใช้สินทรัพย์คุ้ม</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.redBg, borderColor:C.red, height:'100%'}}>
+            <Text strong style={{color:C.red}}>ข้อเสีย (จุดสอบ!)</Text><br/>
+            <Text style={{color:C.text}}>ทำให้ปฏิเสธโครงการดี ๆ ที่ "ฉุด ROI แผนก" ทั้งที่ดีต่อบริษัท + เน้นระยะสั้น (myopia)</Text>
+          </Card></Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'rieva', title:'💎 Ch.12 LO-3: Residual Income & EVA — ยาแก้โรค ROI', tags:[['สูตรออกสอบชัวร์','volcano']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>Residual Income (CS 12.2)</Text><br/>
+            <Text style={{color:C.text}}>RI = OI − (อัตราขั้นต่ำ × สินทรัพย์เฉลี่ย)<br/>Celimar: 48,000 − (12% × 300,000) = <strong>$12,000</strong><br/>คิดเป็น "เงินส่วนที่ทำได้เกินขั้นต่ำ" — โครงการไหนบวกก็รับ ไม่ต้องกลัวฉุดค่าเฉลี่ย</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, height:'100%'}}>
+            <Text strong style={{color:C.cyan}}>EVA (CS 12.3)</Text><br/>
+            <Text style={{color:C.text}}>EVA = OI หลังภาษี − (ต้นทุนเงินทุนจริง% × เงินทุนที่ใช้)<br/>Celimar: OI หลังภาษี 30% = 33,600 → 33,600 − (10% × 300,000) = <strong>$3,600</strong><br/>ต่างจาก RI ตรงใช้ "หลังภาษี" และ "ต้นทุนเงินทุนจริง" ไม่ใช่อัตราที่ตั้งเอง</Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:8}} type="warning" message={<span><Text strong>กับดัก ROI ที่ RI แก้ได้: </Text>แผนก ROI 16% เจอโครงการใหม่ ROI 13% (สูงกว่าขั้นต่ำ 12%) — ถ้าวัดด้วย ROI ผู้จัดการจะปฏิเสธเพราะฉุดค่าเฉลี่ย แต่ RI ของโครงการเป็นบวก → ควรรับ! ข้อเสียของ RI: เป็นตัวเลขสัมบูรณ์ เทียบแผนกเล็ก-ใหญ่ตรง ๆ ไม่ได้ (ตำราแนะให้ใช้คู่กับ ROI)</span>}/>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginTop:8}}>
+          <Text strong style={{color:C.text2}}>มุมพฤติกรรมของ EVA (สไลด์ 34–35): </Text>
+          <Text style={{color:C.text}}>ถ้าไม่มี EVA เงินลงทุนจะดูเป็น "ของฟรี" สำหรับแผนก (ต้นทุนเงินทุนถูกมองเป็นค่าใช้จ่ายส่วนกลาง) แผนกก็ขอลงทุนไม่หยุด — EVA เอาค่าเช่าเงินทุนไปหักถึงระดับแผนก ทำให้ทุกการขอเงินมีราคาต้องรับผิดชอบ นักลงทุนจึงชอบ EVA เพราะโยงกำไรเข้ากับทรัพยากรที่ใช้จริง</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'mix', title:'⛓️ Ch.13 LO-3: Product Mix เมื่อทรัพยากรมีจำกัด', tags:[['หัวข้อที่หลายคนพลาด','red']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text strong style={{color:C.green}}>กฎทอง: เรียงลำดับด้วย CM ต่อหน่วยของ "ทรัพยากรที่ขาด" ไม่ใช่ CM ต่อหน่วยสินค้า!</Text>
+        </Card>
+        <Paragraph style={{color:C.text}}>
+          ตัวอย่างตำรา (CS 13.6 — Jorgenson): เฟือง X CM $25/ตัว ใช้เครื่อง 2 ชม. | เฟือง Y CM $10/ตัว ใช้ 0.5 ชม. | มีเครื่อง 40,000 ชม./ปี
+          — X ดูน่าทำกว่า แต่ต่อชั่วโมงเครื่อง: X = 25÷2 = <strong>$12.50/ชม.</strong> ส่วน Y = 10÷0.5 = <strong>$20/ชม.</strong> → ทุ่มให้ Y ทั้งหมด = 80,000 ตัว, CM รวม <strong>$800,000</strong>
+        </Paragraph>
+        <Card size="small" style={{background:C.blueBg, borderColor:C.blue}}>
+          <Text strong style={{color:C.blue}}>เวอร์ชันมีเพดานขาย (CS 13.7): </Text>
+          <Text style={{color:C.text}}>ถ้าตลาดรับ Y ได้แค่ 60,000 ตัว → ทำ Y เต็มเพดานก่อน (ใช้ 30,000 ชม.) เหลือ 10,000 ชม. ค่อยให้ X (5,000 ตัว) → CM รวม = 600,000 + 125,000 = <strong>$725,000</strong> — ไล่จาก CM/ชม. สูงสุดลงมาเสมอ</Text>
+        </Card>
+        <Text style={{color:C.text3}}>มีข้อจำกัดหลายตัวพร้อมกัน → linear programming (เกินขอบเขตวิชานี้ รู้ชื่อไว้พอ)</Text>
+      </div>
+    )
+  },
+  {
+    key:'price', title:'🏷️ Ch.13 LO-4: การตั้งราคา — Markup กับ Target Costing', tags:[['อ่านเพิ่มจากสไลด์','blue']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.surface3, borderColor:C.gold, height:'100%'}}>
+            <Text strong style={{color:C.goldDark}}>Cost-based (CS 13.8 — Elvin)</Text><br/>
+            <Text style={{color:C.text}}>ราคา = ต้นทุน + (Markup% × ต้นทุน)<br/>งานประกอบคอม: (65,000+4,000) × 1.20 = <strong>$82,800</strong><br/>คิดจากข้างใน → ออกไปข้างนอก (บริษัทประมูลงานใช้วิธีนี้)</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>Target costing (CS 13.9 — Digitime)</Text><br/>
+            <Text style={{color:C.text}}>Target cost = ราคาตลาดที่ลูกค้ายอมจ่าย − กำไรที่ต้องการ<br/>นาฬิกา PDA: 200 − (15%×200 = 30) = <strong>$170</strong><br/>คิดจากข้างนอก → บีบเข้าข้างใน (ทีมออกแบบต้องทำต้นทุนให้ลงมาที่ 170)</Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:8}} type="info" message="สองวิธีคิดสวนทางกัน 180 องศา — ข้อสอบทฤษฎีชอบให้แยกว่าอันไหนเริ่มจากต้นทุน อันไหนเริ่มจากราคาตลาด"/>
+      </div>
+    )
+  },
+  {
+    key:'bsc', title:'🧭 Appendix 12A: Balanced Scorecard + มาตรวัดความเร็วโรงงาน', tags:[['อ่านเพิ่มจากสไลด์','blue']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>
+          ROI/RI/EVA วัดแต่ "เงิน" — Balanced Scorecard เติมอีก 3 มุมให้ครบ:
+        </Paragraph>
+        <Flex gap={8} wrap="wrap" style={{marginBottom:8}}>
+          {[['💰 Financial','ผลลัพธ์ทางเงิน (ปลายทาง)',C.gold],['🤝 Customer','ลูกค้า/ตลาดที่เลือกแข่ง',C.blue],['⚙️ Internal Process','กระบวนการภายใน: นวัตกรรม-ผลิต-บริการหลังขาย',C.cyan],['🌱 Learning & Growth','คน ระบบข้อมูล แรงจูงใจ (รากฐานของทุกมุม)',C.green]].map(([t,d,c],i)=>(
+            <Card key={i} size="small" style={{borderColor:c, background:C.white, width:'47%', minWidth:220}}>
+              <Text strong style={{color:c}}>{t}</Text><br/><Text style={{color:C.text2, fontSize:13}}>{d}</Text>
+            </Card>
+          ))}
+        </Flex>
+        <Paragraph style={{color:C.text}}>
+          แต่ละมุมต้องแปลงกลยุทธ์เป็น objective → measure → target → initiative และผสม <strong>lead indicators</strong> (performance drivers — ตัวขับอนาคต)
+          กับ <strong>lag indicators</strong> (outcome measures — ผลลัพธ์ย้อนหลัง) ให้สมดุล
+        </Paragraph>
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan}}>
+          <Text strong style={{color:C.cyan}}>มาตรวัดความเร็ว (CS 12.5–12.6): </Text>
+          <Text style={{color:C.text}}>Cycle time = เวลาผลิตต่อหน่วย (ทฤษฎี 12 นาที, จริง 15 นาที) · Velocity = ผลิตได้กี่หน่วยต่อชั่วโมง (5 vs 4) · <strong>MCE = เวลาสร้างมูลค่า ÷ เวลาทั้งหมด = 12/15 = 80%</strong> (อีก 20% คือ ขนย้าย-ตรวจ-รอ ที่ควรกำจัด)</Text>
+        </Card>
       </div>
     )
   },
 ];
 
+const summaryByKey = Object.fromEntries(summaryData.map(s=>[s.key, s]));
+const ch13Order = ['rel','costbehav','so','mb','kd','pf','mix','price','qual'];
+const ch12Order = ['decen','roi','rieva','tp','bsc'];
+const renderCards = (keys) => keys.map((k,i) => { const s = summaryByKey[k]; if(!s) return null; return (
+  <Card key={s.key} className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border, animationDelay:`${i*0.06}s`}}
+    title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text>{s.tags.map((t,j)=><Tag key={j} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+    {s.content()}
+  </Card>
+);});
 const SummaryTab = () => (
   <div>
     <FlowAnimation/>
     <DecisionCompare/>
-    {summaryData.map((s,i) => (
-      <Card key={s.key} className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border, animationDelay:`${i*0.08}s`}}
-        title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text>{s.tags.map((t,j)=><Tag key={j} color={t[1]}>{t[0]}</Tag>)}</Space>}>
-        {s.content()}
-      </Card>
-    ))}
+    <Divider orientation="left"><Text strong style={{color:C.goldDark, fontSize:17}}>📕 เส้นเรื่องทั้งบท Ch.13</Text></Divider>
+    <Paragraph style={{color:C.text3}}>กรอบ relevant costing → กับดักพฤติกรรมต้นทุน → เคสตัดสินใจ 4 แบบ (ข้อ 2–5 ในชีท) → ทรัพยากรจำกัด → การตั้งราคา → ปัจจัยคุณภาพและจริยธรรม · ส่วนข้อ 1 ในชีท (transfer pricing) อยู่ในไฟล์ Ch.12</Paragraph>
+    {renderCards(ch13Order)}
   </div>
 );
 
@@ -536,13 +750,115 @@ const TransferLab = () => {
   );
 };
 
+const ROILab = () => {
+  const [oi, setOi] = useState(48000);
+  const [sales, setSales] = useState(480000);
+  const [assets, setAssets] = useState(300000);
+  const [minRate, setMinRate] = useState(12);
+  const [projROI, setProjROI] = useState(13);
+  const margin = sales>0 ? oi/sales : 0;
+  const turnover = assets>0 ? sales/assets : 0;
+  const roi = assets>0 ? oi/assets : 0;
+  const ri = oi - minRate/100*assets;
+  const projRI = (projROI - minRate)/100;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>📈 Lab 5: เครื่อง ROI / RI — และกับดักที่ทำให้ผู้จัดการปฏิเสธโครงการดี (ค่าเริ่มต้น = Celimar CS 12.1–12.2)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>Operating income: $<Pop v={oi}/></Text>
+          <Slider min={0} max={150000} step={2000} value={oi} onChange={setOi}/>
+          <Text style={{color:C.text2}}>Sales: $<Pop v={sales} color={C.blue}/></Text>
+          <Slider min={100000} max={1000000} step={20000} value={sales} onChange={setSales}/>
+          <Text style={{color:C.text2}}>สินทรัพย์ดำเนินงานเฉลี่ย: $<Pop v={assets} color={C.purple}/></Text>
+          <Slider min={100000} max={800000} step={10000} value={assets} onChange={setAssets}/>
+          <Text style={{color:C.text2}}>อัตราขั้นต่ำของบริษัท: <Pop v={minRate} suffix="%"/></Text>
+          <Slider min={5} max={20} step={0.5} value={minRate} onChange={setMinRate}/>
+          <Row gutter={8}>
+            <Col span={6}><Statistic title="Margin" value={(margin*100).toFixed(1)+'%'} valueStyle={{fontSize:15}}/></Col>
+            <Col span={6}><Statistic title="Turnover" value={turnover.toFixed(2)} valueStyle={{fontSize:15}}/></Col>
+            <Col span={6}><Statistic title="ROI" value={(roi*100).toFixed(1)+'%'} valueStyle={{fontSize:15, color:C.green}}/></Col>
+            <Col span={6}><Statistic title="RI" value={fmt(ri)} valueStyle={{fontSize:15, color: ri>=0?C.green:C.red}}/></Col>
+          </Row>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <Text strong style={{color:C.text}}>🎭 ฉากจำลองกับดัก ROI:</Text><br/>
+            <Text style={{color:C.text2}}>มีโครงการใหม่เข้ามา ROI ของโครงการ = <Pop v={projROI} suffix="%"/></Text>
+            <Slider min={5} max={25} step={0.5} value={projROI} onChange={setProjROI}/>
+            <div style={{fontSize:14, color:C.text}}>
+              มุมผู้จัดการ (ถูกวัดด้วย ROI): {projROI < roi*100
+                ? <Text strong style={{color:C.red}}>ปฏิเสธ — ต่ำกว่า ROI แผนก ({(roi*100).toFixed(1)}%) เดี๋ยวฉุดค่าเฉลี่ยฉัน!</Text>
+                : <Text strong style={{color:C.green}}>รับ — ดัน ROI แผนกขึ้น</Text>}<br/>
+              มุมบริษัท (วัดด้วย RI): {projROI > minRate
+                ? <Text strong style={{color:C.green}}>ควรรับ — ทำได้เกินขั้นต่ำ {minRate}% (RI ของโครงการเป็นบวก)</Text>
+                : <Text strong style={{color:C.red}}>ไม่ควรรับ — ต่ำกว่าขั้นต่ำ</Text>}
+            </div>
+            {(projROI < roi*100 && projROI > minRate) &&
+              <Alert style={{marginTop:8}} type="error" message="ตรงนี้แหละที่สองมุมขัดกัน! โครงการดีต่อบริษัทแต่ผู้จัดการไม่เอา — เหตุผลที่ตำราแนะนำใช้ RI/EVA ประกอบ ไม่ใช่ ROI เดี่ยว ๆ"/>}
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ค่าตำรา: OI 48,000 / Sales 480,000 / Assets 300,000 → Margin 10% × Turnover 1.6 = ROI 16% และ RI = 48,000 − 12%×300,000 = 12,000"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const MixLab = () => {
+  const [cmX, setCmX] = useState(25);
+  const [hrX, setHrX] = useState(2);
+  const [cmY, setCmY] = useState(10);
+  const [hrY, setHrY] = useState(0.5);
+  const [hours, setHours] = useState(40000);
+  const [capY, setCapY] = useState(80000);
+  const perX = hrX>0 ? cmX/hrX : 0;
+  const perY = hrY>0 ? cmY/hrY : 0;
+  const yFirst = perY >= perX;
+  const first = yFirst ? {cm:cmY, hr:hrY, cap:capY, n:'Y'} : {cm:cmX, hr:hrX, cap:Infinity, n:'X'};
+  const second = yFirst ? {cm:cmX, hr:hrX, n:'X'} : {cm:cmY, hr:hrY, n:'Y'};
+  const firstUnits = Math.min(first.cap, first.hr>0 ? hours/first.hr : 0);
+  const hoursLeft = hours - firstUnits*first.hr;
+  const secondUnits = second.hr>0 ? hoursLeft/second.hr : 0;
+  const totalCM = firstUnits*first.cm + secondUnits*second.cm;
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>⛓️ Lab 6: Product Mix เมื่อชั่วโมงเครื่องมีจำกัด (ค่าเริ่มต้น = Jorgenson CS 13.6–13.7)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={12}>
+          <Text style={{color:C.text2}}>เฟือง X: CM $<Pop v={cmX}/>/ตัว ใช้ <Pop v={hrX} f={fmt2}/> ชม.</Text>
+          <Slider min={5} max={50} value={cmX} onChange={setCmX}/>
+          <Slider min={0.5} max={4} step={0.5} value={hrX} onChange={setHrX}/>
+          <Text style={{color:C.text2}}>เฟือง Y: CM $<Pop v={cmY}/>/ตัว ใช้ <Pop v={hrY} f={fmt2}/> ชม.</Text>
+          <Slider min={5} max={50} value={cmY} onChange={setCmY}/>
+          <Slider min={0.5} max={4} step={0.5} value={hrY} onChange={setHrY}/>
+          <Text style={{color:C.text2}}>ชั่วโมงเครื่องทั้งหมด: <Pop v={hours}/> ชม. | เพดานขาย Y: <Pop v={capY}/> ตัว</Text>
+          <Slider min={10000} max={80000} step={5000} value={hours} onChange={setHours}/>
+          <Slider min={10000} max={120000} step={5000} value={capY} onChange={setCapY}/>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold}}>
+            <div style={{fontSize:15, color:C.text}}>
+              CM ต่อชั่วโมงเครื่อง: X = <Pop v={perX} f={fmt2} color={yFirst?C.text2:C.green}/> | Y = <Pop v={perY} f={fmt2} color={yFirst?C.green:C.text2}/><br/>
+              → ทำ <Text strong style={{color:C.green}}>{first.n}</Text> ก่อน: <Pop v={firstUnits}/> ตัว (ใช้ {fmt(firstUnits*first.hr)} ชม.)<br/>
+              เหลือ {fmt(hoursLeft)} ชม. → {second.n}: <Pop v={secondUnits}/> ตัว<br/>
+              <Divider style={{margin:'8px 0'}}/>
+              <Text strong style={{fontSize:18, color:C.goldDark}}>CM รวม = $</Text><span key={totalCM} className="pop" style={{fontSize:24, fontWeight:700, color:C.goldDark}}>{fmt(totalCM)}</span>
+            </div>
+          </Card>
+          <Alert style={{marginTop:8}} type="info" message="ค่าตำรา: ไม่มีเพดาน → Y ล้วน 80,000 ตัว = $800,000 (CS 13.6) | เพดาน Y 60,000 → Y 60,000 + X 5,000 = $725,000 (CS 13.7) · ลองดัน CM ของ X เป็น $45 ดู — ลำดับจะสลับเมื่อ X ให้ CM/ชม. ชนะ"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
 const LabTab = () => (
   <div>
-    <Alert type="success" style={{marginBottom:16}} message={<Text strong>🧪 4 สถานี — ทุกสถานีตั้งค่าเริ่มต้นตรงกับเคสในการบ้าน เลื่อนหา "จุดที่คำตอบพลิก" ดู แล้วจะเข้าใจว่าตัวแปรไหนคือหัวใจ</Text>}/>
+    <Alert type="success" style={{marginBottom:16}} message={<Text strong>🧪 4 สถานี — ค่าเริ่มต้นตรงกับเคสการบ้าน/ตำรา เลื่อนหา "จุดที่คำตอบพลิก" ดู แล้วจะเข้าใจว่าตัวแปรไหนคือหัวใจ</Text>}/>
     <SpecialOrderLab/>
     <MakeBuyLab/>
     <KeepDropLab/>
-    <TransferLab/>
+    <MixLab/>
   </div>
 );
 
@@ -551,7 +867,7 @@ const LabTab = () => (
    ============================================================ */
 const cases = [
   {
-    key:'c1', title:'Case 1 — Zimmer: ตั้งราคาโอนขาเก้าอี้ 4 วิธี', concept:'Transfer Pricing',
+    key:'c1', title:'ข้อ 1 ในชีท — Zimmer: ตั้งราคาโอนขาเก้าอี้ 4 วิธี', concept:'Transfer Pricing',
     cold:'ก่อนดูเฉลย: ต้นทุนผันแปรต่อขาคือเท่าไร? (ระวัง OH ที่ผันแปรแค่ 25%)',
     given:['ผลิต 30,000 ขา · ราคาตลาด $20/ขา', 'DM 135,000 · DL 90,000 · OH 90,000 (ผันแปร 25%)'],
     steps:[
@@ -565,7 +881,7 @@ const cases = [
     pitfall:'OH ผันแปรแค่ 25% — ใครหาร 90,000 เต็มก้อนด้วย 30,000 แล้วนับเป็น VC จะได้ 3.00 ผิดทันที',
   },
   {
-    key:'c2', title:'Case 2 — Junior: ทำเองหรือซื้อ (ราคาจะขึ้น 20%)', concept:'Make or Buy',
+    key:'c2', title:'ข้อ 2 ในชีท — Junior: ทำเองหรือซื้อ (ราคาจะขึ้น 20%)', concept:'Make or Buy',
     cold:'ก่อนดูเฉลย: fixed 200,000 ที่ "ยังอยู่แม้ซื้อ" ควรใส่ฝั่งไหน?',
     given:['ซื้ออยู่ 30,000 หน่วย @ $40 → ปีหน้า $48', 'ทำเอง: DM 16 + DL 12 + VOH 12 + FOH 10 = $50', 'ถ้าซื้อ: fixed 200,000 ยังอยู่ + ปล่อยเช่าพื้นที่ได้ 20,000/ปี'],
     steps:[
@@ -578,7 +894,7 @@ const cases = [
     pitfall:'สองกับดักซ้อนกัน: ลืมหัก fixed ที่เลี่ยงไม่ได้ (200,000) ออกจากฝั่งทำเอง และลืมค่าเช่า 20,000 (opportunity cost ของการทำเอง)',
   },
   {
-    key:'c3', title:'Case 3 — Tyler: ออร์เดอร์พิเศษ $11 ทั้งที่ต้นทุนเต็ม $11.50', concept:'Special Order',
+    key:'c3', title:'ข้อ 3 ในชีท — Tyler: ออร์เดอร์พิเศษ $11 ทั้งที่ต้นทุนเต็ม $11.50', concept:'Special Order',
     cold:'ก่อนดูเฉลย: ทำไม fixed OH $3.25 ถึงไม่เกี่ยว?',
     given:['ออร์เดอร์ใหม่ 6,000 หน่วย @ $11 (ราคาปกติ $18)', 'ต้นทุน/หน่วย: DM 4.00 + DL 2.75 + VOH 1.50 + FOH 3.25 = 11.50', 'กำลังผลิต 40,000 แต่ขายแค่ 30,000 → เหลือเฟือ ไม่กระทบยอดเดิม'],
     steps:[
@@ -590,7 +906,7 @@ const cases = [
     pitfall:'เทียบ $11 กับ full cost $11.50 แล้วรีบตอบ "ปฏิเสธ" — ข้อสอบวางกับดักนี้ไว้ตรง ๆ',
   },
   {
-    key:'c4', title:'Case 4 — Grant: แผนก Roach ขาดทุน ปิดเลยดีไหม?', concept:'Keep or Drop',
+    key:'c4', title:'ข้อ 4 ในชีท — Grant: แผนก Roach ขาดทุน ปิดเลยดีไหม?', concept:'Keep or Drop',
     cold:'ก่อนดูเฉลย: บรรทัดไหนในงบ segment ที่ใช้ตัดสิน — บรรทัดสุดท้าย หรือ segment margin?',
     given:['Fix: CM 40,000 − direct fixed 12,500 = segment margin 27,500', 'Roach: CM 25,000 − direct fixed 30,000 = segment margin (5,000)', 'Common cost 17,500 ถูกปันส่วน 10,000/7,500 · กำไรรวมปัจจุบัน 5,000'],
     steps:[
@@ -602,7 +918,7 @@ const cases = [
     pitfall:'ตัวเลข "ขาดทุน 12,500" ของ Roach รวม common cost ที่เลิกแผนกแล้วก็ไม่หาย — ใช้ segment margin เท่านั้น',
   },
   {
-    key:'c5', title:'Case 5 — Mickey: สินค้าร่วม 3 ตัว ขายเลยหรือแปรรูปต่อ', concept:'Sell or Process Further',
+    key:'c5', title:'ข้อ 5 ในชีท — Mickey: สินค้าร่วม 3 ตัว ขายเลยหรือแปรรูปต่อ', concept:'Sell or Process Further',
     cold:'ก่อนดูเฉลย: joint cost 30,000 กับตัวเลขปันส่วน (12,000/10,500/7,500) ใช้ทำอะไรในข้อ A?',
     given:['Joint cost 30,000 · X 5,600 lb / Y 10,000 lb / Z 2,500 lb', 'ราคา split-off: X 2.00, Y 1.00, Z 3.00 · ราคาหลังแปรรูป: 2.50, 3.75, 6.25', 'ต้นทุนแปรรูปเพิ่ม/lb: X 1.50, Y 1.25, Z 0.75'],
     steps:[
@@ -614,6 +930,57 @@ const cases = [
     ],
     answer:'A) X ขายที่ split-off · Y และ Z แปรรูปต่อ   B) กำไร $14,350',
     pitfall:'ห้ามใช้ allocated joint costs ตัดสินข้อ A เด็ดขาด — มีไว้หลอก (ใช้แค่คิดกำไรรวมข้อ B)',
+  },
+  {
+    key:'b1', title:'Bonus Case A — Celimar: วัดผล Western Division ครบ 3 ไม้บรรทัด', concept:'ROI · RI · EVA (ตำรา CS 12.1–12.3)',
+    cold:'ก่อนดูเฉลย: margin 10% แปลว่าอะไร และ turnover 1.6 แปลว่าอะไร?',
+    given:['Sales 480,000 · Operating income 48,000', 'สินทรัพย์ดำเนินงาน: ต้นปี 277,000 / ปลายปี 323,000', 'อัตราขั้นต่ำ 12% · ภาษี 30% · ต้นทุนเงินทุนจริง 10%'],
+    steps:[
+      ['สินทรัพย์เฉลี่ย','(277,000 + 323,000) ÷ 2 = 300,000'],
+      ['ROI','Margin = 48,000÷480,000 = 10% | Turnover = 480,000÷300,000 = 1.6 | ROI = 10% × 1.6 = 16%'],
+      ['Residual Income','48,000 − (12% × 300,000) = 48,000 − 36,000 = $12,000'],
+      ['EVA','OI หลังภาษี = 48,000 − 14,400 = 33,600 → EVA = 33,600 − (10% × 300,000) = $3,600'],
+    ],
+    answer:'ROI 16% (margin 10% × turnover 1.6) · RI $12,000 · EVA $3,600',
+    pitfall:'สามตัวใช้ "ฐาน" ต่างกัน: ROI/RI ใช้ OI ก่อนภาษี + อัตราขั้นต่ำที่ตั้งเอง แต่ EVA ใช้หลังภาษี + ต้นทุนเงินทุนจริง — อย่าจับคู่ผิด',
+  },
+  {
+    key:'b2', title:'Bonus Case B — Omni: แผงวงจร cb-117 ควรโอนราคาเท่าไร', concept:'Transfer Pricing (ตำรา CS 12.4)',
+    cold:'ก่อนดูเฉลย: นโยบาย full cost ใครแฮปปี้ ใครไม่ยอมโอน เพราะอะไร?',
+    given:['Alpha ผลิตแผงวงจร ขายให้ Delta ได้', 'ราคาตลาด $14 · full cost $9', 'ถ้าขายในเครือ Alpha ประหยัดค่าใช้จ่ายขาย $3/ชิ้น'],
+    steps:[
+      ['นโยบาย full cost ($9)','Delta ชอบมาก แต่ Alpha ปฏิเสธ — ขายตลาดนอกได้ $14 ทำไมต้องขายถูก (นี่คือจุดอ่อน cost-based)'],
+      ['นโยบาย market price ($14)','ทั้งคู่ยอมรับ — ไม่มีใครแย่กว่าซื้อขายกับตลาดนอก'],
+      ['นโยบายเจรจา','ขั้นต่ำ (Alpha ผู้ขายตั้ง) = 14 − 3 = $11 | เพดาน (Delta ผู้ซื้อตั้ง) = ราคาตลาด $14'],
+      ['สรุป','กรอบต่อรอง $11–14 — ตกลงที่ไหนขึ้นกับฝีมือเจรจา แต่ทุกจุดในช่วงนี้ win-win'],
+    ],
+    answer:'Full cost $9 (Alpha ไม่ยอม) · Market $14 (โอนได้) · เจรจา: ช่วง $11–14',
+    pitfall:'ขั้นต่ำของ "ผู้ขาย" และเพดานของ "ผู้ซื้อ" — ข้อสอบชอบสลับให้ตอบกลับข้าง จำ: คนขายตั้ง floor คนซื้อตั้ง ceiling',
+  },
+  {
+    key:'b3', title:'Bonus Case C — Jorgenson: เครื่องจักร 40,000 ชม. ทำเฟืองอะไรดี', concept:'Product Mix (ตำรา CS 13.6–13.7)',
+    cold:'ก่อนดูเฉลย: X ให้ CM ตัวละ $25 มากกว่า Y ที่ $10 — ทำ X ล้วนเลยดีไหม?',
+    given:['X: CM $25/ตัว ใช้เครื่อง 2 ชม. | Y: CM $10/ตัว ใช้ 0.5 ชม.', 'เครื่องจักรรวม 40,000 ชม./ปี', '(ต่อยอด) ถ้าตลาดรับ Y ได้แค่ 60,000 ตัว'],
+    steps:[
+      ['คิดต่อหน่วยทรัพยากรที่ขาด','X = 25÷2 = $12.50/ชม. | Y = 10÷0.5 = $20/ชม. → Y ชนะแม้ CM ต่อตัวน้อยกว่า'],
+      ['ไม่มีเพดานขาย','ทุ่ม 40,000 ชม. ให้ Y = 80,000 ตัว → CM รวม = $800,000 (X = 0 ตัว!)'],
+      ['มีเพดาน Y 60,000 ตัว','Y 60,000 ใช้ 30,000 ชม. → เหลือ 10,000 ชม. ให้ X = 5,000 ตัว'],
+      ['CM รวมแบบมีเพดาน','(60,000×10) + (5,000×25) = 600,000 + 125,000 = $725,000'],
+    ],
+    answer:'ไม่มีเพดาน: Y ล้วน 80,000 ตัว = $800,000 · มีเพดาน: Y 60,000 + X 5,000 = $725,000',
+    pitfall:'ห้ามเรียงด้วย CM ต่อตัวเด็ดขาด — ต้องเรียงด้วย CM ต่อชั่วโมงเครื่อง (ทรัพยากรที่ขาด) แล้วไล่เต็มเพดานทีละตัว',
+  },
+  {
+    key:'b4', title:'Bonus Case D — Elvin & Digitime: ตั้งราคาสองขั้ว', concept:'Markup Pricing & Target Costing (ตำรา CS 13.8–13.9)',
+    cold:'ก่อนดูเฉลย: วิธีไหน "เริ่มจากต้นทุน" วิธีไหน "เริ่มจากราคาตลาด"?',
+    given:['Elvin ประกอบคอม: DM 65,000 + DL 4,000 ตั้งราคา cost + 20%', 'Digitime ออกนาฬิกา PDA: ราคาตลาดที่ตั้งใจขาย $200 ต้องการกำไร 15% ของรายได้'],
+    steps:[
+      ['Elvin (markup)','ราคา = 69,000 + (0.20 × 69,000) = 69,000 + 13,800 = $82,800'],
+      ['Digitime (target cost)','กำไรที่ต้องการ = 0.15 × 200 = $30 → target cost = 200 − 30 = $170'],
+      ['เปรียบเทียบแนวคิด','Markup: ต้นทุน→ราคา (เหมาะงานประมูล/สั่งทำ) | Target: ราคา→ต้นทุน (เหมาะตลาดแข่งดุ ทีมออกแบบต้องกดต้นทุนให้ถึง 170)'],
+    ],
+    answer:'Elvin ตั้งราคา $82,800 · Digitime ต้อง design ให้ต้นทุนไม่เกิน $170',
+    pitfall:'target costing กำไรคิดเป็น % ของ "ราคา" ไม่ใช่ % ของต้นทุน — 15%×200 = 30 ไม่ใช่ 15%×170',
   },
 ];
 
@@ -642,10 +1009,19 @@ const CaseCard = ({s}) => {
     </Card>
   );
 };
+const casesByKey = Object.fromEntries(cases.map(s=>[s.key, s]));
+const caseOrder = [
+  {divider:'📕 เคสการบ้าน (ข้อ 2–5 ในชีท) เรียงตามเนื้อหา'},
+  {k:'c2'},{k:'c3'},{k:'c4'},{k:'c5'},
+  {divider:'📕 เคสเสริมจากตำรา (Cornerstone)'},
+  {k:'b3'},{k:'b4'},
+]
 const CasesTab = () => (
   <div>
-    <Alert type="info" style={{marginBottom:16}} message={<Text strong>สไตล์ case method: อ่านเคส → ตอบ cold call ในใจ → ค่อยเปิดเฉลย — ทั้ง 5 เคสคือการบ้านชุดนี้เป๊ะ ๆ</Text>}/>
-    {cases.map(s => <CaseCard key={s.key} s={s}/>)}
+    <Alert type="info" style={{marginBottom:16}} message={<Text strong>สไตล์ case method: อ่านเคส → ตอบ cold call ในใจ → ค่อยเปิดเฉลย — เคสการบ้าน 4 ข้อ (ข้อ 2–5 ในชีท) + เคสตำรา 2 เรื่อง · ข้อ 1 (Zimmer transfer pricing) อยู่ในไฟล์ Ch.12</Text>}/>
+    {caseOrder.map((it,i) => it.divider
+      ? <Divider key={'d'+i} orientation="left"><Text strong style={{color:C.goldDark}}>{it.divider}</Text></Divider>
+      : <CaseCard key={it.k} s={casesByKey[it.k]}/>)}
   </div>
 );
 
@@ -664,17 +1040,14 @@ const flashcards = [
   {q:'Common fixed cost ที่ถูกปันส่วน ใช้ตัดสินใจได้ไหม?', a:'ไม่ได้ — เลิกแผนกแล้วก็ไม่หาย แค่ย้ายไปกองแผนกอื่น', d:'Grant: 17,500 อยู่ครบไม่ว่ามี Roach หรือไม่ — ตัวการที่ทำให้ Roach "ดูขาดทุน"', star:3, exam:true},
   {q:'กฎ sell at split-off vs process further?', a:'แปรรูปต่อ ถ้ารายได้ส่วนเพิ่ม > ต้นทุนแปรรูปส่วนเพิ่ม (คิดต่อหน่วย/ต่อปอนด์)', d:'Mickey: X (0.50<1.50) ขายเลย · Y (2.75>1.25), Z (3.25>0.75) แปรรูปต่อ', star:3, exam:true},
   {q:'Joint cost ณ จุดแยกร่าง relevant ไหม เพราะอะไร?', a:'ไม่ — จ่ายไปแล้วก่อนแยกร่าง เป็น sunk cost', d:'ทุกทางเลือก (ขายเลย/แปรรูป) ต้องแบกมันเท่ากันอยู่ดี — ตัวเลขปันส่วนมีไว้หลอก', star:3, exam:true},
-  {q:'Transfer price ขั้นต่ำของแผนกขาย (มีกำลังเหลือ)?', a:'= ต้นทุนผันแปรต่อหน่วย', d:'Zimmer มีกำลังเหลือ → ขั้นต่ำ 8.25 — ขายเกินนี้ได้กำไรเพิ่มทุกบาท', star:3, exam:true},
-  {q:'Transfer price ขั้นต่ำเมื่อแผนกขาย "เต็มกำลัง"?', a:'= VC + CM ที่เสียจากการไม่ได้ขายภายนอก', d:'เต็มกำลัง: 8.25 + 11.75 = 20 = ราคาตลาดพอดี — จึงบอกว่า market price เหมาะเมื่อตลาดแข่งขัน', star:3, exam:true},
-  {q:'เพดานราคาโอนของแผนกซื้อ?', a:'= ราคาที่หาซื้อได้จากภายนอก', d:'จ่ายแพงกว่าข้างนอกเมื่อไร แผนกซื้อเสียประโยชน์ทันที — กรอบเจรจา = [ขั้นต่ำผู้ขาย, เพดานผู้ซื้อ]', star:2, exam:true},
-  {q:'ราคาโอน 4 แบบของ Zimmer มีอะไรบ้าง?', a:'ตลาด $20 · VC+20% $9.90 · full+20% $12.60 · VC $8.25', d:'VC/ขา = 4.50+3.00+0.75 = 8.25, full = +FOH 2.25 = 10.50 (ระวัง OH ผันแปรแค่ 25%)', star:2, exam:true},
   {q:'ทำไม "fixed cost ต่อหน่วย" เป็นตัวหลอกอันตราย?', a:'มันดูเหมือนผันแปร แต่ก้อนรวมไม่เปลี่ยนตามปริมาณ', d:'Tyler: FOH 3.25/หน่วย ไม่ได้แปลว่ารับออร์เดอร์แล้วจ่ายเพิ่ม 3.25×6,000 — ก้อนรวมเท่าเดิม', star:3, exam:true},
-  {q:'ราคาโอนกระทบกำไร "ทั้งบริษัท" ไหม?', a:'ไม่ (ถ้าซื้อขายกันภายใน) — แต่กระทบกำไรรายแผนกและการวัดผลผู้จัดการ', d:'เป็นเรื่อง performance evaluation ใน decentralization — แผนกขายอยากได้แพง แผนกซื้ออยากได้ถูก', star:2, exam:false},
   {q:'ปัจจัยเชิงคุณภาพที่ต้องคิดนอกเหนือตัวเลข?', a:'คุณภาพ/ความน่าเชื่อถือ supplier · ผลต่อพนักงาน · ความสัมพันธ์ลูกค้า · ผลระยะยาว', d:'เช่น make-or-buy: ซื้อถูกกว่านิดเดียวแต่ supplier ไม่นิ่ง อาจเลือกทำเองต่อ', star:2, exam:false},
   {q:'ขั้นตอนวิเคราะห์การตัดสินใจ 5 ขั้น?', a:'ตั้งโจทย์ → ลิสต์เงินอนาคตแต่ละทาง → ตัดของไม่เกี่ยว → เทียบส่วนต่าง → เช็คปัจจัยคุณภาพ', d:'ใช้ร่วมกันทุกเคสในบท ต่างกันแค่รายละเอียดว่าอะไร relevant', star:2, exam:false},
   {q:'[เลขจากเคส] Junior ควรทำเองหรือซื้อ ประหยัดเท่าไร?', a:'ทำเอง ประหยัด $120,000', d:'ทำเอง 1,300,000 (VC 1.2M + avoidable F 0.1M) vs ซื้อสุทธิ 1,420,000 (1.44M − ค่าเช่า 0.02M)', star:2, exam:true},
   {q:'[เลขจากเคส] แปรรูปทั้ง X, Y, Z กำไรรวมเท่าไร?', a:'$14,350', d:'67,125 − 22,775 − 30,000 — ต่ำกว่าแผนดีสุด 5,600 เพราะฝืนแปรรูป X ที่ควรขายเลย', star:2, exam:true},
-  {q:'Decentralization คืออะไร เกี่ยวอะไรกับ transfer price?', a:'การกระจายอำนาจตัดสินใจให้แผนก — พอแผนกซื้อขายกันเองจึงต้องมีราคาโอน', d:'ราคาโอนคือเครื่องมือให้แต่ละแผนกตัดสินใจเองแล้วยังวัดผลได้ยุติธรรม (Ch.12)', star:1, exam:false},
+  {q:'กฎ product mix เมื่อทรัพยากรจำกัด 1 ตัว?', a:'เรียงผลิตตาม CM ต่อหน่วยของ "ทรัพยากรที่ขาด" ไม่ใช่ CM ต่อชิ้น', d:'Jorgenson: Y ให้ $20/ชม. ชนะ X ที่ $12.50/ชม. แม้ CM ต่อตัวแพ้ (10 vs 25)', star:3, exam:true},
+  {q:'มีเพดานขายของสินค้าที่ CM/ชม. สูงสุด ทำยังไงต่อ?', a:'ผลิตตัวนั้นจนชนเพดาน แล้วเอาชั่วโมงที่เหลือไล่ให้ตัวถัดไป', d:'CS 13.7: Y 60,000 ตัว (30,000 ชม.) + X 5,000 ตัว (10,000 ชม.) = $725,000', star:2, exam:true},
+  {q:'Markup pricing กับ target costing คิดสวนทางกันยังไง?', a:'Markup: ต้นทุน → บวก% → ราคา | Target: ราคาตลาด − กำไร → เพดานต้นทุน', d:'Elvin: 69,000×1.2 = 82,800 | Digitime: 200 − 30 = 170 (กำไรคิดจาก "ราคา")', star:2, exam:true},
 ];
 
 const FlashcardTab = () => {
@@ -742,7 +1115,6 @@ const quickSections = [
   { s:'MoB', t:'Make or buy', b:'ทำเอง = VC + avoidable fixed ± opportunity | เทียบกับราคาซื้อสุทธิ', type:'formula' },
   { s:'KoD', t:'Keep or drop', b:'เลิกถ้า segment margin < 0 | ผลต่อกำไร = avoidable fixed − CM ที่เสีย', type:'formula' },
   { s:'PF', t:'Process further', b:'ต่อถ้า incremental revenue > incremental cost (joint cost ไม่เกี่ยว)', type:'formula' },
-  { s:'TP', t:'Transfer price', b:'VC + lost CM ≤ TP ≤ ราคาตลาดภายนอก | มีกำลังเหลือ → lost CM = 0', type:'formula' },
   { divider: '🧠 ตัวช่วยจำ' },
   { s:'จมแล้วจมเลย', t:'sunk cost', b:'เงินอดีตไม่มีวันฟื้น — ราคาเครื่องจักรเก่า ค่าเสื่อม joint cost = ผี ไม่ต้องกลัว ไม่ต้องนับ', type:'mnem' },
   { s:'มองไปข้างหน้า', t:'relevant = อนาคต+ต่าง', b:'ถาม 2 คำถามกับเงินทุกก้อน: "ยังไม่จ่ายใช่ไหม?" "เลือกอีกทางแล้วเปลี่ยนไหม?"', type:'mnem' },
@@ -750,14 +1122,12 @@ const quickSections = [
   { s:'ปันส่วน = ตัวหลอก', t:'allocated cost', b:'common cost / allocated joint cost โผล่ในโจทย์ไว้ดักคนไม่แม่น — ขีดฆ่าทิ้งได้เลย', type:'mnem' },
   { divider: '⚡ Flow ทำโจทย์' },
   { s:'Flow', t:'ทุกเคส', b:'1) ระบุประเภทเคส → 2) เขียนสองคอลัมน์ (ทางเลือก A/B) → 3) ใส่เฉพาะเงินอนาคตที่ต่างกัน → 4) อย่าลืม opportunity cost → 5) เทียบ + ตอบพร้อมจำนวนเงิน', type:'flow' },
-  { s:'Flow', t:'transfer price', b:'1) หา VC ผู้ขาย → 2) เช็คกำลังผลิต (เหลือ? lost CM = 0) → 3) ขั้นต่ำ = VC + lost CM → 4) เพดาน = ราคานอก → 5) ช่วงตกลง/นโยบายที่โจทย์ถาม', type:'flow' },
   { divider: '⚔️ คู่ที่ชอบสับสน' },
   { s:'SM vs NI', t:'ตัดสินแผนก', b:'ใช้ segment margin (ก่อน common) ไม่ใช่กำไรบรรทัดสุดท้าย (หลังปันส่วน)', type:'contrast' },
   { s:'Avoid vs Not', t:'fixed สองชนิด', b:'เลี่ยงได้ = เกี่ยว | เลี่ยงไม่ได้ = ไม่เกี่ยว — Junior เลี่ยงได้แค่ 100,000 จาก 300,000', type:'contrast' },
   { s:'Sunk vs Opp', t:'สองต้นทุนพิเศษ', b:'Sunk: อยู่ในบัญชีแต่ไม่เกี่ยว | Opportunity: ไม่อยู่ในบัญชีแต่เกี่ยว — ตรงข้ามกันเป๊ะ', type:'contrast' },
   { s:'Full vs Inc', t:'ต้นทุนไหนเทียบราคา', b:'special order เทียบกับต้นทุน "ส่วนเพิ่ม" ไม่ใช่ full cost — 11 > 8.25 รับได้แม้ 11 < 11.50', type:'contrast' },
   { divider: '📌 ชุดตัวเลขเคส จำไว้เช็คคำตอบ' },
-  { s:'เคส 1', t:'Zimmer TP', b:'VC 8.25 · full 10.50 · ตอบ: 20 / 9.90 / 12.60 / 8.25', type:'chunk' },
   { s:'เคส 2', t:'Junior MoB', b:'ทำเอง 1.30M vs ซื้อ 1.42M → ทำเอง ประหยัด 120,000', type:'chunk' },
   { s:'เคส 3', t:'Tyler SO', b:'(11−8.25)×6,000 = +16,500 → รับ', type:'chunk' },
   { s:'เคส 4', t:'Grant KoD', b:'Roach SM −5,000 → เลิก กำไรรวม 5,000 → 10,000', type:'chunk' },
@@ -802,7 +1172,7 @@ const App = () => (
   }}>
     <Layout style={{minHeight:'100vh', background:C.bg}}>
       <Layout.Content style={{maxWidth:960, width:'100%', margin:'0 auto', padding:'32px 16px'}}>
-        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>⚖️ Short-Run Decisions & Transfer Pricing — Ch 12–13</Title>
+        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>📕 Short-Run Decision Making: Relevant Costing — Chapter 13</Title>
         <Paragraph style={{textAlign:'center', color:C.text3, marginBottom:24}}>
           Cornerstones of Managerial Accounting, 5e · เรียนแบบ case method: พื้นฐาน → กรอบคิด → ทดลอง → เคสจริง → ท่องจำ
         </Paragraph>
@@ -810,13 +1180,13 @@ const App = () => (
           { key:'basics', label:'🌱 ปูพื้นก่อน', children:<BasicsTab/> },
           { key:'sum', label:'📚 สรุปเนื้อหา', children:<SummaryTab/> },
           { key:'lab', label:'🧪 ห้องทดลอง', children:<LabTab/> },
-          { key:'cases', label:'🎓 เคส 5 เรื่อง', children:<CasesTab/> },
+          { key:'cases', label:'🎓 เคส 4+2 เรื่อง', children:<CasesTab/> },
           { key:'fc', label:'🎴 Flashcard', children:<FlashcardTab/> },
           { key:'quick', label:'⚡ การ์ดจำด่วน', children:<QuickTab/> },
         ]}/>
         <Divider/>
         <Text style={{display:'block', textAlign:'center', color:C.text3}}>
-          สร้างจากโจทย์ Ch 12 & 13 Problem · เคสทั้งหมดคือการบ้านชุดนี้ (Zimmer · Junior · Tyler · Grant · Mickey)
+          สร้างจากโจทย์ Ch 12 & 13 Problem (ข้อ 2–5) + สไลด์ MA_5e_PPT_Ch13 · เคส: Junior · Tyler · Grant · Mickey + Jorgenson · Elvin/Digitime (ตำรา) · ใช้คู่กับไฟล์ Ch.12
         </Text>
       </Layout.Content>
     </Layout>
