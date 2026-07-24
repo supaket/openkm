@@ -447,7 +447,9 @@
     '.ink-b.armed{background:#dc2626;border-color:#fecaca}' +
     '.ink-b .sw{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.9);display:block}' +
     '.ink-fab{width:54px;height:54px;min-height:54px;font-size:1.4rem;background:rgba(17,24,39,.97);flex:0 0 auto}' +
-    '#inkToolbar.open .ink-fab{background:#fbbf24;color:#1f2937;border-color:#fbbf24}' +
+    '#inkToolbar.open [data-act="fab"]{background:#fbbf24;color:#1f2937;border-color:#fbbf24}' +
+    '.ink-print-fab{background:#2563eb;border-color:#93c5fd}' +          // ปุ่มปริ้นถาวร สีน้ำเงิน เห็นชัด
+    '.ink-print-fab:active{transform:scale(.9)}' +
     '@media (max-height:560px){.ink-b{width:40px;height:40px;min-height:40px;font-size:1rem}.ink-fab{width:46px;height:46px;min-height:46px}#inkToolbar{gap:7px}#inkToolbar .ink-tray{gap:7px}}' +
     '#inkBusy{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:999999;' +
       'background:rgba(17,24,39,.95);color:#fde68a;border-radius:999px;padding:9px 20px;font-size:.9rem;display:none}' +
@@ -466,9 +468,11 @@
     '<button class="ink-b" data-act="clear" title="ล้างทั้งหน้า (แตะซ้ำเพื่อยืนยัน)" aria-label="ล้างทั้งหน้า">🗑️</button>' +
     '<button class="ink-b" data-act="palm" title="โหมดกันฝ่ามือ: Pencil เขียน / นิ้วเลื่อน-กดหน้าได้" aria-label="โหมดกันฝ่ามือ">✋</button>' +
     '<button class="ink-b" data-act="save-view" title="บันทึกภาพเฉพาะที่เห็นบนจอ" aria-label="บันทึกภาพหน้าจอ">📸</button>' +
-    '<button class="ink-b" data-act="save-full" title="บันทึกภาพทั้งเอกสาร" aria-label="บันทึกภาพทั้งเอกสาร">📰</button>' +
-    '<button class="ink-b" data-act="print" title="ปริ้นครบทุกแท็บ · พอดี A4 (เอาเข้าห้องสอบได้)" aria-label="ปริ้นครบทุกแท็บ พอดี A4">🖨️</button>';
-  bar.innerHTML = '<div class="ink-tray">' + trayBtns + '</div><button class="ink-b ink-fab" data-act="fab" title="ปากกาเขียนหน้า (เปิด/หุบ)" aria-label="เปิดหรือหุบเครื่องมือปากกา">✎</button>';
+    '<button class="ink-b" data-act="save-full" title="บันทึกภาพทั้งเอกสาร" aria-label="บันทึกภาพทั้งเอกสาร">📰</button>';
+  // ปุ่มปริ้นเป็นปุ่มลอยถาวร (เห็นบนหน้าอ่านเลย ไม่ต้องเปิดปากกา) + ปุ่มปากกา
+  bar.innerHTML = '<div class="ink-tray">' + trayBtns + '</div>' +
+    '<button class="ink-b ink-fab ink-print-fab" data-act="print" title="ปริ้นครบทุกแท็บ · พอดี A4 (สำหรับอ่าน/เข้าห้องสอบ)" aria-label="ปริ้นหน้านี้ พอดี A4">🖨️</button>' +
+    '<button class="ink-b ink-fab" data-act="fab" title="ปากกาเขียนหน้า (เปิด/หุบ)" aria-label="เปิดหรือหุบเครื่องมือปากกา">✎</button>';
   document.body.appendChild(bar);
   document.body.appendChild(canvas);
 
