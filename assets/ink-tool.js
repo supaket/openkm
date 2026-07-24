@@ -386,7 +386,8 @@
     '<button class="ink-b" data-act="clear" title="ล้างทั้งหน้า (แตะซ้ำเพื่อยืนยัน)" aria-label="ล้างทั้งหน้า">🗑️</button>' +
     '<button class="ink-b" data-act="palm" title="โหมดกันฝ่ามือ: Pencil เขียน / นิ้วเลื่อน-กดหน้าได้" aria-label="โหมดกันฝ่ามือ">✋</button>' +
     '<button class="ink-b" data-act="save-view" title="บันทึกภาพเฉพาะที่เห็นบนจอ" aria-label="บันทึกภาพหน้าจอ">📸</button>' +
-    '<button class="ink-b" data-act="save-full" title="บันทึกภาพทั้งเอกสาร" aria-label="บันทึกภาพทั้งเอกสาร">📰</button>';
+    '<button class="ink-b" data-act="save-full" title="บันทึกภาพทั้งเอกสาร" aria-label="บันทึกภาพทั้งเอกสาร">📰</button>' +
+    '<button class="ink-b" data-act="print" title="ปริ้นหน้านี้ (Ctrl/⌘+P)" aria-label="ปริ้นหน้านี้">🖨️</button>';
   bar.innerHTML = '<div class="ink-tray">' + trayBtns + '</div><button class="ink-b ink-fab" data-act="fab" title="ปากกาเขียนหน้า (เปิด/หุบ)" aria-label="เปิดหรือหุบเครื่องมือปากกา">✎</button>';
   document.body.appendChild(bar);
   document.body.appendChild(canvas);
@@ -442,6 +443,7 @@
     else if (act === 'palm') setPalm(palmMode === 'pen' ? 'any' : 'pen');
     else if (act === 'save-view') saveImage('view');
     else if (act === 'save-full') saveImage('full');
+    else if (act === 'print') { closeBar(); setTimeout(function () { window.print(); }, 60); return; }
     else if (act === 'clear') {                                 // แตะยืนยัน 2 ครั้ง — ไม่บล็อกจอ
       if (b.classList.contains('armed')) { clearAll(); disarmClear(); }
       else {

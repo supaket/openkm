@@ -19,7 +19,7 @@
   <div id="report">กำลังโหลด…</div>
 
   <!-- ตัวเครื่องมือจริง -->
-  <script src="../assets/ink-tool.js?v=3" defer></script>
+  <script src="../assets/ink-tool.js?v=4" defer></script>
 
   <script>
   // ============ ชุดทดสอบ ============
@@ -160,8 +160,21 @@
     btn('clear');
     ok('clear ครั้งสอง = ล้างหมด', D.strokes() === 0, D.strokes());
 
-    // 14) close
-    D.close();
+    // 14) ปุ่มปริ้น — มีปุ่ม + กดแล้วเรียก window.print() (และหุบแถบให้เอง)
+    D.open();
+    const printBtn = document.querySelector('#inkToolbar [data-act="print"]');
+    ok('มีปุ่มปริ้น 🖨️ ในแถบเครื่องมือ', !!printBtn);
+    let printed = false;
+    const realPrint = window.print;
+    window.print = function () { printed = true; };
+    if (printBtn) printBtn.click();
+    await sleep(120);            // handler หุบแถบแล้ว setTimeout(60) ค่อยเรียก print
+    window.print = realPrint;
+    ok('กดปริ้นแล้วเรียก window.print()', printed);
+    ok('กดปริ้นแล้วหุบแถบ (tool=null)', D.tool() === null);
+
+    // 15) close
+    D.open(); D.close();
     ok('ปิดแล้ว tool=null', D.tool() === null);
 
     finish();
