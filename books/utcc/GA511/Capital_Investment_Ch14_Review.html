@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capital Investment Decisions — Ch 14 Review</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+body { background:#F5F0E8; line-height:1.8; font-family:'Noto Sans Thai', sans-serif; margin:0; }
+.fc-perspective { perspective:1200px; }
+.fc-card { position:relative; width:100%; height:320px; transform-style:preserve-3d; transition:transform 0.5s; cursor:pointer; }
+.fc-card.flipped { transform:rotateY(180deg); }
+.fc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:12px; padding:28px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; overflow-y:auto; }
+.fc-back { transform:rotateY(180deg); }
+.qc { transition:all .2s; }
+.qc:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(61,50,41,.12); }
+::-webkit-scrollbar { width:10px; height:10px; }
+::-webkit-scrollbar-track { background:#EDE8DF; }
+::-webkit-scrollbar-thumb { background:#C4B49A; border-radius:5px; }
+::selection { background:#DDD3C1; color:#3D3229; }
+.ant-table-cell { line-height:1.9 !important; }
+.fadein { animation: fadeInUp .6s ease both; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:translateY(0);} }
+.pop { display:inline-block; animation: pop .45s ease; }
+@keyframes pop { 0% { transform:scale(1.25); color:#8B7355; } 100% { transform:scale(1); } }
+.node { transition: all .45s ease; opacity:.4; border-radius:10px; padding:10px 12px; text-align:center; border:2px solid #DDD3C1; background:#FAF7F2; font-size:13px; font-weight:600; color:#3D3229; }
+.node.active { opacity:1; transform:scale(1.08); border-color:#A8906C; background:#F3EDDF; box-shadow:0 4px 14px rgba(139,115,85,.35); }
+.node.done { opacity:.95; border-color:#5D8A66; background:#EFF5F0; }
+.pulse { animation: pulse 1.6s ease infinite; }
+@keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(168,144,108,.45);} 50% { box-shadow:0 0 0 10px rgba(168,144,108,0);} }
+.step-line { padding:6px 12px; border-left:3px solid #A8906C; margin:6px 0; background:#F0EBE2; border-radius:0 8px 8px 0; }
+.bar-anim { transition: height .6s ease, background .4s ease; border-radius:6px 6px 0 0; }
+.fill-anim { transition: width .8s ease; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { ConfigProvider, theme, Layout, Tabs, Typography, Card, Tag, Table, Space, Button, Row, Col, Divider, Alert, Statistic, Flex, Slider, Switch } = antd;
+const { Title, Text, Paragraph } = Typography;
+const { useState, useEffect, useRef } = React;
+
+const C = {
+  gold: '#A8906C', goldDark: '#8B7355', goldLight: '#C4B49A',
+  bg: '#F5F0E8', surface: '#EDE8DF', surface2: '#E5DFD4', surface3: '#F0EBE2',
+  border: '#DDD3C1', borderDark: '#C4B49A',
+  text: '#3D3229', text2: '#5C4F42', text3: '#7A6E62',
+  white: '#FAF7F2',
+  green: '#5D8A66', greenBg: '#EFF5F0',
+  red: '#B85C5C', redBg: '#F5ECEA',
+  purple: '#7B6B8A', purpleBg: '#F0ECF3',
+  blue: '#5B7A9E', blueBg: '#ECF0F5',
+  cyan: '#5B8A8A', cyanBg: '#ECF2F2',
+};
+const fmt = (n) => Math.round(n).toLocaleString('en-US');
+const fmt2 = (n) => (Math.round(n*100)/100).toLocaleString('en-US');
+const Stars = ({n}) => <span>{'⭐'.repeat(n)}</span>;
+const Pop = ({v, color, prefix, suffix, f}) => <span key={String(v)} className="pop" style={{fontWeight:700, color: color||C.goldDark}}>{prefix||''}{(f||fmt)(v)}{suffix||''}</span>;
+const npvOf = (inv, cf, n, r) => { let s = -inv; for(let t=1;t<=n;t++) s += cf/Math.pow(1+r,t); return s; };
+const irrOf = (inv, cf, n) => { let lo=0.0001, hi=1; for(let i=0;i<60;i++){ const mid=(lo+hi)/2; if(npvOf(inv,cf,n,mid)>0) lo=mid; else hi=mid; } return (lo+hi)/2; };
+
+/* ============================================================
+   TAB 0 — ปูพื้นก่อน
+   ============================================================ */
+const TimeMachine = () => {
+  const [amt, setAmt] = useState(100);
+  const [rate, setRate] = useState(10);
+  const [yrs, setYrs] = useState(5);
+  const fv = amt*Math.pow(1+rate/100, yrs);
+  const pv = amt/Math.pow(1+rate/100, yrs);
+  const H = 120, max = Math.max(fv, amt)*1.1;
+  const bar = (v, color, label, val) => (
+    <div style={{textAlign:'center', width:110}}>
+      <div style={{height:H, display:'flex', alignItems:'end', justifyContent:'center'}}>
+        <div className="bar-anim" style={{width:56, height:Math.max(6, v/max*H), background:color}}/>
+      </div>
+      <Text strong style={{color}}>{label}</Text><br/>
+      <Text className="pop" key={val} strong style={{color:C.text}}>{val}</Text>
+    </div>
+  );
+  return (
+    <Card size="small" style={{background:C.white, borderColor:C.borderDark}}
+      title={<Text strong style={{color:C.text}}>⏳ ไทม์แมชชีนการเงิน — เงินก้อนเดียวกัน คนละเวลา ค่าไม่เท่ากัน</Text>}>
+      <Row gutter={16} align="middle">
+        <Col xs={24} md={10}>
+          <Text style={{color:C.text2}}>เงินวันนี้: <Pop v={amt} prefix="฿"/></Text>
+          <Slider min={50} max={500} step={10} value={amt} onChange={setAmt}/>
+          <Text style={{color:C.text2}}>ดอกเบี้ย/อัตราคิดลด: <Pop v={rate} suffix="%"/> ต่อปี</Text>
+          <Slider min={1} max={20} value={rate} onChange={setRate}/>
+          <Text style={{color:C.text2}}>ระยะเวลา: <Pop v={yrs}/> ปี</Text>
+          <Slider min={1} max={15} value={yrs} onChange={setYrs}/>
+        </Col>
+        <Col xs={24} md={14}>
+          <Flex gap={18} justify="center" align="end">
+            {bar(pv, C.purple, `฿${fmt2(amt)} ในอีก ${yrs} ปี`, `มีค่าวันนี้ ฿${fmt2(pv)}`)}
+            {bar(amt, C.gold, 'เงินวันนี้', `฿${fmt2(amt)}`)}
+            {bar(fv, C.green, `ฝากไว้ ${yrs} ปี`, `โตเป็น ฿${fmt2(fv)}`)}
+          </Flex>
+        </Col>
+      </Row>
+      <Alert style={{marginTop:12}} type="info" message={<span>
+        มองไปข้างหน้า = <Text strong>ทบต้น</Text> (×(1+r)ⁿ) | ดึงกลับมาปัจจุบัน = <Text strong>คิดลด</Text> (÷(1+r)ⁿ) —
+        ตาราง PV ในข้อสอบก็คือค่า "1 ÷ (1+r)ⁿ" คำนวณไว้ให้แล้วนั่นเอง เช่น r 10%, 3 ปี → 0.751</span>}/>
+    </Card>
+  );
+};
+
+const vocab = [
+  {key:1, w:'Capital investment decision', m:'ตัดสินใจลงเงินก้อนใหญ่วันนี้ (ซื้อเครื่องจักร สร้างโรงงาน) แลกกระแสเงินสดที่ทยอยกลับมาหลายปี'},
+  {key:2, w:'Time value of money (TVM)', m:'เงิน 100 วันนี้ > เงิน 100 ปีหน้า เพราะเอาไปลงทุนต่อได้ — หัวใจของทั้งบท'},
+  {key:3, w:'Present value (PV) / Discounting', m:'การ "ดึงเงินอนาคตกลับมาตีค่าเป็นวันนี้" ด้วยการหารด้วย (1+r)ⁿ'},
+  {key:4, w:'Annuity', m:'กระแสเงินสดเท่ากันทุกปี — ใช้ตาราง annuity คูณทีเดียวแทนการคิดลดทีละปี'},
+  {key:5, w:'Cost of capital / Hurdle rate', m:'ต้นทุนของเงินที่เอามาลงทุน = อัตราขั้นต่ำที่โครงการต้องทำให้ได้'},
+  {key:6, w:'NPV', m:'PV ของเงินเข้าทั้งหมด − เงินลงทุน = "ความรวยที่เพิ่มขึ้น" เป็นเงินวันนี้'},
+  {key:7, w:'IRR', m:'อัตราผลตอบแทนที่ทำให้ NPV = 0 พอดี = "ดอกเบี้ยที่โครงการนี้จ่ายเรา"'},
+  {key:8, w:'Payback period', m:'กี่ปีถึงได้เงินลงทุนคืนครบ — ง่ายแต่ไม่สน TVM และไม่สนเงินหลังคืนทุน'},
+  {key:9, w:'Accounting rate of return (ARR)', m:'กำไรสุทธิเฉลี่ย ÷ เงินลงทุน — ตัวเดียวในบทที่ใช้ "กำไรบัญชี" ไม่ใช่กระแสเงินสด'},
+  {key:10, w:'Mutually exclusive projects', m:'โครงการที่เลือกได้อันเดียว (แข่งกันเอง) — ต้องจัดอันดับ ไม่ใช่แค่ผ่านเกณฑ์'},
+];
+
+const BasicsTab = () => (
+  <div>
+    <Card className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border}}
+      title={<Text strong style={{color:C.text}}>🤔 บทนี้ตอบคำถามอะไร?</Text>}>
+      <Paragraph style={{color:C.text}}>
+        ทุกบริษัทเจอโจทย์เดียวกัน: <strong>"มีเงินก้อน ควรทุ่มลงโครงการไหน?"</strong> ซื้อเครื่องจักรใหม่ $1.75M คุ้มไหม?
+        ระบบคอมพิวเตอร์ $3M ให้ผลตอบแทนเท่าไร? บทนี้ให้เครื่องมือวัด 4 ตัว — 2 ตัวง่าย (Payback, ARR)
+        และ 2 ตัวเทพ (NPV, IRR) ที่คิดเรื่อง "เวลา" ของเงินด้วย
+      </Paragraph>
+      <Card size="small" style={{background:C.greenBg, borderColor:C.green}}>
+        <Text strong style={{color:C.green}}>ไอเดียเดียวที่ต้องเก็ตก่อนเริ่ม:</Text><br/>
+        <Text style={{color:C.text, fontSize:16}}>เงิน 100 บาทวันนี้ มีค่ามากกว่า 100 บาทปีหน้า — เพราะเอาไปฝาก/ลงทุนต่อได้
+        ดังนั้นจะเทียบเงินคนละปี ต้อง "ดึงทุกก้อนกลับมาเป็นค่าวันนี้" ก่อนเสมอ</Text>
+      </Card>
+    </Card>
+    <div className="fadein" style={{animationDelay:'0.1s'}}><TimeMachine/></div>
+    <Card className="fadein" style={{marginTop:16, marginBottom:16, background:C.white, borderColor:C.border, animationDelay:'0.2s'}}
+      title={<Text strong style={{color:C.text}}>📖 ศัพท์ที่ต้องรู้ (10 คำ)</Text>}>
+      <Table size="small" pagination={false} columns={[
+        {title:'คำศัพท์', dataIndex:'w', key:'w', width:260, render:t=><Text strong style={{color:C.goldDark}}>{t}</Text>},
+        {title:'ความหมายแบบบ้าน ๆ', dataIndex:'m', key:'m'},
+      ]} dataSource={vocab}/>
+    </Card>
+    <Card className="fadein" style={{background:C.white, borderColor:C.border, animationDelay:'0.3s'}}
+      title={<Text strong style={{color:C.text}}>🧭 แผนที่บท + การบ้าน 4 ข้อ</Text>}>
+      <Table size="small" pagination={false} columns={[
+        {title:'เครื่องมือ', dataIndex:'t', key:'t'},
+        {title:'นิสัย', dataIndex:'n', key:'n'},
+        {title:'โจทย์', dataIndex:'h', key:'h'},
+      ]} dataSource={[
+        {key:1, t:'Payback', n:'ง่าย เร็ว ไม่สนเวลาเงิน', h:'ข้อ 1 (Mistral), ข้อ 4A'},
+        {key:2, t:'ARR', n:'ใช้กำไรบัญชี ไม่ใช่เงินสด', h:'ข้อ 2 (Brenning), ข้อ 4B'},
+        {key:3, t:'NPV', n:'ราชาของบท — วัดความรวยที่เพิ่มเป็นเงินวันนี้', h:'ข้อ 3A (Durrel), ข้อ 4C'},
+        {key:4, t:'IRR', n:'% ผลตอบแทนของโครงการ เทียบกับ hurdle rate', h:'ข้อ 3B, ข้อ 4D'},
+      ]}/>
+    </Card>
+  </div>
+);
+
+/* ============================================================
+   TAB 1 — สรุปเนื้อหา
+   ============================================================ */
+const flowNodes = [
+  {t:'1. คัดกรองโครงการ', d:'โครงการ independent (รับได้หลายอัน ถ้าผ่านเกณฑ์) หรือ mutually exclusive (เลือกได้อันเดียว ต้องจัดอันดับ)', icon:'📋'},
+  {t:'2. ประมาณกระแสเงินสด', d:'เงินลงทุนวันนี้ + เงินสดรับสุทธิรายปี — ระวัง: ใช้ "เงินสด" ไม่ใช่กำไรบัญชี (ยกเว้น ARR)', icon:'💵'},
+  {t:'3. คิดลดกลับมาวันนี้', d:'ใช้ cost of capital เป็นอัตราคิดลด — เงินปีไหน ๆ ก็เทียบกันได้บนไม้บรรทัดเดียว', icon:'⏳'},
+  {t:'4. ตัดสินด้วยเกณฑ์', d:'NPV ≥ 0 รับ | IRR ≥ hurdle รับ | payback/ARR ใช้เป็นตัวคัดกรองเสริม', icon:'⚖️'},
+  {t:'5. Postaudit ตามผล', d:'ลงทุนแล้วต้องกลับมาเทียบของจริงกับที่ประมาณไว้ — สร้างวินัยให้คนเสนอโครงการไม่โม้ตัวเลข', icon:'🔍'},
+];
+const FlowAnimation = () => {
+  const [step, setStep] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const timer = useRef(null);
+  useEffect(() => {
+    if (playing) {
+      timer.current = setInterval(() => setStep(s => {
+        if (s >= flowNodes.length-1) { setPlaying(false); return s; }
+        return s+1;
+      }), 1600);
+    }
+    return () => clearInterval(timer.current);
+  }, [playing]);
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🎬 กระบวนการตัดสินใจลงทุน 5 ขั้น (กด Play)</Text>}>
+      <Flex gap={8} style={{marginBottom:12}}>
+        <Button type="primary" className={playing?'':'pulse'} disabled={playing} onClick={()=>{setStep(0); setPlaying(true);}}>▶ Play</Button>
+        <Button onClick={()=>{setPlaying(false); setStep(-1);}}>รีเซ็ต</Button>
+        <Button onClick={()=>{setPlaying(false); setStep(flowNodes.length-1);}}>แสดงทั้งหมด</Button>
+      </Flex>
+      <Row gutter={[8,8]}>
+        {flowNodes.map((n,i)=>(
+          <Col xs={12} md={i<3?8:12} key={i}>
+            <div className={'node' + (i===step?' active':'') + (i<step?' done':'')}>
+              <div style={{fontSize:20}}>{n.icon}</div>{n.t}
+            </div>
+          </Col>
+        ))}
+      </Row>
+      <div style={{minHeight:56, marginTop:12}}>
+        {step>=0
+          ? <Alert type="info" message={<span><Text strong>{flowNodes[step].icon} {flowNodes[step].t}: </Text>{flowNodes[step].d}</span>}/>
+          : <Alert type="warning" message="Capital budgeting = กระบวนการวางแผนลงทุนระยะยาว — เงินก้อนใหญ่ ผูกพันหลายปี แก้ตัวยาก จึงต้องมีเครื่องมือวัดที่ดี"/>}
+      </div>
+    </Card>
+  );
+};
+
+/* ---------- ตารางเทียบ 4 เครื่องมือ (คลิกหัวคอลัมน์เพื่อโฟกัส) ---------- */
+const mMeta = [
+  {k:'pb', name:'Payback', color:C.blue},
+  {k:'arr', name:'ARR', color:C.cyan},
+  {k:'npv', name:'NPV', color:C.green},
+  {k:'irr', name:'IRR', color:C.purple},
+];
+const mAspects = [
+  {a:'📐 สูตร', pb:'เงินลงทุน ÷ เงินสดรับ/ปี (ถ้าไม่เท่ากันทุกปี: นับสะสมทีละปี)', arr:'กำไรสุทธิเฉลี่ย ÷ เงินลงทุนเริ่มแรก', npv:'PV ของเงินสดรับทั้งหมด − เงินลงทุน', irr:'อัตราที่ทำให้ NPV = 0 (เทียบ discount factor กับตาราง)'},
+  {a:'💰 ใช้อะไรวัด', pb:'กระแสเงินสด', arr:'กำไรบัญชี (net income) — ตัวเดียวของบท!', npv:'กระแสเงินสด', irr:'กระแสเงินสด'},
+  {a:'⏳ คิดค่าเวลาเงินไหม', pb:'❌ ไม่คิด', arr:'❌ ไม่คิด', npv:'✅ คิด', irr:'✅ คิด'},
+  {a:'✅ เกณฑ์รับโครงการ', pb:'สั้นกว่าเกณฑ์บริษัท = ผ่าน', arr:'สูงกว่าเกณฑ์บริษัท = ผ่าน', npv:'NPV ≥ 0 = รับ (เพิ่มความมั่งคั่ง)', irr:'IRR ≥ cost of capital = รับ'},
+  {a:'⚠️ จุดอ่อน', pb:'มองข้ามเงินหลังคืนทุน + ไม่สน TVM (ข้อ 1b: เงินปี 5 อีก 150,000 ไม่ถูกนับเลย)', arr:'กำไรบัญชีถูกปรุงแต่งได้ + ไม่สน TVM', npv:'ต้องรู้ cost of capital ที่แม่น', irr:'หลายโครงการขนาด/จังหวะต่างกัน อาจชี้คนละทางกับ NPV'},
+  {a:'🧪 ในการบ้าน', pb:'Mistral: 5 ปี (even) / 3.5 ปี (uneven) · Aragon 6.23 ปี', arr:'Brenning 22.9% · Aragon 6.07%', npv:'Durrel: A 19,400 > B 16,561 → เลือก A · Aragon −7,240 → ปฏิเสธ', irr:'Durrel: B ~10% > A ~9% → เลือก B (ขัดกับ NPV!) · Aragon ~ต่ำกว่า 10%'},
+];
+const MethodCompare = () => {
+  const [focus, setFocus] = useState(null);
+  const cols = [
+    {title:<Text strong style={{color:C.text2}}>ประเด็น</Text>, dataIndex:'a', key:'a', width:140,
+      render:t=><Text strong style={{color:C.text2}}>{t}</Text>},
+    ...mMeta.map(m => ({
+      title: <span style={{cursor:'pointer', fontWeight:700, color: focus===m.k?'#FAF7F2':m.color,
+          background: focus===m.k?m.color:'transparent', padding:'2px 8px', borderRadius:6, transition:'all .3s'}}
+          onClick={()=>setFocus(focus===m.k?null:m.k)}>{m.name}</span>,
+      dataIndex:m.k, key:m.k,
+      onCell: () => ({style:{ background: focus===m.k ? C.surface3 : undefined,
+        opacity: focus && focus!==m.k ? .3 : 1, transition:'all .3s', fontSize:13}}),
+    })),
+  ];
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>🆚 เทียบ 4 เครื่องมือในตารางเดียว — คลิกหัวคอลัมน์เพื่อโฟกัส</Text>}>
+      <Table size="small" pagination={false} columns={cols} scroll={{x:760}}
+        dataSource={mAspects.map((r,i)=>({...r, key:i}))}/>
+      <Alert style={{marginTop:10}} type="warning" message={<span><Text strong>ประโยคทองของบท: </Text>ถ้า NPV กับ IRR ขัดกัน (โครงการ mutually exclusive) — <Text strong>เชื่อ NPV</Text> เพราะวัดเป็น "จำนวนเงินความมั่งคั่ง" ตรง ๆ และสมมติ reinvest ที่ cost of capital ซึ่งสมจริงกว่า</span>}/>
+    </Card>
+  );
+};
+
+const summaryData = [
+  {
+    key:'pb', title:'⏱️ Payback Period — เร็วแค่ไหนถึงคืนทุน', tags:[['ข้อ 1, 4A','blue']],
+    content: () => (
+      <div>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.blueBg, borderColor:C.blue, height:'100%'}}>
+            <Text strong style={{color:C.blue}}>เงินสดเท่ากันทุกปี</Text><br/>
+            <Text style={{color:C.text}}>Payback = เงินลงทุน ÷ เงินสดรับต่อปี<br/>Mistral (a): 1,750,000 ÷ 350,000 = <strong>5 ปี</strong></Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.purpleBg, borderColor:C.purple, height:'100%'}}>
+            <Text strong style={{color:C.purple}}>เงินสดไม่เท่ากัน</Text><br/>
+            <Text style={{color:C.text}}>นับสะสมทีละปีจนครบทุน: 275+420+820 = 1,515 (3 ปี) ขาดอีก 235 จากปี 4 (470) → 3 + 235/470 = <strong>3.5 ปี</strong></Text>
+          </Card></Col>
+        </Row>
+        <Alert style={{marginTop:8}} type="error" message="จุดอ่อนที่ข้อสอบชอบถาม: ไม่สนใจเงินหลังจุดคืนทุน (เงินปี 5 อีก 150,000 ของ Mistral ไม่มีผลต่อคำตอบเลย) และไม่สน TVM"/>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginTop:8}}>
+          <Text strong style={{color:C.text2}}>แล้วทำไมยังใช้กันอยู่? (สไลด์ 14–15): </Text>
+          <Text style={{color:C.text}}>payback เป็นตัววัดความเสี่ยงหยาบ ๆ — คืนทุนช้า = เสี่ยงนาน บริษัทจึงตั้ง "เพดาน payback" คัดโครงการ · บริษัทสภาพคล่องตึงอยากได้เงินคืนไว · อุตสาหกรรมของตกรุ่นเร็ว (เช่น คอมพิวเตอร์) ยิ่งต้องคืนทุนเร็ว — ใช้เป็นตัวกรองชั้นแรก แล้วตัดสินจริงด้วย NPV</Text><br/>
+          <Text style={{color:C.text3}}>ตัวอย่างตำรา (CS 14.1): ลงทุน 100,000 — even 50,000/ปี → 2 ปี | uneven 30/40/50/60/70 → สะสม 2 ปีได้ 70,000 ขาด 30,000 จากปี 3 (50,000) → 2.6 ปี</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'arr', title:'📒 Accounting Rate of Return — ตัวเดียวที่ใช้ "กำไร" ไม่ใช่ "เงินสด"', tags:[['ข้อ 2, 4B','cyan']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.cyanBg, borderColor:C.cyan, marginBottom:8}}>
+          <Text style={{color:C.text, fontSize:15}}><strong>ARR = กำไรสุทธิเฉลี่ย ÷ เงินลงทุนเริ่มแรก</strong></Text><br/>
+          <Text style={{color:C.text}}>Brenning: เฉลี่ย = (475+375+650+900+920+800)÷6 = 686,666.67 → ARR = 686,666.67 ÷ 3,000,000 = <strong>22.9%</strong></Text>
+        </Card>
+        <Paragraph style={{color:C.text}}>
+          จุดแยกแยะสำคัญ: โจทย์ให้ "net income" = ARR | โจทย์ให้ "cash flow" = payback/NPV/IRR —
+          ถ้าให้เงินสดแต่ถาม ARR ต้องหักค่าเสื่อมก่อน (ข้อ 4B: 90,000 − 56,000 = 34,000 → 34,000 ÷ 560,290 = <strong>6.07%</strong>)
+        </Paragraph>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginBottom:8}}>
+          <Text strong style={{color:C.text2}}>ตัวอย่างตำรา (CS 14.2): </Text>
+          <Text style={{color:C.text}}>ลงทุน 100,000 อายุ 5 ปี ค่าเสื่อมปีละ 20,000 · เงินสดรับ 50/50/60/50/70 (พัน) → กำไร = 30/30/40/30/50 → เฉลี่ย 36,000 → ARR = 36,000 ÷ 100,000 = <strong>36%</strong></Text>
+        </Card>
+        <Alert type="error" message={<span><Text strong>ข้อเสียเพิ่มจากสไลด์ 19–20 (ออกทฤษฎีได้): </Text>นอกจากไม่คิด TVM แล้ว ARR ยังพึ่ง "กำไรบัญชี" ซึ่งเป็นตัวเลขที่ผู้จัดการปั้นแต่งได้ง่ายที่สุด และโบนัสผู้จัดการมักผูกกับกำไร → จูงใจให้เลือกโครงการที่บวมกำไรระยะสั้น ไม่ใช่โครงการที่ดีต่อบริษัท</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'npv', title:'👑 NPV — ราชาของบท', tags:[['ข้อ 3A, 4C','green'],['ออกทุกครั้ง','volcano']],
+    content: () => (
+      <div>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginBottom:8}}>
+          <Text style={{color:C.text, fontSize:15}}><strong>NPV = Σ [CF ÷ (1+r)ᵗ] − เงินลงทุน</strong> — ใช้ตาราง PV (เงินก้อนเดียว) หรือตาราง annuity (เงินเท่ากันทุกปี)</Text>
+        </Card>
+        <Table size="small" pagination={false} columns={[
+          {title:'', dataIndex:'a', key:'a'},
+          {title:'Project A (285,000 ปี 3)', dataIndex:'b', key:'b', align:'right'},
+          {title:'Project B (88,500 × 3 ปี)', dataIndex:'c', key:'c', align:'right'},
+        ]} dataSource={[
+          {key:1, a:'PV ของเงินรับ @6%', b:'285,000 × 0.840 = 239,400', c:'88,500 × 2.673 = 236,560.50'},
+          {key:2, a:'− เงินลงทุน', b:'(220,000)', c:'(220,000)'},
+          {key:3, a:<Text strong>NPV</Text>, b:<Text strong style={{color:C.green}}>$19,400 ✓ ชนะ</Text>, c:<Text strong>$16,560.50</Text>},
+        ]}/>
+        <Alert style={{marginTop:8}} type="info" message={<span>อ่านค่า: NPV = 19,400 แปลว่า "ทำโครงการนี้แล้วรวยขึ้น 19,400 เป็นเงินวันนี้ หลังหักต้นทุนเงินทุน 6% แล้ว" — Aragon ข้อ 4C: 90,000×6.145 − 560,290 = <Text strong>−7,240 → ปฏิเสธ</Text></span>}/>
+        <Card size="small" style={{background:C.greenBg, borderColor:C.green, marginTop:8, marginBottom:8}}>
+          <Text strong style={{color:C.green}}>NPV บวก 1 ตัว บอก 3 เรื่องพร้อมกัน (สไลด์ 25 — ชอบออกทฤษฎี): </Text>
+          <Text style={{color:C.text}}>① เงินลงทุนถูกเก็บคืนครบแล้ว ② ผลตอบแทนขั้นต่ำ (required rate) ได้ครบแล้ว ③ ยังมีส่วนเกินเพิ่มอีกเท่ากับตัวเลข NPV — ดังนั้น NPV = 0 ไม่ใช่ "เจ๊า" แต่คือได้ผลตอบแทนเท่า cost of capital พอดี</Text>
+        </Card>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple, marginBottom:8}}>
+          <Text strong style={{color:C.purple}}>ตัวอย่างตำราขั้นเทพ (CS 14.3) — โจทย์ NPV แบบเต็มสูตรมี 2 ชั้น: ระบุกระแสเงินสดก่อน แล้วค่อยคิดลด</Text>
+          <ul style={{margin:'4px 0'}}>
+            <li><Text style={{color:C.text}}>ปี 0: เครื่องจักร 320,000 + <strong>เงินทุนหมุนเวียน (working capital) 40,000</strong> = ออก 360,000</Text></li>
+            <li><Text style={{color:C.text}}>ปี 1–4: รายรับ 300,000 − ค่าใช้จ่าย 180,000 = เข้า 120,000/ปี</Text></li>
+            <li><Text style={{color:C.text}}>ปี 5: 120,000 + <strong>ซาก (salvage) 40,000 + ได้เงินทุนหมุนเวียนคืน 40,000</strong> = เข้า 200,000</Text></li>
+            <li><Text style={{color:C.text}}>คิดลดที่ 12% → NPV = <strong>$117,968</strong> → รับ</Text></li>
+          </ul>
+          <Text style={{color:C.text3}}>จุดที่คนลืม: working capital ลงทุนปี 0 และ "ได้คืน" ปีสุดท้าย / ซากบวกเข้าปีสุดท้าย — สองตัวนี้คือไส้ในที่ข้อสอบยากชอบใส่</Text>
+        </Card>
+        <Alert type="warning" message={<span><Text strong>เลือกอัตราคิดลดผิดก็พังได้ (สไลด์ 24): </Text>ผู้บริหารชอบเผื่อความเสี่ยงด้วยการใช้อัตราสูงกว่า cost of capital — ถ้าสูงเกินไปจะลำเอียงเลือกแต่โครงการระยะสั้น เพราะเงินปีไกล ๆ โดนหารจนแทบไม่เหลือค่า</span>}/>
+      </div>
+    )
+  },
+  {
+    key:'irr', title:'🎯 IRR — โครงการนี้จ่ายดอกเบี้ยเรากี่ %', tags:[['ข้อ 3B, 4D','purple']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>วิธีหาแบบใช้ตาราง (โจทย์ระดับนี้ให้เงินรับก้อนเดียวหรือ annuity):</Paragraph>
+        <div className="step-line"><Text style={{color:C.text}}><Text strong style={{color:C.goldDark}}>เงินก้อนเดียว (A): </Text>df = 220,000 ÷ 285,000 = 0.772 → เปิดตาราง PV แถว 3 ปี: 8% = 0.794, 10% = 0.751 → IRR อยู่ระหว่าง ≈ <strong>9%</strong></Text></div>
+        <div className="step-line"><Text style={{color:C.text}}><Text strong style={{color:C.goldDark}}>Annuity (B): </Text>af = 220,000 ÷ 88,500 = 2.486 → ตาราง annuity แถว 3 ปี: 10% = 2.487 → IRR ≈ <strong>10%</strong></Text></div>
+        <div className="step-line"><Text style={{color:C.text}}><Text strong style={{color:C.goldDark}}>Aragon (4D): </Text>af = 560,290 ÷ 90,000 = 6.225 → แถว 10 ปี: 10% = 6.145 → IRR <strong>ต่ำกว่า 10% เล็กน้อย</strong> (สอดคล้อง NPV ติดลบ) → ไม่ผ่านเกณฑ์</Text></div>
+        <Alert style={{marginTop:8}} type="error" message={<span><Text strong>ไฮไลต์ข้อ 3 — NPV กับ IRR ขัดกัน! </Text>NPV เลือก A (19,400 &gt; 16,561) แต่ IRR เลือก B (10% &gt; 9%) เพราะ B ได้เงินกลับเร็วกว่า → ตำราชี้ขาด: <Text strong>เชื่อ NPV เลือก A</Text></span>}/>
+        <Card size="small" style={{background:C.surface3, borderColor:C.borderDark, marginTop:8}}>
+          <Text strong style={{color:C.text2}}>ตัวอย่างตำรา (CS 14.4 — โรงพยาบาลซื้อเครื่องอัลตราซาวด์): </Text>
+          <Text style={{color:C.text}}>ลงทุน 205,570.50 รับปีละ 50,000 นาน 6 ปี → df = 205,570.50 ÷ 50,000 = 4.11141 → เปิดตาราง annuity แถว 6 ปี เจอพอดีที่ช่อง <strong>12% → IRR = 12% เป๊ะ</strong> (โจทย์ตำราตั้งเลขให้ลงตัว ต่างจากข้อ 4 ของเราที่ต้องบอกเป็นช่วง)</Text>
+        </Card>
+      </div>
+    )
+  },
+  {
+    key:'post', title:'🔍 LO-5: Postaudit — ลงทุนแล้วต้องกลับมาตรวจการบ้าน', tags:[['ทฤษฎีจากสไลด์','blue']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>
+          <strong>Postaudit</strong> = ตามไปเทียบ "ผลจริง vs ที่ประมาณไว้ตอนขออนุมัติ" ทั้งฝั่งประโยชน์และต้นทุนดำเนินงาน แล้วเสนอทางแก้ถ้าหลุดเป้า
+        </Paragraph>
+        <Row gutter={12}>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.greenBg, borderColor:C.green, height:'100%'}}>
+            <Text strong style={{color:C.green}}>ประโยชน์</Text><br/>
+            <Text style={{color:C.text}}>① จัดสรรทรัพยากรฉลาดขึ้น — โครงการไม่เวิร์กถูกจับได้ ② เปลี่ยนพฤติกรรมผู้เสนอ: รู้ว่าจะถูกตามตรวจ ก็ไม่กล้าโม้ตัวเลขตอนขอเงิน (ผลเหมือน budgetary slack ใน Ch.9)</Text>
+          </Card></Col>
+          <Col xs={24} md={12}><Card size="small" style={{background:C.redBg, borderColor:C.red, height:'100%'}}>
+            <Text strong style={{color:C.red}}>ข้อจำกัด</Text><br/>
+            <Text style={{color:C.text}}>ทำแล้วมีต้นทุน · สมมติฐานตอนแรกอาจถูกสภาพแวดล้อมเปลี่ยนจนใช้ไม่ได้ · จะเอาผิดผู้จัดการต้องเผื่อใจว่าไม่มีใครพยากรณ์อนาคตได้หมด</Text>
+          </Card></Col>
+        </Row>
+      </div>
+    )
+  },
+  {
+    key:'mutual', title:'⚔️ LO-6: Mutually Exclusive Projects — ทำไม NPV ต้องชนะ IRR', tags:[['ประเด็นชี้ขาดของบท','volcano']],
+    content: () => (
+      <div>
+        <Paragraph style={{color:C.text}}>
+          โครงการอิสระ (independent): NPV กับ IRR ตอบตรงกันเสมอ — ปัญหาเกิดเฉพาะตอน "เลือกได้อันเดียว" (mutually exclusive) ด้วยเหตุผล 2 ชั้น:
+        </Paragraph>
+        <div className="step-line"><Text style={{color:C.text}}><Text strong style={{color:C.goldDark}}>① สมมติฐาน reinvest ต่างกัน: </Text>NPV สมมติเงินที่ได้ระหว่างทางถูกนำไปลงทุนต่อที่ required rate (สมจริง) แต่ IRR สมมติ reinvest ที่อัตรา IRR เอง (มองโลกดีเกิน — โครงการ IRR 20% ไม่ได้แปลว่าหาที่ลงเงิน 20% ได้เรื่อย ๆ)</Text></div>
+        <div className="step-line"><Text style={{color:C.text}}><Text strong style={{color:C.goldDark}}>② เงินจริง vs เปอร์เซ็นต์: </Text>ความมั่งคั่งของผู้ถือหุ้นวัดเป็น "จำนวนเงินสัมบูรณ์" ไม่ใช่ % — โครงการเล็ก IRR สูงอาจสร้างเงินน้อยกว่าโครงการใหญ่ IRR ต่ำกว่า</Text></div>
+        <Card size="small" style={{background:C.purpleBg, borderColor:C.purple, marginTop:8, marginBottom:8}}>
+          <Text strong style={{color:C.purple}}>ตัวอย่างตำราที่เด็ดมาก (CS 14.5 — ระบบบำบัดมลพิษ Design A vs B, r = 12%):</Text>
+          <Table size="small" pagination={false} columns={[
+            {title:'', dataIndex:'a', key:'a'},
+            {title:'Design A', dataIndex:'b', key:'b', align:'right'},
+            {title:'Design B', dataIndex:'c', key:'c', align:'right'},
+          ]} dataSource={[
+            {key:1, a:'ลงทุน / CF ต่อปี (5 ปี)', b:'(180,000) / 60,000', c:'(210,000) / 70,000'},
+            {key:2, a:'IRR (df = 3.00000)', b:'≈ 20%', c:'≈ 20%'},
+            {key:3, a:'NPV @12% (af 3.60478)', b:'$36,287', c:<Text strong style={{color:C.green}}>$42,335 ✓</Text>},
+          ]}/>
+          <Text style={{color:C.text}}>IRR เท่ากันเป๊ะทั้งคู่ — <strong>ตัดสินไม่ได้เลย!</strong> แต่ NPV ชี้ชัดว่า B สร้างเงินมากกว่า 6,048 → เลือก B — สามขั้นตอนตามตำรา: ① เขียน cash flow แต่ละโครงการ ② คิด NPV ทุกตัว ③ เลือก NPV สูงสุด</Text>
+        </Card>
+        <Alert type="info" message={<span><Text strong>โลกโรงงานอัตโนมัติ (สไลด์ 50–51): </Text>ลงทุนระบบ automation ต้องนับต้นทุนแฝง (ซอฟต์แวร์ วิศวกรรม ฝึกอบรม การติดตั้ง) และประโยชน์จับต้องยาก (lead time สั้นลง ความน่าเชื่อถือ ความพอใจลูกค้า) — ถ้านับแต่ของที่วัดง่าย NPV จะติดลบทั้งที่โครงการดี</span>}/>
+      </div>
+    )
+  },
+];
+
+const SummaryTab = () => (
+  <div>
+    <FlowAnimation/>
+    <MethodCompare/>
+    {summaryData.map((s,i) => (
+      <Card key={s.key} className="fadein" style={{marginBottom:16, background:C.white, borderColor:C.border, animationDelay:`${i*0.08}s`}}
+        title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text>{s.tags.map((t,j)=><Tag key={j} color={t[1]}>{t[0]}</Tag>)}</Space>}>
+        {s.content()}
+      </Card>
+    ))}
+  </div>
+);
+
+/* ============================================================
+   TAB 2 — ห้องทดลอง
+   ============================================================ */
+const PaybackLab = () => {
+  const [inv, setInv] = useState(1750000);
+  const [cf, setCf] = useState(350000);
+  const pb = cf>0 ? inv/cf : Infinity;
+  const years = Math.min(10, Math.ceil(pb));
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>⏱️ Lab 1: Payback — ถังเงินลงทุนค่อย ๆ เต็ม (ค่าเริ่มต้น = Mistral a)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={10}>
+          <Text style={{color:C.text2}}>เงินลงทุน: $<Pop v={inv}/></Text>
+          <Slider min={200000} max={3000000} step={50000} value={inv} onChange={setInv}/>
+          <Text style={{color:C.text2}}>เงินสดรับต่อปี: $<Pop v={cf} color={C.green}/></Text>
+          <Slider min={50000} max={1000000} step={10000} value={cf} onChange={setCf}/>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold, marginTop:8}}>
+            <Text strong style={{fontSize:18, color:C.goldDark}}>Payback = </Text>
+            <span key={pb} className="pop" style={{fontSize:24, fontWeight:700, color:C.goldDark}}>{isFinite(pb)?fmt2(pb):'—'}</span>
+            <Text strong style={{fontSize:16, color:C.goldDark}}> ปี</Text>
+          </Card>
+        </Col>
+        <Col xs={24} md={14}>
+          {[...Array(years)].map((_,i)=>{
+            const filled = Math.max(0, Math.min(1, pb - i >= 1 ? 1 : pb - i));
+            return (
+              <Flex key={i} align="center" gap={8} style={{marginBottom:4}}>
+                <Text style={{width:36, color:C.text3}}>ปี {i+1}</Text>
+                <div style={{flex:1, height:20, background:C.surface2, borderRadius:10, overflow:'hidden'}}>
+                  <div className="fill-anim" style={{width:`${filled*100}%`, height:'100%', background: filled===1?C.green:C.gold}}/>
+                </div>
+                <Text style={{width:90, color:C.text3, fontSize:12}}>{filled===1?'คืนแล้วครบปี':filled>0?`คืนครบที่ ${fmt2((i+filled))} ปี`:''}</Text>
+              </Flex>
+            );
+          })}
+          <Alert style={{marginTop:8}} type="info" message="ลองลดเงินสดรับ/ปี ดูจำนวนแถบที่ต้องใช้เพิ่มขึ้น — และสังเกตว่าไม่ว่าปีหลังคืนทุนจะมีเงินอีกเท่าไร แถบนี้ไม่เคยสนใจ (จุดอ่อนของ payback)"/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const NPVLab = () => {
+  const [inv, setInv] = useState(560290);
+  const [cf, setCf] = useState(90000);
+  const [yrs, setYrs] = useState(10);
+  const [rate, setRate] = useState(10);
+  const r = rate/100;
+  const npv = npvOf(inv, cf, yrs, r);
+  const irr = irrOf(inv, cf, yrs);
+  // curve
+  const W=440, H=260, ml=64, mr=12, mt=12, mb=32;
+  const iw=W-ml-mr, ih=H-mt-mb;
+  const rmax = 0.24;
+  const pts = [];
+  let ymin=Infinity, ymax=-Infinity;
+  for(let i=0;i<=24;i++){ const rr=i/100; const v=npvOf(inv,cf,yrs,rr); pts.push([rr,v]); ymin=Math.min(ymin,v); ymax=Math.max(ymax,v); }
+  const pad=(ymax-ymin)*0.1; ymin-=pad; ymax+=pad;
+  const X = rr => ml + rr/rmax*iw;
+  const Y = v => mt + (1-(v-ymin)/(ymax-ymin))*ih;
+  const path = pts.map((p,i)=>`${i?'L':'M'}${X(p[0])},${Y(p[1])}`).join(' ');
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>👑 Lab 2: เครื่อง NPV/IRR — เห็นเส้นโค้ง NPV กับจุด IRR ด้วยตาตัวเอง (ค่าเริ่มต้น = Aragon ข้อ 4)</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={10}>
+          <Text style={{color:C.text2}}>เงินลงทุน: $<Pop v={inv}/></Text>
+          <Slider min={100000} max={1000000} step={10000} value={inv} onChange={setInv}/>
+          <Text style={{color:C.text2}}>เงินสดรับ/ปี: $<Pop v={cf} color={C.green}/></Text>
+          <Slider min={20000} max={200000} step={5000} value={cf} onChange={setCf}/>
+          <Text style={{color:C.text2}}>อายุโครงการ: <Pop v={yrs}/> ปี</Text>
+          <Slider min={1} max={15} value={yrs} onChange={setYrs}/>
+          <Text style={{color:C.text2}}>Cost of capital: <Pop v={rate} suffix="%"/></Text>
+          <Slider min={0} max={24} step={0.5} value={rate} onChange={setRate}/>
+          <Row gutter={8} style={{marginTop:8}}>
+            <Col span={12}><Statistic title="NPV" value={fmt(npv)} valueStyle={{fontSize:17, color: npv>=0?C.green:C.red}}/></Col>
+            <Col span={12}><Statistic title="IRR (คำนวณจริง)" value={(irr*100).toFixed(2)+'%'} valueStyle={{fontSize:17, color:C.purple}}/></Col>
+          </Row>
+        </Col>
+        <Col xs={24} md={14}>
+          <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%', background:C.white, borderRadius:10, border:`1px solid ${C.border}`}}>
+            <line x1={ml} y1={Y(0)} x2={W-mr} y2={Y(0)} stroke={C.text3} strokeWidth="1.5"/>
+            <line x1={ml} y1={mt} x2={ml} y2={H-mb} stroke={C.text3} strokeWidth="1.5"/>
+            {[0,0.06,0.12,0.18,0.24].map((t,i)=><text key={i} x={X(t)} y={H-mb+16} fontSize="10" fill={C.text3} textAnchor="middle">{Math.round(t*100)}%</text>)}
+            <path d={path} fill="none" stroke={C.gold} strokeWidth="3"/>
+            {irr<=rmax && <g>
+              <circle cx={X(irr)} cy={Y(0)} r="6" fill={C.purple}/>
+              <text x={X(irr)} y={Y(0)-10} fontSize="11" fontWeight="700" fill={C.purple} textAnchor="middle">IRR = {(irr*100).toFixed(1)}%</text>
+            </g>}
+            <line x1={X(r)} y1={mt} x2={X(r)} y2={H-mb} stroke={C.blue} strokeWidth="1" strokeDasharray="4 3"/>
+            <circle cx={X(r)} cy={Y(npv)} r="6" fill={npv>=0?C.green:C.red}/>
+            <text x={X(r)+8} y={Y(npv)+4} fontSize="11" fontWeight="700" fill={npv>=0?C.green:C.red}>NPV {fmt(npv)}</text>
+          </svg>
+          <Alert style={{marginTop:8}} type={npv>=0?'success':'error'} message={npv>=0
+            ? `รับโครงการ — อัตราคิดลด ${rate}% ต่ำกว่า IRR ${(irr*100).toFixed(1)}% (จุดที่เส้นตัดศูนย์)`
+            : `ปฏิเสธ — อัตราคิดลด ${rate}% สูงกว่า IRR ${(irr*100).toFixed(1)}% → NPV ติดลบ (Aragon เจอแบบนี้พอดี: −7,240)`}/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const ConflictLab = () => {
+  const [rate, setRate] = useState(6);
+  const r = rate/100;
+  const npvA = 285000/Math.pow(1+r,3) - 220000;
+  const npvB = (88500/(1+r)) + (88500/Math.pow(1+r,2)) + (88500/Math.pow(1+r,3)) - 220000;
+  const better = npvA>npvB ? 'A' : 'B';
+  return (
+    <Card style={{background:C.white, borderColor:C.borderDark, marginBottom:16}}
+      title={<Text strong style={{color:C.text}}>⚔️ Lab 3: ศึก A vs B (Durrel ข้อ 3) — ทำไม NPV กับ IRR ถึงเถียงกัน</Text>}>
+      <Row gutter={24}>
+        <Col xs={24} md={10}>
+          <Text style={{color:C.text2}}>อัตราคิดลด: <Pop v={rate} suffix="%"/></Text>
+          <Slider min={0} max={14} step={0.5} value={rate} onChange={setRate}/>
+          <Card size="small" style={{background:C.surface3, borderColor:C.gold, marginTop:8}}>
+            <Text style={{color:C.text}}>Project A (285,000 ปีที่ 3): NPV = <Pop v={npvA} color={better==='A'?C.green:C.text2}/></Text><br/>
+            <Text style={{color:C.text}}>Project B (88,500 × 3 ปี): NPV = <Pop v={npvB} color={better==='B'?C.green:C.text2}/></Text><br/>
+            <Divider style={{margin:'8px 0'}}/>
+            <span key={better+rate} className="pop" style={{fontSize:18, fontWeight:700, color:C.goldDark}}>ที่ {rate}% → {better} ชนะ</span>
+          </Card>
+        </Col>
+        <Col xs={24} md={14}>
+          <Flex gap={24} align="end" justify="center" style={{height:170}}>
+            {[['A',npvA,C.blue],['B',npvB,C.purple]].map(([n,v,c])=>(
+              <div key={n} style={{textAlign:'center'}}>
+                <div style={{height:130, display:'flex', alignItems:'end'}}>
+                  <div className="bar-anim" style={{width:70, height:Math.max(4, Math.min(130, Math.abs(v)/40000*130)), background: v>=0?c:C.red, opacity: better===n?1:.45}}/>
+                </div>
+                <Text strong style={{color:c}}>{n}: {fmt(v)}</Text>
+              </div>
+            ))}
+          </Flex>
+          <Alert style={{marginTop:8}} type="info" message={<span>
+            เลื่อนดู: <Text strong>ต่ำกว่า ~7% A ชนะ / สูงกว่า ~7% B ชนะ</Text> — B ได้เงินเร็วกว่าจึงทนอัตราคิดลดสูงได้ดีกว่า (IRR B 10% &gt; A 9%)
+            แต่โจทย์บอก cost of capital = 6% → โลกจริงอยู่ฝั่ง A → <Text strong>เชื่อ NPV เลือก A</Text></span>}/>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+const LabTab = () => (
+  <div>
+    <Alert type="success" style={{marginBottom:16}} message={<Text strong>🧪 3 สถานี: ถัง payback → เส้นโค้ง NPV/IRR → ศึก A vs B — ค่าเริ่มต้นตรงกับโจทย์การบ้าน เลื่อนหาจุดที่คำตอบพลิกดู</Text>}/>
+    <PaybackLab/>
+    <NPVLab/>
+    <ConflictLab/>
+  </div>
+);
+
+/* ============================================================
+   TAB 3 — เคส 4 เรื่อง (เฉลยการบ้าน)
+   ============================================================ */
+const cases = [
+  {
+    key:'c1', title:'Case 1 — Mistral: เครื่องจักร $1.75M คืนทุนกี่ปี', concept:'Payback',
+    cold:'ก่อนดูเฉลย: กรณี (b) เงินไม่เท่ากันทุกปี ใช้สูตรหารตรง ๆ ได้ไหม?',
+    given:['ลงทุน 1,750,000', '(a) เงินสดรับปีละ 350,000 เท่ากันทุกปี', '(b) รับ 275,000 / 420,000 / 820,000 / 470,000 / 150,000'],
+    steps:[
+      ['(a) เงินเท่ากันทุกปี','Payback = 1,750,000 ÷ 350,000 = 5 ปี'],
+      ['(b) นับสะสม','ปี1-3: 275+420+820 = 1,515,000 → ยังขาด 235,000'],
+      ['เศษของปีที่ 4','235,000 ÷ 470,000 = 0.5 → Payback = 3.5 ปี'],
+    ],
+    answer:'(a) 5 ปี   (b) 3.5 ปี',
+    pitfall:'กรณี uneven ห้ามเอาค่าเฉลี่ยมาหาร — ต้องนับสะสมทีละปีแล้วเทียบเศษกับเงินของ "ปีที่คืนครบ" เท่านั้น',
+  },
+  {
+    key:'c2', title:'Case 2 — Brenning: ระบบ $3M ให้ ARR เท่าไร', concept:'ARR',
+    cold:'ก่อนดูเฉลย: โจทย์ให้ "net income" ไม่ใช่ cash flow — บอกอะไรเรา?',
+    given:['ลงทุน 3,000,000', 'กำไรสุทธิ 6 ปี: 475 / 375 / 650 / 900 / 920 / 800 (พันดอลลาร์)'],
+    steps:[
+      ['หากำไรเฉลี่ย','(475,000+375,000+650,000+900,000+920,000+800,000) ÷ 6 = 686,666.67'],
+      ['เข้าสูตร ARR','686,666.67 ÷ 3,000,000 = 0.2289 = 22.9%'],
+    ],
+    answer:'ARR ≈ 22.9%',
+    pitfall:'ARR เป็นตัวเดียวของบทที่ใช้กำไรบัญชี — ถ้าโจทย์เผลอให้ cash flow แล้วถาม ARR ต้องหักค่าเสื่อมก่อน (เหมือนข้อ 4B)',
+  },
+  {
+    key:'c3', title:'Case 3 — Durrel: A vs B เลือกใครดี (cost of capital 6%)', concept:'NPV vs IRR',
+    cold:'ก่อนดูเฉลย: A ได้เงินก้อนเดียวปีที่ 3, B ได้เท่ากัน 3 ปี — ใช้ตารางคนละตัว ตัวไหนบ้าง?',
+    given:['ลงทุนเท่ากัน 220,000', 'A: รับ 285,000 ครั้งเดียวปีที่ 3 (ใช้ตาราง PV of $1)', 'B: รับ 88,500 ทุกปี 3 ปี (ใช้ตาราง annuity)'],
+    steps:[
+      ['A) NPV ที่ 6%','A: 285,000 × 0.840 = 239,400 − 220,000 = +19,400 | B: 88,500 × 2.673 = 236,560.50 − 220,000 = +16,560.50 → NPV เลือก A'],
+      ['B) IRR ของ A','df = 220,000 ÷ 285,000 = 0.772 → ตาราง PV 3 ปี: อยู่ระหว่าง 8% (0.794) กับ 10% (0.751) → ≈ 9%'],
+      ['IRR ของ B','af = 220,000 ÷ 88,500 = 2.486 ≈ 2.487 (ตาราง annuity 3 ปี ช่อง 10%) → ≈ 10% → IRR เลือก B'],
+      ['สรุปความขัดแย้ง','NPV ชี้ A, IRR ชี้ B — ตำราให้เชื่อ NPV (วัดความมั่งคั่งเป็นเงินจริง + สมมติฐาน reinvest สมจริงกว่า) → เลือก A'],
+    ],
+    answer:'A) NPV: A = $19,400, B = $16,560.50 → เลือก A   B) IRR: A ≈ 9%, B ≈ 10% → เลือก B (ถ้ายึด IRR)',
+    pitfall:'อย่าใช้ตารางผิดตัว: เงินก้อนเดียว = PV of $1 / เงินเท่ากันทุกปี = annuity — และจำไว้ว่าถ้าสองเกณฑ์ขัดกัน NPV ชนะ',
+  },
+  {
+    key:'c4', title:'Case 4 — Aragon: เครื่องจักร $560,290 ครบ 4 เครื่องมือ', concept:'ครบทั้งบทในข้อเดียว',
+    cold:'ก่อนดูเฉลย: ตัวเลขไหนใช้กับ payback/NPV/IRR และตัวไหนใช้กับ ARR?',
+    given:['ลงทุน 560,290 · เงินสดรับปีละ 90,000 · 10 ปี', 'ค่าเสื่อมปีละ 56,000 · เกณฑ์ขั้นต่ำ 10%'],
+    steps:[
+      ['A) Payback','560,290 ÷ 90,000 = 6.23 ปี'],
+      ['B) ARR','กำไรสุทธิ = 90,000 − ค่าเสื่อม 56,000 = 34,000 → 34,000 ÷ 560,290 = 6.07%'],
+      ['C) NPV','90,000 × 6.145 (annuity 10%, 10 ปี) = 553,050 − 560,290 = −7,240'],
+      ['D) IRR','af = 560,290 ÷ 90,000 = 6.225 → ตาราง 10 ปี: 10% = 6.145, 8% = 6.710 → IRR ต่ำกว่า 10% เล็กน้อย (~9.7%)'],
+      ['ตัดสิน','NPV ติดลบ + IRR < เกณฑ์ 10% → ไม่ควรลงทุน (สองเครื่องมือหลักเห็นตรงกัน)'],
+    ],
+    answer:'A) 6.23 ปี   B) 6.07%   C) NPV = −$7,240   D) IRR ≈ เกือบ 10% แต่ไม่ถึง → ปฏิเสธโครงการ',
+    pitfall:'ค่าเสื่อม 56,000 ใช้กับ ARR เท่านั้น (แปลงเงินสด→กำไร) — ห้ามเอาไปหักใน payback/NPV/IRR เพราะพวกนั้นใช้เงินสดล้วน',
+  },
+  {
+    key:'b1', title:'Bonus Case A — NPV เต็มสูตร: เครื่องจักร + เงินทุนหมุนเวียน + ซาก', concept:'ตำรา CS 14.3',
+    cold:'ก่อนดูเฉลย: working capital 40,000 ที่ลงตอนปี 0 จะไปโผล่อีกทีตอนไหน?',
+    given:['ซื้อเครื่องจักร 320,000 + ต้องมีเงินทุนหมุนเวียนเพิ่ม 40,000', 'ปี 1–5: รายรับ 300,000 − ค่าใช้จ่ายเงินสด 180,000', 'สิ้นปี 5: ขายซากได้ 40,000 และได้เงินทุนหมุนเวียนคืน', 'Required rate = 12%'],
+    steps:[
+      ['ขั้น 1 ระบุกระแสเงินสด (หัวใจของโจทย์แบบนี้)','ปี 0 = (360,000) | ปี 1–4 = +120,000 | ปี 5 = 120,000 + ซาก 40,000 + WC คืน 40,000 = +200,000'],
+      ['ขั้น 2 คิดลดที่ 12%','PV ปี1–4: 120,000 × (0.89286+0.79719+0.71178+0.63552) = 364,482 | PV ปี5: 200,000 × 0.56743 = 113,486'],
+      ['รวม','364,482 + 113,486 − 360,000 = NPV = $117,968 → รับโครงการ'],
+    ],
+    answer:'NPV = +$117,968 → ลงทุน',
+    pitfall:'สองจุดที่ลืมประจำ: เงินทุนหมุนเวียนต้องลงทุนปี 0 และ "ได้คืน" ปีสุดท้าย / ซากบวกเข้าปีสุดท้าย — และทั้งคู่ไม่ใช่ค่าเสื่อม ไม่เกี่ยวกับ ARR',
+  },
+  {
+    key:'b2', title:'Bonus Case B — โรงพยาบาลซื้อเครื่องอัลตราซาวด์', concept:'ตำรา CS 14.4 (IRR ลงตัวเป๊ะ)',
+    cold:'ก่อนดูเฉลย: ทำไมโจทย์จงใจให้เลขลงทุนเป็น 205,570.50 แปลก ๆ?',
+    given:['ลงทุน $205,570.50', 'เงินสดรับปีละ 50,000 นาน 6 ปี'],
+    steps:[
+      ['หา discount factor','df = 205,570.50 ÷ 50,000 = 4.11141'],
+      ['เปิดตาราง annuity แถว 6 ปี','ค่า 4.11141 ตรงช่อง 12% พอดีเป๊ะ'],
+      ['สรุป','IRR = 12% — ถ้า required rate ≤ 12% ก็รับ'],
+    ],
+    answer:'IRR = 12%',
+    pitfall:'เลขลงทุนถูก "ตั้งย้อนกลับ" จากตาราง ให้ df ลงตัว — ข้อสอบจริงมักไม่ลงตัว ต้องตอบเป็นช่วง (เหมือนข้อ 4D ของเรา) อย่าตกใจถ้าหาค่าเป๊ะไม่เจอ',
+  },
+  {
+    key:'b3', title:'Bonus Case C — Design A vs B: IRR เสมอกัน ใครตัดสิน?', concept:'ตำรา CS 14.5 (mutually exclusive)',
+    cold:'ก่อนดูเฉลย: ถ้าสองโครงการ IRR เท่ากันเป๊ะ แปลว่าดีเท่ากันไหม?',
+    given:['ระบบบำบัดมลพิษ เลือกได้แบบเดียว อายุ 5 ปี', 'A: ลงทุน 180,000 รับปีละ 60,000 | B: ลงทุน 210,000 รับปีละ 70,000', 'Cost of capital 12% (af 5 ปี = 3.60478)'],
+    steps:[
+      ['IRR ทั้งคู่','df ของ A = 180,000÷60,000 = 3.00000 | ของ B = 210,000÷70,000 = 3.00000 → IRR ≈ 20% เท่ากันเป๊ะ — IRR ตัดสินไม่ได้!'],
+      ['NPV ที่ 12%','A: 60,000×3.60478 − 180,000 = 36,287 | B: 70,000×3.60478 − 210,000 = 42,335'],
+      ['ตัดสิน','เลือก B — สร้างความมั่งคั่งมากกว่า 6,048 แม้ต้องลงทุนเพิ่ม 30,000 (เงินก้อนเพิ่มนั้นก็ทำงานที่ ~20% ซึ่งสูงกว่าเกณฑ์ 12%)'],
+    ],
+    answer:'IRR: A = B ≈ 20% (เสมอ) · NPV: B ชนะ 42,335 > 36,287 → เลือก Design B',
+    pitfall:'ตัวอย่างนี้พิสูจน์คำขวัญของบท: จัดอันดับโครงการที่เลือกได้อันเดียว ให้ดู "จำนวนเงิน" (NPV) ไม่ใช่ "เปอร์เซ็นต์" (IRR)',
+  },
+];
+const CaseCard = ({s}) => {
+  const [show, setShow] = useState(false);
+  return (
+    <Card style={{ marginBottom:16, background:C.white, borderColor:C.border }}
+      title={<Space wrap><Text strong style={{color:C.text}}>{s.title}</Text><Tag color="gold">{s.concept}</Tag></Space>}>
+      <Text strong style={{color:C.blue}}>ข้อมูลเคส:</Text>
+      <ul style={{marginTop:4}}>{s.given.map((g,i)=><li key={i}><Text style={{color:C.text2}}>{g}</Text></li>)}</ul>
+      <Alert type="warning" style={{marginBottom:8}} message={<span><Text strong>🎤 Cold call: </Text>{s.cold}</span>}/>
+      {!show
+        ? <Button type="primary" onClick={()=>setShow(true)}>คิดแล้ว — เปิดเฉลย</Button>
+        : <div>
+            <Divider style={{margin:'12px 0'}}>วิธีคิดทีละขั้น</Divider>
+            {s.steps.map((st,i)=>(
+              <div className="step-line" key={i}>
+                <Text strong style={{color:C.goldDark}}>{st[0]}: </Text>
+                <Text style={{color:C.text}}>{st[1]}</Text>
+              </div>
+            ))}
+            <Alert style={{marginTop:12}} type="success" message={<Text strong>✅ คำตอบ: {s.answer}</Text>} />
+            <Alert style={{marginTop:8}} type="error" message={<span><Text strong>⚠️ กับดัก: </Text>{s.pitfall}</span>} />
+            <Button size="small" style={{marginTop:8}} onClick={()=>setShow(false)}>ซ่อนเฉลย</Button>
+          </div>}
+    </Card>
+  );
+};
+const CasesTab = () => (
+  <div>
+    <Alert type="info" style={{marginBottom:16}} message={<Text strong>สไตล์ case method: อ่านเคส → ตอบ cold call ในใจ → ค่อยเปิดเฉลย — เคส 1–4 คือการบ้านชุดนี้ ส่วน Bonus A–C คือตัวอย่างเด็ดจากตำรา (working capital + ซาก / IRR ลงตัว / IRR เสมอกัน)</Text>}/>
+    {cases.map(s => <CaseCard key={s.key} s={s}/>)}
+  </div>
+);
+
+/* ============================================================
+   TAB 4 — FLASHCARDS
+   ============================================================ */
+const flashcards = [
+  {q:'ทำไมเงิน 100 วันนี้ มีค่ามากกว่า 100 ปีหน้า?', a:'เพราะเอาไปลงทุนต่อได้ (time value of money)', d:'ฝาก 10% → ปีหน้าได้ 110 — จึงต้องคิดลดเงินอนาคตก่อนเทียบกับเงินวันนี้เสมอ', star:3, exam:true},
+  {q:'สูตร payback (เงินสดเท่ากันทุกปี)?', a:'เงินลงทุน ÷ เงินสดรับต่อปี', d:'Mistral: 1,750,000 ÷ 350,000 = 5 ปี — ถ้าไม่เท่ากันทุกปีต้องนับสะสม', star:3, exam:true},
+  {q:'Payback กรณีเงินไม่เท่ากันทุกปี ทำยังไง?', a:'บวกสะสมจนเกือบครบทุน แล้วเศษ = ที่ขาด ÷ เงินสดปีนั้น', d:'Mistral b: 3 ปีสะสม 1,515,000 ขาด 235,000 จากปี 4 (470,000) → 3.5 ปี', star:3, exam:true},
+  {q:'จุดอ่อน 2 ข้อของ payback?', a:'ไม่สนเงินหลังคืนทุน + ไม่คิดค่าเวลาเงิน', d:'โครงการที่คืนทุนช้ากว่าแต่ทำเงินมหาศาลปีท้าย ๆ จะแพ้อย่างไม่เป็นธรรม', star:3, exam:true},
+  {q:'ARR ต่างจากเครื่องมืออื่นของบทยังไง?', a:'ใช้ "กำไรสุทธิบัญชี" ตัวเดียว — ที่เหลือใช้กระแสเงินสด', d:'ARR = กำไรเฉลี่ย ÷ เงินลงทุน | Brenning: 686,666.67 ÷ 3,000,000 = 22.9%', star:3, exam:true},
+  {q:'โจทย์ให้ cash flow แต่ถาม ARR ต้องทำอะไรก่อน?', a:'หักค่าเสื่อมเพื่อแปลงเป็นกำไรสุทธิ', d:'Aragon: 90,000 − 56,000 = 34,000 → ARR = 34,000 ÷ 560,290 = 6.07%', star:3, exam:true},
+  {q:'สูตร NPV?', a:'PV ของเงินสดรับทุกปี − เงินลงทุนเริ่มแรก', d:'≥ 0 = รับ | ค่าที่ได้อ่านว่า "ความมั่งคั่งที่เพิ่มเป็นเงินวันนี้หลังหักต้นทุนเงินทุนแล้ว"', star:3, exam:true},
+  {q:'NPV = 0 พอดี แปลว่าอะไร?', a:'โครงการทำผลตอบแทนเท่ากับ cost of capital พอดี (ไม่ได้แปลว่าเจ๊า!)', d:'ยังคุ้มระดับ "ได้เท่าที่เงินทุนควรได้" — และอัตราที่ทำให้ NPV = 0 นั่นแหละคือ IRR', star:3, exam:true},
+  {q:'หา IRR จากตาราง (เงินรับเป็น annuity) ทำยังไง?', a:'df = เงินลงทุน ÷ เงินสดรับต่อปี แล้วไล่หาในตาราง annuity แถวจำนวนปี', d:'Durrel B: 220,000÷88,500 = 2.486 ≈ ช่อง 10% (2.487) → IRR ≈ 10%', star:3, exam:true},
+  {q:'หา IRR เมื่อเงินรับเป็นก้อนเดียวในอนาคต?', a:'df = เงินลงทุน ÷ เงินรับ แล้วเปิดตาราง PV of $1', d:'Durrel A: 220,000÷285,000 = 0.772 → ระหว่าง 8% กับ 10% → ≈ 9%', star:3, exam:true},
+  {q:'เกณฑ์ตัดสินของ NPV และ IRR?', a:'NPV ≥ 0 รับ | IRR ≥ cost of capital (hurdle rate) รับ', d:'โครงการเดี่ยว ๆ สองเกณฑ์ให้คำตอบเดียวกันเสมอ — จะขัดกันได้เฉพาะตอนจัดอันดับหลายโครงการ', star:3, exam:true},
+  {q:'NPV กับ IRR ขัดกัน (mutually exclusive) เชื่อใคร?', a:'NPV', d:'เพราะวัดเป็นจำนวนเงินความมั่งคั่งตรง ๆ + สมมติ reinvest ที่ cost of capital ซึ่งสมจริงกว่าสมมติ reinvest ที่ IRR', star:3, exam:true},
+  {q:'ทำไม Durrel ถึงขัดกัน: NPV เลือก A แต่ IRR เลือก B?', a:'B ได้เงินกลับเร็วกว่า จึงทนอัตราคิดลดสูงได้ดี (IRR สูง) แต่ที่ 6% เงินก้อนใหญ่ของ A ชนะ', d:'จุดตัด (crossover) ~7%: ต่ำกว่านั้น A ชนะ สูงกว่านั้น B ชนะ — ลองดูใน Lab 3', star:2, exam:true},
+  {q:'ตาราง PV of $1 กับตาราง annuity ต่างกันยังไง ใช้เมื่อไร?', a:'PV of $1 = เงินก้อนเดียวปีเดียว | annuity = เงินเท่ากันทุกปีคูณทีเดียว', d:'annuity factor = ผลรวมของ PV factor แต่ละปีนั่นเอง (เช็คได้: 0.943+0.890+0.840 = 2.673)', star:2, exam:true},
+  {q:'ค่าเสื่อมราคาใช้กับเครื่องมือไหนของบทนี้บ้าง?', a:'ARR เท่านั้น (แปลงเงินสด ↔ กำไร)', d:'payback/NPV/IRR ใช้เงินสดล้วน — ค่าเสื่อมไม่ใช่เงินสด (บทนี้ไม่คิดภาษี จึงไม่มี tax shield)', star:3, exam:true},
+  {q:'Independent vs mutually exclusive projects ต่างกันยังไง?', a:'Independent: รับได้ทุกอันที่ผ่านเกณฑ์ | Mutually exclusive: เลือกได้อันเดียว ต้องจัดอันดับ', d:'ความขัดแย้ง NPV vs IRR เป็นปัญหาเฉพาะกรณี mutually exclusive', star:2, exam:true},
+  {q:'Postaudit คืออะไร มีไว้ทำไม?', a:'ตรวจผลจริงของโครงการเทียบกับที่ประมาณไว้ตอนขออนุมัติ', d:'สร้างวินัยให้ผู้เสนอไม่ปั้นตัวเลข + ได้บทเรียนไว้ปรับการประมาณครั้งหน้า', star:1, exam:false},
+  {q:'Cost of capital คืออะไรในบริบทบทนี้?', a:'ต้นทุนของเงินทุนที่ใช้ลงทุน = อัตราคิดลด = เกณฑ์ขั้นต่ำ (hurdle rate)', d:'Durrel ใช้ 6%, Aragon ใช้ 10% — ตัวเดียวกันสามชื่อ', star:2, exam:true},
+  {q:'[เลขจากเคส] Aragon: NPV เท่าไร ตัดสินยังไง?', a:'90,000 × 6.145 − 560,290 = −7,240 → ปฏิเสธ', d:'ยืนยันด้วย IRR: af 6.225 > 6.145 (10%) → IRR ไม่ถึง 10% ไม่ผ่านเกณฑ์', star:2, exam:true},
+  {q:'[เลขจากเคส] Mistral b จ่ายคืนครบตอนไหน?', a:'3.5 ปี', d:'สะสม 3 ปี = 1,515,000 ขาด 235,000 = ครึ่งพอดีของเงินปี 4 (470,000)', star:2, exam:true},
+  {q:'ถ้าอัตราคิดลดสูงขึ้น NPV จะเป็นยังไง?', a:'ลดลงเสมอ (เส้น NPV ลาดลง)', d:'เงินอนาคตถูกหารด้วย (1+r)ⁿ ที่โตขึ้น — จุดที่เส้นแตะศูนย์คือ IRR', star:2, exam:false},
+  {q:'ทำไมโครงการที่ payback สั้นอาจไม่ใช่โครงการที่ดีที่สุด?', a:'เพราะเพิกเฉยต่อเงินหลังคืนทุนและมูลค่าเวลา', d:'ใช้ payback เป็นตัวกรองความเสี่ยง/สภาพคล่องได้ แต่ตัดสินจริงควรใช้ NPV', star:2, exam:false},
+  {q:'NPV เป็นบวก 1 ตัวเลข บอกอะไร 3 อย่าง?', a:'① คืนเงินลงทุนครบ ② ได้ผลตอบแทนขั้นต่ำครบ ③ มีส่วนเกินอีกเท่า NPV', d:'สไลด์ 25 — จึงบอกว่า NPV = 0 ไม่ใช่เจ๊า แต่คือได้เท่า cost of capital พอดี', star:3, exam:true},
+  {q:'Working capital ในโจทย์ NPV ปฏิบัติยังไง?', a:'เป็นเงินออกปี 0 และ "ได้คืน" เป็นเงินเข้าปีสุดท้าย', d:'CS 14.3: ลง 40,000 ปี 0 คืน 40,000 ปี 5 (พร้อมซาก 40,000) → ปี 5 รวมเข้า 200,000', star:3, exam:true},
+  {q:'Salvage value (ซาก) เข้าไปตรงไหนของ NPV?', a:'บวกเข้ากระแสเงินสดปีสุดท้าย', d:'เป็นเงินสดจริงตอนขายเครื่องทิ้ง — ต่างจากค่าเสื่อมซึ่งไม่ใช่เงินสด', star:2, exam:true},
+  {q:'ตั้งอัตราคิดลดสูงเกินไป มีผลเสียยังไง?', a:'ลำเอียงไปทางโครงการระยะสั้น — เงินปีไกล ๆ ถูกหารจนหมดค่า', d:'สไลด์ 24: ผู้บริหารชอบเผื่อความเสี่ยงด้วยอัตราสูง แต่เผื่อเกิน = ฆ่าโครงการระยะยาวดี ๆ', star:2, exam:false},
+  {q:'Postaudit คืออะไร ให้ประโยชน์อะไร?', a:'ตรวจผลจริงเทียบประมาณการหลังลงทุน — จัดสรรทรัพยากรดีขึ้น + คนเสนอไม่กล้าโม้ตัวเลข', d:'ข้อจำกัด: มีต้นทุน และสภาพแวดล้อมอาจเปลี่ยนจนสมมติฐานเดิมใช้ไม่ได้', star:2, exam:true},
+  {q:'NPV กับ IRR สมมติ reinvest ต่างกันยังไง?', a:'NPV: reinvest ที่ required rate (สมจริง) | IRR: reinvest ที่ IRR เอง (มองโลกดีเกิน)', d:'เหตุผลข้อแรกที่ NPV น่าเชื่อกว่าเมื่อจัดอันดับโครงการ mutually exclusive', star:3, exam:true},
+  {q:'[ตำรา CS 14.5] Design A กับ B IRR เท่ากัน 20% ทั้งคู่ เลือกยังไง?', a:'ใช้ NPV: B ชนะ (42,335 > 36,287) → เลือก B', d:'ตัวอย่างพิสูจน์ว่า IRR จัดอันดับไม่ได้ — ความมั่งคั่งวัดเป็นจำนวนเงิน ไม่ใช่ %', star:3, exam:true},
+  {q:'ลงทุนระบบโรงงานอัตโนมัติ ต้องระวังอะไรเป็นพิเศษ?', a:'ต้นทุนแฝง (ซอฟต์แวร์ ติดตั้ง ฝึกอบรม) และประโยชน์จับต้องยาก (lead time, ความพึงพอใจลูกค้า)', d:'นับไม่ครบสองฝั่ง → NPV เพี้ยน โครงการดีถูกปฏิเสธ (สไลด์ 50–51)', star:1, exam:false},
+];
+
+const FlashcardTab = () => {
+  const [filter, setFilter] = useState('all');
+  const [order, setOrder] = useState(flashcards.map((_,i)=>i));
+  const [idx, setIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [score, setScore] = useState({ok:0, ng:0});
+  const pool = order.map(i=>flashcards[i]).filter(c => filter==='all' ? true : filter==='exam' ? c.exam : c.star===3);
+  const card = pool[Math.min(idx, pool.length-1)];
+  const shuffle = () => { const a=[...Array(flashcards.length).keys()]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} setOrder(a); setIdx(0); setFlipped(false); setScore({ok:0,ng:0}); };
+  const nav = (d) => { setFlipped(false); setIdx(i => (i + d + pool.length) % pool.length); };
+  const mark = (good) => { setScore(s => good ? {...s, ok:s.ok+1} : {...s, ng:s.ng+1}); nav(1); };
+  const setF = (f) => { setFilter(f); setIdx(0); setFlipped(false); };
+  if (!card) return <Alert type="warning" message="ไม่มีการ์ดในโหมดนี้" />;
+  return (
+    <div>
+      <Flex justify="space-between" wrap="wrap" gap={8} style={{marginBottom:12}}>
+        <Space wrap>
+          <Button type={filter==='all'?'primary':'default'} onClick={()=>setF('all')}>ทั้งหมด ({flashcards.length})</Button>
+          <Button type={filter==='exam'?'primary':'default'} onClick={()=>setF('exam')}>เฉพาะแนวข้อสอบ ({flashcards.filter(c=>c.exam).length})</Button>
+          <Button type={filter==='star3'?'primary':'default'} onClick={()=>setF('star3')}>⭐⭐⭐ ({flashcards.filter(c=>c.star===3).length})</Button>
+        </Space>
+        <Button onClick={shuffle}>🔀 สลับการ์ด</Button>
+      </Flex>
+      <Row gutter={16} style={{marginBottom:12}}>
+        <Col span={8}><Statistic title="การ์ดที่" value={`${idx+1} / ${pool.length}`} /></Col>
+        <Col span={8}><Statistic title="ตอบถูก" value={score.ok} valueStyle={{color:C.green}} /></Col>
+        <Col span={8}><Statistic title="ตอบผิด" value={score.ng} valueStyle={{color:C.red}} /></Col>
+      </Row>
+      <div className="fc-perspective" onClick={()=>setFlipped(f=>!f)}>
+        <div className={'fc-card' + (flipped ? ' flipped' : '')}>
+          <div className="fc-face" style={{background:C.white, border:`2px solid ${C.borderDark}`}}>
+            <Space direction="vertical" align="center">
+              <Space>{card.exam && <Tag color="volcano">แนวข้อสอบ</Tag>}<Stars n={card.star} /></Space>
+              <Title level={4} style={{color:C.text, margin:0}}>{card.q}</Title>
+              <Text style={{color:C.text3}}>(คลิกเพื่อพลิกดูคำตอบ)</Text>
+            </Space>
+          </div>
+          <div className="fc-face fc-back" style={{background:C.surface3, border:`2px solid ${C.gold}`}}>
+            <Space direction="vertical" align="center">
+              <Title level={4} style={{color:C.goldDark, margin:0}}>{card.a}</Title>
+              <Text style={{color:C.text2}}>{card.d}</Text>
+            </Space>
+          </div>
+        </div>
+      </div>
+      <Flex justify="center" gap={8} style={{marginTop:16}} wrap="wrap">
+        <Button onClick={()=>nav(-1)}>← ก่อนหน้า</Button>
+        <Button style={{background:C.greenBg, borderColor:C.green, color:C.green}} onClick={()=>mark(true)}>✓ ตอบถูก</Button>
+        <Button style={{background:C.redBg, borderColor:C.red, color:C.red}} onClick={()=>mark(false)}>✗ ตอบผิด</Button>
+        <Button onClick={()=>nav(1)}>ถัดไป →</Button>
+      </Flex>
+    </div>
+  );
+};
+
+/* ============================================================
+   TAB 5 — QUICK REFERENCE
+   ============================================================ */
+const quickSections = [
+  { divider: '🎯 สูตร — เขียนได้ใน 30 วินาที' },
+  { s:'PB', t:'Payback', b:'ลงทุน ÷ CF/ปี | uneven: นับสะสม + เศษ = ขาด÷CFปีนั้น | 1,750,000÷350,000 = 5 ปี', type:'formula' },
+  { s:'ARR', t:'Accounting rate', b:'กำไรเฉลี่ย ÷ ลงทุนเริ่มแรก | ใช้ "กำไร" (เงินสด − ค่าเสื่อม)', type:'formula' },
+  { s:'NPV', t:'Net present value', b:'Σ CF×df − ลงทุน | annuity: CF × af | ≥0 รับ', type:'formula' },
+  { s:'IRR', t:'Internal rate', b:'df หรือ af = ลงทุน ÷ CF แล้วเปิดตารางไล่หา % | ≥ hurdle รับ', type:'formula' },
+  { s:'Rule', t:'ขัดกันเชื่อใคร', b:'NPV ชนะ IRR เสมอเมื่อจัดอันดับโครงการ mutually exclusive', type:'formula' },
+  { divider: '🧠 ตัวช่วยจำ' },
+  { s:'2 ง่าย 2 เทพ', t:'จัดกลุ่มเครื่องมือ', b:'ง่าย (ไม่คิด TVM): Payback, ARR | เทพ (คิด TVM): NPV, IRR — ข้อสอบทฤษฎีชอบถามว่าใครคิด TVM', type:'mnem' },
+  { s:'ARR = บัญชี', t:'ชื่อบอกอยู่แล้ว', b:'"Accounting" rate of return = ใช้กำไรทางบัญชี — เห็นค่าเสื่อมในโจทย์เมื่อไร มีไว้ให้ ARR', type:'mnem' },
+  { s:'ก้อนเดียว/ทุกปี', t:'เลือกตาราง', b:'เงินก้อนเดียว → PV of $1 | เงินเท่ากันทุกปี → annuity | จำ: af = ผลรวมของ df', type:'mnem' },
+  { s:'เส้นลาดลง', t:'ภาพ NPV', b:'r สูงขึ้น NPV ลดลงเสมอ จุดที่แตะศูนย์ = IRR — วาดภาพนี้ได้ = เข้าใจครึ่งบท', type:'mnem' },
+  { divider: '⚡ Flow ทำโจทย์' },
+  { s:'Flow', t:'อ่านโจทย์ 10 วินาทีแรก', b:'1) เงินสดหรือกำไร? → 2) เท่ากันทุกปีไหม? → 3) ถามเครื่องมือไหน? → 4) เลือกสูตร/ตารางให้ตรง', type:'flow' },
+  { s:'Flow', t:'โจทย์ NPV', b:'1) เขียน timeline เงิน → 2) เลือก df/af จากตารางตาม r และปี → 3) คูณ → 4) หักเงินลงทุน → 5) แปลผล รับ/ปฏิเสธ', type:'flow' },
+  { s:'Flow', t:'โจทย์ IRR จากตาราง', b:'1) af = ลงทุน÷CF → 2) เปิดแถวปี → 3) หาช่องที่ใกล้สุด → 4) ระบุช่วง % → 5) เทียบ hurdle', type:'flow' },
+  { divider: '⚔️ คู่ที่ชอบสับสน' },
+  { s:'CF vs NI', t:'เงินสด vs กำไร', b:'Payback/NPV/IRR = เงินสด | ARR = กำไร | สะพานเชื่อม: กำไร = เงินสด − ค่าเสื่อม', type:'contrast' },
+  { s:'NPV vs IRR', t:'เงิน vs เปอร์เซ็นต์', b:'NPV ตอบ "รวยขึ้นกี่บาท" | IRR ตอบ "ได้กี่ %" — จัดอันดับแล้วขัดกันให้เชื่อจำนวนเงิน', type:'contrast' },
+  { s:'r vs IRR', t:'สองอัตราอย่าปน', b:'r (cost of capital) = เกณฑ์ที่เราตั้ง | IRR = ความสามารถของโครงการ | รับเมื่อ IRR ≥ r', type:'contrast' },
+  { divider: '📌 ชุดตัวเลขเคส จำไว้เช็คคำตอบ' },
+  { s:'เคส 1', t:'Mistral PB', b:'(a) 5 ปี · (b) 3.5 ปี', type:'chunk' },
+  { s:'เคส 2', t:'Brenning ARR', b:'686,666.67 ÷ 3M = 22.9%', type:'chunk' },
+  { s:'เคส 3', t:'Durrel NPV/IRR', b:'NPV: A 19,400 > B 16,560.50 | IRR: A ~9% < B ~10% → เชื่อ NPV เลือก A', type:'chunk' },
+  { s:'เคส 4', t:'Aragon ครบเซ็ต', b:'PB 6.23 ปี · ARR 6.07% · NPV −7,240 · IRR ไม่ถึง 10% → ปฏิเสธ', type:'chunk' },
+  { divider: '📗 เพิ่มจากสไลด์ตำรา' },
+  { s:'3 ชั้น', t:'NPV บวกแปลว่า', b:'คืนทุนครบ + ได้ขั้นต่ำครบ + เหลือส่วนเกินอีกเท่า NPV', type:'chunk' },
+  { s:'ปี 0/ปีท้าย', t:'ไส้ในโจทย์ NPV เต็มสูตร', b:'ปี 0: เครื่องจักร + working capital | ปีสุดท้าย: CF ปกติ + ซาก + WC คืน (CS 14.3 → NPV 117,968)', type:'formula' },
+  { s:'Reinvest', t:'ทำไม NPV ชนะ IRR', b:'NPV สมมติลงทุนต่อที่ required rate (จริง) | IRR สมมติที่ IRR เอง (ฝันหวาน) + เงินจริงสำคัญกว่า %', type:'contrast' },
+  { s:'A vs B', t:'CS 14.5 จำไว้อ้าง', b:'IRR เสมอ 20% ทั้งคู่ → NPV ชี้ขาด: B 42,335 > A 36,287 → เลือก B', type:'chunk' },
+  { s:'Postaudit', t:'หลังลงทุน', b:'เทียบจริง vs ประมาณการ → จัดสรรดีขึ้น + กันคนโม้ตัวเลข (แต่มีต้นทุน)', type:'chunk' },
+  { s:'F=P(1+i)ⁿ', t:'Appendix 14A', b:'ทบต้นไปอนาคต | ย้อนกลับ: P = F ÷ (1+i)ⁿ — df ในตารางคือ 1/(1+i)ⁿ นั่นเอง', type:'formula' },
+];
+const typeStyle = {
+  mnem: { color:C.purple, bg:C.purpleBg },
+  flow: { color:C.cyan, bg:C.cyanBg },
+  contrast: { color:C.red, bg:C.redBg },
+  chunk: { color:C.blue, bg:C.blueBg },
+  formula: { color:C.goldDark, bg:'#F3EDDF' },
+};
+const QuickTab = () => (
+  <div>
+    {quickSections.map((it, i) => it.divider
+      ? <Divider key={i} orientation="left"><Text strong style={{color:C.text2}}>{it.divider}</Text></Divider>
+      : (() => { const st = typeStyle[it.type]; return (
+          <Card key={i} className="qc" size="small"
+            style={{marginBottom:10, background:st.bg, borderColor:st.color, borderLeft:`5px solid ${st.color}`}}>
+            <Space align="start">
+              <Tag style={{color:st.color, borderColor:st.color, background:'transparent', fontWeight:700}}>{it.s}</Tag>
+              <div>
+                <Text strong style={{color:C.text}}>{it.t}</Text><br/>
+                <Text style={{color:C.text2}}>{it.b}</Text>
+              </div>
+            </Space>
+          </Card>
+        );})()
+    )}
+  </div>
+);
+
+/* ============================================================ */
+const App = () => (
+  <ConfigProvider theme={{
+    algorithm: theme.defaultAlgorithm,
+    token: {
+      colorPrimary: C.gold, colorBgBase: C.bg, colorTextBase: C.text,
+      colorBgContainer: C.white, colorBorder: C.border, borderRadius: 10,
+      fontFamily: "'Noto Sans Thai', sans-serif",
+    },
+  }}>
+    <Layout style={{minHeight:'100vh', background:C.bg}}>
+      <Layout.Content style={{maxWidth:960, width:'100%', margin:'0 auto', padding:'32px 16px'}}>
+        <Title level={2} style={{color:C.text, textAlign:'center', marginBottom:4}}>🏗️ Capital Investment Decisions — Chapter 14</Title>
+        <Paragraph style={{textAlign:'center', color:C.text3, marginBottom:24}}>
+          Cornerstones of Managerial Accounting, 5e · เรียนแบบ case method: พื้นฐาน → กรอบคิด → ทดลอง → เคสจริง → ท่องจำ
+        </Paragraph>
+        <Tabs centered type="card" defaultActiveKey="basics" items={[
+          { key:'basics', label:'🌱 ปูพื้นก่อน', children:<BasicsTab/> },
+          { key:'sum', label:'📚 สรุปเนื้อหา', children:<SummaryTab/> },
+          { key:'lab', label:'🧪 ห้องทดลอง', children:<LabTab/> },
+          { key:'cases', label:'🎓 เคส 4+3 เรื่อง', children:<CasesTab/> },
+          { key:'fc', label:'🎴 Flashcard', children:<FlashcardTab/> },
+          { key:'quick', label:'⚡ การ์ดจำด่วน', children:<QuickTab/> },
+        ]}/>
+        <Divider/>
+        <Text style={{display:'block', textAlign:'center', color:C.text3}}>
+          สร้างจากโจทย์ Ch 14 Problem + สไลด์ MA_5e_PPT_Ch14 · เคสการบ้าน (Mistral · Brenning · Durrel · Aragon) + เคสตำรา (CS 14.3–14.5) · ตาราง PV/annuity ตรงกับ Figure 1–2 ในโจทย์
+        </Text>
+      </Layout.Content>
+    </Layout>
+  </ConfigProvider>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
