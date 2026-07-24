@@ -19,7 +19,7 @@
   <div id="report">กำลังโหลด…</div>
 
   <!-- ตัวเครื่องมือจริง -->
-  <script src="../assets/ink-tool.js?v=6" defer></script>
+  <script src="../assets/ink-tool.js?v=7" defer></script>
 
   <script>
   // ============ ชุดทดสอบ ============
@@ -160,11 +160,10 @@
     btn('clear');
     ok('clear ครั้งสอง = ล้างหมด', D.strokes() === 0, D.strokes());
 
-    // 14) ปุ่มปริ้นเป็นปุ่มลอยถาวร — เห็น/กดได้ทั้งที่ยังไม่เปิดปากกา
-    D.close();
-    const printBtn = document.querySelector('#inkToolbar [data-act="print"]');
-    ok('มีปุ่มปริ้น 🖨️ (ปุ่มลอย)', !!printBtn);
-    ok('ปุ่มปริ้นเห็นได้ทั้งที่ยังไม่เปิดปากกา', !!printBtn && printBtn.offsetParent !== null && !document.getElementById('inkToolbar').classList.contains('open'));
+    // 14) ปุ่มปริ้นอยู่ในถาดปากกา (เปิด ✎ ก่อนถึงเจอ) + กดแล้ว mount แท็บ → window.print()
+    D.open();
+    const printBtn = document.querySelector('#inkToolbar .ink-tray [data-act="print"]');
+    ok('มีปุ่มปริ้น 🖨️ ในถาดปากกา', !!printBtn);
     let printed = false;
     const realPrint = window.print;
     window.print = function () { printed = true; };
