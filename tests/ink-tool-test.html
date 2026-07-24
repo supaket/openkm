@@ -19,7 +19,7 @@
   <div id="report">กำลังโหลด…</div>
 
   <!-- ตัวเครื่องมือจริง -->
-  <script src="../assets/ink-tool.js?v=4" defer></script>
+  <script src="../assets/ink-tool.js?v=5" defer></script>
 
   <script>
   // ============ ชุดทดสอบ ============
@@ -160,7 +160,7 @@
     btn('clear');
     ok('clear ครั้งสอง = ล้างหมด', D.strokes() === 0, D.strokes());
 
-    // 14) ปุ่มปริ้น — มีปุ่ม + กดแล้วเรียก window.print() (และหุบแถบให้เอง)
+    // 14) ปุ่มปริ้น — มีปุ่ม + กดแล้วเรียก window.print() หลัง mount แท็บ (หุบแถบ + ใส่ class A4)
     D.open();
     const printBtn = document.querySelector('#inkToolbar [data-act="print"]');
     ok('มีปุ่มปริ้น 🖨️ ในแถบเครื่องมือ', !!printBtn);
@@ -168,10 +168,19 @@
     const realPrint = window.print;
     window.print = function () { printed = true; };
     if (printBtn) printBtn.click();
-    await sleep(120);            // handler หุบแถบแล้ว setTimeout(60) ค่อยเรียก print
-    window.print = realPrint;
+    await sleep(700);            // printAll: mount แท็บ → setTimeout(250) → window.print()
     ok('กดปริ้นแล้วเรียก window.print()', printed);
     ok('กดปริ้นแล้วหุบแถบ (tool=null)', D.tool() === null);
+    ok('ใส่ class ink-print-all สำหรับ A4/ทุกแท็บ', document.body.classList.contains('ink-print-all'));
+    window.print = realPrint;
+
+    // 14b) printAll บนหน้าไม่มีแท็บ (หน้านี้) ต้องไม่พังและเรียก print ได้
+    printed = false; window.print = function () { printed = true; };
+    D.printAll();
+    await sleep(700);
+    ok('printAll ทำงานบนหน้าไม่มี antd tabs', printed);
+    window.print = realPrint;
+    document.body.classList.remove('ink-print-all');
 
     // 15) close
     D.open(); D.close();

@@ -347,6 +347,86 @@
     }).finally(function () { setBusy(false); });
   }
 
+  /* ---------- print: ทุกแท็บ/ทุกส่วน · พอดี A4 (เอาเข้าห้องสอบได้) ---------- */
+  var printCss = document.createElement('style');
+  printCss.id = 'inkPrintCss';
+  printCss.textContent =
+    '@page{size:A4;margin:11mm}' +
+    '@media print{' +
+      'html,body{background:#fff !important}' +
+      '#inkToolbar,#inkBusy,#inkToolCanvas{display:none !important}' +
+      '*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}' +
+      // กางทุกแท็บให้เห็นพร้อมกัน (ตอนกด 🖨️ จะ mount แท็บครบก่อน)
+      'body.ink-print-all .ant-tabs-nav{display:none !important}' +
+      'body.ink-print-all .ant-tabs-content,body.ink-print-all .ant-tabs-content-holder{display:block !important;height:auto !important;overflow:visible !important;transform:none !important}' +
+      'body.ink-print-all .ant-tabs-tabpane,body.ink-print-all .ant-tabs-tabpane-hidden{display:block !important;visibility:visible !important;opacity:1 !important;height:auto !important;overflow:visible !important}' +
+      'body.ink-print-all .ant-tabs-tabpane[data-ink-label]::before{content:attr(data-ink-label);display:block;font-weight:700;font-size:13pt;margin:16px 0 8px;padding:6px 10px;background:#efe9df;border-left:5px solid #A8906C;border-radius:3px;break-after:avoid;break-before:auto}' +
+      // กาง Collapse/accordion ที่กางไว้
+      'body.ink-print-all .ant-collapse-content,body.ink-print-all .ant-collapse-content-hidden{display:block !important;height:auto !important;overflow:visible !important}' +
+      'body.ink-print-all .ant-collapse-item{break-inside:avoid}' +
+      // ให้พอดีความกว้าง A4 + กันตัดกลางบล็อก
+      '#root,.ant-layout,.ant-layout-content,.ant-tabs,main,section,.container{width:auto !important;max-width:100% !important}' +
+      'img{max-width:100% !important;height:auto !important}' +
+      'table{width:100% !important;font-size:10pt}' +
+      '.ant-card,.chcard,table,tr,img,.ant-alert,.ant-statistic,.flashcard,.ant-collapse-item,li{break-inside:avoid;page-break-inside:avoid}' +
+      'h1,h2,h3,h4{break-after:avoid}' +
+    '}';
+  document.head.appendChild(printCss);
+
+  function expandAllCollapse() {
+    document.querySelectorAll('.ant-collapse-header').forEach(function (h) {
+      if (h.getAttribute('aria-expanded') === 'false') { try { h.click(); } catch (_) {} }
+    });
+  }
+  function labelPanes() {                                       // ใส่หัวข้อชื่อแท็บก่อนแต่ละส่วน
+    document.querySelectorAll('.ant-tabs-tab').forEach(function (t) {
+      var btn = t.querySelector('.ant-tabs-tab-btn') || t;
+      var paneId = btn.getAttribute('aria-controls') || t.getAttribute('aria-controls');
+      var label = (btn.textContent || '').trim();
+      if (paneId) { var p = document.getElementById(paneId); if (p && label) p.setAttribute('data-ink-label', label); }
+    });
+  }
+  function visitAllTabs(done) {                                 // คลิกวนทุกแท็บให้ React mount pane (รวมแท็บซ้อน)
+    var rounds = 0;
+    (function pass() {
+      var fresh = Array.prototype.slice.call(document.querySelectorAll('.ant-tabs-tab'))
+        .filter(function (t) { return !t.__inkVisited; });
+      if (!fresh.length || rounds > 4) return done();
+      rounds++;
+      var i = 0;
+      (function next() {
+        if (i >= fresh.length) { setTimeout(pass, 70); return; }  // สแกนซ้ำเผื่อแท็บซ้อนที่เพิ่งโผล่
+        var t = fresh[i++]; t.__inkVisited = 1;
+        try { t.click(); } catch (_) {}
+        setTimeout(next, 45);
+      })();
+    })();
+  }
+  function printAll() {
+    if (tool) closeBar();
+    var actives = Array.prototype.slice.call(document.querySelectorAll('.ant-tabs')).map(function (g) {
+      return g.querySelector(':scope > .ant-tabs-nav .ant-tabs-tab-active');
+    });
+    expandAllCollapse();
+    visitAllTabs(function () {
+      expandAllCollapse();                                      // เผื่อ Collapse ในแท็บที่เพิ่ง mount
+      labelPanes();
+      setTimeout(function () {
+        document.body.classList.add('ink-print-all');
+        var restored = false;
+        function restore() {
+          if (restored) return; restored = true;
+          window.removeEventListener('afterprint', restore);
+          document.body.classList.remove('ink-print-all');
+          actives.forEach(function (a) { if (a && document.contains(a)) { try { a.click(); } catch (_) {} } });
+        }
+        window.addEventListener('afterprint', restore);
+        window.print();
+        setTimeout(restore, 4000);                              // สำรอง เผื่อ afterprint ไม่ยิงบางเบราว์เซอร์
+      }, 250);
+    });
+  }
+
   /* ---------- UI ---------- */
   var css = document.createElement('style');
   css.textContent =
@@ -387,7 +467,7 @@
     '<button class="ink-b" data-act="palm" title="โหมดกันฝ่ามือ: Pencil เขียน / นิ้วเลื่อน-กดหน้าได้" aria-label="โหมดกันฝ่ามือ">✋</button>' +
     '<button class="ink-b" data-act="save-view" title="บันทึกภาพเฉพาะที่เห็นบนจอ" aria-label="บันทึกภาพหน้าจอ">📸</button>' +
     '<button class="ink-b" data-act="save-full" title="บันทึกภาพทั้งเอกสาร" aria-label="บันทึกภาพทั้งเอกสาร">📰</button>' +
-    '<button class="ink-b" data-act="print" title="ปริ้นหน้านี้ (Ctrl/⌘+P)" aria-label="ปริ้นหน้านี้">🖨️</button>';
+    '<button class="ink-b" data-act="print" title="ปริ้นครบทุกแท็บ · พอดี A4 (เอาเข้าห้องสอบได้)" aria-label="ปริ้นครบทุกแท็บ พอดี A4">🖨️</button>';
   bar.innerHTML = '<div class="ink-tray">' + trayBtns + '</div><button class="ink-b ink-fab" data-act="fab" title="ปากกาเขียนหน้า (เปิด/หุบ)" aria-label="เปิดหรือหุบเครื่องมือปากกา">✎</button>';
   document.body.appendChild(bar);
   document.body.appendChild(canvas);
@@ -443,7 +523,7 @@
     else if (act === 'palm') setPalm(palmMode === 'pen' ? 'any' : 'pen');
     else if (act === 'save-view') saveImage('view');
     else if (act === 'save-full') saveImage('full');
-    else if (act === 'print') { closeBar(); setTimeout(function () { window.print(); }, 60); return; }
+    else if (act === 'print') { printAll(); return; }
     else if (act === 'clear') {                                 // แตะยืนยัน 2 ครั้ง — ไม่บล็อกจอ
       if (b.classList.contains('armed')) { clearAll(); disarmClear(); }
       else {
@@ -477,6 +557,7 @@
     shotScale: shotScale,
     open: openBar,
     close: closeBar,
+    printAll: printAll,
     setTool: function (t) { if (!bar.classList.contains('open')) openBar(); tool = t; refreshUI(); },
     setPalm: setPalm,
     clearAll: clearAll,
